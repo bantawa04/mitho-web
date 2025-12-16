@@ -11,8 +11,18 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "Mitho Cha! - Discover Amazing Food",
-  description: "Your food discovery platform for restaurants and food trucks",
+  title: "Mitho Cha! - Discover the Real Taste of Nepal",
+  description:
+    "Find authentic restaurants, food trucks, and hidden local gems across Nepal. Read reviews from locals and discover your next favorite meal.",
+  keywords: [
+    "Nepal food",
+    "restaurants",
+    "food trucks",
+    "local cuisine",
+    "Nepali food",
+    "Kathmandu restaurants",
+    "food discovery",
+  ],
   generator: "v0.app",
   icons: {
     icon: [
@@ -31,10 +41,18 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
+  openGraph: {
+    title: "Mitho Cha! - Discover the Real Taste of Nepal",
+    description: "Find authentic restaurants, food trucks, and hidden local gems across Nepal.",
+    type: "website",
+    locale: "en_US",
+  },
 }
 
 export const viewport: Viewport = {
   themeColor: "#EF8A00",
+  width: "device-width",
+  initialScale: 1,
 }
 
 export default function RootLayout({

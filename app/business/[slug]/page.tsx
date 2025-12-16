@@ -13,7 +13,7 @@ import { RatingsSection } from "@/components/business/ratings-section"
 import { ReviewsSection } from "@/components/business/reviews-section"
 import { AddReviewForm } from "@/components/business/add-review-form"
 import { SimilarPlaces } from "@/components/business/similar-places"
-import { SponsoredSection } from "@/components/business/sponsered-section"
+import { SponsoredSection } from "@/components/business/sponsored-section"
 import { ClaimReport } from "@/components/business/claim-report"
 
 const businessData = {

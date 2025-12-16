@@ -89,7 +89,7 @@ const getProgressColor = (stars: number): string => {
     case 5:
       return "bg-brand-deep-green"
     case 4:
-      return "bg-brand-green"
+      return "bg-brand-light-green"
     case 3:
       return "bg-warning"
     case 2:

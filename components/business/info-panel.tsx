@@ -1,4 +1,4 @@
-import { MapPin, Clock, UtensilsCrossed, DollarSign, Phone, Globe } from "lucide-react"
+import { MapPin, Clock, UtensilsCrossed, Phone, Globe } from "lucide-react"
 import { MithoCard, MithoCardHeader, MithoCardContent } from "@/components/ui/mitho-card"
 import { AmenityList } from "@/components/ui/mitho-amenity"
 
@@ -12,7 +12,6 @@ const businessInfo = {
     { day: "Saturday - Sunday", time: "9:00 AM - 11:00 PM" },
   ],
   cuisines: ["Nepali", "Tibetan", "Indian"],
-  priceRange: "$$",
   amenities: ["wifi", "parking", "takeaway", "cards", "dineIn", "vegan"] as const,
 }
 
@@ -61,17 +60,6 @@ export function InfoPanel() {
                 <div>
                   <p className="font-medium">Cuisine</p>
                   <p className="text-muted-foreground text-sm">{businessInfo.cuisines.join(", ")}</p>
-                </div>
-              </div>
-
-              {/* Price Range */}
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center flex-shrink-0">
-                  <DollarSign className="h-5 w-5 text-brand-orange" />
-                </div>
-                <div>
-                  <p className="font-medium">Price Range</p>
-                  <p className="text-muted-foreground text-sm">{businessInfo.priceRange} - Moderate</p>
                 </div>
               </div>
 
@@ -126,7 +114,11 @@ export function InfoPanel() {
             </MithoCardHeader>
             <MithoCardContent>
               <div className="aspect-square rounded-xl overflow-hidden bg-brand-soft-beige/30 flex items-center justify-center">
-                <img src="/map-kathmandu-thamel-location-pin.jpg" alt="Map location" className="w-full h-full object-cover" />
+                <img
+                  src="/map-kathmandu-thamel-location-pin.jpg"
+                  alt="Map location"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <a href="#" className="block text-center text-brand-orange hover:underline mt-4 text-sm font-medium">
                 Get Directions

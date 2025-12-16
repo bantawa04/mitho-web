@@ -4,7 +4,7 @@ import * as React from "react"
 import { MapPin, Clock, Heart, Truck } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MithoBadge, OpenNowBadge, ClosedBadge, TopRatedBadge, TrendingBadge } from "./mitho-badge"
-import { StarRating } from "@/components/ui/mitho-rating"
+import { StarRating } from "./mitho-rating"
 
 // Base Card Components
 const MithoCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
