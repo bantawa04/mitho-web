@@ -12,6 +12,8 @@ import { BusinessCtaSection } from "@/components/home/business-cta-section"
 import { SponsoredListingsSection } from "@/components/home/sponsored-listings-section"
 import { FinalCtaSection } from "@/components/home/final-cta-section"
 import { Footer } from "@/components/home/footer"
+import { FooterV2 } from "@/components/home/footer-v2"
+
 import { MithoTabBar } from "@/components/ui/mitho-navigation"
 
 export default function HomePage() {
@@ -59,7 +61,8 @@ export default function HomePage() {
       </main>
 
       {/* 14. Footer */}
-      <Footer />
+      {/* <Footer /> */}
+      <FooterV2 />
 
       {/* Mobile Bottom Tab Bar */}
       <MithoTabBar />
