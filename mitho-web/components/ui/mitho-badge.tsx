@@ -7,16 +7,16 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand-orange text-white hover:bg-brand-fresh-orange",
+        default: "bg-brand-orange text-brand-dark-green hover:bg-brand-fresh-orange",
         success: "bg-success text-success-foreground hover:bg-success/90",
         warning: "bg-warning text-warning-foreground hover:bg-warning/90",
         danger: "bg-danger text-danger-foreground hover:bg-danger/90",
         info: "bg-info text-info-foreground hover:bg-info/90",
-        muted: "bg-brand-soft-beige text-brand-dark-green hover:bg-brand-soft-beige/80",
+        muted: "bg-brand-soft-beige/70 text-brand-dark-green hover:bg-brand-soft-beige",
         outline:
-          "border-2 border-brand-deep-green text-brand-deep-green bg-transparent hover:bg-brand-deep-green hover:text-white",
+          "border-2 border-brand-deep-green/60 text-brand-deep-green bg-white/70 hover:bg-brand-deep-green hover:text-white",
         "outline-orange":
-          "border-2 border-brand-orange text-brand-orange bg-transparent hover:bg-brand-orange hover:text-white",
+          "border-2 border-brand-orange text-brand-orange bg-white/70 hover:bg-brand-orange hover:text-brand-dark-green",
         "outline-success": "border-2 border-success text-success bg-transparent hover:bg-success hover:text-white",
         "outline-danger": "border-2 border-danger text-danger bg-transparent hover:bg-danger hover:text-white",
         "outline-info": "border-2 border-info text-info bg-transparent hover:bg-info hover:text-white",
@@ -55,7 +55,7 @@ function TopRatedBadge() {
 }
 
 function TrendingBadge() {
-  return <MithoBadge variant="warning">Trending</MithoBadge>
+  return <MithoBadge variant="outline-orange">Trending</MithoBadge>
 }
 
 export { MithoBadge, badgeVariants, OpenNowBadge, ClosedBadge, TopRatedBadge, TrendingBadge }

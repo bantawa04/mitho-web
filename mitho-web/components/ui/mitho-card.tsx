@@ -12,7 +12,7 @@ const MithoCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
     <div
       ref={ref}
       className={cn(
-        "rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-200 hover:shadow-lg overflow-hidden",
+        "overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-card text-card-foreground shadow-[0_10px_30px_rgba(10,70,53,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(10,70,53,0.12)]",
         className,
       )}
       {...props}
@@ -23,14 +23,14 @@ MithoCard.displayName = "MithoCard"
 
 const MithoCardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-5", className)} {...props} />
+    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
   ),
 )
 MithoCardHeader.displayName = "MithoCardHeader"
 
 const MithoCardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-xl font-bold leading-none tracking-tight", className)} {...props} />
+    <h3 ref={ref} className={cn("text-xl font-bold leading-tight tracking-tight text-brand-dark-green", className)} {...props} />
   ),
 )
 MithoCardTitle.displayName = "MithoCardTitle"
@@ -43,13 +43,13 @@ const MithoCardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAt
 MithoCardDescription.displayName = "MithoCardDescription"
 
 const MithoCardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => <div ref={ref} className={cn("p-5 pt-0", className)} {...props} />,
+  ({ className, ...props }, ref) => <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />,
 )
 MithoCardContent.displayName = "MithoCardContent"
 
 const MithoCardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center p-5 pt-0", className)} {...props} />
+    <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
   ),
 )
 MithoCardFooter.displayName = "MithoCardFooter"
@@ -62,7 +62,7 @@ interface TextCardProps {
 
 function TextCard({ title, description, className }: TextCardProps) {
   return (
-    <MithoCard className={cn("hover:border-brand-orange/30", className)}>
+    <MithoCard className={cn("hover:border-brand-orange/25", className)}>
       <MithoCardHeader>
         <MithoCardTitle>{title}</MithoCardTitle>
         <MithoCardDescription className="mt-2 leading-relaxed">{description}</MithoCardDescription>
@@ -81,10 +81,10 @@ interface IconCardProps {
 
 function IconCard({ icon, title, description, iconBgColor = "bg-brand-orange/10", className }: IconCardProps) {
   return (
-    <MithoCard className={cn("hover:border-brand-orange/30 transition-all duration-200", className)}>
+    <MithoCard className={cn("hover:border-brand-orange/25 transition-all duration-200", className)}>
       <MithoCardHeader>
         <div
-          className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-3 text-brand-orange", iconBgColor)}
+          className={cn("mb-3 flex h-12 w-12 items-center justify-center rounded-2xl text-brand-orange", iconBgColor)}
         >
           {icon}
         </div>
@@ -112,7 +112,7 @@ function ImageCard({ imageUrl, imageAlt, title, description, aspectRatio = "vide
   }
 
   return (
-    <MithoCard className={cn("cursor-pointer hover:border-brand-orange/30", className)}>
+    <MithoCard className={cn("cursor-pointer hover:border-brand-orange/25", className)}>
       <div className={cn("overflow-hidden group/image", aspectClasses[aspectRatio])}>
         <img
           src={imageUrl || "/placeholder.svg"}
@@ -161,7 +161,7 @@ function RestaurantCard({
   onSave,
 }: RestaurantCardProps) {
   return (
-    <MithoCard className="cursor-pointer hover:border-brand-orange/30">
+    <MithoCard className="cursor-pointer hover:border-brand-orange/25">
       <div className="relative aspect-[4/3] overflow-hidden group/image">
         <img
           src={imageUrl || "/placeholder.svg"}
@@ -181,7 +181,7 @@ function RestaurantCard({
           }}
           className={cn(
             "absolute top-3 right-3 p-2 rounded-full",
-            "bg-white/90 backdrop-blur-sm",
+            "bg-white/90 backdrop-blur-sm shadow-sm",
             "transition-all duration-200",
             "hover:bg-white hover:scale-110",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",

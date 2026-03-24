@@ -66,14 +66,16 @@ const trendingPlaces = [
 export function TrendingSection() {
   return (
     <MithoSection
-      title="Trending Local Gems"
+      eyebrow="Discovery"
+      title="Trending local gems"
       titleIcon={<Flame className="h-7 w-7 text-brand-orange" />}
-      subtitle="Discover what's popular right now"
+      subtitle="Crowd-loved spots locals keep talking about this week."
+      density="feature"
       action={<MithoButton variant="link">View All</MithoButton>}
     >
       <MithoCarousel>
         {trendingPlaces.map((place, index) => (
-          <div key={index} className="flex-shrink-0 w-[300px]">
+          <div key={index} className="w-[312px] flex-shrink-0">
             <RestaurantCard {...place} />
           </div>
         ))}

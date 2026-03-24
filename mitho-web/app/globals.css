@@ -24,26 +24,34 @@
   --danger-foreground: #ffffff;
 
   /* Theme Tokens */
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
+  --background: #fffdf8;
+  --foreground: #15382d;
+  --card: #fffdf8;
+  --card-foreground: #15382d;
   --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
+  --popover-foreground: #15382d;
   --primary: #ef8a00;
-  --primary-foreground: #ffffff;
+  --primary-foreground: #0a4635;
   --secondary: #007936;
   --secondary-foreground: #ffffff;
-  --muted: #f4e0a6;
-  --muted-foreground: #0a4635;
+  --muted: #fbf4e5;
+  --muted-foreground: #4f665e;
   --accent: #8cac1c;
   --accent-foreground: #ffffff;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
+  --border: #e6dcc5;
+  --input: #e6dcc5;
   --ring: #ef8a00;
-  --radius: 0.75rem;
+  --radius: 1.5rem;
+
+  /* Extended surfaces */
+  --surface-warm: #fff6df;
+  --surface-soft: #fffbf1;
+  --surface-strong: #0a4635;
+  --surface-strong-foreground: #fff4da;
+  --surface-highlight: #fff0d8;
+  --border-strong: #bfd0b6;
 
   /* Chart Colors */
   --chart-1: #ef8a00;
@@ -91,6 +99,12 @@
   --sidebar-accent-foreground: #f4e0a6;
   --sidebar-border: #1a7350;
   --sidebar-ring: #ef8a00;
+  --surface-warm: #144f3d;
+  --surface-soft: #0d5a44;
+  --surface-strong: #072d22;
+  --surface-strong-foreground: #fff4da;
+  --surface-highlight: #1c674e;
+  --border-strong: #326f5a;
 }
 
 @theme inline {
@@ -142,6 +156,12 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-surface-warm: var(--surface-warm);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-strong: var(--surface-strong);
+  --color-surface-strong-foreground: var(--surface-strong-foreground);
+  --color-surface-highlight: var(--surface-highlight);
+  --color-border-strong: var(--border-strong);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -161,7 +181,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    background-image: radial-gradient(circle at top left, rgba(244, 224, 166, 0.24), transparent 28%);
   }
   h1,
   h2,
@@ -170,5 +191,10 @@
   h5,
   h6 {
     font-family: var(--font-heading);
+  }
+
+  ::selection {
+    background: rgba(239, 138, 0, 0.22);
+    color: var(--foreground);
   }
 }

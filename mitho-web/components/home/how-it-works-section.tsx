@@ -4,59 +4,54 @@ import { cn } from "@/lib/utils"
 
 const steps = [
   {
+    icon: <MessageSquare className="h-6 w-6" />,
+    title: "Read local reviews",
+    description: "See what people actually loved, what to order, and what to skip.",
+  },
+  {
     icon: <Search className="h-6 w-6" />,
-    title: "Search",
-    description: "Search by city, dish, or cuisine to find exactly what you're craving.",
+    title: "Search with intent",
+    description: "Look up a dish, a neighborhood, or the kind of place you want tonight.",
   },
   {
     icon: <MapPin className="h-6 w-6" />,
-    title: "Explore",
-    description: "Browse through local restaurants, food trucks, and hidden gems nearby.",
-  },
-  {
-    icon: <MessageSquare className="h-6 w-6" />,
-    title: "Read Reviews",
-    description: "Get insights from real locals with authentic reviews and photos.",
+    title: "Pick nearby favorites",
+    description: "Compare crowd-loved spots around you without digging through noise.",
   },
   {
     icon: <Share2 className="h-6 w-6" />,
-    title: "Share",
-    description: "Share your own food experiences and help others discover great places.",
+    title: "Save your next stop",
+    description: "Shortlist go-to places for momos, thakali, coffee dates, and more.",
   },
 ]
 
 export function HowItWorksSection() {
   return (
     <MithoSection
-      title="Your Journey to Great Food"
-      subtitle="Discover your next favorite meal in just a few simple steps"
-      className="bg-white"
+      eyebrow="Start here"
+      title="How Mitho Cha helps you choose well"
+      subtitle="A simple flow for finding places worth your appetite, time, and money."
+      density="compact"
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid gap-4 lg:grid-cols-4">
         {steps.map((step, index) => (
           <div
             key={index}
             className={cn(
-              "relative flex flex-col h-full",
-              "bg-card rounded-2xl border border-border p-6",
-              "transition-all duration-200 hover:shadow-lg hover:border-brand-orange/30",
+              "relative flex h-full flex-col rounded-[1.75rem] border border-brand-deep-green/10 bg-surface-soft p-6",
+              "transition-all duration-200 hover:border-brand-orange/25 hover:shadow-[0_16px_36px_rgba(10,70,53,0.1)]",
             )}
           >
-            {/* Step number badge */}
-            <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-brand-orange text-white flex items-center justify-center text-sm font-bold shadow-md z-10">
-              {index + 1}
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft-beige text-brand-deep-green">
+                {step.icon}
+              </div>
+              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-deep-green/55">
+                0{index + 1}
+              </div>
             </div>
-
-            {/* Icon container - fixed height */}
-            <div className="w-14 h-14 rounded-xl bg-brand-orange/10 flex items-center justify-center mb-4 text-brand-orange flex-shrink-0">
-              {step.icon}
-            </div>
-
-            {/* Title - fixed spacing */}
-            <h3 className="text-lg font-bold text-foreground mb-2 flex-shrink-0">{step.title}</h3>
-
-            {/* Description - flex-grow to fill remaining space */}
-            <p className="text-sm text-muted-foreground leading-relaxed flex-grow">{step.description}</p>
+            <h3 className="mb-2 text-lg font-bold text-brand-dark-green">{step.title}</h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">{step.description}</p>
           </div>
         ))}
       </div>

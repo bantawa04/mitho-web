@@ -55,18 +55,21 @@ const nearbyPlaces = [
 export function PopularNearYouSection() {
   return (
     <MithoSection
-      title="Popular Near You"
+      eyebrow="Nearby"
+      title="Worth the short walk"
       titleIcon={<MapPin className="h-6 w-6 text-brand-deep-green" />}
-      subtitle="Based on your location"
+      subtitle="Reliable nearby picks when you want something good without overthinking it."
+      density="compact"
+      tone="warm"
       action={
-        <MithoButton variant="secondary" size="sm" leftIcon={<Navigation className="h-4 w-4" />}>
+        <MithoButton variant="outline-secondary" size="sm" leftIcon={<Navigation className="h-4 w-4" />}>
           Update Location
         </MithoButton>
       }
     >
       <MithoCarousel>
         {nearbyPlaces.map((place, index) => (
-          <MithoCard key={index} className="flex-shrink-0 w-[280px] cursor-pointer group">
+          <MithoCard key={index} className="group w-[292px] flex-shrink-0 cursor-pointer bg-white/95">
             <div className="relative aspect-[3/2] overflow-hidden">
               <img
                 src={place.imageUrl || "/placeholder.svg"}

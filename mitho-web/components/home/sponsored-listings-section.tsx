@@ -20,7 +20,7 @@ const sponsoredListings = [
     rating: 4.5,
     reviewCount: 234,
     location: "Thamel, Kathmandu",
-    imageUrl: "/placeholder.svg?height=200&width=300",
+    imageUrl: "/restaurant-interior-cozy.jpg",
     offer: "20% off on first visit",
   },
   {
@@ -29,7 +29,7 @@ const sponsoredListings = [
     rating: 4.3,
     reviewCount: 189,
     location: "Basantapur, Kathmandu",
-    imageUrl: "/placeholder.svg?height=200&width=300",
+    imageUrl: "/himalayan-java-coffee-cafe-nepal.jpg",
     offer: "Free dessert with meal",
   },
   {
@@ -38,7 +38,7 @@ const sponsoredListings = [
     rating: 4.6,
     reviewCount: 312,
     location: "Jhamsikhel, Lalitpur",
-    imageUrl: "/placeholder.svg?height=200&width=300",
+    imageUrl: "/chef-cooking-nepali-food.jpg",
     offer: "Happy hour 4-6 PM",
   },
 ]
@@ -46,25 +46,26 @@ const sponsoredListings = [
 export function SponsoredListingsSection() {
   return (
     <MithoSection
-      title="Featured Listings"
-      subtitle="Handpicked recommendations from our partners"
-      className="bg-brand-soft-beige/20"
+      eyebrow="Partner picks"
+      title="Featured partner picks"
+      subtitle="Useful sponsored recommendations that still feel like part of the Mitho discovery experience."
+      density="compact"
     >
       <MithoCarousel>
         {sponsoredListings.map((listing, index) => (
-          <MithoCard key={index} className="flex-shrink-0 w-[280px] sm:w-[320px] cursor-pointer group">
+          <MithoCard key={index} className="group w-[292px] flex-shrink-0 cursor-pointer bg-white/95 sm:w-[320px]">
             <div className="relative aspect-[3/2] overflow-hidden">
               <img
                 src={listing.imageUrl || "/placeholder.svg"}
                 alt={listing.name}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              <MithoBadge variant="muted" size="sm" className="absolute top-3 left-3">
+              <MithoBadge variant="outline-orange" size="sm" className="absolute top-3 left-3">
                 Sponsored
               </MithoBadge>
               {listing.offer && (
                 <div className="absolute bottom-3 left-3 right-3">
-                  <div className="bg-brand-deep-green text-white text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg text-center truncate">
+                  <div className="rounded-full bg-brand-deep-green px-3 py-1.5 text-center text-xs font-medium text-white sm:text-sm">
                     {listing.offer}
                   </div>
                 </div>

@@ -1,95 +1,187 @@
 "use client"
 
 import * as React from "react"
-import { Search, MapPin, ChevronDown } from "lucide-react"
+import { Search, MapPin, ChevronDown, Star, UtensilsCrossed, MessageSquareQuote } from "lucide-react"
 import { MithoButton } from "@/components/ui/mitho-button"
+import { MithoBadge } from "@/components/ui/mitho-badge"
+
+const quickCravings = ["Momos", "Thakali", "Newari", "Cozy cafes"]
+
+const trustPoints = [
+  {
+    icon: <UtensilsCrossed className="h-5 w-5" />,
+    title: "Local-first picks",
+    description: "Find neighborhood favorites, not just the biggest names.",
+  },
+  {
+    icon: <MessageSquareQuote className="h-5 w-5" />,
+    title: "Honest reviews",
+    description: "Read clear notes on taste, portions, service, and vibe.",
+  },
+  {
+    icon: <Star className="h-5 w-5" />,
+    title: "Worth going back for",
+    description: "Ratings shaped by food lovers across Nepal.",
+  },
+]
 
 export function HeroSection() {
   const [searchQuery, setSearchQuery] = React.useState("")
   const [location, setLocation] = React.useState("Kathmandu")
 
   return (
-    <section className="relative min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-soft-beige via-white to-brand-soft-beige/50" />
+    <section className="relative overflow-hidden border-b border-brand-deep-green/10">
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,#fff8ea_0%,#fffdf8_45%,#fff4da_100%)]" />
       <div
-        className="absolute inset-0 opacity-10"
+        className="absolute inset-0 opacity-[0.08]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23EF8A00' fillOpacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
       />
+      <div className="absolute -left-24 top-16 h-64 w-64 rounded-full bg-brand-light-green/12 blur-3xl" />
+      <div className="absolute right-0 top-8 h-80 w-80 rounded-full bg-brand-orange/12 blur-3xl" />
 
-      {/* Content */}
-      <div className="relative container mx-auto px-4 py-16 md:py-24 text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-brand-dark-green mb-6 text-balance leading-tight">
-          Discover the Real <span className="text-brand-orange">Taste of Nepal</span>
-        </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 text-pretty">
-          Find authentic restaurants, food trucks, and hidden local gems reviewed by locals.
-        </p>
+      <div className="relative container mx-auto px-4 py-16 md:py-24 lg:py-28">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="max-w-2xl">
+            <MithoBadge variant="outline" className="mb-5 border-brand-deep-green/30 bg-white/70">
+              Nepal's local food guide
+            </MithoBadge>
+            <h1 className="text-4xl font-bold leading-[1.02] text-balance text-brand-dark-green sm:text-5xl md:text-6xl lg:text-7xl">
+              Find the places people actually
+              <span className="text-brand-orange"> love to eat.</span>
+            </h1>
+            <p className="mt-6 max-w-xl text-lg text-muted-foreground md:text-xl">
+              Discover trusted local favorites, hidden gems, and dishes worth leaving home for across Kathmandu,
+              Pokhara, Lalitpur, and beyond.
+            </p>
 
-        {/* Search Bar */}
-        <div className="max-w-3xl mx-auto mb-8">
-          <div className="flex flex-col sm:flex-row gap-3 p-3 bg-white rounded-2xl shadow-lg border border-border">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search restaurants, dishes, cuisines..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-12 pl-12 pr-4 rounded-xl bg-brand-soft-beige/30 border-0 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-orange/30"
-              />
+            <div className="mt-8 rounded-[2rem] border border-brand-deep-green/10 bg-white/95 p-4 shadow-[0_24px_60px_rgba(10,70,53,0.12)] backdrop-blur">
+              <div className="grid gap-3 lg:grid-cols-[1fr_220px_auto]">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search restaurants, dishes, cuisines..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-14 w-full rounded-full border border-brand-deep-green/10 bg-surface-soft pl-12 pr-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-orange/30"
+                  />
+                </div>
+
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand-orange" />
+                  <select
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="h-14 w-full appearance-none rounded-full border border-brand-deep-green/10 bg-surface-soft pl-12 pr-10 text-foreground focus:outline-none focus:ring-2 focus:ring-brand-orange/30"
+                  >
+                    <option value="Kathmandu">Kathmandu</option>
+                    <option value="Pokhara">Pokhara</option>
+                    <option value="Lalitpur">Lalitpur</option>
+                    <option value="Bhaktapur">Bhaktapur</option>
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                </div>
+
+                <MithoButton size="lg" className="h-14 px-8">
+                  <Search className="mr-2 h-5 w-5" />
+                  Search
+                </MithoButton>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                <span className="mr-1 font-medium text-brand-dark-green">Popular cravings:</span>
+                {quickCravings.map((craving) => (
+                  <button
+                    key={craving}
+                    type="button"
+                    className="rounded-full bg-brand-soft-beige/65 px-3 py-1.5 text-brand-dark-green transition-colors hover:bg-brand-orange/15"
+                  >
+                    {craving}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Location Selector */}
-            <div className="relative sm:w-48">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-brand-orange" />
-              <select
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full h-12 pl-12 pr-10 rounded-xl bg-brand-soft-beige/30 border-0 text-foreground appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-orange/30"
-              >
-                <option value="Kathmandu">Kathmandu</option>
-                <option value="Pokhara">Pokhara</option>
-                <option value="Lalitpur">Lalitpur</option>
-                <option value="Bhaktapur">Bhaktapur</option>
-              </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+              <MithoButton size="lg" leftIcon={<MapPin className="h-5 w-5" />}>
+                Start Exploring
+              </MithoButton>
+              <MithoButton variant="secondary" size="lg">
+                List Your Business
+              </MithoButton>
             </div>
 
-            {/* Search Button */}
-            <MithoButton size="lg" className="h-12 px-8">
-              <Search className="h-5 w-5 mr-2" />
-              Search
-            </MithoButton>
+            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              {trustPoints.map((point) => (
+                <div
+                  key={point.title}
+                  className="rounded-[1.5rem] border border-brand-deep-green/10 bg-white/80 p-5 shadow-[0_12px_28px_rgba(10,70,53,0.08)]"
+                >
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-brand-soft-beige text-brand-deep-green">
+                    {point.icon}
+                  </div>
+                  <p className="text-sm font-semibold text-brand-dark-green">{point.title}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{point.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <MithoButton size="lg" leftIcon={<MapPin className="h-5 w-5" />}>
-            Find Eateries Near Me
-          </MithoButton>
-          <MithoButton variant="link" size="lg">
-            List Your Business
-          </MithoButton>
-        </div>
+          <div className="relative">
+            <div className="absolute -right-6 top-12 hidden h-40 w-40 rounded-full bg-brand-orange/15 blur-3xl lg:block" />
+            <div className="grid gap-4 sm:grid-cols-[1.1fr_0.9fr]">
+              <div className="relative overflow-hidden rounded-[2.25rem] border border-brand-deep-green/10 bg-white p-3 shadow-[0_24px_60px_rgba(10,70,53,0.12)] sm:row-span-2">
+                <img
+                  src="/nepali-dal-bhat-traditional-meal.jpg"
+                  alt="Nepali dal bhat set"
+                  className="h-full min-h-[360px] w-full rounded-[1.6rem] object-cover"
+                />
+                <div className="absolute inset-x-8 bottom-8 rounded-[1.4rem] border border-brand-deep-green/10 bg-white/92 p-4 backdrop-blur">
+                  <div className="mb-2 flex items-center gap-2 text-brand-orange">
+                    <Star className="h-4 w-4 fill-brand-orange" />
+                    <span className="text-sm font-semibold">4.8 average from local reviewers</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Rich thalis, well-balanced achar, and service that feels genuinely welcoming.
+                  </p>
+                </div>
+              </div>
 
-        {/* Stats */}
-        <div className="flex flex-wrap justify-center gap-8 md:gap-16 mt-16 pt-8 border-t border-border/50">
-          <div className="text-center">
-            <p className="text-3xl md:text-4xl font-bold text-brand-orange">2,500+</p>
-            <p className="text-sm text-muted-foreground">Local Eateries</p>
-          </div>
-          <div className="text-center">
-            <p className="text-3xl md:text-4xl font-bold text-brand-deep-green">50K+</p>
-            <p className="text-sm text-muted-foreground">Reviews</p>
-          </div>
-          <div className="text-center">
-            <p className="text-3xl md:text-4xl font-bold text-brand-orange">15+</p>
-            <p className="text-sm text-muted-foreground">Cities</p>
+              <div className="rounded-[2rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_18px_36px_rgba(10,70,53,0.1)]">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-deep-green/70">
+                  This week on Mitho
+                </p>
+                <p className="mt-3 text-2xl font-bold text-brand-dark-green">2,500+</p>
+                <p className="text-sm text-muted-foreground">Local eateries reviewed across growing food neighborhoods.</p>
+                <div className="mt-4 flex items-center gap-2 text-sm text-brand-orange">
+                  <Star className="h-4 w-4 fill-brand-orange" />
+                  <span>50K+ honest reviews and photos</span>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 sm:grid-rows-1">
+                <div className="overflow-hidden rounded-[2rem] border border-brand-deep-green/10 bg-white p-3 shadow-[0_18px_36px_rgba(10,70,53,0.1)]">
+                  <img
+                    src="/nepali-momos-dumplings-plate.jpg"
+                    alt="Steamed momo plate"
+                    className="h-40 w-full rounded-[1.35rem] object-cover"
+                  />
+                  <p className="mt-3 text-sm font-semibold text-brand-dark-green">Best for cravings</p>
+                  <p className="text-sm text-muted-foreground">Momos, chowmein, choila, and late-night comfort food.</p>
+                </div>
+                <div className="overflow-hidden rounded-[2rem] border border-brand-deep-green/10 bg-white p-3 shadow-[0_18px_36px_rgba(10,70,53,0.1)]">
+                  <img
+                    src="/newari-food-platter.jpg"
+                    alt="Newari food platter"
+                    className="h-40 w-full rounded-[1.35rem] object-cover"
+                  />
+                  <p className="mt-3 text-sm font-semibold text-brand-dark-green">Local specials</p>
+                  <p className="text-sm text-muted-foreground">Find dishes people recommend by neighborhood, not hype.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ const topRatedPlaces = [
     reviewCount: 445,
     priceRange: "$$",
     location: "Durbar Marg, Kathmandu",
-    imageUrl: "/placeholder.svg?height=300&width=400",
+    imageUrl: "/nepali-thali-plate.jpg",
     isOpen: true,
     isTopRated: true,
   },
@@ -25,7 +25,7 @@ const topRatedPlaces = [
     reviewCount: 623,
     priceRange: "$$$",
     location: "Durbar Marg, Kathmandu",
-    imageUrl: "/placeholder.svg?height=300&width=400",
+    imageUrl: "/upscale-steakhouse.png",
     isOpen: true,
     isTopRated: true,
   },
@@ -36,7 +36,7 @@ const topRatedPlaces = [
     reviewCount: 312,
     priceRange: "$$$",
     location: "Lazimpat, Kathmandu",
-    imageUrl: "/placeholder.svg?height=300&width=400",
+    imageUrl: "/newari-food-choila-plate.jpg",
     isOpen: true,
     isTopRated: true,
   },
@@ -47,7 +47,7 @@ const topRatedPlaces = [
     reviewCount: 289,
     priceRange: "$$",
     location: "Jhamsikhel, Lalitpur",
-    imageUrl: "/placeholder.svg?height=300&width=400",
+    imageUrl: "/sekuwa-nepali-grilled-meat.jpg",
     isOpen: true,
     isTopRated: true,
   },
@@ -56,14 +56,16 @@ const topRatedPlaces = [
 export function TopRatedSection() {
   return (
     <MithoSection
-      title="Top Rated This Week"
+      eyebrow="Reliable favorites"
+      title="Top rated this week"
       titleIcon={<Award className="h-6 w-6 text-brand-orange" />}
-      subtitle="Highest rated by our community"
+      subtitle="Standout places earning consistently strong reviews from the community."
+      density="compact"
       action={<MithoButton variant="link">See All Top Rated</MithoButton>}
     >
       <MithoCarousel>
         {topRatedPlaces.map((place, index) => (
-          <div key={index} className="flex-shrink-0 w-[300px]">
+          <div key={index} className="w-[312px] flex-shrink-0">
             <RestaurantCard {...place} />
           </div>
         ))}

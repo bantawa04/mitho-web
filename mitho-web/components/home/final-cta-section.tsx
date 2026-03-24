@@ -4,26 +4,25 @@ import { MithoButton } from "@/components/ui/mitho-button"
 
 export function FinalCtaSection() {
   return (
-    <MithoSection className="bg-white">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-soft-beige via-white to-brand-soft-beige/50 p-8 md:p-12 lg:p-16 text-center">
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-32 h-32 bg-brand-orange/10 rounded-full -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-48 h-48 bg-brand-deep-green/10 rounded-full translate-x-1/4 translate-y-1/4" />
+    <MithoSection density="compact">
+      <div className="relative overflow-hidden rounded-[2.25rem] border border-brand-deep-green/10 bg-[linear-gradient(135deg,#fff8ea_0%,#fffdf8_55%,#fff4da_100%)] p-8 text-center md:p-12 lg:p-14">
+        <div className="absolute -left-12 top-0 h-32 w-32 rounded-full bg-brand-orange/12 blur-2xl" />
+        <div className="absolute -right-8 bottom-0 h-40 w-40 rounded-full bg-brand-light-green/10 blur-2xl" />
 
-        <div className="relative">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-brand-dark-green mb-4 text-balance">
-            Ready to Discover Your Next Favorite Meal?
+        <div className="relative mx-auto max-w-3xl">
+          <h2 className="text-3xl font-bold text-balance text-brand-dark-green md:text-4xl lg:text-5xl">
+            Start with the places people would happily recommend twice.
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            Join thousands of food lovers exploring authentic Nepali cuisine. Start your culinary adventure today.
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            The closing action should stay simple: help people begin exploring, then let the food and reviews do the work.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <MithoButton size="lg" leftIcon={<Compass className="h-5 w-5" />}>
               Explore Places
             </MithoButton>
-            <MithoButton variant="secondary" size="lg" leftIcon={<Store className="h-5 w-5" />}>
-              Add Your Business
+            <MithoButton variant="link" size="lg" leftIcon={<Store className="h-5 w-5" />}>
+              Add your business
             </MithoButton>
           </div>
         </div>

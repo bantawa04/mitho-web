@@ -17,51 +17,36 @@ import { MithoTabBar } from "@/components/ui/mitho-navigation"
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* 1. Sticky Header */}
       <Header />
 
-      <main>
-        {/* 2. Hero Section */}
+      <main className="overflow-x-hidden pb-20 lg:pb-0">
         <HeroSection />
 
-        {/* 3. How It Works */}
-        <HowItWorksSection />
+        <div className="bg-white">
+          <HowItWorksSection />
+        </div>
 
-        {/* 4. Ad Placement */}
-        <AdSection />
+        <div className="border-y border-brand-deep-green/10 bg-gradient-to-b from-white via-brand-soft-beige/10 to-brand-soft-beige/40">
+          <TrendingSection />
+          <CategoriesSection />
+          <PopularNearYouSection />
+          <TopRatedSection />
+          <AdSection />
+          <SponsoredListingsSection />
+        </div>
 
-        {/* 5. Trending Eateries */}
-        <TrendingSection />
+        <div className="bg-surface-soft">
+          <FeaturedReviewsSection />
+        </div>
 
-        {/* 6. Browse by Category */}
-        <CategoriesSection />
-
-        {/* 7. Popular Near You */}
-        <PopularNearYouSection />
-
-        {/* 8. Featured Reviews */}
-        <FeaturedReviewsSection />
-
-        {/* 9. Top Rated This Week */}
-        <TopRatedSection />
-
-        {/* 10. Mobile App Promotion */}
-        <AppPromotionSection />
-
-        {/* 11. Business CTA */}
-        <BusinessCtaSection />
-
-        {/* 12. Sponsored Listings */}
-        <SponsoredListingsSection />
-
-        {/* 13. Final CTA */}
-        <FinalCtaSection />
+        <div className="bg-white">
+          <AppPromotionSection />
+          <BusinessCtaSection />
+          <FinalCtaSection />
+        </div>
       </main>
 
-      {/* 14. Footer */}
       <Footer />
-
-      {/* Mobile Bottom Tab Bar */}
       <MithoTabBar />
     </div>
   )
