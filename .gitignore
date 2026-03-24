@@ -1,5 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Monorepo sibling — tracked in github.com/bantawa04/mitho-api
+/mitho-api/
+
+.DS_Store
+
 # dependencies
 /node_modules
 
