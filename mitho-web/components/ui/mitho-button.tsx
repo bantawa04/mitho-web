@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-brand-orange text-brand-dark-green hover:bg-brand-fresh-orange shadow-[0_14px_28px_rgba(239,138,0,0.2)] hover:shadow-[0_18px_36px_rgba(239,138,0,0.26)] active:bg-[#de8306]",
+          "bg-brand-orange text-white hover:bg-brand-fresh-orange shadow-[0_14px_28px_rgba(239,138,0,0.2)] hover:shadow-[0_18px_36px_rgba(239,138,0,0.26)] active:bg-[#de8306]",
         secondary:
           "bg-brand-deep-green text-white hover:bg-brand-dark-green shadow-[0_14px_28px_rgba(10,70,53,0.16)] hover:shadow-[0_18px_36px_rgba(10,70,53,0.22)] active:bg-[#006630]",
         success: "bg-success text-success-foreground hover:bg-success/90 shadow-md active:bg-[#15803d]",
@@ -21,7 +21,7 @@ const buttonVariants = cva(
         "outline-primary":
           "border-2 border-brand-orange text-brand-orange bg-white/80 hover:bg-brand-orange hover:text-brand-dark-green active:bg-[#d97b00]",
         "outline-secondary":
-          "border-2 border-brand-deep-green text-brand-deep-green bg-brand-soft-beige/35 hover:bg-brand-deep-green hover:text-white active:bg-[#006630]",
+          "border-2 border-brand-deep-green text-brand-deep-green bg-transparent hover:bg-brand-deep-green hover:text-white active:bg-[#006630]",
         "outline-success":
           "border-2 border-success text-success bg-transparent hover:bg-success hover:text-white active:bg-[#15803d]",
         "outline-danger":

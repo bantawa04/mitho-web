@@ -120,10 +120,10 @@ export function AppPromotionSection() {
                 </div>
               </div>
             </div>
-            <div className="absolute -left-10 bottom-8 hidden rounded-[1.5rem] border border-white/10 bg-white/10 p-4 backdrop-blur-sm md:block">
-              <p className="text-xs uppercase tracking-[0.2em] text-white/65">Saved for later</p>
-              <p className="mt-2 text-lg font-semibold text-white">Thakali spots in Patan</p>
-              <p className="mt-1 text-sm text-white/70">Synced across your shortlist and recommendations.</p>
+            <div className="absolute -left-10 bottom-8 hidden rounded-[1.5rem] border border-brand-soft-beige/40 bg-brand-soft-beige/95 p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] md:block">
+              <p className="text-xs uppercase tracking-[0.2em] text-brand-deep-green/70">Saved for later</p>
+              <p className="mt-2 text-lg font-semibold text-brand-dark-green">Thakali spots in Patan</p>
+              <p className="mt-1 text-sm text-brand-dark-green/75">Synced across your shortlist and recommendations.</p>
             </div>
           </div>
         </div>

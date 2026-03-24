@@ -69,7 +69,7 @@ export function Footer() {
               <input
                 type="email"
                 placeholder="Your email"
-                className="flex-1 h-10 px-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-brand-orange"
+                className="flex-1 h-10 rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white placeholder:text-white/50 transition-[border-color,box-shadow,background-color] focus:border-brand-orange focus:bg-white/12 focus:outline-none focus:ring-4 focus:ring-brand-orange/15 focus:shadow-[0_0_24px_rgba(239,138,0,0.18)]"
               />
               <button className="h-10 px-4 bg-brand-orange rounded-lg hover:bg-brand-fresh-orange transition-colors">
                 <Mail className="h-4 w-4" />
