@@ -1,5 +1,4 @@
 import { Header } from "@/components/home/header"
-import { HeroSection } from "@/components/home/hero-section"
 import { HowItWorksSection } from "@/components/home/how-it-works-section"
 import { AdSection } from "@/components/home/ad-section"
 import { TrendingSection } from "@/components/home/trending-section"
@@ -13,6 +12,7 @@ import { SponsoredListingsSection } from "@/components/home/sponsored-listings-s
 import { FinalCtaSection } from "@/components/home/final-cta-section"
 import { Footer } from "@/components/home/footer"
 import { MithoTabBar } from "@/components/ui/mitho-navigation"
+import { HeroSection } from "@/components/home/hero-section"
 
 export default function HomePage() {
   return (

@@ -31,15 +31,18 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden border-b border-brand-deep-green/10">
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,#fff8ea_0%,#fffdf8_45%,#fff4da_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,#fff8ea_0%,#fffdf8_42%,#fff3d6_100%)]" />
+      
       <div
-        className="absolute inset-0 opacity-[0.08]"
+        className="absolute inset-0 opacity-[0.06]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23EF8A00' fillOpacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, rgba(10,70,53,0.32) 1px, transparent 0)",
+          backgroundSize: "20px 20px",
         }}
       />
-      <div className="absolute -left-24 top-16 h-64 w-64 rounded-full bg-brand-light-green/12 blur-3xl" />
-      <div className="absolute right-0 top-8 h-80 w-80 rounded-full bg-brand-orange/12 blur-3xl" />
+      <div className="absolute -left-16 top-20 h-64 w-64 rounded-full bg-brand-orange/12 blur-3xl" />
+      <div className="absolute right-0 top-10 h-72 w-72 rounded-full bg-brand-light-green/12 blur-3xl" />
 
       <div className="relative container mx-auto px-4 py-16 md:py-24 lg:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
