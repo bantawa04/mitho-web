@@ -50,7 +50,7 @@ export function MithoSection({
               {eyebrow && (
                 <p
                   className={cn(
-                    "mb-3 text-xs font-semibold uppercase tracking-[0.24em]",
+                    "type-eyebrow mb-3",
                     isStrong ? "text-brand-soft-beige/75" : "text-brand-deep-green/70",
                   )}
                 >
@@ -60,7 +60,7 @@ export function MithoSection({
               {title && (
                 <h2
                   className={cn(
-                    "flex items-center gap-2 text-3xl font-bold leading-tight text-balance md:text-4xl",
+                    "type-section-title flex items-center gap-2",
                     isStrong ? "text-white" : "text-brand-dark-green",
                   )}
                 >
@@ -69,7 +69,7 @@ export function MithoSection({
                 </h2>
               )}
               {subtitle && (
-                <p className={cn("mt-3 text-base text-pretty md:text-lg", isStrong ? "text-white/75" : "text-muted-foreground")}>
+                <p className={cn("type-body mt-3 max-w-3xl text-pretty", isStrong ? "text-white/75" : "text-muted-foreground")}>
                   {subtitle}
                 </p>
               )}

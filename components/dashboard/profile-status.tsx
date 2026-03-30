@@ -16,13 +16,14 @@ export function ProfileStatus() {
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Business Profile Status</h2>
-      <MithoCard className="border-brand-orange/30">
+      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Readiness</p>
+      <h2 className="type-section-title mb-6 text-foreground">Business profile status</h2>
+      <MithoCard surface="business" interactive="subtle" className="border-brand-orange/20">
         <MithoCardHeader>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-bold text-foreground">Profile Completion</h3>
-              <p className="text-sm text-muted-foreground">Complete your profile to attract more customers</p>
+              <h3 className="type-card-title text-foreground">Profile completion</h3>
+              <p className="type-meta">Complete your profile to attract more customers</p>
             </div>
             <div className="text-right">
               <span className="text-3xl font-bold text-brand-orange">{completionPercentage}%</span>
@@ -35,7 +36,7 @@ export function ProfileStatus() {
             {tasks.map((task, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-brand-soft-beige/20 transition-colors"
+                className="surface-business-inset flex items-center gap-3 rounded-[1rem] p-3 transition-colors hover:bg-brand-soft-beige/85"
               >
                 {task.completed ? (
                   <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />

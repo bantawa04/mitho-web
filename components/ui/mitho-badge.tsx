@@ -9,6 +9,9 @@ const badgeVariants = cva(
       variant: {
         default: "bg-brand-orange text-white hover:bg-brand-fresh-orange",
         "brand-green": "bg-brand-deep-green text-white hover:bg-brand-dark-green",
+        neutral: "bg-surface-business-inset text-brand-dark-green hover:bg-brand-soft-beige",
+        moderation: "bg-surface-admin text-brand-dark-green hover:bg-surface-business-inset",
+        promotional: "bg-brand-orange text-white hover:bg-brand-fresh-orange",
         success: "bg-success text-success-foreground hover:bg-success/90",
         warning: "bg-warning text-warning-foreground hover:bg-warning/90",
         danger: "bg-danger text-danger-foreground hover:bg-danger/90",

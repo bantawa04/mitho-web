@@ -20,7 +20,11 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value, subtext, trend, isLocked = false, className }: StatCardProps) {
   return (
-    <MithoCard className={cn("relative hover:shadow-md transition-all", isLocked && "opacity-70", className)}>
+    <MithoCard
+      surface="business"
+      interactive="subtle"
+      className={cn("relative", isLocked && "opacity-70", className)}
+    >
       {isLocked && (
         <div className="absolute top-4 right-4 z-10">
           <Lock className="h-4 w-4 text-muted-foreground" />
@@ -28,24 +32,24 @@ export function StatCard({ icon, label, value, subtext, trend, isLocked = false,
       )}
       <MithoCardHeader className="pb-3">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft-beige text-brand-orange">
             {icon}
           </div>
           <div className="flex-1">
-            <p className="text-sm text-muted-foreground font-medium">{label}</p>
+            <p className="type-meta font-medium">{label}</p>
           </div>
         </div>
       </MithoCardHeader>
       <MithoCardContent>
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-3xl font-bold text-foreground">{isLocked ? "---" : value}</p>
-            {subtext && <p className="text-xs text-muted-foreground mt-1">{subtext}</p>}
+            <p className="text-3xl font-bold tracking-tight text-foreground">{isLocked ? "---" : value}</p>
+            {subtext && <p className="type-meta mt-1 text-xs">{subtext}</p>}
           </div>
           {trend && !isLocked && (
             <div
               className={cn(
-                "px-2 py-1 rounded-lg text-xs font-semibold",
+                "rounded-full px-2.5 py-1 text-xs font-semibold",
                 trend.isPositive ? "bg-success/10 text-success" : "bg-danger/10 text-danger",
               )}
             >

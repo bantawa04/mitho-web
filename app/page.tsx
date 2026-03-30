@@ -16,7 +16,7 @@ import { MithoTabBar } from "@/components/ui/mitho-navigation"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="page-shell-customer min-h-screen">
       <Header />
 
       <main className="overflow-x-hidden pb-20 lg:pb-0">

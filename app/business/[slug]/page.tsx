@@ -42,11 +42,10 @@ export default function BusinessDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="page-shell-customer min-h-screen">
       <Header />
 
       <main className="pb-12">
-        {/* Breadcrumb */}
         <div className="container mx-auto px-4 py-4">
           <MithoBreadcrumb items={breadcrumbItems} />
         </div>

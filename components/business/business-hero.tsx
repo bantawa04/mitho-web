@@ -59,10 +59,10 @@ export function BusinessHero({
 
       {/* Business Info Overlay */}
       <div className="container mx-auto px-4">
-        <div className="relative -mt-20 sm:-mt-24 bg-card rounded-2xl shadow-xl p-5 sm:p-6 border border-border">
+        <div className="taste-spotlight relative -mt-20 rounded-[2rem] border border-brand-orange/12 p-5 shadow-[0_18px_48px_rgba(10,70,53,0.12)] sm:-mt-24 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3">{name}</h1>
+              <h1 className="type-page-title mb-3 text-foreground">{name}</h1>
 
               {/* Rating */}
               <div className="flex items-center gap-3 mb-4">
@@ -74,7 +74,7 @@ export function BusinessHero({
               {/* Categories */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {categories.map((category) => (
-                  <MithoBadge key={category} variant="muted">
+                  <MithoBadge key={category} variant="neutral">
                     {category}
                   </MithoBadge>
                 ))}

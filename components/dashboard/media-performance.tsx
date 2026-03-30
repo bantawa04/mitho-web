@@ -7,22 +7,23 @@ import { MithoButton } from "@/components/ui/mitho-button"
 export function MediaPerformance() {
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Media Performance</h2>
-      <MithoCard>
+      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Media</p>
+      <h2 className="type-section-title mb-6 text-foreground">Media performance</h2>
+      <MithoCard surface="business" interactive="subtle">
         <MithoCardHeader>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
               <ImageIcon className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-foreground">Photos & Videos</h3>
-              <p className="text-sm text-muted-foreground">Your media engagement stats</p>
+              <h3 className="type-card-title text-foreground">Photos & videos</h3>
+              <p className="type-meta">Your media engagement stats</p>
             </div>
           </div>
         </MithoCardHeader>
         <MithoCardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="p-6 rounded-xl bg-gradient-to-br from-brand-orange/5 to-brand-orange/10 border border-brand-orange/20">
+            <div className="taste-spotlight rounded-[1.5rem] border border-brand-orange/18 p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-lg bg-brand-orange/20 flex items-center justify-center">
                   <ImageIcon className="h-6 w-6 text-brand-orange" />
@@ -35,7 +36,7 @@ export function MediaPerformance() {
               <p className="text-xs text-muted-foreground">18 photos uploaded</p>
             </div>
 
-            <div className="p-6 rounded-xl bg-gradient-to-br from-brand-deep-green/5 to-brand-deep-green/10 border border-brand-deep-green/20">
+            <div className="surface-business-inset rounded-[1.5rem] border p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-lg bg-brand-deep-green/20 flex items-center justify-center">
                   <Video className="h-6 w-6 text-brand-deep-green" />

@@ -33,16 +33,17 @@ export function SettingsManagement() {
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Settings & Management</h2>
-      <MithoCard>
+      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Operations</p>
+      <h2 className="type-section-title mb-6 text-foreground">Settings & management</h2>
+      <MithoCard surface="business" interactive="subtle">
         <MithoCardHeader>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
               <Settings className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-foreground">Quick Settings</h3>
-              <p className="text-sm text-muted-foreground">Manage your business profile and preferences</p>
+              <h3 className="type-card-title text-foreground">Quick settings</h3>
+              <p className="type-meta">Manage your business profile and preferences</p>
             </div>
           </div>
         </MithoCardHeader>
@@ -52,7 +53,7 @@ export function SettingsManagement() {
               <a
                 key={idx}
                 href={setting.href}
-                className="group p-4 rounded-xl border border-border hover:border-brand-orange/30 hover:bg-brand-soft-beige/10 transition-all duration-200 cursor-pointer"
+                className="group surface-business-inset cursor-pointer rounded-[1rem] p-4 transition-all duration-200 hover:border-brand-orange/18 hover:bg-brand-soft-beige/85"
               >
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange group-hover:bg-brand-orange group-hover:text-white transition-colors">

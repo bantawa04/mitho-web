@@ -47,16 +47,16 @@ export function HeroSection() {
             <MithoBadge variant="outline" className="mb-5 border-brand-deep-green/30 bg-white/70">
               Nepal's local food guide
             </MithoBadge>
-            <h1 className="text-4xl font-bold leading-[1.02] text-balance text-brand-dark-green sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="type-display motion-soft-rise text-brand-dark-green">
               Find the places people actually
               <span className="text-brand-orange"> love to eat.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-muted-foreground md:text-xl">
+            <p className="type-body motion-soft-rise motion-delay-1 mt-6 max-w-xl text-muted-foreground">
               Discover trusted local favorites, hidden gems, and dishes worth leaving home for across Kathmandu,
               Pokhara, Lalitpur, and beyond.
             </p>
 
-            <div className="mt-8 rounded-[2rem] border border-brand-deep-green/10 bg-white/95 p-4 shadow-[0_24px_60px_rgba(10,70,53,0.12)] backdrop-blur">
+            <div className="motion-soft-rise motion-delay-2 mt-8 rounded-[2rem] border border-brand-deep-green/10 bg-white/95 p-4 shadow-[0_24px_60px_rgba(10,70,53,0.12)] backdrop-blur">
               <div className="grid gap-3 lg:grid-cols-[1fr_220px_auto]">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
@@ -104,7 +104,7 @@ export function HeroSection() {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+            <div className="motion-soft-rise motion-delay-3 mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
               <MithoButton size="lg" leftIcon={<MapPin className="h-5 w-5" />}>
                 Start Exploring
               </MithoButton>
@@ -115,10 +115,7 @@ export function HeroSection() {
 
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
               {trustPoints.map((point) => (
-                <div
-                  key={point.title}
-                  className="rounded-[1.5rem] border border-brand-deep-green/10 bg-white/80 p-5 shadow-[0_12px_28px_rgba(10,70,53,0.08)]"
-                >
+                <div key={point.title} className="surface-raised rounded-[1.5rem] p-5">
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-brand-soft-beige text-brand-deep-green">
                     {point.icon}
                   </div>
@@ -149,8 +146,8 @@ export function HeroSection() {
                 </div>
               </div>
 
-              <div className="rounded-[2rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_18px_36px_rgba(10,70,53,0.1)]">
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-deep-green/70">
+              <div className="taste-spotlight rounded-[2rem] border border-brand-orange/10 p-5 shadow-[0_18px_36px_rgba(10,70,53,0.1)]">
+                <p className="type-eyebrow text-brand-deep-green/70">
                   This week on Mitho
                 </p>
                 <p className="mt-3 text-2xl font-bold text-brand-dark-green">2,500+</p>

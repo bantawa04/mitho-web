@@ -6,7 +6,8 @@ import { StatCard } from "@/components/ui/mitho-stat-card"
 export function KeyMetrics() {
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Key Metrics</h2>
+      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Overview</p>
+      <h2 className="type-section-title mb-6 text-foreground">Key metrics</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           icon={<Eye className="h-6 w-6" />}

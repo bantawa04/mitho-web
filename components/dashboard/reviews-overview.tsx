@@ -12,16 +12,17 @@ export function ReviewsOverview() {
 
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Reviews Overview</h2>
-      <MithoCard>
+      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Feedback</p>
+      <h2 className="type-section-title mb-6 text-foreground">Reviews overview</h2>
+      <MithoCard surface="business" interactive="subtle">
         <MithoCardHeader>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
               <MessageSquare className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-foreground">Customer Reviews</h3>
-              <p className="text-sm text-muted-foreground">Manage and respond to customer feedback</p>
+              <h3 className="type-card-title text-foreground">Customer reviews</h3>
+              <p className="type-meta">Manage and respond to customer feedback</p>
             </div>
           </div>
         </MithoCardHeader>
@@ -45,8 +46,8 @@ export function ReviewsOverview() {
           </div>
 
           {/* Latest Reviews Preview */}
-          <div className="mt-6 pt-6 border-t border-border">
-            <h4 className="text-sm font-semibold text-foreground mb-4">Latest Reviews</h4>
+          <div className="mt-6 border-t border-border pt-6">
+            <h4 className="type-meta mb-4 font-semibold text-foreground">Latest reviews</h4>
             <div className="space-y-4">
               {[
                 {
@@ -70,7 +71,7 @@ export function ReviewsOverview() {
               ].map((review, idx) => (
                 <div
                   key={idx}
-                  className="flex gap-3 p-3 rounded-lg bg-brand-soft-beige/20 hover:bg-brand-soft-beige/40 transition-colors"
+                  className="surface-business-inset flex gap-3 rounded-[1rem] p-3 transition-colors hover:bg-brand-soft-beige/85"
                 >
                   <div className="w-10 h-10 rounded-full bg-brand-orange/20 flex items-center justify-center text-brand-orange font-semibold text-sm">
                     {review.author[0]}

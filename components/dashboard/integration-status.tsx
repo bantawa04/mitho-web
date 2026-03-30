@@ -8,22 +8,23 @@ import { ToggleSwitch } from "@/components/ui/mitho-toggle-switch"
 export function IntegrationStatus() {
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Delivery Integrations</h2>
-      <MithoCard>
+      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Expansion</p>
+      <h2 className="type-section-title mb-6 text-foreground">Delivery integrations</h2>
+      <MithoCard surface="business" interactive="subtle">
         <MithoCardHeader>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
               <Package className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-foreground">Food Delivery Platforms</h3>
-              <p className="text-sm text-muted-foreground">Connect with popular delivery services</p>
+              <h3 className="type-card-title text-foreground">Food delivery platforms</h3>
+              <p className="type-meta">Connect with popular delivery services</p>
             </div>
           </div>
         </MithoCardHeader>
         <MithoCardContent>
           <div className="space-y-4">
-            <div className="p-4 rounded-xl border border-border hover:border-brand-orange/30 transition-colors bg-background">
+            <div className="surface-business-inset rounded-[1rem] p-4 transition-colors hover:border-brand-orange/18">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
                   <div className="w-12 h-12 rounded-lg bg-brand-orange/10 flex items-center justify-center">
@@ -32,7 +33,7 @@ export function IntegrationStatus() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="text-sm font-bold text-foreground">Foodmandu</h4>
-                      <MithoBadge variant="warning" size="sm">
+                      <MithoBadge variant="moderation" size="sm">
                         Coming Soon
                       </MithoBadge>
                     </div>
@@ -46,7 +47,7 @@ export function IntegrationStatus() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-border hover:border-brand-orange/30 transition-colors bg-background">
+            <div className="surface-business-inset rounded-[1rem] p-4 transition-colors hover:border-brand-orange/18">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
                   <div className="w-12 h-12 rounded-lg bg-brand-deep-green/10 flex items-center justify-center">
@@ -55,7 +56,7 @@ export function IntegrationStatus() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="text-sm font-bold text-foreground">Vok Lagyo</h4>
-                      <MithoBadge variant="warning" size="sm">
+                      <MithoBadge variant="moderation" size="sm">
                         Coming Soon
                       </MithoBadge>
                     </div>

@@ -2,19 +2,48 @@
 
 import * as React from "react"
 import { MapPin, Clock, Heart, Truck } from "lucide-react"
+import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { MithoBadge, OpenNowBadge, ClosedBadge, TopRatedBadge, TrendingBadge } from "./mitho-badge"
 import { StarRating } from "./mitho-rating"
 
+const cardVariants = cva(
+  "overflow-hidden rounded-[1.5rem] text-card-foreground transition-all duration-300",
+  {
+    variants: {
+      surface: {
+        customer:
+          "bg-card border border-brand-deep-green/10 shadow-[0_10px_30px_rgba(10,70,53,0.08)]",
+        business:
+          "bg-surface-business border border-brand-deep-green/12 shadow-[0_8px_24px_rgba(10,70,53,0.06)]",
+        admin:
+          "bg-surface-admin border border-brand-deep-green/10 shadow-[0_8px_20px_rgba(10,70,53,0.05)]",
+        inset:
+          "bg-surface-inset border border-brand-deep-green/10 shadow-none",
+        spotlight:
+          "taste-spotlight border border-brand-orange/18 shadow-[0_16px_40px_rgba(239,138,0,0.12)]",
+      },
+      interactive: {
+        lift: "hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(10,70,53,0.12)]",
+        subtle: "hover:border-brand-deep-green/18 hover:shadow-[0_12px_28px_rgba(10,70,53,0.08)]",
+        none: "",
+      },
+    },
+    defaultVariants: {
+      surface: "customer",
+      interactive: "lift",
+    },
+  },
+)
+
 // Base Card Components
-const MithoCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+interface MithoCardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {}
+
+const MithoCard = React.forwardRef<HTMLDivElement, MithoCardProps>(
+  ({ className, surface, interactive, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn(
-        "overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-card text-card-foreground shadow-[0_10px_30px_rgba(10,70,53,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(10,70,53,0.12)]",
-        className,
-      )}
+      className={cn(cardVariants({ surface, interactive }), className)}
       {...props}
     />
   ),
@@ -30,14 +59,14 @@ MithoCardHeader.displayName = "MithoCardHeader"
 
 const MithoCardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-xl font-bold leading-tight tracking-tight text-brand-dark-green", className)} {...props} />
+    <h3 ref={ref} className={cn("type-card-title text-brand-dark-green", className)} {...props} />
   ),
 )
 MithoCardTitle.displayName = "MithoCardTitle"
 
 const MithoCardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
   ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
+    <p ref={ref} className={cn("type-meta", className)} {...props} />
   ),
 )
 MithoCardDescription.displayName = "MithoCardDescription"

@@ -8,28 +8,29 @@ import { MithoBadge } from "@/components/ui/mitho-badge"
 export function SponsoredPromotion() {
   return (
     <section className="py-8">
-      <h2 className="text-2xl font-bold text-foreground mb-6">Sponsored Promotion</h2>
-      <MithoCard className="border-2 border-brand-orange/30 bg-gradient-to-br from-brand-orange/5 to-brand-fresh-orange/5 overflow-hidden relative">
+      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Growth</p>
+      <h2 className="type-section-title mb-6 text-foreground">Sponsored promotion</h2>
+      <MithoCard surface="business" interactive="subtle" className="relative overflow-hidden border-brand-orange/20">
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <MithoCardHeader className="relative">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-brand-orange flex items-center justify-center text-white shadow-lg">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-orange text-white shadow-lg">
                 <Megaphone className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-foreground">Promote Your Business</h3>
-                <p className="text-sm text-muted-foreground">Reach more customers with sponsored listings</p>
+                <h3 className="type-card-title text-foreground">Promote your business</h3>
+                <p className="type-meta">Reach more customers with sponsored listings</p>
               </div>
             </div>
-            <MithoBadge variant="default" size="sm">
+            <MithoBadge variant="promotional" size="sm">
               Premium Feature
             </MithoBadge>
           </div>
         </MithoCardHeader>
         <MithoCardContent className="relative">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="p-4 rounded-xl bg-white/80 backdrop-blur-sm border border-border">
+            <div className="surface-business-inset rounded-[1rem] p-4">
               <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center mb-3">
                 <TrendingUp className="h-5 w-5 text-brand-orange" />
               </div>
@@ -37,7 +38,7 @@ export function SponsoredPromotion() {
               <p className="text-xs text-muted-foreground">Appear at the top of search results</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/80 backdrop-blur-sm border border-border">
+            <div className="surface-business-inset rounded-[1rem] p-4">
               <div className="w-10 h-10 rounded-lg bg-brand-deep-green/10 flex items-center justify-center mb-3">
                 <Target className="h-5 w-5 text-brand-deep-green" />
               </div>
@@ -45,7 +46,7 @@ export function SponsoredPromotion() {
               <p className="text-xs text-muted-foreground">Connect with local food lovers</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-white/80 backdrop-blur-sm border border-border">
+            <div className="surface-business-inset rounded-[1rem] p-4">
               <div className="w-10 h-10 rounded-lg bg-brand-light-green/10 flex items-center justify-center mb-3">
                 <Zap className="h-5 w-5 text-brand-light-green" />
               </div>
@@ -54,7 +55,7 @@ export function SponsoredPromotion() {
             </div>
           </div>
 
-          <div className="relative h-48 bg-white rounded-xl border-2 border-dashed border-brand-orange/30 flex flex-col items-center justify-center gap-3 p-6">
+          <div className="surface-business-inset relative flex h-48 flex-col items-center justify-center gap-3 rounded-[1.25rem] border border-dashed border-brand-orange/28 p-6">
             <div className="w-14 h-14 rounded-full bg-brand-soft-beige flex items-center justify-center">
               <Lock className="h-7 w-7 text-brand-orange" />
             </div>
