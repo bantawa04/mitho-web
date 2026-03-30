@@ -85,42 +85,60 @@ export function AppPromotionSection() {
           </div>
         </div>
 
-        <div className="relative flex justify-center lg:justify-end">
-          <div className="relative">
+        <div className="relative flex justify-center pb-24 md:pb-28 lg:justify-end lg:pb-12">
+          <div className="relative px-6 md:px-8">
             <div className="absolute left-1/2 top-10 h-64 w-64 -translate-x-1/2 rounded-full bg-brand-orange/18 blur-3xl" />
-            <div className="relative mx-auto w-[300px] rounded-[2.75rem] border border-white/10 bg-[#083426] p-3 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
-              <div className="rounded-[2.2rem] bg-surface-soft p-4">
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-deep-green/70">Mitho picks</p>
-                    <p className="text-lg font-bold text-brand-dark-green">Near Kathmandu tonight</p>
+            <div className="relative ml-1 h-[600px] w-72 rounded-[45px] border-8 border-zinc-900 shadow-[0_0_2px_2px_rgba(255,255,255,0.1),0_30px_80px_rgba(0,0,0,0.35)]">
+              <div className="absolute left-1/2 top-2 z-20 h-[22px] w-[90px] -translate-x-1/2 rounded-full bg-zinc-900" />
+              <div className="pointer-events-none absolute -inset-[1px] rounded-[37px] border-[3px] border-zinc-700/40" />
+
+              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[37px] bg-[#fbf6ea]">
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,248,234,0.96)_0%,rgba(244,224,166,0.78)_100%)]" />
+                <div className="absolute left-1/2 top-1/2 h-24 w-12 -translate-x-1/2 -translate-y-1/2 bg-brand-orange/20 blur-[60px]" />
+
+                <div className="relative z-10 flex h-full w-full flex-col p-3.5">
+                  <div className="mb-3 flex items-center justify-between px-1 pt-8">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-deep-green/70">
+                        Mitho picks
+                      </p>
+                      <p className="text-lg font-bold text-brand-dark-green">Near Kathmandu tonight</p>
+                    </div>
+                    <div className="rounded-full bg-brand-orange px-3 py-1 text-xs font-semibold text-white">
+                      4.8+
+                    </div>
                   </div>
-                  <div className="rounded-full bg-brand-orange px-3 py-1 text-xs font-semibold text-brand-dark-green">
-                    4.8+
+{/* This section */}
+                  <div className="overflow-hidden rounded-[1.9rem] border border-brand-deep-green/10 bg-white/94 shadow-[0_18px_36px_rgba(10,70,53,0.08)]">
+                    <img src="/nepali-momo-dish.jpg" alt="Mitho Cha app preview" className="h-48 w-full object-cover" />
+
+                    <div className="p-4 pb-3">
+                      <p className="font-semibold text-brand-dark-green">Momo Central</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Buff momo, spicy achar, always busy after 7 PM.
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="overflow-hidden rounded-[1.6rem]">
-                  <img src="/nepali-momo-dish.jpg" alt="Mitho Cha app preview" className="h-52 w-full object-cover" />
-                </div>
-                <div className="mt-4 space-y-3">
-                  <div className="rounded-[1.35rem] bg-white p-4 shadow-sm">
-                    <p className="font-semibold text-brand-dark-green">Momo Central</p>
-                    <p className="mt-1 text-sm text-muted-foreground">Buff momo, spicy achar, always busy after 7 PM.</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-[1.35rem] bg-brand-soft-beige p-4">
+
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white/94 px-4 py-3.5 shadow-[0_10px_20px_rgba(10,70,53,0.05)]">
                       <p className="text-xs uppercase tracking-[0.18em] text-brand-deep-green/65">Saved</p>
                       <p className="mt-1 text-xl font-bold text-brand-dark-green">18</p>
                     </div>
-                    <div className="rounded-[1.35rem] bg-white p-4">
+                    <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white/94 px-4 py-3.5">
                       <p className="text-xs uppercase tracking-[0.18em] text-brand-deep-green/65">Alerts</p>
                       <p className="mt-1 text-xl font-bold text-brand-dark-green">6 new</p>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <div className="absolute left-[-12px] top-20 h-8 w-[6px] rounded-l-md bg-zinc-900 shadow-md" />
+              <div className="absolute left-[-12px] top-36 h-12 w-[6px] rounded-l-md bg-zinc-900 shadow-md" />
+              <div className="absolute left-[-12px] top-52 h-12 w-[6px] rounded-l-md bg-zinc-900 shadow-md" />
+              <div className="absolute right-[-12px] top-36 h-16 w-[6px] rounded-r-md bg-zinc-900 shadow-md" />
             </div>
-            <div className="absolute -left-10 bottom-8 hidden rounded-[1.5rem] border border-brand-soft-beige/40 bg-brand-soft-beige/95 p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] md:block">
+            <div className="absolute -left-3 -bottom-12 hidden max-w-[240px] rounded-[1.5rem] border border-brand-soft-beige/55 bg-brand-soft-beige/98 p-4 shadow-[0_20px_48px_rgba(0,0,0,0.28)] md:block lg:-left-8 lg:-bottom-10">
               <p className="text-xs uppercase tracking-[0.2em] text-brand-deep-green/70">Saved for later</p>
               <p className="mt-2 text-lg font-semibold text-brand-dark-green">Thakali spots in Patan</p>
               <p className="mt-1 text-sm text-brand-dark-green/75">Synced across your shortlist and recommendations.</p>
