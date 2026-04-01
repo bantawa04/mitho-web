@@ -56,17 +56,9 @@ export function BusinessGalleryPreview({
     )
   }
 
-  const tileClasses = [
-    "col-span-2 row-span-2 min-h-[240px] sm:min-h-[320px]",
-    "min-h-[156px]",
-    "min-h-[156px]",
-    "min-h-[156px]",
-    "min-h-[156px]",
-  ]
-
   return (
     <>
-      <div className={cn("grid grid-cols-2 gap-3 md:grid-cols-4 md:grid-rows-2", className)}>
+      <div className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5", className)}>
         {visibleItems.map((item, index) => {
           const isOverlayTile = index === visibleItems.length - 1 && moreCount > 0
           return (
@@ -75,8 +67,7 @@ export function BusinessGalleryPreview({
               type="button"
               onClick={() => setSelectedIndex(index)}
               className={cn(
-                "group relative overflow-hidden rounded-[1.5rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",
-                tileClasses[index] ?? "min-h-[156px]",
+                "group relative aspect-[4/3] overflow-hidden rounded-[1.5rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",
               )}
             >
               <img
@@ -92,7 +83,7 @@ export function BusinessGalleryPreview({
                 </div>
               )}
               {isOverlayTile && (
-                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/65 via-black/30 to-transparent p-4 text-left text-white">
+                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-black/35 to-transparent p-4 text-left text-white">
                   <div>
                     <p className="text-lg font-semibold">+{moreCount} more</p>
                     <p className="text-sm text-white/80">See the full gallery</p>
