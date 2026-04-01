@@ -40,7 +40,7 @@ export function Header() {
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <BrandLogo kind="icon" tone="green" className="h-10 w-auto sm:hidden" alt="Mitho Cha! logo" priority />
             <BrandLogo
-              kind="wordmark"
+              kind="full"
               tone="green"
               className="hidden h-11 w-auto sm:block"
               alt="Mitho Cha! wordmark"

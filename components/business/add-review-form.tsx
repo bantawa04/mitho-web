@@ -6,7 +6,12 @@ import { MithoCard, MithoCardHeader, MithoCardContent } from "@/components/ui/mi
 import { StarRating } from "@/components/ui/mitho-rating"
 import { MithoButton } from "@/components/ui/mitho-button"
 
-export function AddReviewForm() {
+interface AddReviewFormProps {
+  isFirstReview?: boolean
+  prompt?: string
+}
+
+export function AddReviewForm({ isFirstReview = false, prompt }: AddReviewFormProps) {
   const [rating, setRating] = React.useState(0)
   const [review, setReview] = React.useState("")
 
@@ -14,8 +19,10 @@ export function AddReviewForm() {
     <section className="container mx-auto px-4 pb-14 pt-6" id="add-review">
       <MithoCard surface="spotlight" interactive="none">
         <MithoCardHeader>
-          <h2 className="type-card-title text-xl">Write a review</h2>
-          <p className="type-meta mt-1">Share the details that actually help the next person decide.</p>
+          <h2 className="type-card-title text-xl">{isFirstReview ? "Be the first to review" : "Write a review"}</h2>
+          <p className="type-meta mt-1">
+            {prompt ?? "Share the details that actually help the next person decide."}
+          </p>
         </MithoCardHeader>
         <MithoCardContent>
           <form className="space-y-5">
