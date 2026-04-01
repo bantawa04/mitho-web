@@ -68,8 +68,14 @@ export function SimilarPlaces() {
   }
 
   return (
-    <section className="container mx-auto px-4 py-6">
-      <h2 className="text-xl font-bold mb-4">Similar Places Nearby</h2>
+    <section className="container mx-auto px-4 py-12">
+      <div className="mb-5 max-w-2xl">
+        <p className="type-eyebrow text-brand-deep-green/70">Keep exploring</p>
+        <h2 className="type-section-title mt-3 text-brand-dark-green">Similar places nearby</h2>
+        <p className="type-meta mt-3">
+          If this one feels close but not quite right, these are the next places people usually compare.
+        </p>
+      </div>
       <MithoCarousel>
         {similarPlaces.map((place) => (
           <div key={place.name} className="flex-shrink-0 w-[280px] sm:w-[320px]">

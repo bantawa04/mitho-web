@@ -3,15 +3,15 @@ import { MithoCard, MithoCardContent } from "@/components/ui/mitho-card"
 
 export function ClaimReport() {
   return (
-    <section className="container mx-auto px-4 py-6">
-      <MithoCard>
-        <MithoCardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-5">
+    <section className="container mx-auto px-4 pb-12 pt-2">
+      <MithoCard surface="inset" interactive="none">
+        <MithoCardContent className="flex flex-col items-start justify-between gap-5 py-5 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-deep-green/10 flex items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-deep-green/10">
               <Building2 className="h-5 w-5 text-brand-deep-green" />
             </div>
             <div>
-              <p className="font-medium">Is this your business?</p>
+              <p className="font-medium text-brand-dark-green">Is this your business?</p>
               <a href="#" className="text-brand-orange hover:underline text-sm font-medium">
                 Claim this Business
               </a>
@@ -19,11 +19,11 @@ export function ClaimReport() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-danger/10 flex items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10">
               <Flag className="h-5 w-5 text-danger" />
             </div>
             <div>
-              <p className="font-medium">See something wrong?</p>
+              <p className="font-medium text-brand-dark-green">See something wrong?</p>
               <a href="#" className="text-danger hover:underline text-sm font-medium">
                 Report Incorrect Information
               </a>

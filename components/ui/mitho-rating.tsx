@@ -133,13 +133,13 @@ interface ReviewSummaryProps {
 
 export function ReviewSummary({ ratings, averageRating, totalReviews }: ReviewSummaryProps) {
   return (
-    <div className="flex flex-col sm:flex-row gap-6 p-6 bg-card rounded-2xl border border-border shadow-sm">
-      <div className="flex flex-col items-center justify-center gap-2">
+    <div className="taste-spotlight flex flex-col gap-6 rounded-[1.75rem] border border-brand-orange/15 p-6 shadow-[0_16px_42px_rgba(10,70,53,0.08)] sm:flex-row sm:items-center">
+      <div className="flex min-w-[180px] flex-col items-center justify-center gap-2 rounded-[1.35rem] border border-brand-deep-green/10 bg-white/80 px-6 py-5">
         <span className="text-5xl font-bold text-brand-orange">{averageRating.toFixed(1)}</span>
         <StarRating rating={averageRating} size="lg" />
         <span className="text-sm text-muted-foreground">{totalReviews} reviews</span>
       </div>
-      <div className="flex-1 space-y-2">
+      <div className="flex-1 space-y-3">
         <ReviewProgress stars={5} count={ratings[5]} total={totalReviews} />
         <ReviewProgress stars={4} count={ratings[4]} total={totalReviews} />
         <ReviewProgress stars={3} count={ratings[3]} total={totalReviews} />

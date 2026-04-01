@@ -11,49 +11,46 @@ export function AddReviewForm() {
   const [review, setReview] = React.useState("")
 
   return (
-    <section className="container mx-auto px-4 py-6" id="add-review">
-      <MithoCard>
+    <section className="container mx-auto px-4 pb-14 pt-6" id="add-review">
+      <MithoCard surface="spotlight" interactive="none">
         <MithoCardHeader>
-          <h2 className="text-xl font-bold">Write a Review</h2>
-          <p className="text-muted-foreground text-sm mt-1">Share your experience with others</p>
+          <h2 className="type-card-title text-xl">Write a review</h2>
+          <p className="type-meta mt-1">Share the details that actually help the next person decide.</p>
         </MithoCardHeader>
         <MithoCardContent>
           <form className="space-y-5">
-            {/* Rating */}
             <div>
-              <label className="block text-sm font-medium mb-2">Your Rating</label>
+              <label className="mb-2 block text-sm font-medium">Your rating</label>
               <StarRating rating={rating} onChange={setRating} interactive size="lg" />
             </div>
 
-            {/* Review Text */}
             <div>
-              <label htmlFor="review" className="block text-sm font-medium mb-2">
-                Your Review
+              <label htmlFor="review" className="mb-2 block text-sm font-medium">
+                Your review
               </label>
               <textarea
                 id="review"
                 rows={5}
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
-                placeholder="Tell us about your experience..."
-                className="w-full rounded-xl border-2 border-input bg-background px-4 py-3 text-sm transition-all duration-200 placeholder:text-muted-foreground focus:border-brand-orange focus:outline-none focus:ring-2 focus:ring-brand-orange/20 resize-none"
+                placeholder="Tell people what stood out: dishes worth ordering, service, portions, wait time, and whether you'd come back."
+                className="w-full resize-none rounded-[1.25rem] border border-brand-deep-green/12 bg-white/90 px-4 py-3 text-sm transition-all duration-200 placeholder:text-muted-foreground focus:border-brand-orange focus:outline-none focus:ring-4 focus:ring-brand-orange/12"
               />
             </div>
 
-            {/* Upload */}
             <div>
-              <label className="block text-sm font-medium mb-2">Add Photos or Videos</label>
+              <label className="mb-2 block text-sm font-medium">Add photos or videos</label>
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-input hover:border-brand-orange hover:bg-brand-orange/5 transition-colors"
+                  className="flex items-center gap-2 rounded-[1rem] border border-dashed border-brand-deep-green/20 bg-white/75 px-4 py-3 transition-colors hover:border-brand-orange hover:bg-brand-orange/5"
                 >
                   <ImageIcon className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Add Image</span>
                 </button>
                 <button
                   type="button"
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-input hover:border-brand-orange hover:bg-brand-orange/5 transition-colors"
+                  className="flex items-center gap-2 rounded-[1rem] border border-dashed border-brand-deep-green/20 bg-white/75 px-4 py-3 transition-colors hover:border-brand-orange hover:bg-brand-orange/5"
                 >
                   <Video className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Add Video</span>
@@ -61,7 +58,6 @@ export function AddReviewForm() {
               </div>
             </div>
 
-            {/* Submit */}
             <MithoButton type="submit" variant="primary" size="lg" className="w-full sm:w-auto">
               Submit Review
             </MithoButton>

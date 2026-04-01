@@ -5,15 +5,12 @@ import { Header } from "@/components/home/header"
 import { Footer } from "@/components/home/footer"
 import { MithoBreadcrumb } from "@/components/ui/mitho-breadcrumb"
 import { BusinessHero } from "@/components/business/business-hero"
-import { QuickActions } from "@/components/business/quick-actions"
-import { GallerySection } from "@/components/business/gallery-section"
 import { InfoPanel } from "@/components/business/info-panel"
 import { MenuHighlights } from "@/components/business/menu-highlights"
 import { RatingsSection } from "@/components/business/ratings-section"
 import { ReviewsSection } from "@/components/business/reviews-section"
 import { AddReviewForm } from "@/components/business/add-review-form"
 import { SimilarPlaces } from "@/components/business/similar-places"
-import { SponsoredSection } from "@/components/business/sponsored-section"
 import { ClaimReport } from "@/components/business/claim-report"
 
 const businessData = {
@@ -41,47 +38,54 @@ export default function BusinessDetailPage() {
     document.getElementById("add-review")?.scrollIntoView({ behavior: "smooth" })
   }
 
+  const handleShare = async () => {
+    if (typeof window === "undefined") return
+    const shareUrl = window.location.href
+
+    if (navigator.share) {
+      await navigator.share({
+        title: businessData.name,
+        text: `Check out ${businessData.name} on Mitho Cha.`,
+        url: shareUrl,
+      })
+      return
+    }
+
+    await navigator.clipboard.writeText(shareUrl)
+  }
+
   return (
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="pb-12">
+      <main className="pb-16">
         <div className="container mx-auto px-4 py-4">
           <MithoBreadcrumb items={breadcrumbItems} />
         </div>
 
-        {/* Hero */}
-        <BusinessHero {...businessData} isSaved={isSaved} onSave={() => setIsSaved(!isSaved)} />
+        <BusinessHero
+          {...businessData}
+          isSaved={isSaved}
+          onSave={() => setIsSaved(!isSaved)}
+          onWriteReview={scrollToReview}
+          onShare={handleShare}
+        />
 
-        {/* Quick Actions */}
-        <QuickActions isSaved={isSaved} onSave={() => setIsSaved(!isSaved)} onWriteReview={scrollToReview} />
+        <div className="mt-10 border-y border-brand-deep-green/10 bg-gradient-to-b from-white via-brand-soft-beige/12 to-white">
+          <InfoPanel />
+          <MenuHighlights />
+        </div>
 
-        {/* Gallery */}
-        <GallerySection />
+        <div className="bg-surface-soft/60">
+          <RatingsSection sortOrder={sortOrder} onSortChange={setSortOrder} />
+          <ReviewsSection sortOrder={sortOrder} />
+          <AddReviewForm />
+        </div>
 
-        {/* Info Panel */}
-        <InfoPanel />
-
-        {/* Menu Highlights */}
-        <MenuHighlights />
-
-        {/* Ratings Summary with Sort Dropdown */}
-        <RatingsSection sortOrder={sortOrder} onSortChange={setSortOrder} />
-
-        {/* Customer Reviews with Pagination */}
-        <ReviewsSection sortOrder={sortOrder} />
-
-        {/* Add Review Form */}
-        <AddReviewForm />
-
-        {/* Similar Places */}
-        <SimilarPlaces />
-
-        {/* Sponsored Section */}
-        <SponsoredSection />
-
-        {/* Claim/Report */}
-        <ClaimReport />
+        <div className="bg-white">
+          <SimilarPlaces />
+          <ClaimReport />
+        </div>
       </main>
 
       <Footer />

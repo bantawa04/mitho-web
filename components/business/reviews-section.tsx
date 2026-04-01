@@ -106,13 +106,12 @@ export function ReviewsSection({ sortOrder = "all" }: ReviewsSectionProps) {
 
   return (
     <section className="container mx-auto px-4 py-6">
-      <div className="space-y-4">
+      <div className="space-y-5">
         {paginatedReviews.map((review, index) => (
-          <MithoReviewCard key={`${review.author}-${index}`} {...review} />
+          <MithoReviewCard key={`${review.author}-${index}`} {...review} className="shadow-[0_12px_28px_rgba(10,70,53,0.06)]" />
         ))}
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-8">
           <MithoPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />

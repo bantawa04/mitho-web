@@ -1,6 +1,15 @@
-import { MapPin, Clock, UtensilsCrossed, Phone, Globe } from "lucide-react"
-import { MithoCard, MithoCardHeader, MithoCardContent } from "@/components/ui/mitho-card"
+import { Clock, Globe, MapPin, Phone, UtensilsCrossed } from "lucide-react"
 import { AmenityList } from "@/components/ui/mitho-amenity"
+import { MithoCard, MithoCardContent, MithoCardHeader, MithoCardTitle, MithoCardDescription } from "@/components/ui/mitho-card"
+import { MithoImageGallery } from "@/components/ui/mitho-image-gallery"
+
+const galleryItems = [
+  { type: "image" as const, src: "/restaurant-interior-cozy.jpg", alt: "Restaurant interior" },
+  { type: "image" as const, src: "/nepali-momo-dish.jpg", alt: "Steamed momo platter" },
+  { type: "image" as const, src: "/newari-food-platter.jpg", alt: "Newari food platter" },
+  { type: "image" as const, src: "/restaurant-exterior-storefront.jpg", alt: "Restaurant exterior" },
+  { type: "image" as const, src: "/chef-cooking-nepali-food.jpg", alt: "Chef preparing food" },
+]
 
 const businessInfo = {
   address: "123 Thamel Street, Kathmandu 44600, Nepal",
@@ -15,116 +24,114 @@ const businessInfo = {
   amenities: ["wifi", "parking", "takeaway", "cards", "dineIn", "vegan"] as const,
 }
 
+const visitFacts = [
+  {
+    icon: <MapPin className="h-5 w-5 text-brand-orange" />,
+    label: "Address",
+    content: businessInfo.address,
+  },
+  {
+    icon: <Clock className="h-5 w-5 text-brand-orange" />,
+    label: "Hours",
+    content: businessInfo.hours.map((schedule) => `${schedule.day}: ${schedule.time}`).join(" • "),
+  },
+  {
+    icon: <Phone className="h-5 w-5 text-brand-orange" />,
+    label: "Contact",
+    content: `${businessInfo.phone} • ${businessInfo.email}`,
+  },
+  {
+    icon: <UtensilsCrossed className="h-5 w-5 text-brand-orange" />,
+    label: "Cuisine",
+    content: businessInfo.cuisines.join(", "),
+  },
+]
+
 export function InfoPanel() {
   return (
-    <section className="container mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Info */}
-        <div className="lg:col-span-2 space-y-6">
-          <MithoCard>
-            <MithoCardHeader>
-              <h2 className="text-xl font-bold">Business Information</h2>
+    <section className="container mx-auto px-4 py-12 md:py-14">
+      <div className="mb-8 max-w-3xl">
+        <p className="type-eyebrow text-brand-deep-green/70">Plan your visit</p>
+        <h2 className="type-section-title mt-3 text-brand-dark-green">What to know before you go</h2>
+        <p className="type-body mt-3 text-muted-foreground">
+          Quick details for deciding if this spot fits tonight&apos;s plan: a feel for the place, practical info, and
+          the amenities people care about most.
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <MithoCard surface="spotlight" interactive="none" className="overflow-hidden">
+          <MithoCardContent className="p-4 md:p-5">
+            <MithoImageGallery items={galleryItems} className="pb-0" />
+          </MithoCardContent>
+        </MithoCard>
+
+        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <MithoCard surface="customer" interactive="none">
+            <MithoCardHeader className="pb-4">
+              <MithoCardTitle>Visit essentials</MithoCardTitle>
+              <MithoCardDescription className="mt-2 leading-relaxed">
+                The practical details most people want before heading out.
+              </MithoCardDescription>
             </MithoCardHeader>
-            <MithoCardContent className="space-y-4">
-              {/* Address */}
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center flex-shrink-0">
-                  <MapPin className="h-5 w-5 text-brand-orange" />
-                </div>
-                <div>
-                  <p className="font-medium">Address</p>
-                  <p className="text-muted-foreground text-sm">{businessInfo.address}</p>
-                </div>
-              </div>
-
-              {/* Hours */}
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center flex-shrink-0">
-                  <Clock className="h-5 w-5 text-brand-orange" />
-                </div>
-                <div>
-                  <p className="font-medium">Opening Hours</p>
-                  {businessInfo.hours.map((schedule, index) => (
-                    <p key={index} className="text-muted-foreground text-sm">
-                      {schedule.day}: {schedule.time}
-                    </p>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cuisine */}
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center flex-shrink-0">
-                  <UtensilsCrossed className="h-5 w-5 text-brand-orange" />
-                </div>
-                <div>
-                  <p className="font-medium">Cuisine</p>
-                  <p className="text-muted-foreground text-sm">{businessInfo.cuisines.join(", ")}</p>
-                </div>
-              </div>
-
-              {/* Contact */}
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center flex-shrink-0">
-                  <Phone className="h-5 w-5 text-brand-orange" />
-                </div>
-                <div>
-                  <p className="font-medium">Contact</p>
-                  <p className="text-muted-foreground text-sm">{businessInfo.phone}</p>
-                  <p className="text-muted-foreground text-sm">{businessInfo.email}</p>
-                </div>
-              </div>
-
-              {/* Website */}
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center flex-shrink-0">
-                  <Globe className="h-5 w-5 text-brand-orange" />
-                </div>
-                <div>
-                  <p className="font-medium">Website</p>
-                  <a
-                    href={`https://${businessInfo.website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-brand-orange hover:underline text-sm"
+            <MithoCardContent className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {visitFacts.map((fact) => (
+                  <div
+                    key={fact.label}
+                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-surface-inset p-4"
                   >
-                    {businessInfo.website}
-                  </a>
+                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-orange/10">
+                      {fact.icon}
+                    </div>
+                    <p className="text-sm font-semibold text-brand-dark-green">{fact.label}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{fact.content}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-brand-soft-beige/40 p-4">
+                <p className="text-sm font-semibold text-brand-dark-green">Amenities people often look for</p>
+                <AmenityList amenities={[...businessInfo.amenities]} className="mt-3" />
+              </div>
+            </MithoCardContent>
+          </MithoCard>
+
+          <div className="space-y-6">
+            <MithoCard surface="customer" interactive="none" className="overflow-hidden">
+              <MithoCardHeader className="pb-4">
+                <MithoCardTitle>Find it easily</MithoCardTitle>
+                <MithoCardDescription className="mt-2">Close to the heart of Thamel and easy to share with friends.</MithoCardDescription>
+              </MithoCardHeader>
+              <MithoCardContent>
+                <div className="overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10">
+                  <img
+                    src="/map-kathmandu-thamel-location-pin.jpg"
+                    alt="Map location"
+                    className="aspect-[4/3] w-full object-cover"
+                  />
                 </div>
-              </div>
-            </MithoCardContent>
-          </MithoCard>
+                <a
+                  href={`https://${businessInfo.website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+                >
+                  <Globe className="h-4 w-4" />
+                  Open website and directions
+                </a>
+              </MithoCardContent>
+            </MithoCard>
 
-          {/* Amenities */}
-          <MithoCard>
-            <MithoCardHeader>
-              <h2 className="text-xl font-bold">Amenities</h2>
-            </MithoCardHeader>
-            <MithoCardContent>
-              <AmenityList amenities={[...businessInfo.amenities]} />
-            </MithoCardContent>
-          </MithoCard>
-        </div>
-
-        {/* Map Preview */}
-        <div className="lg:col-span-1">
-          <MithoCard className="h-full">
-            <MithoCardHeader>
-              <h2 className="text-xl font-bold">Location</h2>
-            </MithoCardHeader>
-            <MithoCardContent>
-              <div className="aspect-square rounded-xl overflow-hidden bg-brand-soft-beige/30 flex items-center justify-center">
-                <img
-                  src="/map-kathmandu-thamel-location-pin.jpg"
-                  alt="Map location"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <a href="#" className="block text-center text-brand-orange hover:underline mt-4 text-sm font-medium">
-                Get Directions
-              </a>
-            </MithoCardContent>
-          </MithoCard>
+            <MithoCard surface="inset" interactive="none">
+              <MithoCardContent className="p-5">
+                <p className="type-eyebrow text-brand-deep-green/70">Good to know</p>
+                <p className="mt-3 text-lg font-semibold text-brand-dark-green">
+                  Best for casual dinners, comforting plates, and taking out-of-town friends somewhere dependable.
+                </p>
+              </MithoCardContent>
+            </MithoCard>
+          </div>
         </div>
       </div>
     </section>

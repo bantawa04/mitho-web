@@ -48,31 +48,28 @@ export function MithoReviewCard({
   }
 
   return (
-    <div className={cn("rounded-2xl border border-border bg-card p-5 shadow-sm", className)}>
-      {/* Header */}
-      <div className="flex items-start gap-3 mb-4">
+    <div className={cn("rounded-[1.6rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)]", className)}>
+      <div className="mb-4 flex items-start gap-3">
         <img
           src={authorImage || "/placeholder.svg"}
           alt={author}
-          className="w-12 h-12 rounded-full object-cover border-2 border-brand-soft-beige"
+          className="h-12 w-12 rounded-full border-2 border-brand-soft-beige object-cover"
         />
         <div className="flex-1">
-          <h4 className="font-semibold text-foreground">{author}</h4>
+          <h4 className="font-semibold text-brand-dark-green">{author}</h4>
           <p className="text-sm text-muted-foreground">{date}</p>
         </div>
         <StarRating rating={rating} size="sm" />
       </div>
 
-      {/* Content */}
-      <p className="text-foreground leading-relaxed mb-4">{content}</p>
+      <p className="mb-4 leading-relaxed text-foreground">{content}</p>
 
-      {/* Media */}
       {media && media.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+        <div className="mb-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {media.map((item, index) => (
             <div
               key={index}
-              className="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden cursor-pointer group"
+              className="group relative h-20 w-20 flex-shrink-0 cursor-pointer overflow-hidden rounded-xl"
             >
               <img
                 src={item.type === "video" ? item.thumbnail || item.src : item.src}
@@ -89,8 +86,7 @@ export function MithoReviewCard({
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex items-center gap-4 pt-3 border-t border-border">
+      <div className="flex items-center gap-4 border-t border-brand-deep-green/10 pt-3">
         <button
           type="button"
           onClick={handleHelpful}
@@ -111,10 +107,9 @@ export function MithoReviewCard({
         </button>
       </div>
 
-      {/* Owner Response */}
       {ownerResponse && (
-        <div className="mt-4 p-4 rounded-xl bg-brand-soft-beige/30 border-l-4 border-brand-deep-green">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="mt-4 rounded-[1.2rem] border border-brand-deep-green/10 bg-brand-soft-beige/35 p-4">
+          <div className="mb-2 flex items-center gap-2">
             <span className="text-sm font-semibold text-brand-deep-green">Response from Owner</span>
             <span className="text-xs text-muted-foreground">{ownerResponse.date}</span>
           </div>

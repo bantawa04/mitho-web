@@ -21,11 +21,16 @@ interface RatingsSectionProps {
 
 export function RatingsSection({ sortOrder = "all", onSortChange }: RatingsSectionProps) {
   return (
-    <section className="container mx-auto px-4 py-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-        <h2 className="text-xl font-bold">Ratings & Reviews</h2>
+    <section className="container mx-auto px-4 pb-4 pt-12 md:pt-14">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="max-w-2xl">
+          <p className="type-eyebrow text-brand-deep-green/70">From locals</p>
+          <h2 className="type-section-title mt-3 text-brand-dark-green">Ratings and reviews</h2>
+          <p className="type-body mt-3 text-muted-foreground">
+            See what people consistently say about the food, service, portions, and whether this place feels worth the trip.
+          </p>
+        </div>
 
-        {/* Sort Dropdown */}
         <MithoSelect value={sortOrder} onValueChange={onSortChange}>
           <MithoSelectTrigger className="w-full sm:w-[180px]">
             <MithoSelectValue placeholder="Sort reviews" />
