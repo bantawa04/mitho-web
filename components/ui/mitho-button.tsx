@@ -1,5 +1,4 @@
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -59,21 +58,47 @@ const MithoButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
     { className, variant, size, asChild = false, loading = false, leftIcon, rightIcon, children, disabled, ...props },
     ref,
   ) => {
-    const Comp = asChild ? Slot : "button"
     const isIconOnly = size === "icon" || size === "icon-sm" || size === "icon-lg"
+    const content = (
+      <>
+        {loading ? <Loader2 className="animate-spin" aria-hidden="true" /> : leftIcon}
+        {!isIconOnly && children}
+        {!loading && rightIcon}
+      </>
+    )
+
+    if (asChild) {
+      const child = React.Children.only(children) as React.ReactElement<{
+        children?: React.ReactNode
+        className?: string
+      }>
+
+      return React.cloneElement(child, {
+        ...props,
+        className: cn(buttonVariants({ variant, size, className }), child.props.className),
+        "aria-busy": loading,
+        "aria-disabled": disabled || loading || undefined,
+        children: (
+          <>
+            {loading ? <Loader2 className="animate-spin" aria-hidden="true" /> : leftIcon}
+            {!isIconOnly && child.props.children}
+            {!loading && rightIcon}
+          </>
+        ),
+        ref,
+      })
+    }
 
     return (
-      <Comp
+      <button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         disabled={disabled || loading}
         aria-busy={loading}
         {...props}
       >
-        {loading ? <Loader2 className="animate-spin" aria-hidden="true" /> : leftIcon}
-        {!isIconOnly && children}
-        {!loading && rightIcon}
-      </Comp>
+        {content}
+      </button>
     )
   },
 )

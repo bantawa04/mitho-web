@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Flame } from "lucide-react"
 import { MithoSection } from "@/components/ui/mitho-section"
 import { MithoCarousel } from "@/components/ui/mitho-carousel"
@@ -66,12 +67,17 @@ const trendingPlaces = [
 export function TrendingSection() {
   return (
     <MithoSection
+      id="trending"
       eyebrow="Discovery"
       title="Trending local gems"
       titleIcon={<Flame className="h-7 w-7 text-brand-orange" />}
-      subtitle="Crowd-loved spots locals keep talking about this week."
+      subtitle="Crowd-loved spots locals are talking about this week, from dependable thakali kitchens to late-night momo fixes."
       density="feature"
-      action={<MithoButton variant="link">View All</MithoButton>}
+      action={
+        <MithoButton variant="link" asChild>
+          <Link href="#">Browse all local picks</Link>
+        </MithoButton>
+      }
     >
       <MithoCarousel>
         {trendingPlaces.map((place, index) => (

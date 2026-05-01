@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { MapPin, Navigation } from "lucide-react"
 import { MithoSection } from "@/components/ui/mitho-section"
 import { MithoCarousel } from "@/components/ui/mitho-carousel"
@@ -55,6 +56,7 @@ const nearbyPlaces = [
 export function PopularNearYouSection() {
   return (
     <MithoSection
+      id="nearby"
       eyebrow="Nearby"
       title="Worth the short walk"
       titleIcon={<MapPin className="h-6 w-6 text-brand-deep-green" />}
@@ -62,8 +64,11 @@ export function PopularNearYouSection() {
       density="compact"
       tone="warm"
       action={
-        <MithoButton variant="outline-secondary" size="sm" leftIcon={<Navigation className="h-4 w-4" />}>
-          Update Location
+        <MithoButton variant="outline-secondary" size="sm" asChild>
+          <Link href="#">
+            <Navigation className="h-4 w-4" />
+            Update location
+          </Link>
         </MithoButton>
       }
     >

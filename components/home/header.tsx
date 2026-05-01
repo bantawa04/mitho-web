@@ -8,11 +8,11 @@ import { MithoButton } from "@/components/ui/mitho-button"
 import { BrandLogo } from "@/components/ui/brand-logo"
 
 const navLinks = [
-  { href: "/explore", label: "Explore" },
-  { href: "/cities", label: "Cities" },
-  { href: "/categories", label: "Categories" },
-  { href: "/top-rated", label: "Top Rated" },
-  { href: "/for-business", label: "For Business" },
+  { href: "#reviews", label: "Reviews" },
+  { href: "#trending", label: "Trending" },
+  { href: "#categories", label: "Cravings" },
+  { href: "#nearby", label: "Nearby" },
+  { href: "#for-business", label: "For Business" },
 ]
 
 export function Header() {
@@ -63,17 +63,12 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex">
-              Add Business
+            <MithoButton variant="secondary" size="sm" className="hidden md:inline-flex" asChild>
+              <Link href="#app">Get the app</Link>
             </MithoButton>
-            <div className="hidden md:flex items-center gap-2">
-              <MithoButton variant="ghost" size="sm">
-                Login
-              </MithoButton>
-              <MithoButton variant="secondary" size="sm">
-                Sign Up
-              </MithoButton>
-            </div>
+            <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex" asChild>
+              <Link href="#for-business">Add Business</Link>
+            </MithoButton>
 
             {/* Mobile Menu Button */}
             <button
@@ -102,17 +97,16 @@ export function Header() {
               ))}
             </nav>
             <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
-              <MithoButton variant="primary" className="w-full">
-                Add Business
+              <MithoButton variant="primary" className="w-full" asChild>
+                <Link href="#for-business" onClick={() => setIsMenuOpen(false)}>
+                  Add Business
+                </Link>
               </MithoButton>
-              <div className="flex gap-2">
-                <MithoButton variant="ghost" size="sm" className="flex-1">
-                  Login
-                </MithoButton>
-                <MithoButton variant="secondary" size="sm" className="flex-1">
-                  Sign Up
-                </MithoButton>
-              </div>
+              <MithoButton variant="secondary" className="w-full" asChild>
+                <Link href="#app" onClick={() => setIsMenuOpen(false)}>
+                  Get the app
+                </Link>
+              </MithoButton>
             </div>
           </div>
         )}

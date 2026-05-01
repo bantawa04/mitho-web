@@ -3,44 +3,44 @@ import { Facebook, Instagram, Twitter, Youtube, Mail } from "lucide-react"
 import { BrandLogo } from "@/components/ui/brand-logo"
 
 const footerLinks = {
-  about: {
-    title: "About",
-    links: [
-      { label: "About Us", href: "/about" },
-      { label: "Mission", href: "/mission" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
   discover: {
     title: "Discover",
     links: [
-      { label: "Explore", href: "/explore" },
-      { label: "Cities", href: "/cities" },
-      { label: "Top Rated", href: "/top-rated" },
-      { label: "Food Trucks", href: "/food-trucks" },
+      { label: "Trending picks", href: "#trending" },
+      { label: "Local reviews", href: "#reviews" },
+      { label: "Nearby favorites", href: "#nearby" },
+      { label: "Cravings", href: "#categories" },
     ],
   },
   forBusiness: {
     title: "For Business",
     links: [
-      { label: "List Business", href: "/list-business" },
-      { label: "Dashboard", href: "/dashboard" },
-      { label: "Advertise", href: "/advertise" },
+      { label: "Claim your business", href: "#for-business" },
+      { label: "Featured placement", href: "#partners" },
+      { label: "Talk to the team", href: "#" },
     ],
   },
-  legal: {
-    title: "Legal",
+  product: {
+    title: "Product",
     links: [
-      { label: "Privacy", href: "/privacy" },
-      { label: "Terms", href: "/terms" },
-      { label: "Guidelines", href: "/guidelines" },
+      { label: "Get the app", href: "#app" },
+      { label: "Join the waitlist", href: "#" },
+      { label: "Saved lists", href: "#" },
     ],
   },
   support: {
     title: "Support",
     links: [
-      { label: "Help Center", href: "/help" },
-      { label: "Report", href: "/report" },
+      { label: "Contact", href: "#" },
+      { label: "Report a listing", href: "#" },
+      { label: "Community guidelines", href: "#" },
+    ],
+  },
+  legal: {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "#" },
+      { label: "Terms", href: "#" },
     ],
   },
 }
@@ -63,15 +63,26 @@ export function Footer() {
             <Link href="/" className="inline-flex mb-4">
               <BrandLogo kind="full" tone="orange" className="h-20 w-auto" alt="Mitho Cha! logo" />
             </Link>
-            <p className="text-sm text-white/70 mb-4">Discover authentic Nepali food experiences near you.</p>
+            <p className="text-sm text-white/70 mb-4">
+              Discover trusted local food picks across Nepal, from neighborhood momo stops to places worth a longer ride.
+            </p>
             {/* Newsletter */}
             <div className="flex gap-2">
+              <label htmlFor="footer-email" className="sr-only">
+                Email address
+              </label>
               <input
+                id="footer-email"
                 type="email"
                 placeholder="Your email"
+                aria-label="Email address"
                 className="flex-1 h-10 rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white placeholder:text-white/50 transition-[border-color,box-shadow,background-color] focus:border-brand-orange focus:bg-white/12 focus:outline-none focus:ring-4 focus:ring-brand-orange/15 focus:shadow-[0_0_24px_rgba(239,138,0,0.18)]"
               />
-              <button className="h-10 px-4 bg-brand-orange rounded-lg hover:bg-brand-fresh-orange transition-colors">
+              <button
+                type="button"
+                aria-label="Join the newsletter waitlist"
+                className="h-10 rounded-lg bg-brand-orange px-4 transition-colors hover:bg-brand-fresh-orange"
+              >
                 <Mail className="h-4 w-4" />
               </button>
             </div>

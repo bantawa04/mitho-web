@@ -1,3 +1,5 @@
+import Image from "next/image"
+import Link from "next/link"
 import { BellRing, Bookmark, Route } from "lucide-react"
 import { MithoButton } from "@/components/ui/mitho-button"
 import { MithoSection } from "@/components/ui/mitho-section"
@@ -23,9 +25,10 @@ const appBenefits = [
 export function AppPromotionSection() {
   return (
     <MithoSection
+      id="app"
       eyebrow="Download the app"
       title="Keep your next great meal in your pocket"
-      subtitle="The app should feel like habit-forming convenience: save places, get useful nudges, and decide faster when you are out."
+      subtitle="Save the places you want to try, keep neighborhood favorites close, and make faster decisions when the craving hits."
       tone="strong"
       density="feature"
       className="overflow-hidden"
@@ -48,7 +51,7 @@ export function AppPromotionSection() {
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <a
+            <Link
               href="#"
               className="inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-brand-dark-green transition-colors hover:bg-brand-soft-beige"
             >
@@ -59,8 +62,8 @@ export function AppPromotionSection() {
                 <p className="text-xs opacity-80">Download on the</p>
                 <p className="text-sm font-semibold">App Store</p>
               </div>
-            </a>
-            <a
+            </Link>
+            <Link
               href="#"
               className="inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-brand-dark-green transition-colors hover:bg-brand-soft-beige"
             >
@@ -71,17 +74,18 @@ export function AppPromotionSection() {
                 <p className="text-xs opacity-80">Get it on</p>
                 <p className="text-sm font-semibold">Google Play</p>
               </div>
-            </a>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3 pt-2">
             <MithoButton
               variant="outline-secondary"
               className="border-white/25 bg-white/8 text-white hover:border-white hover:bg-white hover:text-brand-dark-green"
+              asChild
             >
-              Join the waitlist
+              <Link href="#">Join the waitlist</Link>
             </MithoButton>
-            <p className="text-sm text-white/70">Perfect for quick decisions on the go.</p>
+            <p className="text-sm text-white/70">Built for quick decisions when you are already out and hungry.</p>
           </div>
         </div>
 
@@ -108,9 +112,16 @@ export function AppPromotionSection() {
                       4.8+
                     </div>
                   </div>
-{/* This section */}
                   <div className="overflow-hidden rounded-[1.9rem] border border-brand-deep-green/10 bg-white/94 shadow-[0_18px_36px_rgba(10,70,53,0.08)]">
-                    <img src="/nepali-momo-dish.jpg" alt="Mitho Cha app preview" className="h-48 w-full object-cover" />
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src="/nepali-momo-dish.jpg"
+                        alt="Mitho Cha app preview"
+                        fill
+                        sizes="(min-width: 1024px) 22rem, 100vw"
+                        className="object-cover"
+                      />
+                    </div>
 
                     <div className="p-4 pb-3">
                       <p className="font-semibold text-brand-dark-green">Momo Central</p>

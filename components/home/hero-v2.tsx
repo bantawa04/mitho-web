@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
+import Link from "next/link"
 import { ArrowRight, ChevronDown, MapPin, Search, Star } from "lucide-react"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { MithoButton } from "@/components/ui/mitho-button"
@@ -30,7 +32,7 @@ export function HeroV2() {
         }}
       />
       <div className="absolute -left-16 top-20 h-64 w-64 rounded-full bg-brand-orange/12 blur-3xl" />
-      <div className="absolute right-0 top-10 h-72 w-72 rounded-full bg-brand-light-green/12 blur-3xl" />
+      <div className="absolute right-0 top-10 h-72 w-72 rounded-full bg-brand-soft-beige/28 blur-3xl" />
 
       <div className="relative container mx-auto px-4 py-14 md:py-18 lg:py-22">
         <div className="grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
@@ -72,8 +74,12 @@ export function HeroV2() {
 
               <div className="grid gap-3 lg:grid-cols-[1fr_220px_auto]">
                 <div className="relative">
+                  <label htmlFor="hero-search" className="sr-only">
+                    Search for dishes, neighborhoods, or restaurants
+                  </label>
                   <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand-deep-green/65" />
                   <input
+                    id="hero-search"
                     type="text"
                     placeholder="Search buff momo, cozy cafes, thakali..."
                     value={searchQuery}
@@ -83,8 +89,12 @@ export function HeroV2() {
                 </div>
 
                 <div className="relative">
+                  <label htmlFor="hero-location" className="sr-only">
+                    Choose a city
+                  </label>
                   <MapPin className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand-orange" />
                   <select
+                    id="hero-location"
                     value={location}
                     onChange={(event) => setLocation(event.target.value)}
                     className="h-14 w-full appearance-none rounded-full border border-brand-deep-green/10 bg-white/92 pl-12 pr-10 text-foreground shadow-[0_8px_24px_rgba(10,70,53,0.05)] outline-none transition-[border-color,box-shadow] duration-200 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/12"
@@ -97,31 +107,36 @@ export function HeroV2() {
                   <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 </div>
 
-                <MithoButton size="lg" className="h-14 px-8">
-                  Search
-                  <ArrowRight className="h-5 w-5" />
+                <MithoButton size="lg" className="h-14 px-8" asChild>
+                  <Link href="#trending">
+                    Search
+                    <ArrowRight className="h-5 w-5" />
+                  </Link>
                 </MithoButton>
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 {quickSearches.map((item) => (
-                  <button
+                  <Link
                     key={item}
-                    type="button"
+                    href="#trending"
                     className="rounded-full border border-brand-deep-green/10 bg-white/85 px-3 py-1.5 text-sm font-medium text-brand-dark-green transition-colors hover:border-brand-orange/25 hover:bg-brand-soft-beige"
                   >
                     {item}
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>
 
             <div className="motion-soft-rise motion-delay-3 mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-              <MithoButton size="lg" leftIcon={<MapPin className="h-5 w-5" />}>
-                Explore now
+              <MithoButton size="lg" asChild>
+                <Link href="#trending">
+                  <MapPin className="h-5 w-5" />
+                  Explore now
+                </Link>
               </MithoButton>
-              <MithoButton variant="link" size="lg">
-                For restaurant owners
+              <MithoButton variant="link" size="lg" asChild>
+                <Link href="#for-business">For restaurant owners</Link>
               </MithoButton>
             </div>
 
@@ -137,10 +152,12 @@ export function HeroV2() {
 
           <div className="motion-soft-rise motion-delay-2 relative min-h-[540px] lg:min-h-[620px]">
             <div className="absolute right-0 top-0 h-[74%] w-[72%] overflow-hidden rounded-[2.5rem] border border-brand-deep-green/10 bg-white p-3 shadow-[0_24px_70px_rgba(10,70,53,0.16)]">
-              <img
+              <Image
                 src="/nepali-dal-bhat-traditional-meal.jpg"
                 alt="Nepali meal"
-                className="h-full w-full rounded-[2rem] object-cover"
+                fill
+                sizes="(min-width: 1024px) 32vw, 72vw"
+                className="rounded-[2rem] object-cover"
               />
               <div className="absolute inset-x-8 bottom-8 rounded-[1.5rem] bg-white/92 p-4 backdrop-blur-md">
                 <p className="type-eyebrow text-brand-deep-green/60">Tonight&apos;s most saved</p>
@@ -149,11 +166,15 @@ export function HeroV2() {
             </div>
 
             <div className="absolute left-0 top-10 w-[48%] rotate-[-3deg] rounded-[2rem] border border-brand-deep-green/12 bg-white p-3 shadow-[0_18px_44px_rgba(10,70,53,0.12)]">
-              <img
-                src="/nepali-momos-dumplings-plate.jpg"
-                alt="Steamed momo plate"
-                className="aspect-[4/5] w-full rounded-[1.5rem] object-cover"
-              />
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.5rem]">
+                <Image
+                  src="/nepali-momos-dumplings-plate.jpg"
+                  alt="Steamed momo plate"
+                  fill
+                  sizes="(min-width: 1024px) 18vw, 48vw"
+                  className="object-cover"
+                />
+              </div>
               <div className="mt-3 flex items-center justify-between gap-2">
                 <div>
                   <p className="type-card-title text-brand-dark-green">Buff jhol momo</p>

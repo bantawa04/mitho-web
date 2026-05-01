@@ -6,6 +6,7 @@
 /* Mitho Cha! Design System */
 :root {
   /* Brand Colors */
+  /* Keep the logo green as the anchor, orange as the accent, and beige as the warmth layer. */
   --brand-orange: #ef8a00;
   --brand-deep-green: #007936;
   --brand-light-green: #8cac1c;
@@ -24,7 +25,7 @@
   --danger-foreground: #ffffff;
 
   /* Theme Tokens */
-  --background: #fffdf8;
+  --background: #fffcf6;
   --foreground: #15382d;
   --card: #fffdf8;
   --card-foreground: #15382d;
@@ -34,10 +35,10 @@
   --primary-foreground: #0a4635;
   --secondary: #007936;
   --secondary-foreground: #ffffff;
-  --muted: #fbf4e5;
+  --muted: #f7efdf;
   --muted-foreground: #4f665e;
-  --accent: #8cac1c;
-  --accent-foreground: #ffffff;
+  --accent: #f4e0a6;
+  --accent-foreground: #0a4635;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --border: #e6dcc5;
@@ -46,21 +47,21 @@
   --radius: 1.5rem;
 
   /* Extended surfaces */
-  --surface-warm: #fff6df;
-  --surface-soft: #fffbf1;
+  --surface-warm: #fbefd0;
+  --surface-soft: #fdf7ea;
   --surface-strong: #0a4635;
   --surface-strong-foreground: #fff4da;
   --surface-highlight: #fff0d8;
-  --page-customer: #fffdf8;
-  --page-business: #f7f4ea;
+  --page-customer: #fffbf3;
+  --page-business: #f8f1de;
   --page-admin: #f6f7f4;
   --surface-raised: #ffffff;
   --surface-inset: #f8f3e4;
-  --surface-business: #fffaf0;
-  --surface-business-inset: #f1ead7;
+  --surface-business: #fcf4e2;
+  --surface-business-inset: #efe5cc;
   --surface-admin: #fbfbf8;
   --surface-positive: #eef8ef;
-  --surface-spotlight: #fff1d4;
+  --surface-spotlight: #f8e6bd;
   --border-strong: #bfd0b6;
 
   /* Chart Colors */
@@ -90,11 +91,11 @@
   --popover-foreground: #f4e0a6;
   --primary: #ef8a00;
   --primary-foreground: #ffffff;
-  --secondary: #8cac1c;
+  --secondary: #007936;
   --secondary-foreground: #ffffff;
   --muted: #0d5a44;
   --muted-foreground: #a3c4a8;
-  --accent: #f19d4b;
+  --accent: #f4e0a6;
   --accent-foreground: #1a1a1a;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
@@ -113,7 +114,7 @@
   --surface-soft: #0d5a44;
   --surface-strong: #072d22;
   --surface-strong-foreground: #fff4da;
-  --surface-highlight: #1c674e;
+  --surface-highlight: #1b5a45;
   --page-customer: #0a4635;
   --page-business: #083d2f;
   --page-admin: #062f24;
@@ -123,7 +124,7 @@
   --surface-business-inset: #114433;
   --surface-admin: #0b3d2f;
   --surface-positive: #154735;
-  --surface-spotlight: #2d5d1d;
+  --surface-spotlight: #325841;
   --border-strong: #326f5a;
 }
 
@@ -238,7 +239,7 @@
 
   .page-shell-business {
     background:
-      radial-gradient(circle at top left, rgba(140, 172, 28, 0.08), transparent 20%),
+      radial-gradient(circle at top left, rgba(0, 121, 54, 0.08), transparent 20%),
       linear-gradient(180deg, var(--page-business) 0%, #fffaf0 100%);
   }
 

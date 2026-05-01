@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Store, Check } from "lucide-react"
 import { MithoSection } from "@/components/ui/mitho-section"
 import { MithoButton } from "@/components/ui/mitho-button"
@@ -6,7 +7,7 @@ const benefits = ["Free business listing", "Respond to reviews", "Manage your pr
 
 export function BusinessCtaSection() {
   return (
-    <MithoSection density="compact">
+    <MithoSection id="for-business" density="compact">
       <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="rounded-[2rem] border border-brand-deep-green/10 bg-surface-warm p-8">
           <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-brand-orange text-brand-dark-green">
@@ -14,12 +15,14 @@ export function BusinessCtaSection() {
           </div>
           <h2 className="text-3xl font-bold text-brand-dark-green md:text-4xl">Own a local gem? Grow with Mitho.</h2>
           <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-            This section should speak to restaurant owners clearly: show up where locals already look when they want a place worth trying.
+            Show up where hungry locals already look when they want someplace genuinely worth trying, not just the loudest listing.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <MithoButton size="lg">Claim Your Business</MithoButton>
-            <MithoButton variant="outline-secondary" size="lg">
-              Talk to the team
+            <MithoButton size="lg" asChild>
+              <Link href="#">Claim your business</Link>
+            </MithoButton>
+            <MithoButton variant="outline-secondary" size="lg" asChild>
+              <Link href="#">Talk to the team</Link>
             </MithoButton>
           </div>
         </div>
@@ -39,10 +42,10 @@ export function BusinessCtaSection() {
             ))}
           </div>
           <div className="mt-6 rounded-[1.5rem] bg-brand-dark-green p-5 text-white">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-soft-beige/75">Positioning</p>
-            <p className="mt-2 text-lg font-semibold">Discovery, trust, and reputation in one place.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-soft-beige/75">Why it works</p>
+            <p className="mt-2 text-lg font-semibold">Build discovery, trust, and repeat visits in one place.</p>
             <p className="mt-2 text-sm text-white/75">
-              Business messaging should feel useful and serious, not like a generic growth ad.
+              Be easier to find, respond to real customer feedback, and earn credibility with people who care about food.
             </p>
           </div>
         </div>

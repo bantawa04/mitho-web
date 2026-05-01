@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils"
 
 interface SectionProps {
   children: React.ReactNode
+  id?: string
   className?: string
   containerClassName?: string
   title?: string
@@ -29,6 +30,7 @@ const toneClasses = {
 
 export function MithoSection({
   children,
+  id,
   className,
   containerClassName,
   title,
@@ -42,7 +44,7 @@ export function MithoSection({
   const isStrong = tone === "strong"
 
   return (
-    <section className={cn(densityClasses[density], toneClasses[tone], className)}>
+    <section id={id} className={cn(densityClasses[density], toneClasses[tone], "scroll-mt-24", className)}>
       <div className={cn("container mx-auto px-4", containerClassName)}>
         {(title || subtitle || action) && (
           <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">

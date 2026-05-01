@@ -1,7 +1,9 @@
 "use client"
 
+import Link from "next/link"
 import { MithoSection } from "@/components/ui/mitho-section"
 import { MithoCarousel } from "@/components/ui/mitho-carousel"
+import { MithoButton } from "@/components/ui/mitho-button"
 import {
   MithoCard,
   MithoCardHeader,
@@ -46,10 +48,16 @@ const sponsoredListings = [
 export function SponsoredListingsSection() {
   return (
     <MithoSection
+      id="partners"
       eyebrow="Partner picks"
       title="Featured partner picks"
-      subtitle="Useful sponsored recommendations that still feel like part of the Mitho discovery experience."
+      subtitle="Clearly labeled partner placements that still help people discover places they may actually want to try."
       density="compact"
+      action={
+        <MithoButton variant="link" asChild>
+          <Link href="#for-business">Ask about featured placement</Link>
+        </MithoButton>
+      }
     >
       <MithoCarousel>
         {sponsoredListings.map((listing, index) => (
