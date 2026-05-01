@@ -6,26 +6,25 @@ import { MithoButton } from "@/components/ui/mitho-button"
 export function FinalCtaSection() {
   return (
     <MithoSection density="compact">
-      <div className="relative overflow-hidden rounded-[2.25rem] border border-brand-deep-green/10 bg-[linear-gradient(135deg,#fff8ea_0%,#fffdf8_55%,#fff4da_100%)] p-8 text-center md:p-12 lg:p-14">
-        <div className="absolute -left-12 top-0 h-32 w-32 rounded-full bg-brand-orange/12 blur-2xl" />
-        <div className="absolute -right-8 bottom-0 h-40 w-40 rounded-full bg-brand-soft-beige/28 blur-2xl" />
+      <div className="rounded-[2rem] border border-brand-deep-green/10 bg-white px-6 py-8 shadow-[0_8px_24px_rgba(10,70,53,0.04)] md:px-8 md:py-10">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-semibold leading-tight text-brand-dark-green md:text-4xl">
+              Start with the places someone local would happily recommend.
+            </h2>
+            <p className="mt-3 text-base leading-7 text-muted-foreground">
+              Browse trusted picks, follow the dishes people keep talking about, and make the dinner decision faster.
+            </p>
+          </div>
 
-        <div className="relative mx-auto max-w-3xl">
-          <h2 className="text-3xl font-bold text-balance text-brand-dark-green md:text-4xl lg:text-5xl">
-            Start with the places people would gladly recommend to a friend.
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Explore trusted local picks, follow the dishes people keep talking about, and let real reviews guide the final call.
-          </p>
-
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
             <MithoButton size="lg" asChild>
               <Link href="#trending">
                 <Compass className="h-5 w-5" />
                 Explore places
               </Link>
             </MithoButton>
-            <MithoButton variant="link" size="lg" asChild>
+            <MithoButton variant="outline-secondary" size="lg" asChild>
               <Link href="#for-business">
                 <Store className="h-5 w-5" />
                 Add your business

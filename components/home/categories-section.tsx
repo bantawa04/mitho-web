@@ -16,13 +16,13 @@ export function CategoriesSection() {
     <MithoSection
       id="categories"
       eyebrow="Browse"
-      title="Pick a craving, not a generic category"
-      subtitle="Scan the kinds of places people in Nepal actually look for most."
+      title="Start with the kind of meal you want"
+      subtitle="Quick ways into the food people in Nepal actually search for, without digging through generic directory labels."
       density="compact"
     >
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {categories.map((category, index) => (
-          <CategoryCard key={index} {...category} />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {categories.map((category) => (
+          <CategoryCard key={category.label} {...category} />
         ))}
       </div>
     </MithoSection>

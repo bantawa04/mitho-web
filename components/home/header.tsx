@@ -10,8 +10,8 @@ import { BrandLogo } from "@/components/ui/brand-logo"
 const navLinks = [
   { href: "#reviews", label: "Reviews" },
   { href: "#trending", label: "Trending" },
-  { href: "#categories", label: "Cravings" },
   { href: "#nearby", label: "Nearby" },
+  { href: "#categories", label: "Cravings" },
   { href: "#for-business", label: "For Business" },
 ]
 
@@ -30,13 +30,12 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-200",
-        isScrolled ? "bg-background/95 backdrop-blur-md shadow-sm border-b border-border" : "bg-transparent",
+        "sticky top-0 z-50 w-full border-b border-brand-deep-green/10 bg-background/88 backdrop-blur-md transition-all duration-200",
+        isScrolled ? "shadow-[0_8px_26px_rgba(10,70,53,0.08)]" : "shadow-none",
       )}
     >
       <div className="container mx-auto px-4">
-        <div className="flex h-16 md:h-20 items-center justify-between gap-4">
-          {/* Logo */}
+        <div className="flex h-16 items-center justify-between gap-4 md:h-[72px]">
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <BrandLogo kind="icon" tone="green" className="h-10 w-auto sm:hidden" alt="Mitho Cha! logo" priority />
             <BrandLogo
@@ -48,31 +47,25 @@ export function Header() {
             />
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
-                key={link.href}
+                key={link.label}
                 href={link.href}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-foreground/80 transition-colors hover:text-brand-orange hover:bg-brand-soft-beige/50"
+                className="rounded-full px-4 py-2 text-sm font-medium text-foreground/78 transition-colors hover:bg-brand-soft-beige/60 hover:text-brand-orange"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <MithoButton variant="secondary" size="sm" className="hidden md:inline-flex" asChild>
-              <Link href="#app">Get the app</Link>
-            </MithoButton>
             <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex" asChild>
               <Link href="#for-business">Add Business</Link>
             </MithoButton>
 
-            {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2 rounded-lg hover:bg-brand-soft-beige/50 transition-colors"
+              className="rounded-full p-2 transition-colors hover:bg-brand-soft-beige/50 lg:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -83,26 +76,26 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-border bg-background">
+          <div className="border-t border-brand-deep-green/10 bg-background/98 py-4 lg:hidden">
             <nav className="space-y-1">
               {navLinks.map((link) => (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
-                  className="block px-4 py-3 rounded-lg text-sm font-medium text-foreground hover:bg-brand-soft-beige/50 transition-colors"
+                  className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
             </nav>
-            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
+            <div className="mt-4 flex flex-col gap-2 border-t border-brand-deep-green/10 pt-4">
               <MithoButton variant="primary" className="w-full" asChild>
                 <Link href="#for-business" onClick={() => setIsMenuOpen(false)}>
                   Add Business
                 </Link>
               </MithoButton>
-              <MithoButton variant="secondary" className="w-full" asChild>
+              <MithoButton variant="outline-secondary" className="w-full" asChild>
                 <Link href="#app" onClick={() => setIsMenuOpen(false)}>
                   Get the app
                 </Link>

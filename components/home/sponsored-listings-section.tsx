@@ -1,19 +1,12 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
+import { MapPin } from "lucide-react"
 import { MithoSection } from "@/components/ui/mitho-section"
 import { MithoCarousel } from "@/components/ui/mitho-carousel"
 import { MithoButton } from "@/components/ui/mitho-button"
-import {
-  MithoCard,
-  MithoCardHeader,
-  MithoCardTitle,
-  MithoCardDescription,
-  MithoCardContent,
-} from "@/components/ui/mitho-card"
-import { MithoBadge } from "@/components/ui/mitho-badge"
 import { StarRating } from "@/components/ui/mitho-rating"
-import { MapPin } from "lucide-react"
 
 const sponsoredListings = [
   {
@@ -50,8 +43,8 @@ export function SponsoredListingsSection() {
     <MithoSection
       id="partners"
       eyebrow="Partner picks"
-      title="Featured partner picks"
-      subtitle="Clearly labeled partner placements that still help people discover places they may actually want to try."
+      title="A quieter space for clearly labeled placements"
+      subtitle="Sponsored listings stay visible, but they should never feel louder than the editorial recommendations around them."
       density="compact"
       action={
         <MithoButton variant="link" asChild>
@@ -59,42 +52,47 @@ export function SponsoredListingsSection() {
         </MithoButton>
       }
     >
-      <MithoCarousel>
-        {sponsoredListings.map((listing, index) => (
-          <MithoCard key={index} className="group w-[292px] flex-shrink-0 cursor-pointer bg-white/95 sm:w-[320px]">
-            <div className="relative aspect-[3/2] overflow-hidden">
-              <img
-                src={listing.imageUrl || "/placeholder.svg"}
+      <MithoCarousel className="px-1 sm:px-3">
+        {sponsoredListings.map((listing) => (
+          <article
+            key={listing.name}
+            className="w-[292px] flex-shrink-0 overflow-hidden rounded-[1.6rem] border border-brand-deep-green/10 bg-white shadow-[0_8px_22px_rgba(10,70,53,0.05)]"
+          >
+            <div className="relative aspect-[4/3]">
+              <Image
+                src={listing.imageUrl}
                 alt={listing.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                fill
+                sizes="292px"
+                className="object-cover"
               />
-              <MithoBadge variant="default" size="sm" className="absolute top-3 left-3">
+              <div className="absolute left-3 top-3 rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-deep-green">
                 Sponsored
-              </MithoBadge>
-              {listing.offer && (
-                <div className="absolute bottom-3 left-3 right-3">
-                  <div className="rounded-full bg-brand-deep-green px-3 py-1.5 text-center text-xs font-medium text-white sm:text-sm">
-                    {listing.offer}
-                  </div>
-                </div>
-              )}
-            </div>
-            <MithoCardHeader>
-              <MithoCardTitle>{listing.name}</MithoCardTitle>
-              <MithoCardDescription>{listing.cuisine}</MithoCardDescription>
-            </MithoCardHeader>
-            <MithoCardContent className="space-y-2">
-              <div className="flex items-center gap-2">
-                <StarRating rating={listing.rating} size="sm" />
-                <span className="text-sm font-medium">{listing.rating}</span>
-                <span className="text-sm text-muted-foreground">({listing.reviewCount})</span>
               </div>
-              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                <MapPin className="h-4 w-4" />
-                {listing.location}
-              </p>
-            </MithoCardContent>
-          </MithoCard>
+            </div>
+
+            <div className="space-y-3 p-4">
+              <div>
+                <p className="text-lg font-semibold text-brand-dark-green">{listing.name}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{listing.cuisine}</p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-sm">
+                <div className="flex items-center gap-2">
+                  <StarRating rating={listing.rating} size="sm" />
+                  <span className="font-medium text-brand-dark-green">
+                    {listing.rating.toFixed(1)} <span className="text-muted-foreground">({listing.reviewCount})</span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-muted-foreground">
+                  <MapPin className="h-4 w-4" />
+                  <span>{listing.location}</span>
+                </div>
+              </div>
+
+              <p className="text-sm leading-6 text-foreground">{listing.offer}</p>
+            </div>
+          </article>
         ))}
       </MithoCarousel>
     </MithoSection>

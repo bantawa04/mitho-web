@@ -6,41 +6,26 @@ const footerLinks = {
   discover: {
     title: "Discover",
     links: [
-      { label: "Trending picks", href: "#trending" },
-      { label: "Local reviews", href: "#reviews" },
-      { label: "Nearby favorites", href: "#nearby" },
-      { label: "Cravings", href: "#categories" },
+      { id: "discover-trending", label: "Trending picks", href: "#trending" },
+      { id: "discover-reviews", label: "Local reviews", href: "#reviews" },
+      { id: "discover-nearby", label: "Nearby favorites", href: "#nearby" },
+      { id: "discover-cravings", label: "Cravings", href: "#categories" },
     ],
   },
   forBusiness: {
     title: "For Business",
     links: [
-      { label: "Claim your business", href: "#for-business" },
-      { label: "Featured placement", href: "#partners" },
-      { label: "Talk to the team", href: "#" },
+      { id: "business-claim", label: "Claim your business", href: "#for-business" },
+      { id: "business-placement", label: "Featured placement", href: "#partners" },
+      { id: "business-team", label: "Talk to the team", href: "#" },
     ],
   },
   product: {
     title: "Product",
     links: [
-      { label: "Get the app", href: "#app" },
-      { label: "Join the waitlist", href: "#" },
-      { label: "Saved lists", href: "#" },
-    ],
-  },
-  support: {
-    title: "Support",
-    links: [
-      { label: "Contact", href: "#" },
-      { label: "Report a listing", href: "#" },
-      { label: "Community guidelines", href: "#" },
-    ],
-  },
-  legal: {
-    title: "Legal",
-    links: [
-      { label: "Privacy", href: "#" },
-      { label: "Terms", href: "#" },
+      { id: "product-app", label: "Get the app", href: "#app" },
+      { id: "product-waitlist", label: "Join the waitlist", href: "#" },
+      { id: "product-guidelines", label: "Community guidelines", href: "#" },
     ],
   },
 }
@@ -55,18 +40,15 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="bg-brand-dark-green text-white">
-      <div className="container mx-auto px-4 py-12 md:py-16">
-        {/* Top Section */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
-          {/* Logo & Description */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-1">
+      <div className="container mx-auto px-4 py-12 md:py-14">
+        <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr]">
+          <div className="max-w-md">
             <Link href="/" className="inline-flex mb-4">
               <BrandLogo kind="full" tone="orange" className="h-20 w-auto" alt="Mitho Cha! logo" />
             </Link>
-            <p className="text-sm text-white/70 mb-4">
+            <p className="mb-5 text-sm leading-7 text-white/72">
               Discover trusted local food picks across Nepal, from neighborhood momo stops to places worth a longer ride.
             </p>
-            {/* Newsletter */}
             <div className="flex gap-2">
               <label htmlFor="footer-email" className="sr-only">
                 Email address
@@ -86,42 +68,48 @@ export function Footer() {
                 <Mail className="h-4 w-4" />
               </button>
             </div>
+            <div className="mt-6 flex items-center gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-brand-orange"
+                  aria-label={social.label}
+                >
+                  <social.icon className="h-5 w-5" />
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* Links */}
-          {Object.values(footerLinks).map((section) => (
-            <div key={section.title}>
-              <h3 className="font-semibold mb-4">{section.title}</h3>
-              <ul className="space-y-2">
-                {section.links.map((link) => (
-                  <li key={link.href}>
-                    <Link href={link.href} className="text-sm text-white/70 hover:text-white transition-colors">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom Section */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/60">Serving food lovers across Nepal</p>
-
-          <div className="flex items-center gap-4">
-            {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-brand-orange transition-colors"
-                aria-label={social.label}
-              >
-                <social.icon className="h-5 w-5" />
-              </a>
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
+            {Object.values(footerLinks).map((section) => (
+              <div key={section.title}>
+                <h3 className="mb-4 font-semibold">{section.title}</h3>
+                <ul className="space-y-2">
+                  {section.links.map((link) => (
+                    <li key={link.id}>
+                      <Link href={link.href} className="text-sm text-white/70 transition-colors hover:text-white">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
+        </div>
 
+        <div className="flex flex-col gap-4 border-t border-white/10 pt-8 md:flex-row md:items-center md:justify-between">
+          <p className="text-sm text-white/60">Serving food lovers across Nepal</p>
+          <div className="flex items-center gap-4 text-sm text-white/60">
+            <Link href="#" className="transition-colors hover:text-white">
+              Privacy
+            </Link>
+            <Link href="#" className="transition-colors hover:text-white">
+              Terms
+            </Link>
+          </div>
           <p className="text-sm text-white/60">&copy; {new Date().getFullYear()} Mitho Cha! All rights reserved.</p>
         </div>
       </div>

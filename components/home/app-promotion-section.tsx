@@ -7,18 +7,18 @@ import { MithoSection } from "@/components/ui/mitho-section"
 const appBenefits = [
   {
     icon: <Bookmark className="h-5 w-5" />,
-    title: "Save the places you want to try",
-    description: "Build a real shortlist instead of losing screenshots and links.",
+    title: "Save places you actually want to revisit",
+    description: "Keep one clean shortlist instead of losing screenshots, reels, and chat links.",
   },
   {
     icon: <BellRing className="h-5 w-5" />,
-    title: "Get timely alerts",
-    description: "Hear about fresh openings, returning favorites, and local offers.",
+    title: "Get timely local updates",
+    description: "Catch fresh openings, neighborhood favorites, and places people are newly talking about.",
   },
   {
     icon: <Route className="h-5 w-5" />,
-    title: "Decide faster when you're out",
-    description: "Open nearby recommendations when the craving hits on the move.",
+    title: "Decide faster when you are already out",
+    description: "Open nearby picks and make a call without another spiral through generic maps results.",
   },
 ]
 
@@ -27,30 +27,34 @@ export function AppPromotionSection() {
     <MithoSection
       id="app"
       eyebrow="Download the app"
-      title="Keep your next great meal in your pocket"
-      subtitle="Save the places you want to try, keep neighborhood favorites close, and make faster decisions when the craving hits."
+      title="Keep your next good meal one quick check away"
+      subtitle="Built for shortlists, nearby decisions, and the places you keep meaning to try."
       tone="strong"
       density="feature"
       className="overflow-hidden"
     >
-      <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.95fr]">
-        <div className="space-y-6">
+      <div className="grid items-start gap-10 lg:grid-cols-[1fr_0.92fr]">
+        <div>
           <div className="grid gap-4">
             {appBenefits.map((benefit) => (
               <div
                 key={benefit.title}
-                className="rounded-[1.75rem] border border-white/10 bg-white/8 p-5 backdrop-blur-sm"
+                className="rounded-[1.55rem] border border-white/10 bg-white/7 px-5 py-5 backdrop-blur-sm"
               >
-                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft-beige text-brand-dark-green">
-                  {benefit.icon}
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft-beige text-brand-dark-green">
+                    {benefit.icon}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white">{benefit.title}</p>
+                    <p className="mt-2 text-sm leading-6 text-white/72">{benefit.description}</p>
+                  </div>
                 </div>
-                <p className="font-semibold text-white">{benefit.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-white/72">{benefit.description}</p>
               </div>
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="mt-6 flex flex-wrap gap-4">
             <Link
               href="#"
               className="inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-brand-dark-green transition-colors hover:bg-brand-soft-beige"
@@ -77,83 +81,61 @@ export function AppPromotionSection() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3 pt-2">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             <MithoButton
               variant="outline-secondary"
-              className="border-white/25 bg-white/8 text-white hover:border-white hover:bg-white hover:text-brand-dark-green"
+              className="border-white/22 bg-white/7 text-white hover:border-white hover:bg-white hover:text-brand-dark-green"
               asChild
             >
               <Link href="#">Join the waitlist</Link>
             </MithoButton>
-            <p className="text-sm text-white/70">Built for quick decisions when you are already out and hungry.</p>
+            <p className="text-sm text-white/72">Made for quick neighborhood decisions, not endless browsing.</p>
           </div>
         </div>
 
-        <div className="relative flex justify-center pb-24 md:pb-28 lg:justify-end lg:pb-12">
-          <div className="relative px-6 md:px-8">
-            <div className="absolute left-1/2 top-10 h-64 w-64 -translate-x-1/2 rounded-full bg-brand-orange/18 blur-3xl" />
-            <div className="relative ml-1 h-[600px] w-72 rounded-[45px] border-8 border-zinc-900 shadow-[0_0_2px_2px_rgba(255,255,255,0.1),0_30px_80px_rgba(0,0,0,0.35)]">
-              <div className="absolute left-1/2 top-2 z-20 h-[22px] w-[90px] -translate-x-1/2 rounded-full bg-zinc-900" />
-              <div className="pointer-events-none absolute -inset-[1px] rounded-[37px] border-[3px] border-zinc-700/40" />
+        <div className="rounded-[2rem] border border-white/10 bg-white/8 p-4 shadow-[0_16px_42px_rgba(0,0,0,0.18)] backdrop-blur-sm sm:p-5">
+          <div className="rounded-[1.6rem] bg-[#fbf3df] p-4 text-brand-dark-green">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-deep-green/70">Mitho picks</p>
+                <p className="mt-2 text-2xl font-semibold leading-tight">Near Kathmandu tonight</p>
+              </div>
+              <div className="rounded-full bg-brand-orange px-3 py-1 text-xs font-semibold text-white">4.8+</div>
+            </div>
 
-              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[37px] bg-[#fbf6ea]">
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,248,234,0.96)_0%,rgba(244,224,166,0.78)_100%)]" />
-                <div className="absolute left-1/2 top-1/2 h-24 w-12 -translate-x-1/2 -translate-y-1/2 bg-brand-orange/20 blur-[60px]" />
-
-                <div className="relative z-10 flex h-full w-full flex-col p-3.5">
-                  <div className="mb-3 flex items-center justify-between px-1 pt-8">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-deep-green/70">
-                        Mitho picks
-                      </p>
-                      <p className="text-lg font-bold text-brand-dark-green">Near Kathmandu tonight</p>
-                    </div>
-                    <div className="rounded-full bg-brand-orange px-3 py-1 text-xs font-semibold text-white">
-                      4.8+
-                    </div>
+            <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_26px_rgba(10,70,53,0.06)]">
+              <div className="relative aspect-[16/10]">
+                <Image
+                  src="/nepali-momo-dish.jpg"
+                  alt="Mitho app preview showing a restaurant recommendation"
+                  fill
+                  sizes="(min-width: 1024px) 34vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="space-y-3 p-4">
+                <div>
+                  <p className="font-semibold text-brand-dark-green">Momo Central</p>
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                    Buff momo, spicy achar, busy after 7 PM, and still one of the easiest crowd-pleasing calls.
+                  </p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[1.2rem] bg-surface-soft px-4 py-3">
+                    <p className="text-xs uppercase tracking-[0.18em] text-brand-deep-green/65">Saved</p>
+                    <p className="mt-1 text-xl font-semibold text-brand-dark-green">18</p>
                   </div>
-                  <div className="overflow-hidden rounded-[1.9rem] border border-brand-deep-green/10 bg-white/94 shadow-[0_18px_36px_rgba(10,70,53,0.08)]">
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src="/nepali-momo-dish.jpg"
-                        alt="Mitho Cha app preview"
-                        fill
-                        sizes="(min-width: 1024px) 22rem, 100vw"
-                        className="object-cover"
-                      />
-                    </div>
-
-                    <div className="p-4 pb-3">
-                      <p className="font-semibold text-brand-dark-green">Momo Central</p>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Buff momo, spicy achar, always busy after 7 PM.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 grid grid-cols-2 gap-3">
-                    <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white/94 px-4 py-3.5 shadow-[0_10px_20px_rgba(10,70,53,0.05)]">
-                      <p className="text-xs uppercase tracking-[0.18em] text-brand-deep-green/65">Saved</p>
-                      <p className="mt-1 text-xl font-bold text-brand-dark-green">18</p>
-                    </div>
-                    <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white/94 px-4 py-3.5">
-                      <p className="text-xs uppercase tracking-[0.18em] text-brand-deep-green/65">Alerts</p>
-                      <p className="mt-1 text-xl font-bold text-brand-dark-green">6 new</p>
-                    </div>
+                  <div className="rounded-[1.2rem] bg-surface-soft px-4 py-3">
+                    <p className="text-xs uppercase tracking-[0.18em] text-brand-deep-green/65">Alerts</p>
+                    <p className="mt-1 text-xl font-semibold text-brand-dark-green">6 new</p>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="absolute left-[-12px] top-20 h-8 w-[6px] rounded-l-md bg-zinc-900 shadow-md" />
-              <div className="absolute left-[-12px] top-36 h-12 w-[6px] rounded-l-md bg-zinc-900 shadow-md" />
-              <div className="absolute left-[-12px] top-52 h-12 w-[6px] rounded-l-md bg-zinc-900 shadow-md" />
-              <div className="absolute right-[-12px] top-36 h-16 w-[6px] rounded-r-md bg-zinc-900 shadow-md" />
-            </div>
-            <div className="absolute -left-3 -bottom-12 hidden max-w-[240px] rounded-[1.5rem] border border-brand-soft-beige/55 bg-brand-soft-beige/98 p-4 shadow-[0_20px_48px_rgba(0,0,0,0.28)] md:block lg:-left-8 lg:-bottom-10">
-              <p className="text-xs uppercase tracking-[0.2em] text-brand-deep-green/70">Saved for later</p>
-              <p className="mt-2 text-lg font-semibold text-brand-dark-green">Thakali spots in Patan</p>
-              <p className="mt-1 text-sm text-brand-dark-green/75">Synced across your shortlist and recommendations.</p>
-            </div>
+            <p className="mt-4 text-sm leading-6 text-brand-dark-green/78">
+              The app keeps nearby picks, saved places, and practical dinner decisions in one calmer flow.
+            </p>
           </div>
         </div>
       </div>

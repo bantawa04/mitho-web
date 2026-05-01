@@ -1,17 +1,10 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { MapPin, Navigation } from "lucide-react"
 import { MithoSection } from "@/components/ui/mitho-section"
 import { MithoCarousel } from "@/components/ui/mitho-carousel"
-import {
-  MithoCard,
-  MithoCardHeader,
-  MithoCardTitle,
-  MithoCardDescription,
-  MithoCardContent,
-} from "@/components/ui/mitho-card"
-import { MithoBadge } from "@/components/ui/mitho-badge"
 import { StarRating } from "@/components/ui/mitho-rating"
 import { MithoButton } from "@/components/ui/mitho-button"
 
@@ -22,6 +15,7 @@ const nearbyPlaces = [
     rating: 4.7,
     distance: "0.5 km",
     imageUrl: "/nepali-restaurant-traditional-interior.jpg",
+    note: "A practical call when you want a full meal nearby and not another cafe stop.",
   },
   {
     name: "Chiya Pasal",
@@ -29,6 +23,7 @@ const nearbyPlaces = [
     rating: 4.4,
     distance: "0.8 km",
     imageUrl: "/nepali-tea-house-chiya.jpg",
+    note: "Good for a slower tea break and small plates when the crowd matters less than the mood.",
   },
   {
     name: "Sel Roti House",
@@ -36,6 +31,7 @@ const nearbyPlaces = [
     rating: 4.6,
     distance: "1.2 km",
     imageUrl: "/nepali-sel-roti-street-food.jpg",
+    note: "Worth the short detour if you want something local, filling, and easy on the budget.",
   },
   {
     name: "Himalayan Java",
@@ -43,13 +39,7 @@ const nearbyPlaces = [
     rating: 4.5,
     distance: "1.5 km",
     imageUrl: "/himalayan-java-coffee-cafe-nepal.jpg",
-  },
-  {
-    name: "Dal Bhat Power",
-    type: "Restaurant",
-    rating: 4.8,
-    distance: "2.0 km",
-    imageUrl: "/nepali-dal-bhat-traditional-meal.jpg",
+    note: "Reliable when you need a familiar coffee stop without spending too much time choosing.",
   },
 ]
 
@@ -60,9 +50,8 @@ export function PopularNearYouSection() {
       eyebrow="Nearby"
       title="Worth the short walk"
       titleIcon={<MapPin className="h-6 w-6 text-brand-deep-green" />}
-      subtitle="Reliable nearby picks when you want something good without overthinking it."
+      subtitle="Close-by picks for when the decision needs to be easy and the meal still needs to be good."
       density="compact"
-      tone="warm"
       action={
         <MithoButton variant="outline-secondary" size="sm" asChild>
           <Link href="#">
@@ -72,30 +61,40 @@ export function PopularNearYouSection() {
         </MithoButton>
       }
     >
-      <MithoCarousel>
-        {nearbyPlaces.map((place, index) => (
-          <MithoCard key={index} className="group w-[292px] flex-shrink-0 cursor-pointer bg-white/95">
-            <div className="relative aspect-[3/2] overflow-hidden">
-              <img
-                src={place.imageUrl || "/placeholder.svg"}
+      <MithoCarousel className="px-1 sm:px-3">
+        {nearbyPlaces.map((place) => (
+          <article
+            key={place.name}
+            className="w-[276px] flex-shrink-0 overflow-hidden rounded-[1.6rem] border border-brand-deep-green/10 bg-white shadow-[0_8px_24px_rgba(10,70,53,0.05)]"
+          >
+            <div className="relative aspect-[4/3]">
+              <Image
+                src={place.imageUrl}
                 alt={place.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                fill
+                sizes="276px"
+                className="object-cover"
               />
-              <MithoBadge variant="muted" className="absolute top-3 right-3">
+              <div className="absolute right-3 top-3 rounded-full bg-white/92 px-2.5 py-1 text-xs font-semibold text-brand-dark-green">
                 {place.distance}
-              </MithoBadge>
-            </div>
-            <MithoCardHeader className="pb-2">
-              <MithoCardTitle className="text-base">{place.name}</MithoCardTitle>
-              <MithoCardDescription>{place.type}</MithoCardDescription>
-            </MithoCardHeader>
-            <MithoCardContent className="pt-0">
-              <div className="flex items-center gap-2">
-                <StarRating rating={place.rating} size="sm" />
-                <span className="text-sm font-medium">{place.rating}</span>
               </div>
-            </MithoCardContent>
-          </MithoCard>
+            </div>
+
+            <div className="space-y-3 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-lg font-semibold text-brand-dark-green">{place.name}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{place.type}</p>
+                </div>
+                <div className="flex items-center gap-1 text-sm font-medium text-brand-dark-green">
+                  <StarRating rating={place.rating} size="sm" />
+                  <span>{place.rating}</span>
+                </div>
+              </div>
+
+              <p className="text-sm leading-6 text-foreground">{place.note}</p>
+            </div>
+          </article>
         ))}
       </MithoCarousel>
     </MithoSection>
