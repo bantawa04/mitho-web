@@ -9,6 +9,8 @@ interface BusinessGalleryPreviewProps {
   items: BusinessGalleryItem[]
   totalCount?: number
   emptyMessage?: string
+  emptyTitle?: string
+  compactEmpty?: boolean
   className?: string
 }
 
@@ -16,6 +18,8 @@ export function BusinessGalleryPreview({
   items,
   totalCount,
   emptyMessage = "This business has not uploaded photos yet.",
+  emptyTitle = "Photos coming soon",
+  compactEmpty = false,
   className,
 }: BusinessGalleryPreviewProps) {
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
@@ -43,14 +47,23 @@ export function BusinessGalleryPreview({
     return (
       <div
         className={cn(
-          "flex min-h-[280px] flex-col items-center justify-center rounded-[1.75rem] border border-brand-deep-green/12 bg-white/72 px-6 py-10 text-center",
+          compactEmpty
+            ? "flex min-h-[220px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-brand-deep-green/12 bg-white/60 px-6 py-8 text-center"
+            : "flex min-h-[280px] flex-col items-center justify-center rounded-[1.75rem] border border-brand-deep-green/12 bg-white/72 px-6 py-10 text-center",
           className,
         )}
       >
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-soft-beige text-brand-dark-green">
-          <Camera className="h-7 w-7" />
+        <div
+          className={cn(
+            "flex items-center justify-center rounded-full bg-brand-soft-beige text-brand-dark-green",
+            compactEmpty ? "h-14 w-14" : "h-16 w-16",
+          )}
+        >
+          <Camera className={cn(compactEmpty ? "h-6 w-6" : "h-7 w-7")} />
         </div>
-        <p className="mt-5 text-xl font-semibold text-brand-dark-green">Photos coming soon</p>
+        <p className={cn("font-semibold text-brand-dark-green", compactEmpty ? "mt-4 text-lg" : "mt-5 text-xl")}>
+          {emptyTitle}
+        </p>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">{emptyMessage}</p>
       </div>
     )

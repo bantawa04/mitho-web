@@ -1,12 +1,13 @@
 import type { BusinessMenuItem } from "@/components/business/business-detail-types"
 
 interface MenuHighlightsProps {
+  isEarlyListing?: boolean
   items: BusinessMenuItem[]
   emptyMessage?: string
   menuLink?: string
 }
 
-export function MenuHighlights({ items, emptyMessage, menuLink }: MenuHighlightsProps) {
+export function MenuHighlights({ isEarlyListing = false, items, emptyMessage, menuLink }: MenuHighlightsProps) {
   const hasItems = items.length > 0
 
   return (
@@ -53,10 +54,21 @@ export function MenuHighlights({ items, emptyMessage, menuLink }: MenuHighlights
           ))}
         </div>
       ) : (
-        <div className="rounded-[1.6rem] border border-brand-deep-green/10 bg-white/80 p-6 shadow-[0_10px_28px_rgba(10,70,53,0.06)]">
-          <p className="text-lg font-semibold text-brand-dark-green">Menu highlights are still missing</p>
+        <div
+          className={
+            isEarlyListing
+              ? "rounded-[1.45rem] border border-dashed border-brand-deep-green/12 bg-white/70 p-5"
+              : "rounded-[1.6rem] border border-brand-deep-green/10 bg-white/80 p-6 shadow-[0_10px_28px_rgba(10,70,53,0.06)]"
+          }
+        >
+          <p className="text-lg font-semibold text-brand-dark-green">
+            {isEarlyListing ? "Dish highlights will show up once locals start reviewing" : "Menu highlights are still missing"}
+          </p>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            {emptyMessage ?? "This business has not added any dish highlights yet."}
+            {emptyMessage ??
+              (isEarlyListing
+                ? "This listing is still early. Once people start mentioning standout dishes, the most useful menu highlights can appear here."
+                : "This business has not added any dish highlights yet.")}
           </p>
         </div>
       )}

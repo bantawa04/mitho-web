@@ -5,13 +5,20 @@ import { BusinessGalleryPreview } from "@/components/business/business-gallery-p
 import type { BusinessGalleryItem, BusinessVisitInfo } from "@/components/business/business-detail-types"
 
 interface InfoPanelProps {
+  isEarlyListing?: boolean
   galleryItems: BusinessGalleryItem[]
   galleryTotalCount?: number
   galleryEmptyMessage?: string
   visitInfo: BusinessVisitInfo
 }
 
-export function InfoPanel({ galleryItems, galleryTotalCount, galleryEmptyMessage, visitInfo }: InfoPanelProps) {
+export function InfoPanel({
+  isEarlyListing = false,
+  galleryItems,
+  galleryTotalCount,
+  galleryEmptyMessage,
+  visitInfo,
+}: InfoPanelProps) {
   const contactLine = [visitInfo.phone, visitInfo.email].filter(Boolean).join(" • ") || "Contact details not listed yet"
   const hoursLine =
     visitInfo.hours.length > 0
@@ -59,7 +66,14 @@ export function InfoPanel({ galleryItems, galleryTotalCount, galleryEmptyMessage
             <BusinessGalleryPreview
               items={galleryItems}
               totalCount={galleryTotalCount}
-              emptyMessage={galleryEmptyMessage}
+              emptyTitle={isEarlyListing ? "No photos yet" : undefined}
+              emptyMessage={
+                galleryEmptyMessage ??
+                (isEarlyListing
+                  ? "Mitho has listed this place, but no one has added photos yet. The first visit photos will make this page much more useful."
+                  : undefined)
+              }
+              compactEmpty={isEarlyListing}
             />
           </MithoCardContent>
         </MithoCard>

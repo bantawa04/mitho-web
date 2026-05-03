@@ -21,6 +21,13 @@ interface BusinessDetailPageProps {
 export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
   const [isSaved, setIsSaved] = React.useState(false)
   const [sortOrder, setSortOrder] = React.useState("all")
+  const isEarlyListing =
+    pageData.sourceBadge === "mitho" &&
+    !pageData.coverImage &&
+    !pageData.ratingsData &&
+    pageData.reviews.length === 0 &&
+    pageData.galleryItems.length === 0 &&
+    pageData.menuItems.length === 0
 
   const scrollToReview = () => {
     document.getElementById("add-review")?.scrollIntoView({ behavior: "smooth" })
@@ -54,6 +61,7 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
         <BusinessHero
           name={pageData.name}
           sourceBadge={pageData.sourceBadge}
+          isEarlyListing={isEarlyListing}
           coverImage={pageData.coverImage}
           rating={pageData.rating}
           reviewCount={pageData.reviewCount}
@@ -69,12 +77,14 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
 
         <div className="mt-10">
           <InfoPanel
+            isEarlyListing={isEarlyListing}
             galleryItems={pageData.galleryItems}
             galleryTotalCount={pageData.galleryTotalCount}
             galleryEmptyMessage={pageData.galleryEmptyMessage}
             visitInfo={pageData.visitInfo}
           />
           <MenuHighlights
+            isEarlyListing={isEarlyListing}
             items={pageData.menuItems}
             emptyMessage={pageData.menuEmptyMessage}
             menuLink={pageData.menuLink}
@@ -82,19 +92,24 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
         </div>
 
         <div className="mt-4">
-          <RatingsSection ratingsData={pageData.ratingsData ?? null} />
+          <RatingsSection isEarlyListing={isEarlyListing} ratingsData={pageData.ratingsData ?? null} />
           <ReviewsSection
+            isEarlyListing={isEarlyListing}
             sortOrder={sortOrder}
             onSortChange={setSortOrder}
             reviews={pageData.reviews}
             emptyMessage={pageData.reviewsEmptyMessage}
           />
-          <AddReviewForm isFirstReview={pageData.reviews.length === 0} prompt={pageData.addReviewPrompt} />
+          <AddReviewForm
+            isEarlyListing={isEarlyListing}
+            isFirstReview={pageData.reviews.length === 0}
+            prompt={pageData.addReviewPrompt}
+          />
         </div>
 
         <div className="mt-2 bg-transparent">
-          <SimilarPlaces />
-          <ClaimReport />
+          <SimilarPlaces subdued={isEarlyListing} />
+          <ClaimReport subdued={isEarlyListing} />
         </div>
       </main>
 

@@ -7,11 +7,12 @@ import { StarRating } from "@/components/ui/mitho-rating"
 import { MithoButton } from "@/components/ui/mitho-button"
 
 interface AddReviewFormProps {
+  isEarlyListing?: boolean
   isFirstReview?: boolean
   prompt?: string
 }
 
-export function AddReviewForm({ isFirstReview = false, prompt }: AddReviewFormProps) {
+export function AddReviewForm({ isEarlyListing = false, isFirstReview = false, prompt }: AddReviewFormProps) {
   const [rating, setRating] = React.useState(0)
   const [review, setReview] = React.useState("")
 
@@ -19,12 +20,15 @@ export function AddReviewForm({ isFirstReview = false, prompt }: AddReviewFormPr
     <section className="container mx-auto px-4 pb-14 pt-6" id="add-review">
       <MithoCard surface="spotlight" interactive="none">
         <MithoCardHeader>
-          <p className="type-eyebrow text-brand-deep-green/70">Add your experience</p>
+          <p className="type-eyebrow text-brand-deep-green/70">{isEarlyListing ? "Help start the page" : "Add your experience"}</p>
           <h2 className="type-card-title mt-2 text-xl">
-            {isFirstReview ? "Start the first local review" : "Write a review"}
+            {isFirstReview ? "Write the first local review" : "Write a review"}
           </h2>
           <p className="type-meta mt-1">
-            {prompt ?? "Share the details that actually help the next person decide."}
+            {prompt ??
+              (isEarlyListing
+                ? "The most helpful first review usually covers what to order, what the atmosphere feels like, and whether you would come back."
+                : "Share the details that actually help the next person decide.")}
           </p>
         </MithoCardHeader>
         <MithoCardContent>

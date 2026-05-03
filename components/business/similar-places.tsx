@@ -52,7 +52,11 @@ const similarPlaces = [
   },
 ]
 
-export function SimilarPlaces() {
+interface SimilarPlacesProps {
+  subdued?: boolean
+}
+
+export function SimilarPlaces({ subdued = false }: SimilarPlacesProps) {
   const [savedItems, setSavedItems] = React.useState<Set<string>>(new Set())
 
   const toggleSave = (name: string) => {
@@ -68,12 +72,14 @@ export function SimilarPlaces() {
   }
 
   return (
-    <section className="container mx-auto px-4 py-12">
+    <section className={subdued ? "container mx-auto px-4 py-10" : "container mx-auto px-4 py-12"}>
       <div className="mb-5 max-w-2xl">
         <p className="type-eyebrow text-brand-deep-green/70">Keep exploring</p>
         <h2 className="type-section-title mt-3 text-brand-dark-green">Similar places nearby</h2>
         <p className="type-meta mt-3">
-          If this one feels close but not quite right, these are the next places people usually compare.
+          {subdued
+            ? "If this spot stays on your shortlist for later, these are a few nearby places people might also compare."
+            : "If this one feels close but not quite right, these are the next places people usually compare."}
         </p>
       </div>
       <MithoCarousel>

@@ -16,13 +16,20 @@ import type { BusinessReview } from "@/components/business/business-detail-types
 const REVIEWS_PER_PAGE = 3
 
 interface ReviewsSectionProps {
+  isEarlyListing?: boolean
   sortOrder?: string
   onSortChange?: (value: string) => void
   reviews: BusinessReview[]
   emptyMessage?: string
 }
 
-export function ReviewsSection({ sortOrder = "all", onSortChange, reviews, emptyMessage }: ReviewsSectionProps) {
+export function ReviewsSection({
+  isEarlyListing = false,
+  sortOrder = "all",
+  onSortChange,
+  reviews,
+  emptyMessage,
+}: ReviewsSectionProps) {
   const [currentPage, setCurrentPage] = React.useState(1)
   const hasReviews = reviews.length > 0
 
@@ -93,7 +100,10 @@ export function ReviewsSection({ sortOrder = "all", onSortChange, reviews, empty
             <MithoCardContent className="p-6">
               <p className="text-lg font-semibold text-brand-dark-green">No local voices here yet</p>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                {emptyMessage ?? "There are no local stories here yet. Your visit can become the first helpful one."}
+                {emptyMessage ??
+                  (isEarlyListing
+                    ? "Mitho has added the basics, but no one has shared a firsthand experience yet. If you go, your review can become the first useful signal here."
+                    : "There are no local stories here yet. Your visit can become the first helpful one.")}
               </p>
             </MithoCardContent>
           </MithoCard>
