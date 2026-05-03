@@ -3,6 +3,7 @@ import Link from "next/link"
 import { BellRing, Bookmark, Route } from "lucide-react"
 import { MithoButton } from "@/components/ui/mitho-button"
 import { MithoSection } from "@/components/ui/mitho-section"
+import { Device } from "../ui/device"
 
 const appBenefits = [
   {
@@ -42,7 +43,7 @@ export function AppPromotionSection() {
                 className="rounded-[1.55rem] border border-white/10 bg-white/7 px-5 py-5 backdrop-blur-sm"
               >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft-beige text-brand-dark-green">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-soft-beige text-brand-dark-green">
                     {benefit.icon}
                   </div>
                   <div>
@@ -80,30 +81,19 @@ export function AppPromotionSection() {
               </div>
             </Link>
           </div>
-
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <MithoButton
-              variant="outline-secondary"
-              className="border-white/22 bg-white/7 text-white hover:border-white hover:bg-white hover:text-brand-dark-green"
-              asChild
-            >
-              <Link href="#">Join the waitlist</Link>
-            </MithoButton>
-            <p className="text-sm text-white/72">Made for quick neighborhood decisions, not endless browsing.</p>
-          </div>
         </div>
 
-        <div className="rounded-[2rem] border border-white/10 bg-white/8 p-4 shadow-[0_16px_42px_rgba(0,0,0,0.18)] backdrop-blur-sm sm:p-5">
-          <div className="rounded-[1.6rem] bg-[#fbf3df] p-4 text-brand-dark-green">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-deep-green/70">Mitho picks</p>
-                <p className="mt-2 text-2xl font-semibold leading-tight">Near Kathmandu tonight</p>
-              </div>
+        <Device>
+          <div className="relative flex h-full w-full flex-col bg-[#fbf3df] py-8 px-4 text-brand-dark-green">
+            <div className="absolute left-1/2 top-1/2 h-24 w-12 -translate-x-1/2 -translate-y-1/2 bg-brand-orange/15 blur-[70px]" />
+
+            <div className="flex flex-row justify-between items-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-deep-green/70">Mitho picks</p>
               <div className="rounded-full bg-brand-orange px-3 py-1 text-xs font-semibold text-white">4.8+</div>
             </div>
+            <p className="mt-2 text-2xl font-semibold leading-tight">Near Kathmandu tonight</p>
 
-            <div className="mt-4 overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_26px_rgba(10,70,53,0.06)]">
+            <div className="relative z-10 mt-4 overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_26px_rgba(10,70,53,0.06)]">
               <div className="relative aspect-[16/10]">
                 <Image
                   src="/nepali-momo-dish.jpg"
@@ -113,31 +103,21 @@ export function AppPromotionSection() {
                   className="object-cover"
                 />
               </div>
-              <div className="space-y-3 p-4">
+              <div className="space-y-3 p-2">
                 <div>
-                  <p className="font-semibold text-brand-dark-green">Momo Central</p>
-                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  <p className="font-semibold text-brand-dark-green text-sm">Momo Central</p>
+                  <p className="mt-1 text-xs leading-6 text-muted-foreground">
                     Buff momo, spicy achar, busy after 7 PM, and still one of the easiest crowd-pleasing calls.
                   </p>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[1.2rem] bg-surface-soft px-4 py-3">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-deep-green/65">Saved</p>
-                    <p className="mt-1 text-xl font-semibold text-brand-dark-green">18</p>
-                  </div>
-                  <div className="rounded-[1.2rem] bg-surface-soft px-4 py-3">
-                    <p className="text-xs uppercase tracking-[0.18em] text-brand-deep-green/65">Alerts</p>
-                    <p className="mt-1 text-xl font-semibold text-brand-dark-green">6 new</p>
-                  </div>
                 </div>
               </div>
             </div>
 
-            <p className="mt-4 text-sm leading-6 text-brand-dark-green/78">
+            <p className="relative z-10 mt-4 text-sm leading-6 text-brand-dark-green/78">
               The app keeps nearby picks, saved places, and practical dinner decisions in one calmer flow.
             </p>
           </div>
-        </div>
+        </Device>
       </div>
     </MithoSection>
   )
