@@ -53,6 +53,7 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
 
         <BusinessHero
           name={pageData.name}
+          sourceBadge={pageData.sourceBadge}
           coverImage={pageData.coverImage}
           rating={pageData.rating}
           reviewCount={pageData.reviewCount}

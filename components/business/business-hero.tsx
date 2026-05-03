@@ -1,12 +1,14 @@
 "use client"
-import { Bookmark, Camera, MapPin, PenLine, Share2 } from "lucide-react"
+import { BadgeCheck, Bookmark, Camera, MapPin, PenLine, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MithoBadge, OpenNowBadge, ClosedBadge } from "@/components/ui/mitho-badge"
 import { StarRating } from "@/components/ui/mitho-rating"
 import { MithoButton } from "@/components/ui/mitho-button"
+import type { BusinessSourceBadge } from "@/components/business/business-detail-types"
 
 interface BusinessHeroProps {
   name: string
+  sourceBadge?: BusinessSourceBadge
   coverImage?: string | null
   rating?: number | null
   reviewCount: number
@@ -22,6 +24,7 @@ interface BusinessHeroProps {
 
 export function BusinessHero({
   name,
+  sourceBadge = "mitho",
   coverImage,
   rating,
   reviewCount,
@@ -35,6 +38,15 @@ export function BusinessHero({
   onShare,
 }: BusinessHeroProps) {
   const hasReviews = reviewCount > 0 && rating !== null && rating !== undefined
+  const sourceBadgeContent =
+    sourceBadge === "verifiedOwner" ? (
+      <MithoBadge variant="success" className="gap-1.5">
+        <BadgeCheck className="h-3.5 w-3.5" />
+        Verified owner
+      </MithoBadge>
+    ) : (
+      <MithoBadge variant="muted">Added by Mitho</MithoBadge>
+    )
 
   return (
     <section className="relative">
@@ -68,6 +80,7 @@ export function BusinessHero({
             <div className="max-w-3xl flex-1">
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 {isOpen ? <OpenNowBadge /> : <ClosedBadge />}
+                {sourceBadgeContent}
                 <MithoBadge variant="neutral">{hasReviews ? `${reviewCount} local reviews` : "No reviews yet"}</MithoBadge>
               </div>
 

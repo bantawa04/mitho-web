@@ -48,6 +48,8 @@ export interface BusinessRatingsData {
   totalReviews: number
 }
 
+export type BusinessSourceBadge = "mitho" | "verifiedOwner"
+
 export interface BusinessVisitInfo {
   address: string
   phone?: string
@@ -67,6 +69,7 @@ export interface BusinessVisitInfo {
 
 export interface BusinessPageData {
   name: string
+  sourceBadge?: BusinessSourceBadge
   coverImage?: string | null
   rating?: number | null
   reviewCount: number

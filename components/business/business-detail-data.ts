@@ -70,6 +70,7 @@ const richReviews = [
 
 export const richBusinessPageData: BusinessPageData = {
   name: "Himalayan Flavors",
+  sourceBadge: "verifiedOwner",
   coverImage: "/placeholder.svg?height=600&width=1200",
   rating: 4.3,
   reviewCount: 294,
@@ -153,6 +154,7 @@ export const richBusinessPageData: BusinessPageData = {
 
 export const emptyBusinessPageData: BusinessPageData = {
   name: "Patan Courtyard Kitchen",
+  sourceBadge: "mitho",
   coverImage: null,
   rating: null,
   reviewCount: 0,
