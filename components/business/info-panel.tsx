@@ -12,6 +12,13 @@ interface InfoPanelProps {
 }
 
 export function InfoPanel({ galleryItems, galleryTotalCount, galleryEmptyMessage, visitInfo }: InfoPanelProps) {
+  const contactLine = [visitInfo.phone, visitInfo.email].filter(Boolean).join(" • ") || "Contact details not listed yet"
+  const hoursLine =
+    visitInfo.hours.length > 0
+      ? visitInfo.hours.map((schedule) => `${schedule.day}: ${schedule.time}`).join(" • ")
+      : "Hours not listed yet"
+  const cuisineLine = visitInfo.cuisines.length > 0 ? visitInfo.cuisines.join(", ") : "Cuisine details coming soon"
+
   const visitFacts = [
     {
       icon: <MapPin className="h-5 w-5 text-brand-orange" />,
@@ -21,17 +28,17 @@ export function InfoPanel({ galleryItems, galleryTotalCount, galleryEmptyMessage
     {
       icon: <Clock className="h-5 w-5 text-brand-orange" />,
       label: "Hours",
-      content: visitInfo.hours.map((schedule) => `${schedule.day}: ${schedule.time}`).join(" • "),
+      content: hoursLine,
     },
     {
       icon: <Phone className="h-5 w-5 text-brand-orange" />,
       label: "Contact",
-      content: [visitInfo.phone, visitInfo.email].filter(Boolean).join(" • "),
+      content: contactLine,
     },
     {
       icon: <UtensilsCrossed className="h-5 w-5 text-brand-orange" />,
       label: "Cuisine",
-      content: visitInfo.cuisines.join(", "),
+      content: cuisineLine,
     },
   ]
 
@@ -57,7 +64,7 @@ export function InfoPanel({ galleryItems, galleryTotalCount, galleryEmptyMessage
           </MithoCardContent>
         </MithoCard>
 
-        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <MithoCard surface="customer" interactive="none">
             <MithoCardHeader className="pb-4">
               <MithoCardTitle>Visit essentials</MithoCardTitle>
@@ -70,12 +77,14 @@ export function InfoPanel({ galleryItems, galleryTotalCount, galleryEmptyMessage
                 {visitFacts.map((fact) => (
                   <div
                     key={fact.label}
-                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-surface-inset p-4"
+                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white/88 p-4"
                   >
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-orange/10">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-orange/10">
                       {fact.icon}
                     </div>
-                    <p className="text-sm font-semibold text-brand-dark-green">{fact.label}</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-deep-green/72">
+                      {fact.label}
+                    </p>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{fact.content}</p>
                   </div>
                 ))}
@@ -107,7 +116,7 @@ export function InfoPanel({ galleryItems, galleryTotalCount, galleryEmptyMessage
                     href={`https://${visitInfo.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+                    className="mt-4 inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-brand-soft-beige/45 px-4 py-2 text-sm font-semibold text-brand-deep-green transition-colors hover:border-brand-orange/30 hover:text-brand-orange"
                   >
                     <Globe className="h-4 w-4" />
                     {visitInfo.mapLinkText ?? "Open website and directions"}

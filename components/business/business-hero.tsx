@@ -38,7 +38,7 @@ export function BusinessHero({
 
   return (
     <section className="relative">
-      <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden">
+      <div className="relative h-64 overflow-hidden sm:h-80 lg:h-[26rem]">
         {coverImage ? (
           <>
             <img src={coverImage} alt={name} className="w-full h-full object-cover" />
@@ -63,12 +63,11 @@ export function BusinessHero({
       </div>
 
       <div className="container mx-auto px-4">
-        <div className="taste-spotlight relative -mt-20 rounded-[2rem] border border-brand-orange/12 p-5 shadow-[0_18px_48px_rgba(10,70,53,0.12)] sm:-mt-24 sm:p-6 lg:p-7">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="taste-spotlight relative -mt-16 rounded-[2rem] border border-brand-orange/12 p-5 shadow-[0_18px_48px_rgba(10,70,53,0.12)] sm:-mt-20 sm:p-6 lg:p-7">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl flex-1">
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 {isOpen ? <OpenNowBadge /> : <ClosedBadge />}
-                <MithoBadge variant="neutral">{location}</MithoBadge>
                 <MithoBadge variant="neutral">{hasReviews ? `${reviewCount} local reviews` : "No reviews yet"}</MithoBadge>
               </div>
 
@@ -79,7 +78,7 @@ export function BusinessHero({
 
               <div className="mt-5 flex flex-wrap items-center gap-3">
                 {hasReviews ? (
-                  <div className="flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/80 px-4 py-2 text-brand-dark-green">
+                  <div className="flex flex-wrap items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/85 px-4 py-2 text-brand-dark-green">
                     <StarRating rating={rating} size="md" />
                     <span className="text-lg font-semibold">{rating.toFixed(1)}</span>
                     <span className="text-sm text-muted-foreground">from {reviewCount} reviews</span>
@@ -99,27 +98,38 @@ export function BusinessHero({
                 ))}
               </div>
 
-              <div className="mt-5 flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-5 w-5" />
-                <span>{location}</span>
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-white/72 px-4 py-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span className="truncate">{location}</span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row lg:w-auto lg:flex-col">
-              <MithoButton size="lg" leftIcon={<PenLine className="h-5 w-5" />} onClick={onWriteReview}>
+            <div className="flex w-full max-w-md flex-col gap-3 lg:w-[224px] lg:max-w-none">
+              <MithoButton
+                size="lg"
+                className="w-full justify-center"
+                leftIcon={<PenLine className="h-5 w-5" />}
+                onClick={onWriteReview}
+              >
                 Write a Review
               </MithoButton>
               <MithoButton
                 variant={isSaved ? "secondary" : "outline-secondary"}
                 size="lg"
+                className="w-full justify-center"
                 leftIcon={<Bookmark className={cn("h-5 w-5", isSaved && "fill-white")} />}
                 onClick={onSave}
               >
                 {isSaved ? "Saved" : "Save Place"}
               </MithoButton>
-              <MithoButton variant="ghost" size="lg" leftIcon={<Share2 className="h-5 w-5" />} onClick={onShare}>
-                Share
-              </MithoButton>
+              <button
+                type="button"
+                onClick={onShare}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-brand-soft-beige/55 hover:text-brand-dark-green"
+              >
+                <Share2 className="h-4 w-4" />
+                Share this place
+              </button>
             </div>
           </div>
         </div>

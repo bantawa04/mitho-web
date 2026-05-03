@@ -46,8 +46,8 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="pb-16">
-        <div className="container mx-auto px-4 py-4">
+      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fff9ee_36%,#ffffff_64%,#fffdf9_100%)] pb-20">
+        <div className="container mx-auto px-4 py-5 md:py-6">
           <MithoBreadcrumb items={pageData.breadcrumbItems} />
         </div>
 
@@ -66,7 +66,7 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
           onShare={handleShare}
         />
 
-        <div className="mt-10 border-y border-brand-deep-green/10 bg-gradient-to-b from-white via-brand-soft-beige/12 to-white">
+        <div className="mt-10">
           <InfoPanel
             galleryItems={pageData.galleryItems}
             galleryTotalCount={pageData.galleryTotalCount}
@@ -80,21 +80,18 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
           />
         </div>
 
-        <div className="bg-surface-soft/60">
-          <RatingsSection
-            sortOrder={sortOrder}
-            onSortChange={setSortOrder}
-            ratingsData={pageData.ratingsData ?? null}
-          />
+        <div className="mt-4">
+          <RatingsSection ratingsData={pageData.ratingsData ?? null} />
           <ReviewsSection
             sortOrder={sortOrder}
+            onSortChange={setSortOrder}
             reviews={pageData.reviews}
             emptyMessage={pageData.reviewsEmptyMessage}
           />
           <AddReviewForm isFirstReview={pageData.reviews.length === 0} prompt={pageData.addReviewPrompt} />
         </div>
 
-        <div className="bg-white">
+        <div className="mt-2 bg-transparent">
           <SimilarPlaces />
           <ClaimReport />
         </div>

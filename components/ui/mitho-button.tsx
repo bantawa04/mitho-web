@@ -71,6 +71,8 @@ const MithoButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
       const child = React.Children.only(children) as React.ReactElement<{
         children?: React.ReactNode
         className?: string
+        "aria-busy"?: React.AriaAttributes["aria-busy"]
+        "aria-disabled"?: React.AriaAttributes["aria-disabled"]
       }>
 
       return React.cloneElement(child, {
@@ -85,7 +87,6 @@ const MithoButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {!loading && rightIcon}
           </>
         ),
-        ref,
       })
     }
 

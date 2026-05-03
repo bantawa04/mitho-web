@@ -19,7 +19,10 @@ export function AddReviewForm({ isFirstReview = false, prompt }: AddReviewFormPr
     <section className="container mx-auto px-4 pb-14 pt-6" id="add-review">
       <MithoCard surface="spotlight" interactive="none">
         <MithoCardHeader>
-          <h2 className="type-card-title text-xl">{isFirstReview ? "Be the first to review" : "Write a review"}</h2>
+          <p className="type-eyebrow text-brand-deep-green/70">Add your experience</p>
+          <h2 className="type-card-title mt-2 text-xl">
+            {isFirstReview ? "Start the first local review" : "Write a review"}
+          </h2>
           <p className="type-meta mt-1">
             {prompt ?? "Share the details that actually help the next person decide."}
           </p>
