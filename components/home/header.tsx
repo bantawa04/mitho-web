@@ -2,22 +2,24 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MithoButton } from "@/components/ui/mitho-button"
 import { BrandLogo } from "@/components/ui/brand-logo"
 
 const navLinks = [
-  { href: "#reviews", label: "Reviews" },
-  { href: "#trending", label: "Trending" },
-  { href: "#nearby", label: "Nearby" },
-  { href: "#categories", label: "Cravings" },
-  { href: "#for-business", label: "For Business" },
+  { href: "/#reviews", label: "Reviews" },
+  { href: "/#trending", label: "Trending" },
+  { href: "/#nearby", label: "Nearby" },
+  { href: "/#categories", label: "Cravings" },
+  { href: "/#for-business", label: "For Business" },
 ]
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
+  const pathname = usePathname()
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -61,7 +63,7 @@ export function Header() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex" asChild>
-              <Link href="#for-business">Add Business</Link>
+              <Link href={pathname === "/" ? "#for-business" : "/#for-business"}>Add Business</Link>
             </MithoButton>
 
             <button
@@ -91,12 +93,12 @@ export function Header() {
             </nav>
             <div className="mt-4 flex flex-col gap-2 border-t border-brand-deep-green/10 pt-4">
               <MithoButton variant="primary" className="w-full" asChild>
-                <Link href="#for-business" onClick={() => setIsMenuOpen(false)}>
+                <Link href={pathname === "/" ? "#for-business" : "/#for-business"} onClick={() => setIsMenuOpen(false)}>
                   Add Business
                 </Link>
               </MithoButton>
               <MithoButton variant="outline-secondary" className="w-full" asChild>
-                <Link href="#app" onClick={() => setIsMenuOpen(false)}>
+                <Link href={pathname === "/" ? "#app" : "/#app"} onClick={() => setIsMenuOpen(false)}>
                   Get the app
                 </Link>
               </MithoButton>

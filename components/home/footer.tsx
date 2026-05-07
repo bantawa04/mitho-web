@@ -6,24 +6,24 @@ const footerLinks = {
   discover: {
     title: "Discover",
     links: [
-      { id: "discover-trending", label: "Trending picks", href: "#trending" },
-      { id: "discover-reviews", label: "Local reviews", href: "#reviews" },
-      { id: "discover-nearby", label: "Nearby favorites", href: "#nearby" },
-      { id: "discover-cravings", label: "Cravings", href: "#categories" },
+      { id: "discover-trending", label: "Trending picks", href: "/#trending" },
+      { id: "discover-reviews", label: "Local reviews", href: "/#reviews" },
+      { id: "discover-nearby", label: "Nearby favorites", href: "/#nearby" },
+      { id: "discover-cravings", label: "Cravings", href: "/#categories" },
     ],
   },
   forBusiness: {
     title: "For Business",
     links: [
-      { id: "business-claim", label: "Claim your business", href: "#for-business" },
-      { id: "business-placement", label: "Featured placement", href: "#partners" },
+      { id: "business-claim", label: "Claim your business", href: "/#for-business" },
+      { id: "business-placement", label: "Featured placement", href: "/#partners" },
       { id: "business-team", label: "Talk to the team", href: "#" },
     ],
   },
   product: {
     title: "Product",
     links: [
-      { id: "product-app", label: "Get the app", href: "#app" },
+      { id: "product-app", label: "Get the app", href: "/#app" },
       { id: "product-waitlist", label: "Join the waitlist", href: "#" },
       { id: "product-guidelines", label: "Community guidelines", href: "#" },
     ],

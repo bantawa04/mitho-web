@@ -3,14 +3,34 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ArrowRight, ChevronDown, MapPin, Search } from "lucide-react"
 import { MithoButton } from "@/components/ui/mitho-button"
 
 const trustHighlights = ["Moderated local reviews", "Dish-first notes", "Useful owner replies"]
 
 export function HeroV2() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = React.useState("")
   const [location, setLocation] = React.useState("Kathmandu")
+
+  const buildExploreHref = React.useCallback(
+    (query: string, city: string) => {
+      const params = new URLSearchParams()
+      const trimmedQuery = query.trim()
+
+      if (trimmedQuery) params.set("q", trimmedQuery)
+      if (city && city !== "Kathmandu") params.set("city", city)
+
+      return params.toString() ? `/explore?${params.toString()}` : "/explore"
+    },
+    [],
+  )
+
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    router.push(buildExploreHref(searchQuery, location))
+  }
 
   return (
     <section className="relative overflow-hidden border-b border-brand-deep-green/10 bg-[linear-gradient(180deg,#fffaf2_0%,#fffef9_46%,#f8efd9_100%)]">
@@ -26,7 +46,10 @@ export function HeroV2() {
               Nepal suggest to friends when the meal genuinely matters.
             </p>
 
-            <div className="mt-8 rounded-[1.9rem] border border-brand-deep-green/10 bg-white/84 p-4 shadow-[0_18px_48px_rgba(10,70,53,0.08)] backdrop-blur-sm sm:p-5">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="mt-8 rounded-[1.9rem] border border-brand-deep-green/10 bg-white/84 p-4 shadow-[0_18px_48px_rgba(10,70,53,0.08)] backdrop-blur-sm sm:p-5"
+            >
               <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="type-eyebrow text-brand-deep-green/68">Search tonight&apos;s shortlist</p>
@@ -74,18 +97,17 @@ export function HeroV2() {
                   <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 </div>
 
-                <MithoButton size="lg" className="h-[52px] px-7" asChild>
-                  <Link href="#trending">
-                    Search
-                    <ArrowRight className="h-5 w-5" />
-                  </Link>
+                <MithoButton type="submit" size="lg" className="h-[52px] px-7">
+                  <Search className="h-5 w-5" />
+                  Search
+                  <ArrowRight className="h-5 w-5" />
                 </MithoButton>
               </div>
-            </div>
+            </form>
 
             <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
               <MithoButton size="lg" asChild>
-                <Link href="#trending">Explore local picks</Link>
+                <Link href={buildExploreHref("", location)}>Explore local picks</Link>
               </MithoButton>
               <Link
                 href="#for-business"

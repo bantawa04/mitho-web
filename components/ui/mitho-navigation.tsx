@@ -128,7 +128,7 @@ export function MithoTabBar({ className }: TabBarProps) {
 
   const tabs = [
     { href: "/", icon: Home, label: "Home" },
-    { href: "/search", icon: Search, label: "Search" },
+    { href: "/explore", icon: Search, label: "Search" },
     { href: "/nearby", icon: MapPin, label: "Nearby" },
     { href: "/saved", icon: Heart, label: "Saved" },
     { href: "/profile", icon: User, label: "Profile" },
