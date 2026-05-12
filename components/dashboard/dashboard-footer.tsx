@@ -1,6 +1,6 @@
 export function DashboardFooter() {
   return (
-    <footer className="mt-16 border-t border-brand-deep-green/10 bg-surface-business">
+    <footer className="mt-16 border-t border-brand-deep-green/10 bg-white">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground text-center sm:text-left">

@@ -1,33 +1,38 @@
 "use client"
 
+import Link from "next/link"
 import { Settings, Clock, Bell, User, ExternalLink } from "lucide-react"
 import { MithoCard, MithoCardHeader, MithoCardContent } from "@/components/ui/mitho-card"
 
-export function SettingsManagement() {
+interface SettingsManagementProps {
+  businessId: string
+}
+
+export function SettingsManagement({ businessId }: SettingsManagementProps) {
   const settingsLinks = [
     {
       icon: <User className="h-5 w-5" />,
       title: "Edit Business Info",
       description: "Update name, description, and contact details",
-      href: "#",
+      href: `/dashboard/businesses/${businessId}/edit`,
     },
     {
       icon: <Clock className="h-5 w-5" />,
       title: "Manage Opening Hours",
       description: "Set your business hours and special schedules",
-      href: "#",
+      href: `/dashboard/businesses/${businessId}/hours`,
     },
     {
       icon: <Bell className="h-5 w-5" />,
       title: "Notification Preferences",
       description: "Control email and push notifications",
-      href: "#",
+      href: `/dashboard/businesses/${businessId}/settings`,
     },
     {
       icon: <Settings className="h-5 w-5" />,
       title: "Account Settings",
       description: "Manage password, security, and preferences",
-      href: "#",
+      href: `/dashboard/businesses/${businessId}/settings`,
     },
   ]
 
@@ -50,7 +55,7 @@ export function SettingsManagement() {
         <MithoCardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {settingsLinks.map((setting, idx) => (
-              <a
+              <Link
                 key={idx}
                 href={setting.href}
                 className="group surface-business-inset cursor-pointer rounded-[1rem] p-4 transition-all duration-200 hover:border-brand-orange/18 hover:bg-brand-soft-beige/85"
@@ -67,7 +72,7 @@ export function SettingsManagement() {
                     <p className="text-xs text-muted-foreground">{setting.description}</p>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </MithoCardContent>
