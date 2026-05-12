@@ -23,7 +23,7 @@ export function StatCard({ icon, label, value, subtext, trend, isLocked = false,
     <MithoCard
       surface="business"
       interactive="subtle"
-      className={cn("relative", isLocked && "opacity-70", className)}
+      className={cn("relative bg-white", isLocked && "opacity-70", className)}
     >
       {isLocked && (
         <div className="absolute top-4 right-4 z-10">

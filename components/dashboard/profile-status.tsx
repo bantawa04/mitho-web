@@ -18,7 +18,7 @@ export function ProfileStatus() {
     <section className="py-8">
       <p className="type-eyebrow mb-3 text-brand-deep-green/70">Readiness</p>
       <h2 className="type-section-title mb-6 text-foreground">Business profile status</h2>
-      <MithoCard surface="business" interactive="subtle" className="border-brand-orange/20">
+      <MithoCard surface="business" interactive="subtle" className="border-brand-deep-green/10 bg-white">
         <MithoCardHeader>
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -36,7 +36,7 @@ export function ProfileStatus() {
             {tasks.map((task, idx) => (
               <div
                 key={idx}
-                className="surface-business-inset flex items-center gap-3 rounded-[1rem] p-3 transition-colors hover:bg-brand-soft-beige/85"
+                className="flex items-center gap-3 rounded-[1rem] border border-brand-deep-green/10 bg-white p-3 transition-colors hover:border-brand-deep-green/18"
               >
                 {task.completed ? (
                   <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />

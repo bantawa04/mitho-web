@@ -5,6 +5,6 @@ interface DashboardBusinessHoursPageProps {
 }
 
 export default async function DashboardBusinessHoursPage({ params }: DashboardBusinessHoursPageProps) {
-  const { id } = await params
-  return <HoursRoutePage businessId={id} />
+  await params
+  return <HoursRoutePage />
 }

@@ -93,9 +93,9 @@ export function BusinessWorkspaceShell({ business, children }: BusinessWorkspace
         actions={
           <Sheet>
             <SheetTrigger asChild>
-              <MithoButton variant="outline-secondary" size="sm" className="lg:hidden">
+              <MithoButton variant="outline-secondary" size="sm" className="lg:hidden" aria-label="Open navigation">
                 <Menu className="h-4 w-4" />
-                Sections
+                <span className="sr-only">Open navigation</span>
               </MithoButton>
             </SheetTrigger>
             <SheetContent side="left" className="border-brand-deep-green/10 bg-white">

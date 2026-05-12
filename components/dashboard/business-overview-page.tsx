@@ -62,7 +62,10 @@ export function BusinessOverviewPage({ business }: BusinessOverviewPageProps) {
           <MithoCardContent>
             <div className="space-y-4">
               {recentReviews.map((review) => (
-                <div key={`${review.author}-${review.date}`} className="rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4">
+                <div
+                  key={`${review.author}-${review.date}`}
+                  className="rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 shadow-[0_6px_18px_rgba(10,70,53,0.04)]"
+                >
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-foreground">{review.author}</p>
                     <StarRating rating={review.rating} size="sm" />
@@ -102,7 +105,7 @@ export function BusinessOverviewPage({ business }: BusinessOverviewPageProps) {
                   "Location is live, but verify the pin and nearby cues.",
                   "Review replies are still the easiest retention signal to improve this week.",
                 ].map((item) => (
-                  <div key={item} className="rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4">
+                  <div key={item} className="rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4">
                     <p className="text-sm leading-6 text-foreground">{item}</p>
                   </div>
                 ))}
@@ -138,7 +141,7 @@ export function BusinessOverviewPage({ business }: BusinessOverviewPageProps) {
                 </MithoButton>
               </div>
 
-              <div className="mt-5 rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4">
+              <div className="mt-5 rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 shadow-[0_6px_18px_rgba(10,70,53,0.04)]">
                 <div className="flex items-center gap-2">
                   <Star className="h-4 w-4 text-brand-orange" />
                   <p className="text-sm font-semibold text-foreground">Current rating snapshot</p>

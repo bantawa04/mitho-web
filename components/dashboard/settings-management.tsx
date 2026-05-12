@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Settings, Clock, Bell, User, ExternalLink } from "lucide-react"
+import { Settings, Bell, User, ExternalLink } from "lucide-react"
 import { MithoCard, MithoCardHeader, MithoCardContent } from "@/components/ui/mitho-card"
 
 interface SettingsManagementProps {
@@ -17,22 +17,10 @@ export function SettingsManagement({ businessId }: SettingsManagementProps) {
       href: `/dashboard/businesses/${businessId}/edit`,
     },
     {
-      icon: <Clock className="h-5 w-5" />,
-      title: "Manage Opening Hours",
-      description: "Set your business hours and special schedules",
-      href: `/dashboard/businesses/${businessId}/hours`,
-    },
-    {
       icon: <Bell className="h-5 w-5" />,
       title: "Notification Preferences",
       description: "Control email and push notifications",
-      href: `/dashboard/businesses/${businessId}/settings`,
-    },
-    {
-      icon: <Settings className="h-5 w-5" />,
-      title: "Account Settings",
-      description: "Manage password, security, and preferences",
-      href: `/dashboard/businesses/${businessId}/settings`,
+      href: `/dashboard/businesses/${businessId}/settings#notification-preferences`,
     },
   ]
 
@@ -53,12 +41,12 @@ export function SettingsManagement({ businessId }: SettingsManagementProps) {
           </div>
         </MithoCardHeader>
         <MithoCardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {settingsLinks.map((setting, idx) => (
               <Link
                 key={idx}
                 href={setting.href}
-                className="group surface-business-inset cursor-pointer rounded-[1rem] p-4 transition-all duration-200 hover:border-brand-orange/18 hover:bg-brand-soft-beige/85"
+                className="group cursor-pointer rounded-[1rem] border border-brand-deep-green/10 bg-white p-4 transition-all duration-200 hover:border-brand-deep-green/18"
               >
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange group-hover:bg-brand-orange group-hover:text-white transition-colors">

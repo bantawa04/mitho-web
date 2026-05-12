@@ -35,7 +35,7 @@ export function MithoProgress({
 
   return (
     <div className={cn("w-full", className)}>
-      <div className={cn("w-full bg-brand-soft-beige/60 rounded-full overflow-hidden", sizeClasses[size])}>
+      <div className={cn("w-full overflow-hidden rounded-full bg-brand-deep-green/8", sizeClasses[size])}>
         <div
           className={cn("h-full rounded-full transition-all duration-500", variantClasses[variant])}
           style={{ width: `${percentage}%` }}

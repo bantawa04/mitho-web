@@ -24,7 +24,7 @@ export function IntegrationStatus() {
         </MithoCardHeader>
         <MithoCardContent>
           <div className="space-y-4">
-            <div className="surface-business-inset rounded-[1rem] p-4 transition-colors hover:border-brand-orange/18">
+            <div className="rounded-[1rem] border border-brand-deep-green/10 bg-white p-4 transition-colors hover:border-brand-deep-green/18">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
                   <div className="w-12 h-12 rounded-lg bg-brand-orange/10 flex items-center justify-center">
@@ -47,7 +47,7 @@ export function IntegrationStatus() {
               </div>
             </div>
 
-            <div className="surface-business-inset rounded-[1rem] p-4 transition-colors hover:border-brand-orange/18">
+            <div className="rounded-[1rem] border border-brand-deep-green/10 bg-white p-4 transition-colors hover:border-brand-deep-green/18">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
                   <div className="w-12 h-12 rounded-lg bg-brand-deep-green/10 flex items-center justify-center">

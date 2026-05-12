@@ -9,7 +9,7 @@ export function TrafficAnalytics() {
     <section className="py-8">
       <p className="type-eyebrow mb-3 text-brand-deep-green/70">Performance</p>
       <h2 className="type-section-title mb-6 text-foreground">Traffic & engagement</h2>
-      <MithoCard surface="business" interactive="subtle" className="relative overflow-hidden">
+      <MithoCard surface="business" interactive="subtle" className="relative overflow-hidden bg-white">
         <MithoCardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -24,7 +24,7 @@ export function TrafficAnalytics() {
           </div>
         </MithoCardHeader>
         <MithoCardContent>
-          <div className="surface-business-inset relative flex h-64 flex-col items-center justify-center gap-4 rounded-[1.5rem] border border-dashed border-brand-deep-green/18 p-8">
+          <div className="relative flex h-64 flex-col items-center justify-center gap-4 rounded-[1.5rem] border border-dashed border-brand-deep-green/18 bg-white p-8">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-md">
               <TrendingUp className="h-8 w-8 text-brand-orange" />
             </div>

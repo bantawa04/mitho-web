@@ -53,12 +53,12 @@
   --surface-strong-foreground: #fff4da;
   --surface-highlight: #fff0d8;
   --page-customer: #fffbf3;
-  --page-business: #f4f8f4;
+  --page-business: #f8fbf8;
   --page-admin: #f6f7f4;
   --surface-raised: #ffffff;
   --surface-inset: #f8f3e4;
   --surface-business: #ffffff;
-  --surface-business-inset: #f4f7f4;
+  --surface-business-inset: #fbfdfb;
   --surface-admin: #fbfbf8;
   --surface-positive: #eef8ef;
   --surface-spotlight: #f8e6bd;
@@ -238,7 +238,7 @@
   }
 
   .page-shell-business {
-    background: linear-gradient(180deg, var(--page-business) 0%, #ffffff 32%, #fbfdfb 100%);
+    background: linear-gradient(180deg, var(--page-business) 0%, #ffffff 22%, #fcfefc 100%);
   }
 
   .page-shell-admin {
@@ -255,11 +255,11 @@
   }
 
   .surface-business-panel {
-    @apply bg-surface-business border border-brand-deep-green/12 shadow-[0_10px_24px_rgba(10,70,53,0.05)];
+    @apply bg-surface-business border border-brand-deep-green/10 shadow-[0_12px_28px_rgba(10,70,53,0.05)];
   }
 
   .surface-business-inset {
-    @apply bg-surface-business-inset border border-brand-deep-green/10;
+    @apply bg-surface-business-inset border border-brand-deep-green/8;
   }
 
   .surface-admin-panel {
