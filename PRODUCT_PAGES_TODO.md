@@ -17,7 +17,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/business/[slug]` Business detail page
 - [x] `/categories/[slug]` Category detail / listings
 - [ ] `/cities/[slug]` City detail / listings
-- [ ] `/top-rated` Top rated listings
 - [ ] `/login` Shared Google OAuth entry point
 - [ ] `/auth/callback` OAuth callback / session handoff
 - [ ] `/profile` Customer profile
@@ -26,7 +25,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [ ] `/profile/settings` Account settings
 
 ### Business
-- [ ] `/for-business` Business landing page
 - [ ] `/add-business` Add business listing flow
 - [ ] `/business/claim` Claim business flow
 - [ ] `/business/claim/status` Claim business submission status / follow-up
