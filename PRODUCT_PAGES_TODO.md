@@ -15,7 +15,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/` Home / discovery
 - [x] `/explore` Search and filter results
 - [x] `/business/[slug]` Business detail page
-- [ ] `/categories/[slug]` Category detail / listings
+- [x] `/categories/[slug]` Category detail / listings
 - [ ] `/cities/[slug]` City detail / listings
 - [ ] `/top-rated` Top rated listings
 - [ ] `/login` Shared Google OAuth entry point
@@ -24,7 +24,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [ ] `/profile/reviews` My reviews
 - [ ] `/profile/saved` Saved places / collections
 - [ ] `/profile/settings` Account settings
-- [ ] `/onboarding` First-time user onboarding / city and preference setup
 
 ### Business
 - [ ] `/for-business` Business landing page

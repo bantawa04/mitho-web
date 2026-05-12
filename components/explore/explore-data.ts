@@ -1,14 +1,11 @@
 import type { ExploreResult } from "@/components/explore/explore-types"
+import { CATEGORY_OPTIONS } from "@/components/categories/category-taxonomy"
 
 export const EXPLORE_CITY_OPTIONS = ["Kathmandu", "Pokhara", "Lalitpur", "Bhaktapur"]
 
 export const EXPLORE_CATEGORY_OPTIONS = [
   { value: "all", label: "All categories" },
-  { value: "restaurants", label: "Restaurants" },
-  { value: "street-food", label: "Street Food" },
-  { value: "cafes", label: "Cafes" },
-  { value: "local-cuisine", label: "Local Cuisine" },
-  { value: "fine-dining", label: "Fine Dining" },
+  ...CATEGORY_OPTIONS,
 ]
 
 export const EXPLORE_PRICE_OPTIONS = [
@@ -43,6 +40,9 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     standoutDish: "Thakali khana set",
     trustNote: "Dependable achar, generous refills, and the kind of plate that works for a hungry group.",
     whyGo: "Worth the walk when you want something filling, familiar, and actually consistent.",
+    featured: true,
+    editorialTakeaway: "One of the safer category anchors when a group wants a proper meal and no one wants surprises.",
+    bestFor: "Family dinner and dependable full meals",
   },
   {
     id: "momo-central",
@@ -61,6 +61,9 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     standoutDish: "Buff jhol momo",
     trustNote: "The broth has real depth, the spice lands well, and it still moves fast even when crowded.",
     whyGo: "A dependable late-evening call when the group wants momos and no one wants to overthink it.",
+    featured: true,
+    editorialTakeaway: "A strong first look when the craving is specific and the decision needs to be quick.",
+    bestFor: "Late-evening momo cravings",
   },
   {
     id: "newari-bhoj",
@@ -79,6 +82,9 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     standoutDish: "Choila platter",
     trustNote: "Real smoke, real chili heat, and enough neighborhood character to feel like more than just a stop.",
     whyGo: "Worth the ride if the point of the meal is flavor and local feel, not just convenience.",
+    featured: true,
+    editorialTakeaway: "A more rooted local-cuisine pick when flavor and place matter more than convenience.",
+    bestFor: "Visitors and locals chasing stronger regional flavor",
   },
   {
     id: "lakeside-cafe",
@@ -97,6 +103,9 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     standoutDish: "Cold brew and mushroom toast",
     trustNote: "A calmer cafe pick when the setting matters, but the food still has to justify the stop.",
     whyGo: "Good for a slower afternoon or a meeting that should still end in something worth eating.",
+    featured: true,
+    editorialTakeaway: "Useful when you want a cafe that feels intentional instead of just available.",
+    bestFor: "Slow afternoons and coffee meetings",
   },
   {
     id: "sekuwa-corner",
@@ -115,6 +124,8 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     standoutDish: "Buff sekuwa",
     trustNote: "Smoky enough to be memorable, with achar that keeps the plate from feeling one-note.",
     whyGo: "A strong quick dinner pick when you want grilled food that still feels local.",
+    editorialTakeaway: "Better for people who want street food with a little more fire and focus than snack-chain comfort.",
+    bestFor: "Quick grilled dinners",
   },
   {
     id: "sel-roti-house",
@@ -133,6 +144,9 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     standoutDish: "Sel roti with aalu tama",
     trustNote: "Comforting, reasonably priced, and useful when you want something local instead of another snack-chain decision.",
     whyGo: "A better-than-average short detour when you want fast food that still has identity.",
+    featured: true,
+    editorialTakeaway: "One of the easier ways into something local when you want comfort without a full sit-down meal.",
+    bestFor: "Fast local comfort food",
   },
   {
     id: "himalayan-java-jhamsikhel",
@@ -151,6 +165,8 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     standoutDish: "Mocha and breakfast plate",
     trustNote: "Reliable when the group wants coffee, Wi-Fi, and a low-risk place to sit for a while.",
     whyGo: "Not the most surprising pick, but often the easiest useful one.",
+    editorialTakeaway: "A dependable fallback when the plan is more about sitting well than chasing novelty.",
+    bestFor: "Meetings, coffee, and longer sits",
   },
   {
     id: "bhojan-griha",
@@ -169,5 +185,8 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     standoutDish: "Traditional thali experience",
     trustNote: "Best when you want atmosphere and a full evening, not just a plate and a quick exit.",
     whyGo: "Worth the ride for visitors, family dinners, or when the setting needs to carry some weight.",
+    featured: true,
+    editorialTakeaway: "A stronger category pick for nights when the room matters almost as much as the food.",
+    bestFor: "Dates, family occasions, and guests",
   },
 ]

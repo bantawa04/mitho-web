@@ -15,6 +15,9 @@ export interface ExploreResult {
   standoutDish: string
   trustNote: string
   whyGo: string
+  featured?: boolean
+  editorialTakeaway?: string
+  bestFor?: string
 }
 
 export interface ExploreFilters {

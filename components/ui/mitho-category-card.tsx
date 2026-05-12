@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import type * as React from "react"
 import { cn } from "@/lib/utils"
 import { Utensils, Truck, Coffee, MapPin, Soup, Building2 } from "lucide-react"
@@ -13,7 +14,7 @@ interface CategoryCardProps {
 
 export function CategoryCard({ icon, label, href = "#", className }: CategoryCardProps) {
   return (
-    <a
+    <Link
       href={href}
       className={cn(
         "group flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/90 px-4 py-3 shadow-[0_8px_24px_rgba(10,70,53,0.06)]",
@@ -27,7 +28,7 @@ export function CategoryCard({ icon, label, href = "#", className }: CategoryCar
         {icon}
       </div>
       <span className="text-sm font-semibold text-brand-dark-green">{label}</span>
-    </a>
+    </Link>
   )
 }
 
