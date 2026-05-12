@@ -1,7 +1,8 @@
 import type { ExploreResult } from "@/components/explore/explore-types"
 import { CATEGORY_OPTIONS } from "@/components/categories/category-taxonomy"
+import { CITY_OPTIONS } from "@/components/cities/city-taxonomy"
 
-export const EXPLORE_CITY_OPTIONS = ["Kathmandu", "Pokhara", "Lalitpur", "Bhaktapur"]
+export const EXPLORE_CITY_OPTIONS = CITY_OPTIONS
 
 export const EXPLORE_CATEGORY_OPTIONS = [
   { value: "all", label: "All categories" },
@@ -33,6 +34,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     rating: 4.8,
     reviewCount: 324,
     location: "Thamel, Kathmandu",
+    neighborhood: "Thamel",
     city: "Kathmandu",
     openNow: true,
     priceRange: "$$",
@@ -42,6 +44,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     whyGo: "Worth the walk when you want something filling, familiar, and actually consistent.",
     featured: true,
     editorialTakeaway: "One of the safer category anchors when a group wants a proper meal and no one wants surprises.",
+    cityEditorialTakeaway: "A strong Kathmandu anchor when the group wants a proper dinner without overthinking the shortlist.",
     bestFor: "Family dinner and dependable full meals",
   },
   {
@@ -54,6 +57,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     rating: 4.7,
     reviewCount: 512,
     location: "New Road, Kathmandu",
+    neighborhood: "New Road",
     city: "Kathmandu",
     openNow: true,
     priceRange: "$",
@@ -63,6 +67,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     whyGo: "A dependable late-evening call when the group wants momos and no one wants to overthink it.",
     featured: true,
     editorialTakeaway: "A strong first look when the craving is specific and the decision needs to be quick.",
+    cityEditorialTakeaway: "One of the more useful Kathmandu late-evening picks when speed matters but the dish still has to land well.",
     bestFor: "Late-evening momo cravings",
   },
   {
@@ -75,6 +80,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     rating: 4.9,
     reviewCount: 278,
     location: "Bhaktapur Durbar Area",
+    neighborhood: "Durbar Area",
     city: "Bhaktapur",
     openNow: false,
     priceRange: "$$",
@@ -84,6 +90,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     whyGo: "Worth the ride if the point of the meal is flavor and local feel, not just convenience.",
     featured: true,
     editorialTakeaway: "A more rooted local-cuisine pick when flavor and place matter more than convenience.",
+    cityEditorialTakeaway: "A stronger Bhaktapur choice when the meal is really about local flavor and area character.",
     bestFor: "Visitors and locals chasing stronger regional flavor",
   },
   {
@@ -96,6 +103,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     rating: 4.6,
     reviewCount: 189,
     location: "Lakeside, Pokhara",
+    neighborhood: "Lakeside",
     city: "Pokhara",
     openNow: true,
     priceRange: "$$",
@@ -105,6 +113,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     whyGo: "Good for a slower afternoon or a meeting that should still end in something worth eating.",
     featured: true,
     editorialTakeaway: "Useful when you want a cafe that feels intentional instead of just available.",
+    cityEditorialTakeaway: "A useful Pokhara pick when the setting matters, but you still want the cafe stop to justify itself.",
     bestFor: "Slow afternoons and coffee meetings",
   },
   {
@@ -117,6 +126,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     rating: 4.5,
     reviewCount: 156,
     location: "Patan, Lalitpur",
+    neighborhood: "Patan",
     city: "Lalitpur",
     openNow: true,
     priceRange: "$",
@@ -125,6 +135,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     trustNote: "Smoky enough to be memorable, with achar that keeps the plate from feeling one-note.",
     whyGo: "A strong quick dinner pick when you want grilled food that still feels local.",
     editorialTakeaway: "Better for people who want street food with a little more fire and focus than snack-chain comfort.",
+    cityEditorialTakeaway: "A useful Lalitpur dinner pick when you want something grilled, quick, and still rooted in the neighborhood feel.",
     bestFor: "Quick grilled dinners",
   },
   {
@@ -137,6 +148,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     rating: 4.6,
     reviewCount: 144,
     location: "Patan Dhoka, Lalitpur",
+    neighborhood: "Patan Dhoka",
     city: "Lalitpur",
     openNow: true,
     priceRange: "$",
@@ -146,6 +158,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     whyGo: "A better-than-average short detour when you want fast food that still has identity.",
     featured: true,
     editorialTakeaway: "One of the easier ways into something local when you want comfort without a full sit-down meal.",
+    cityEditorialTakeaway: "A strong Lalitpur comfort-food entry point when you want something local and quick without losing identity.",
     bestFor: "Fast local comfort food",
   },
   {
@@ -158,6 +171,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     rating: 4.4,
     reviewCount: 410,
     location: "Jhamsikhel, Lalitpur",
+    neighborhood: "Jhamsikhel",
     city: "Lalitpur",
     openNow: true,
     priceRange: "$$",
@@ -166,6 +180,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     trustNote: "Reliable when the group wants coffee, Wi-Fi, and a low-risk place to sit for a while.",
     whyGo: "Not the most surprising pick, but often the easiest useful one.",
     editorialTakeaway: "A dependable fallback when the plan is more about sitting well than chasing novelty.",
+    cityEditorialTakeaway: "A practical Lalitpur cafe fallback when the plan is conversation, coffee, and a longer sit.",
     bestFor: "Meetings, coffee, and longer sits",
   },
   {
@@ -178,6 +193,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     rating: 4.7,
     reviewCount: 205,
     location: "Dillibazar, Kathmandu",
+    neighborhood: "Dillibazar",
     city: "Kathmandu",
     openNow: false,
     priceRange: "$$$",
@@ -187,6 +203,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
     whyGo: "Worth the ride for visitors, family dinners, or when the setting needs to carry some weight.",
     featured: true,
     editorialTakeaway: "A stronger category pick for nights when the room matters almost as much as the food.",
+    cityEditorialTakeaway: "A useful Kathmandu special-occasion option when the evening needs a room with a little more weight.",
     bestFor: "Dates, family occasions, and guests",
   },
 ]

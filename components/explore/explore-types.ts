@@ -8,6 +8,7 @@ export interface ExploreResult {
   rating: number
   reviewCount: number
   location: string
+  neighborhood?: string
   city: string
   openNow: boolean
   priceRange: "$" | "$$" | "$$$"
@@ -17,6 +18,7 @@ export interface ExploreResult {
   whyGo: string
   featured?: boolean
   editorialTakeaway?: string
+  cityEditorialTakeaway?: string
   bestFor?: string
 }
 
