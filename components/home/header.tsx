@@ -17,7 +17,15 @@ const navLinks = [
   { href: "/#for-business", label: "For Business" },
 ]
 
-export function Header() {
+interface HeaderProps {
+  signedInUser?: {
+    name: string
+    avatarUrl?: string
+    href?: string
+  }
+}
+
+export function Header({ signedInUser }: HeaderProps = {}) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
@@ -70,9 +78,23 @@ export function Header() {
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex" onClick={openSignInModal}>
-                Sign in
-              </MithoButton>
+              {signedInUser ? (
+                <Link
+                  href={signedInUser.href ?? "/profile"}
+                  className="hidden items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/88 px-3 py-2 text-sm font-semibold text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.06)] transition-colors hover:border-brand-deep-green/18 hover:bg-brand-soft-beige/45 sm:inline-flex"
+                >
+                  <img
+                    src={signedInUser.avatarUrl || "/placeholder.svg"}
+                    alt={signedInUser.name}
+                    className="h-8 w-8 rounded-full border border-brand-soft-beige object-cover"
+                  />
+                  <span className="max-w-[10rem] truncate">{signedInUser.name}</span>
+                </Link>
+              ) : (
+                <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex" onClick={openSignInModal}>
+                  Sign in
+                </MithoButton>
+              )}
 
               <button
                 className="rounded-full p-2 transition-colors hover:bg-brand-soft-beige/50 lg:hidden"
@@ -100,9 +122,24 @@ export function Header() {
                 ))}
               </nav>
               <div className="mt-4 flex flex-col gap-2 border-t border-brand-deep-green/10 pt-4">
-                <MithoButton variant="primary" className="w-full" onClick={openSignInModal}>
-                  Sign in
-                </MithoButton>
+                {signedInUser ? (
+                  <Link
+                    href={signedInUser.href ?? "/profile"}
+                    className="flex items-center gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-3 text-sm font-semibold text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.05)]"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <img
+                      src={signedInUser.avatarUrl || "/placeholder.svg"}
+                      alt={signedInUser.name}
+                      className="h-10 w-10 rounded-full border border-brand-soft-beige object-cover"
+                    />
+                    <span className="truncate">{signedInUser.name}</span>
+                  </Link>
+                ) : (
+                  <MithoButton variant="primary" className="w-full" onClick={openSignInModal}>
+                    Sign in
+                  </MithoButton>
+                )}
                 <MithoButton variant="outline-secondary" className="w-full" asChild>
                   <Link href={pathname === "/" ? "#app" : "/#app"} onClick={() => setIsMenuOpen(false)}>
                     Get the app

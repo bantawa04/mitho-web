@@ -17,7 +17,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/business/[slug]` Business detail page
 - [x] `/categories/[slug]` Category detail / listings
 - [x] `/cities/[slug]` City detail / listings
-- [ ] `/profile` Customer profile
+- [x] `/profile` Customer profile
 - [ ] `/profile/reviews` My reviews
 - [ ] `/profile/saved` Saved places / collections
 - [ ] `/profile/settings` Account settings
