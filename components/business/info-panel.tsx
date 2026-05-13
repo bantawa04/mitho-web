@@ -1,7 +1,10 @@
-import { Clock, Globe, MapPin, Phone, UtensilsCrossed } from "lucide-react"
+import { StaticMap } from "@vis.gl/react-google-maps"
+import { Clock, Globe, MapPin, Navigation, Phone, UtensilsCrossed } from "lucide-react"
 import { AmenityList } from "@/components/ui/mitho-amenity"
+import { MithoButton } from "@/components/ui/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader, MithoCardTitle, MithoCardDescription } from "@/components/ui/mitho-card"
 import { BusinessGalleryPreview } from "@/components/business/business-gallery-preview"
+import { createBusinessStaticMapUrl, createGoogleDirectionsUrl } from "@/lib/google-maps"
 import type { BusinessGalleryItem, BusinessVisitInfo } from "@/components/business/business-detail-types"
 
 interface InfoPanelProps {
@@ -25,6 +28,11 @@ export function InfoPanel({
       ? visitInfo.hours.map((schedule) => `${schedule.day}: ${schedule.time}`).join(" • ")
       : "Hours not listed yet"
   const cuisineLine = visitInfo.cuisines.length > 0 ? visitInfo.cuisines.join(", ") : "Cuisine details coming soon"
+  const staticMapUrl = createBusinessStaticMapUrl({
+    coordinates: visitInfo.coordinates,
+    zoom: visitInfo.mapZoom ?? 15,
+  })
+  const directionsUrl = createGoogleDirectionsUrl(visitInfo.coordinates)
 
   const visitFacts = [
     {
@@ -119,23 +127,36 @@ export function InfoPanel({
               </MithoCardHeader>
               <MithoCardContent>
                 <div className="overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10">
-                  <img
-                    src={visitInfo.mapImage}
-                    alt="Map location"
-                    className="aspect-[4/3] w-full object-cover"
-                  />
+                  {staticMapUrl ? (
+                    <StaticMap url={staticMapUrl} className="aspect-[4/3] w-full object-cover" />
+                  ) : (
+                    <div className="flex aspect-[4/3] items-center justify-center bg-[#fffdf8] px-6 text-center">
+                      <div>
+                        <p className="text-sm font-semibold text-brand-dark-green">Map preview unavailable</p>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          Add the Google Maps API key to render the static location preview here.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {visitInfo.website && (
-                  <a
-                    href={`https://${visitInfo.website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-white px-4 py-2 text-sm font-semibold text-brand-deep-green transition-colors hover:border-brand-orange/30 hover:text-brand-orange"
-                  >
-                    <Globe className="h-4 w-4" />
-                    {visitInfo.mapLinkText ?? "Open website and directions"}
-                  </a>
-                )}
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <MithoButton variant="outline-secondary" size="default" asChild>
+                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer">
+                      <Navigation className="h-4 w-4" />
+                      {visitInfo.mapLinkText ?? "Get directions"}
+                    </a>
+                  </MithoButton>
+
+                  {visitInfo.website ? (
+                    <MithoButton variant="ghost" size="default" asChild>
+                      <a href={`https://${visitInfo.website}`} target="_blank" rel="noopener noreferrer">
+                        <Globe className="h-4 w-4" />
+                        Visit website
+                      </a>
+                    </MithoButton>
+                  ) : null}
+                </div>
               </MithoCardContent>
             </MithoCard>
 

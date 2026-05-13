@@ -47,6 +47,16 @@ export const addBusinessSchema = z.object({
     .max(120, "Address 2 should stay under 120 characters.")
     .optional()
     .or(z.literal("")),
+  latitude: z
+    .number()
+    .min(-90, "Choose a valid location from the map.")
+    .max(90, "Choose a valid location from the map.")
+    .nullable(),
+  longitude: z
+    .number()
+    .min(-180, "Choose a valid location from the map.")
+    .max(180, "Choose a valid location from the map.")
+    .nullable(),
   phone: z
     .string()
     .trim()
@@ -85,6 +95,14 @@ export const addBusinessSchema = z.object({
   authorizationConfirmed: z.boolean().refine((value) => value, {
     message: "You need to confirm that you are allowed to manage this listing.",
   }),
+}).superRefine((values, ctx) => {
+  if (values.latitude === null || values.longitude === null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Place the marker on the map to save the business location.",
+      path: ["latitude"],
+    })
+  }
 })
 
 export type AddBusinessFormValues = z.infer<typeof addBusinessSchema>

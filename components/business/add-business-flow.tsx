@@ -6,8 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowRight, Building2, CheckCircle2, ClipboardList, ImagePlus, Mail, MapPin, Phone, Store } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { CATEGORY_OPTIONS } from "@/components/categories/category-taxonomy"
-import { CITY_METADATA, STATE_OPTIONS } from "@/components/cities/city-taxonomy"
+import { CITY_METADATA, STATE_OPTIONS, getCityByLabel } from "@/components/cities/city-taxonomy"
 import { buildNewListingPreviewId } from "@/components/dashboard/dashboard-business-data"
+import { GoogleMapPicker } from "@/components/business/google-map-picker"
 import { addBusinessSchema, BUSINESS_ROLE_OPTIONS, type AddBusinessFormValues } from "@/lib/validators/business"
 import { cn } from "@/lib/utils"
 import { MithoBadge } from "@/components/ui/mitho-badge"
@@ -145,6 +146,8 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       city: "Kathmandu",
       addressLine1: "",
       addressLine2: "",
+      latitude: null,
+      longitude: null,
       phone: "",
       publicEmail: "",
       website: "",
@@ -168,7 +171,16 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const watchedCity = form.watch("city")
   const watchedAddressLine1 = form.watch("addressLine1")
   const watchedAddressLine2 = form.watch("addressLine2")
+  const watchedLatitude = form.watch("latitude")
+  const watchedLongitude = form.watch("longitude")
   const cityOptions = CITY_METADATA.filter((city) => city.state === watchedState).map(({ label }) => label)
+  const selectedCity = getCityByLabel(watchedCity) ?? CITY_METADATA[0]
+  const markerPosition =
+    watchedLatitude !== null && watchedLongitude !== null
+      ? { lat: watchedLatitude, lng: watchedLongitude }
+      : null
+  const mapLocationError =
+    form.formState.errors.latitude?.message ?? form.formState.errors.longitude?.message
 
   useEffect(() => {
     if (cityOptions.length === 0) return
@@ -389,6 +401,26 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     )}
                   />
                 </div>
+
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <FormLabel>Map marker</FormLabel>
+                    <FormDescription>
+                      Drop the pin where your business is located.
+                    </FormDescription>
+                  </div>
+
+                  <GoogleMapPicker
+                    cityLabel={selectedCity.label}
+                    defaultCenter={selectedCity.center}
+                    markerPosition={markerPosition}
+                    onSelect={(coordinates) => {
+                      form.setValue("latitude", coordinates.lat, { shouldDirty: true, shouldValidate: true })
+                      form.setValue("longitude", coordinates.lng, { shouldDirty: true, shouldValidate: true })
+                    }}
+                  />
+
+                </div>
               </MithoCardContent>
             </MithoCard>
 
@@ -608,8 +640,13 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Location</p>
                   <p className="mt-1 text-sm font-semibold text-brand-dark-green">
                     {watchedAddressLine1.trim()
-                      ? `${watchedAddressLine1}${watchedAddressLine2.trim() ? `, ${watchedAddressLine2}` : ""}, ${watchedCity}`
+                      ? `${watchedAddressLine1}${(watchedAddressLine2 ?? "").trim() ? `, ${watchedAddressLine2}` : ""}, ${watchedCity}`
                       : `${watchedCity}, ${watchedState}`}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {markerPosition
+                      ? `Map pin: ${markerPosition.lat.toFixed(6)}, ${markerPosition.lng.toFixed(6)}`
+                      : "Map pin still needed before submission"}
                   </p>
                 </div>
               </div>
@@ -626,7 +663,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
             <ul className="space-y-3">
               {[
                 { icon: Building2, label: "Business identity and category" },
-                { icon: MapPin, label: "State, city, and address lines" },
+                { icon: MapPin, label: "State, city, address, and exact map pin" },
                 { icon: Phone, label: "Public contact basics" },
                 { icon: Mail, label: shell === "dashboard" ? "One ownership/authorization check" : "A quick first submission, not the full setup" },
               ].map((item) => (

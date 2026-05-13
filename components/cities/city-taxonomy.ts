@@ -7,6 +7,10 @@ export interface CityMetadata {
   slug: CitySlug
   label: string
   state: StateLabel
+  center: {
+    lat: number
+    lng: number
+  }
   heroTitle: string
   heroDescription: string
   editorialNote: string
@@ -24,6 +28,7 @@ export const CITY_METADATA: CityMetadata[] = [
     slug: "kathmandu",
     label: "Kathmandu",
     state: "Bagmati Province",
+    center: { lat: 27.7172, lng: 85.324 },
     heroTitle: "A city for dependable dinners, late-evening fixes, and food plans that start fast.",
     heroDescription:
       "Kathmandu works best when you need range: fuller restaurant meals, quick momo decisions, and enough neighborhood variety to avoid defaulting to generic picks.",
@@ -42,6 +47,7 @@ export const CITY_METADATA: CityMetadata[] = [
     slug: "pokhara",
     label: "Pokhara",
     state: "Gandaki Province",
+    center: { lat: 28.2096, lng: 83.9856 },
     heroTitle: "A calmer city for slower cafe picks, longer hangs, and meals with a little breathing room.",
     heroDescription:
       "Pokhara is useful when the setting matters alongside the food, especially for cafes, quieter afternoons, and stops that should feel more relaxed than rushed.",
@@ -60,6 +66,7 @@ export const CITY_METADATA: CityMetadata[] = [
     slug: "lalitpur",
     label: "Lalitpur",
     state: "Bagmati Province",
+    center: { lat: 27.6644, lng: 85.3188 },
     heroTitle: "A strong city for local comfort, cafes that linger, and quick meals with more neighborhood character.",
     heroDescription:
       "Lalitpur gives you a more compact rhythm: useful coffee stops, stronger local comfort picks, and places that feel grounded in area identity instead of city-center noise.",
@@ -78,6 +85,7 @@ export const CITY_METADATA: CityMetadata[] = [
     slug: "bhaktapur",
     label: "Bhaktapur",
     state: "Bagmati Province",
+    center: { lat: 27.671, lng: 85.4298 },
     heroTitle: "A smaller city for stronger local identity, slower meals, and dishes that feel rooted in place.",
     heroDescription:
       "Bhaktapur is most useful when the point of the meal is flavor and locality, not just convenience or quick turnover.",

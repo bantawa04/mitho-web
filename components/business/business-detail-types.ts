@@ -55,13 +55,17 @@ export interface BusinessVisitInfo {
   phone?: string
   website?: string
   email?: string
+  coordinates: {
+    lat: number
+    lng: number
+  }
+  mapZoom?: number
   hours: Array<{
     day: string
     time: string
   }>
   cuisines: string[]
   amenities: Array<"wifi" | "parking" | "takeaway" | "cards" | "accessible" | "dineIn" | "alcohol" | "liveMusic" | "petFriendly" | "vegan">
-  mapImage: string
   mapDescription: string
   mapLinkText?: string
   goodToKnow: string

@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LogIn, Menu, X } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MithoButton } from "@/components/ui/mitho-button"
 import { BrandLogo } from "@/components/ui/brand-logo"
@@ -71,7 +71,6 @@ export function Header() {
 
             <div className="flex items-center gap-2 sm:gap-3">
               <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex" onClick={openSignInModal}>
-                <LogIn className="h-4 w-4" />
                 Sign in
               </MithoButton>
 
@@ -102,7 +101,6 @@ export function Header() {
               </nav>
               <div className="mt-4 flex flex-col gap-2 border-t border-brand-deep-green/10 pt-4">
                 <MithoButton variant="primary" className="w-full" onClick={openSignInModal}>
-                  <LogIn className="h-4 w-4" />
                   Sign in
                 </MithoButton>
                 <MithoButton variant="outline-secondary" className="w-full" asChild>
