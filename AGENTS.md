@@ -10,6 +10,21 @@ This document is the implementation runbook for coding agents working in the `mi
 
 Mitho Cha is a Nepal-focused food discovery and review platform. This Next.js app is the primary web client, backed by the `mitho-api` Go REST API. The mobile client is a separate React Native app sharing the same API.
 
+### Business listing and claim lifecycle
+
+- `Add business` and `Claim business` are separate user flows and must not be collapsed into one.
+- `/add-business` is a **public listing submission** flow.
+- A non-logged-in user may fill the add-business form first. If they try to submit while logged out, the frontend should show a **Google login/signup modal**, preserve the form state, then continue submission after auth succeeds.
+- A successful add-business submission does **not** create business dashboard access.
+- After add-business submission, the listing goes to **admin review**.
+- If admin approves the initial listing, the user should be informed by email that the listing is approved and ready to be claimed.
+- `Claim business` is the ownership-verification flow that unlocks management access to an existing listing.
+- Claiming requires PAN/VAT legal-document upload for verification.
+- Admin reviews that claim separately and can approve or reject it.
+- Only final claim approval should unlock `/dashboard/businesses/[id]/*` management access.
+- Claim approval and rejection both require email notifications.
+- PAN/VAT verification files should not be treated as normal long-term business media; they are verification-only documents and should be deleted after final approval.
+
 ---
 
 ## Stack
@@ -274,6 +289,16 @@ Protected routes are enforced in `proxy.ts` at the Next.js edge. The middleware 
 
 On login success: store tokens via `lib/api/auth-tokens.ts`, update Zustand auth store.
 On logout: call logout endpoint, clear tokens, reset auth store, redirect to `/login`.
+
+### Important business-access rule
+
+Do not assume that a user who submitted `/add-business` can immediately manage that listing.
+
+- Add-business submission -> admin listing review
+- Listing approved -> user can start claim flow
+- Claim approved -> user gets business workspace access
+
+Business dashboard routes should reflect the **claim-approved** state, not just the existence of a user-submitted listing.
 
 ---
 
