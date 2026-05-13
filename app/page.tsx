@@ -18,17 +18,17 @@ export default function HomePage() {
       <main id="top" className="overflow-x-hidden">
         <HeroV2 />
 
-        <div className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf4e6_100%)]">
+        <div className="bg-[linear-gradient(180deg,#fffdf8_0%,#fff9f0_100%)]">
           <FeaturedReviewsSection />
         </div>
 
-        <div className="border-y border-brand-deep-green/10 bg-surface-warm/72">
+        <div className="border-y border-brand-deep-green/10 bg-[linear-gradient(180deg,#fffef9_0%,#fbf6eb_100%)]">
           <TrendingSection />
           <CategoriesSection />
           <PopularNearYouSection />
         </div>
 
-        <div className="bg-[linear-gradient(180deg,#fffdf8_0%,#f8f1df_100%)]">
+        <div className="bg-[linear-gradient(180deg,#fffdf9_0%,#fbf5e9_100%)]">
           <BusinessCtaSection />
           <AppPromotionSection />
           <SponsoredListingsSection />

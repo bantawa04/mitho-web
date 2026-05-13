@@ -48,8 +48,8 @@ export function BusinessGalleryPreview({
       <div
         className={cn(
           compactEmpty
-            ? "flex min-h-[220px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-brand-deep-green/12 bg-white/60 px-6 py-8 text-center"
-            : "flex min-h-[280px] flex-col items-center justify-center rounded-[1.75rem] border border-brand-deep-green/12 bg-white/72 px-6 py-10 text-center",
+            ? "flex min-h-[220px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-brand-deep-green/12 bg-[#fffdf8] px-6 py-8 text-center"
+            : "flex min-h-[280px] flex-col items-center justify-center rounded-[1.75rem] border border-brand-deep-green/12 bg-white px-6 py-10 text-center",
           className,
         )}
       >

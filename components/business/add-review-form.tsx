@@ -18,7 +18,7 @@ export function AddReviewForm({ isEarlyListing = false, isFirstReview = false, p
 
   return (
     <section className="container mx-auto px-4 pb-14 pt-6" id="add-review">
-      <MithoCard surface="spotlight" interactive="none">
+      <MithoCard surface="customer" interactive="none">
         <MithoCardHeader>
           <p className="type-eyebrow text-brand-deep-green/70">{isEarlyListing ? "Help start the page" : "Add your experience"}</p>
           <h2 className="type-card-title mt-2 text-xl">
@@ -57,14 +57,14 @@ export function AddReviewForm({ isEarlyListing = false, isFirstReview = false, p
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-[1rem] border border-dashed border-brand-deep-green/20 bg-white/75 px-4 py-3 transition-colors hover:border-brand-orange hover:bg-brand-orange/5"
+                  className="flex items-center gap-2 rounded-[1rem] border border-dashed border-brand-deep-green/20 bg-[#fffdf8] px-4 py-3 transition-colors hover:border-brand-orange hover:bg-brand-orange/5"
                 >
                   <ImageIcon className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Add Image</span>
                 </button>
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-[1rem] border border-dashed border-brand-deep-green/20 bg-white/75 px-4 py-3 transition-colors hover:border-brand-orange hover:bg-brand-orange/5"
+                  className="flex items-center gap-2 rounded-[1rem] border border-dashed border-brand-deep-green/20 bg-[#fffdf8] px-4 py-3 transition-colors hover:border-brand-orange hover:bg-brand-orange/5"
                 >
                   <Video className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">Add Video</span>

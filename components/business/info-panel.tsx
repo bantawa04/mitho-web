@@ -61,7 +61,7 @@ export function InfoPanel({
       </div>
 
       <div className="space-y-6">
-        <MithoCard surface="spotlight" interactive="none" className="overflow-hidden">
+        <MithoCard surface="customer" interactive="none" className="overflow-hidden">
           <MithoCardContent className="p-4 md:p-5">
             <BusinessGalleryPreview
               items={galleryItems}
@@ -91,7 +91,7 @@ export function InfoPanel({
                 {visitFacts.map((fact) => (
                   <div
                     key={fact.label}
-                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white/88 p-4"
+                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-4 shadow-[0_10px_24px_rgba(10,70,53,0.04)]"
                   >
                     <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-orange/10">
                       {fact.icon}
@@ -104,7 +104,7 @@ export function InfoPanel({
                 ))}
               </div>
 
-              <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-brand-soft-beige/40 p-4">
+              <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
                 <p className="text-sm font-semibold text-brand-dark-green">Amenities people often look for</p>
                 <AmenityList amenities={[...visitInfo.amenities]} className="mt-3" />
               </div>
@@ -130,7 +130,7 @@ export function InfoPanel({
                     href={`https://${visitInfo.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-brand-soft-beige/45 px-4 py-2 text-sm font-semibold text-brand-deep-green transition-colors hover:border-brand-orange/30 hover:text-brand-orange"
+                    className="mt-4 inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-white px-4 py-2 text-sm font-semibold text-brand-deep-green transition-colors hover:border-brand-orange/30 hover:text-brand-orange"
                   >
                     <Globe className="h-4 w-4" />
                     {visitInfo.mapLinkText ?? "Open website and directions"}
@@ -139,7 +139,7 @@ export function InfoPanel({
               </MithoCardContent>
             </MithoCard>
 
-            <MithoCard surface="inset" interactive="none">
+            <MithoCard surface="customer" interactive="none" className="bg-[#fffdf8]">
               <MithoCardContent className="p-5">
                 <p className="type-eyebrow text-brand-deep-green/70">Good to know</p>
                 <p className="mt-3 text-lg font-semibold text-brand-dark-green">{visitInfo.goodToKnow}</p>

@@ -25,6 +25,81 @@ Mitho Cha is a Nepal-focused food discovery and review platform. This Next.js ap
 
 ---
 
+## Theming Rules
+
+Mitho Web uses **two intentionally different visual systems**:
+
+### 1. Public-site pages
+
+These include pages such as:
+- `/`
+- `/explore`
+- `/categories/[slug]`
+- `/cities/[slug]`
+- `/business/[slug]`
+
+Public pages should feel:
+- warm
+- editorial
+- trust-first
+- discovery-oriented
+
+Use this visual hierarchy:
+- base page background
+- primary white cards
+- soft support surfaces
+- **one hero spotlight surface at most** per page/section cluster
+
+Public-page rules:
+- Gradients, glow, and beige warmth are allowed, but must be **rare emphasis tools**, not default backgrounds for every section.
+- Lower-page content should rely more on **spacing, typography, white cards, and subtle borders** than on repeated tinted containers.
+- Empty states on public pages should be **quieter and more informational** than full-content states.
+- Avoid stacking multiple decorative treatments in one section (for example: gradient + glow + tinted card + floating badge all together).
+- Public pages should feel branded and warm, but never look overly glossy, over-layered, or “AI-ish.”
+
+### 2. Dashboard / business workspace pages
+
+These include pages such as:
+- `/dashboard/businesses`
+- `/dashboard/businesses/[id]/overview`
+- `/dashboard/businesses/[id]/*`
+
+Dashboard pages should feel:
+- operational
+- clean
+- focused
+- low-decoration
+
+Dashboard rules:
+- Prefer near-white or neutral page shells.
+- Use white cards, subtle borders, restrained shadows, and green for structure/status.
+- Avoid public-site spotlight gradients and warm marketing treatments inside dashboard flows.
+- Nested dashboard content should read like **tooling/workspace UI**, not like landing-page sections.
+
+### 3. Do not mix the two systems casually
+
+- Do not use business/dashboard surface tokens as the default style for public pages.
+- Do not use public spotlight/marketing shells as the default style for dashboard pages.
+- If a component is shared across both contexts, it must either:
+  - stay visually neutral, or
+  - accept explicit variants for `public` vs `dashboard` usage.
+
+### 4. Practical implementation guidance
+
+- `page-shell-customer` is the base shell for public pages.
+- `page-shell-business` is the base shell for dashboard/business workspace pages.
+- `taste-spotlight` should be used sparingly and mainly for public hero emphasis, not repeated throughout content sections.
+- `surface-business-*` tokens should stay in dashboard/business workspace contexts unless there is a deliberate reason otherwise.
+
+When making design decisions, default to this question:
+
+> Is this page helping someone **discover and trust a place**, or **manage and operate a place**?
+
+- If it is discovery/trust: use the **public editorial system**
+- If it is management/operations: use the **dashboard system**
+
+---
+
 ## Project Structure
 
 ```

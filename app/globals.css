@@ -233,8 +233,8 @@
 @layer components {
   .page-shell-customer {
     background:
-      radial-gradient(circle at top left, rgba(244, 224, 166, 0.22), transparent 26%),
-      linear-gradient(180deg, var(--page-customer) 0%, #fffaf0 100%);
+      radial-gradient(circle at top left, rgba(244, 224, 166, 0.14), transparent 24%),
+      linear-gradient(180deg, #fffdf8 0%, #fffaf3 32%, #ffffff 100%);
   }
 
   .page-shell-business {
@@ -268,8 +268,8 @@
 
   .taste-spotlight {
     background:
-      radial-gradient(circle at top right, rgba(239, 138, 0, 0.14), transparent 32%),
-      linear-gradient(135deg, var(--surface-spotlight) 0%, var(--surface-raised) 58%, var(--surface-soft) 100%);
+      radial-gradient(circle at top right, rgba(239, 138, 0, 0.08), transparent 28%),
+      linear-gradient(135deg, rgba(255, 252, 246, 0.98) 0%, rgba(255, 248, 236, 0.96) 100%);
   }
 
   .capsule-cluster {

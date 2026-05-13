@@ -53,7 +53,7 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fff9ee_36%,#ffffff_64%,#fffdf9_100%)] pb-20">
+      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fffaf3_30%,#ffffff_68%,#fffdf9_100%)] pb-20">
         <div className="container mx-auto px-4 py-5 md:py-6">
           <MithoBreadcrumb items={pageData.breadcrumbItems} />
         </div>
@@ -107,7 +107,7 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
           />
         </div>
 
-        <div className="mt-2 bg-transparent">
+        <div className="mt-4 bg-transparent">
           <SimilarPlaces subdued={isEarlyListing} />
           <ClaimReport subdued={isEarlyListing} />
         </div>

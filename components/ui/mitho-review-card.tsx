@@ -108,7 +108,7 @@ export function MithoReviewCard({
       </div>
 
       {ownerResponse && (
-        <div className="mt-4 rounded-[1.2rem] border border-brand-deep-green/10 bg-brand-soft-beige/35 p-4">
+        <div className="mt-4 rounded-[1.2rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
           <div className="mb-2 flex items-center gap-2">
             <span className="text-sm font-semibold text-brand-deep-green">Response from Owner</span>
             <span className="text-xs text-muted-foreground">{ownerResponse.date}</span>

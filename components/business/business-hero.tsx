@@ -59,7 +59,7 @@ export function BusinessHero({
       </div>
 
       <div className="container mx-auto px-4">
-        <div className="taste-spotlight relative -mt-16 rounded-[2rem] border border-brand-orange/12 p-5 shadow-[0_18px_48px_rgba(10,70,53,0.12)] sm:-mt-20 sm:p-6 lg:p-7">
+        <div className="relative -mt-16 rounded-[2rem] border border-brand-deep-green/10 bg-[linear-gradient(180deg,rgba(255,252,246,0.98)_0%,rgba(255,248,237,0.94)_100%)] p-5 shadow-[0_18px_48px_rgba(10,70,53,0.1)] sm:-mt-20 sm:p-6 lg:p-7">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-3xl flex-1">
               <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -75,20 +75,20 @@ export function BusinessHero({
 
               <div className="mt-5 flex flex-wrap items-center gap-3">
                 {hasReviews ? (
-                  <div className="flex flex-wrap items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/85 px-4 py-2 text-brand-dark-green">
+                  <div className="flex flex-wrap items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white px-4 py-2 text-brand-dark-green shadow-[0_8px_20px_rgba(10,70,53,0.05)]">
                     <StarRating rating={rating} size="md" />
                     <span className="text-lg font-semibold">{rating.toFixed(1)}</span>
                     <span className="text-sm text-muted-foreground">from {reviewCount} reviews</span>
                   </div>
                 ) : (
-                  <div className="rounded-full border border-brand-deep-green/10 bg-white/80 px-4 py-2 text-sm font-medium text-brand-dark-green">
+                  <div className="rounded-full border border-brand-deep-green/10 bg-white px-4 py-2 text-sm font-medium text-brand-dark-green shadow-[0_8px_20px_rgba(10,70,53,0.05)]">
                     {isEarlyListing ? "Newly listed and waiting for its first local review" : "Be the first local to review this place"}
                   </div>
                 )}
               </div>
 
               {isEarlyListing && (
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-4 max-w-2xl rounded-[1.35rem] border border-brand-deep-green/8 bg-white/76 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
                   Mitho has added the basics so this place is easier to discover. Visit it, save it for later, or leave the first review to help the next person decide.
                 </p>
               )}
@@ -101,7 +101,7 @@ export function BusinessHero({
                 ))}
               </div>
 
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-white/72 px-4 py-2 text-sm text-muted-foreground">
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-white px-4 py-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 shrink-0" />
                 <span className="truncate">{location}</span>
               </div>
@@ -128,7 +128,7 @@ export function BusinessHero({
               <button
                 type="button"
                 onClick={onShare}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-brand-soft-beige/55 hover:text-brand-dark-green"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-brand-deep-green/10 bg-white/84 px-4 text-sm font-semibold text-muted-foreground transition-colors hover:border-brand-orange/25 hover:text-brand-dark-green"
               >
                 <Share2 className="h-4 w-4" />
                 Share this place

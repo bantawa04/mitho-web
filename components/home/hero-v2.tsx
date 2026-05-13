@@ -33,7 +33,7 @@ export function HeroV2() {
   }
 
   return (
-    <section className="relative overflow-hidden border-b border-brand-deep-green/10 bg-[linear-gradient(180deg,#fffaf2_0%,#fffef9_46%,#f8efd9_100%)]">
+    <section className="relative overflow-hidden border-b border-brand-deep-green/10 bg-[linear-gradient(180deg,#fffaf3_0%,#fffdf8_54%,#f9f1df_100%)]">
       <div className="relative container mx-auto px-4 py-12 md:py-16 lg:py-20">
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.88fr)] lg:gap-12">
           <div className="max-w-2xl">
@@ -48,7 +48,7 @@ export function HeroV2() {
 
             <form
               onSubmit={handleSearchSubmit}
-              className="mt-8 rounded-[1.9rem] border border-brand-deep-green/10 bg-white/84 p-4 shadow-[0_18px_48px_rgba(10,70,53,0.08)] backdrop-blur-sm sm:p-5"
+              className="mt-8 rounded-[1.9rem] border border-brand-deep-green/10 bg-white/92 p-4 shadow-[0_14px_36px_rgba(10,70,53,0.07)] sm:p-5"
             >
               <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -127,7 +127,7 @@ export function HeroV2() {
             </div>
           </div>
 
-          <aside className="surface-raised overflow-hidden rounded-[2rem]">
+          <aside className="surface-raised overflow-hidden rounded-[2rem] border-brand-deep-green/12 shadow-[0_14px_34px_rgba(10,70,53,0.08)]">
             <div className="relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5]">
               <Image
                 src="/nepali-dal-bhat-traditional-meal.jpg"
@@ -137,7 +137,7 @@ export function HeroV2() {
                 sizes="(min-width: 1024px) 38vw, 100vw"
                 className="object-cover"
               />
-              <div className="absolute inset-x-5 bottom-5 rounded-[1.4rem] bg-white/94 p-4 shadow-[0_14px_34px_rgba(10,70,53,0.12)] backdrop-blur-sm">
+              <div className="absolute inset-x-5 bottom-5 rounded-[1.4rem] border border-white/60 bg-white/96 p-4 shadow-[0_12px_28px_rgba(10,70,53,0.1)]">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-deep-green/60">
                   Most saved this week
                 </p>
@@ -147,7 +147,7 @@ export function HeroV2() {
               </div>
             </div>
 
-            <div className="grid gap-4 border-t border-brand-deep-green/10 bg-white px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-start">
+            <div className="grid gap-4 border-t border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-start">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/60">
                   Why this feels useful
@@ -157,7 +157,7 @@ export function HeroV2() {
                   the ride across town.
                 </p>
               </div>
-              <div className="rounded-full bg-brand-dark-green px-4 py-2 text-sm font-medium text-white">
+              <div className="rounded-full border border-brand-deep-green/10 bg-white px-4 py-2 text-sm font-medium text-brand-dark-green">
                 Real food notes, not filler
               </div>
             </div>
