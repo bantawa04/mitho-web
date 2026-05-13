@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ArrowRight, Building2, CheckCircle2, ClipboardList, ImagePlus, Mail, MapPin, Phone, ShieldCheck, Store } from "lucide-react"
+import { ArrowRight, Building2, CheckCircle2, ClipboardList, ImagePlus, Mail, MapPin, Phone, Store } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { CATEGORY_OPTIONS } from "@/components/categories/category-taxonomy"
 import { CITY_METADATA, STATE_OPTIONS } from "@/components/cities/city-taxonomy"
@@ -168,7 +168,6 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const watchedCity = form.watch("city")
   const watchedAddressLine1 = form.watch("addressLine1")
   const watchedAddressLine2 = form.watch("addressLine2")
-  const watchedRole = form.watch("relationshipRole")
   const cityOptions = CITY_METADATA.filter((city) => city.state === watchedState).map(({ label }) => label)
 
   useEffect(() => {
@@ -612,16 +611,6 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                       ? `${watchedAddressLine1}${watchedAddressLine2.trim() ? `, ${watchedAddressLine2}` : ""}, ${watchedCity}`
                       : `${watchedCity}, ${watchedState}`}
                   </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-[1.15rem] border border-brand-deep-green/10 bg-white p-4">
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="h-5 w-5 text-brand-orange" />
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Role</p>
-                  <p className="mt-1 text-sm font-semibold text-brand-dark-green">{titleCaseFromSlug(watchedRole)}</p>
                 </div>
               </div>
             </div>
