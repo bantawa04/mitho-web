@@ -1,11 +1,13 @@
+import Link from "next/link"
 import { Building2, Flag } from "lucide-react"
 import { MithoCard, MithoCardContent } from "@/components/ui/mitho-card"
 
 interface ClaimReportProps {
   subdued?: boolean
+  claimHref?: string
 }
 
-export function ClaimReport({ subdued = false }: ClaimReportProps) {
+export function ClaimReport({ subdued = false, claimHref = "/business/claim" }: ClaimReportProps) {
   return (
     <section className="container mx-auto px-4 pb-12 pt-2">
       <MithoCard
@@ -20,9 +22,9 @@ export function ClaimReport({ subdued = false }: ClaimReportProps) {
             </div>
             <div>
               <p className="font-medium text-brand-dark-green">Is this your business?</p>
-              <a href="#" className="text-brand-orange hover:underline text-sm font-medium">
+              <Link href={claimHref} className="text-brand-orange hover:underline text-sm font-medium">
                 {subdued ? "Claim and verify this listing" : "Claim this Business"}
-              </a>
+              </Link>
             </div>
           </div>
 

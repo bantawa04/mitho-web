@@ -16,9 +16,10 @@ import type { BusinessPageData } from "@/components/business/business-detail-typ
 
 interface BusinessDetailPageProps {
   pageData: BusinessPageData
+  claimHref?: string
 }
 
-export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
+export function BusinessDetailPage({ pageData, claimHref = "/business/claim" }: BusinessDetailPageProps) {
   const [isSaved, setIsSaved] = React.useState(false)
   const [sortOrder, setSortOrder] = React.useState("all")
   const isEarlyListing =
@@ -109,7 +110,7 @@ export function BusinessDetailPage({ pageData }: BusinessDetailPageProps) {
 
         <div className="mt-4 bg-transparent">
           <SimilarPlaces subdued={isEarlyListing} />
-          <ClaimReport subdued={isEarlyListing} />
+          <ClaimReport subdued={isEarlyListing} claimHref={claimHref} />
         </div>
       </main>
 
