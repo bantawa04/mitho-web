@@ -23,12 +23,12 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [ ] `/profile/settings` Account settings
 
 ### Business
-- [ ] `/add-business` Add business listing flow
+- [x] `/add-business` Add business listing flow
 - [ ] `/business/claim` Claim business flow
 - [ ] `/business/claim/status` Claim business submission status / follow-up
 - [ ] `/dashboard` Business dashboard home
 - [x] `/dashboard/businesses` Business list / switcher
-- [ ] `/dashboard/businesses/new` Add business from dashboard
+- [x] `/dashboard/businesses/new` Add business from dashboard
 - [ ] `/dashboard/businesses/[id]/overview` Business overview
 - [ ] `/dashboard/businesses/[id]/edit` Edit business profile
 - [ ] `/dashboard/businesses/[id]/hours` Manage business hours

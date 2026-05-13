@@ -1,10 +1,12 @@
 import type { CategorySlug } from "@/components/categories/category-taxonomy"
 
 export type CitySlug = "kathmandu" | "pokhara" | "lalitpur" | "bhaktapur"
+export type StateLabel = "Bagmati Province" | "Gandaki Province"
 
 export interface CityMetadata {
   slug: CitySlug
   label: string
+  state: StateLabel
   heroTitle: string
   heroDescription: string
   editorialNote: string
@@ -21,6 +23,7 @@ export const CITY_METADATA: CityMetadata[] = [
   {
     slug: "kathmandu",
     label: "Kathmandu",
+    state: "Bagmati Province",
     heroTitle: "A city for dependable dinners, late-evening fixes, and food plans that start fast.",
     heroDescription:
       "Kathmandu works best when you need range: fuller restaurant meals, quick momo decisions, and enough neighborhood variety to avoid defaulting to generic picks.",
@@ -38,6 +41,7 @@ export const CITY_METADATA: CityMetadata[] = [
   {
     slug: "pokhara",
     label: "Pokhara",
+    state: "Gandaki Province",
     heroTitle: "A calmer city for slower cafe picks, longer hangs, and meals with a little breathing room.",
     heroDescription:
       "Pokhara is useful when the setting matters alongside the food, especially for cafes, quieter afternoons, and stops that should feel more relaxed than rushed.",
@@ -55,6 +59,7 @@ export const CITY_METADATA: CityMetadata[] = [
   {
     slug: "lalitpur",
     label: "Lalitpur",
+    state: "Bagmati Province",
     heroTitle: "A strong city for local comfort, cafes that linger, and quick meals with more neighborhood character.",
     heroDescription:
       "Lalitpur gives you a more compact rhythm: useful coffee stops, stronger local comfort picks, and places that feel grounded in area identity instead of city-center noise.",
@@ -72,6 +77,7 @@ export const CITY_METADATA: CityMetadata[] = [
   {
     slug: "bhaktapur",
     label: "Bhaktapur",
+    state: "Bagmati Province",
     heroTitle: "A smaller city for stronger local identity, slower meals, and dishes that feel rooted in place.",
     heroDescription:
       "Bhaktapur is most useful when the point of the meal is flavor and locality, not just convenience or quick turnover.",
@@ -89,6 +95,7 @@ export const CITY_METADATA: CityMetadata[] = [
 ]
 
 export const CITY_OPTIONS = CITY_METADATA.map(({ label }) => label)
+export const STATE_OPTIONS = Array.from(new Set(CITY_METADATA.map(({ state }) => state)))
 
 export function getCityBySlug(slug: string) {
   return CITY_METADATA.find((city) => city.slug === slug)

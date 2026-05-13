@@ -1,0 +1,90 @@
+import { z } from "zod"
+import { CATEGORY_METADATA } from "@/components/categories/category-taxonomy"
+import { CITY_METADATA, STATE_OPTIONS } from "@/components/cities/city-taxonomy"
+
+const categorySlugs = new Set(CATEGORY_METADATA.map((category) => category.slug))
+const cityLabels = new Set(CITY_METADATA.map((city) => city.label))
+const stateLabels = new Set(STATE_OPTIONS)
+
+const websitePattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/.*)?$/i
+const phonePattern = /^[+]?[\d\s()-]{7,}$/
+
+export const BUSINESS_ROLE_OPTIONS = [
+  { value: "owner", label: "Owner" },
+  { value: "manager", label: "Manager" },
+  { value: "authorized-team-member", label: "Authorized team member" },
+] as const
+
+export const addBusinessSchema = z.object({
+  businessName: z
+    .string()
+    .trim()
+    .min(2, "Business name must be at least 2 characters.")
+    .max(80, "Business name should stay under 80 characters."),
+  primaryCategory: z
+    .string()
+    .refine((value) => categorySlugs.has(value as never), "Choose a valid business category."),
+  shortNote: z
+    .string()
+    .trim()
+    .max(140, "Short note should stay under 140 characters.")
+    .optional()
+    .or(z.literal("")),
+  state: z
+    .string()
+    .refine((value) => stateLabels.has(value as never), "Choose a valid state."),
+  city: z
+    .string()
+    .refine((value) => cityLabels.has(value), "Choose a valid city."),
+  addressLine1: z
+    .string()
+    .trim()
+    .min(4, "Address 1 is required.")
+    .max(120, "Address 1 should stay under 120 characters."),
+  addressLine2: z
+    .string()
+    .trim()
+    .max(120, "Address 2 should stay under 120 characters.")
+    .optional()
+    .or(z.literal("")),
+  phone: z
+    .string()
+    .trim()
+    .refine((value) => phonePattern.test(value), "Enter a valid phone number."),
+  publicEmail: z
+    .string()
+    .trim()
+    .email("Enter a valid public email address."),
+  website: z
+    .string()
+    .trim()
+    .refine((value) => value.length === 0 || websitePattern.test(value), "Enter a valid website URL.")
+    .optional()
+    .or(z.literal("")),
+  facebookUrl: z
+    .string()
+    .trim()
+    .refine((value) => value.length === 0 || websitePattern.test(value), "Enter a valid Facebook URL.")
+    .optional()
+    .or(z.literal("")),
+  instagramUrl: z
+    .string()
+    .trim()
+    .refine((value) => value.length === 0 || websitePattern.test(value), "Enter a valid Instagram URL.")
+    .optional()
+    .or(z.literal("")),
+  tiktokUrl: z
+    .string()
+    .trim()
+    .refine((value) => value.length === 0 || websitePattern.test(value), "Enter a valid TikTok URL.")
+    .optional()
+    .or(z.literal("")),
+  relationshipRole: z.enum(["owner", "manager", "authorized-team-member"], {
+    message: "Choose your relationship to the business.",
+  }),
+  authorizationConfirmed: z.boolean().refine((value) => value, {
+    message: "You need to confirm that you are allowed to manage this listing.",
+  }),
+})
+
+export type AddBusinessFormValues = z.infer<typeof addBusinessSchema>

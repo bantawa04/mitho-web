@@ -126,7 +126,7 @@ export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
 
             <div className="flex flex-wrap gap-3">
               <MithoButton asChild>
-                <Link href="/add-business">
+                <Link href="/dashboard/businesses/new">
                   <CirclePlus className="h-4 w-4" />
                   Add business
                 </Link>
@@ -211,7 +211,7 @@ export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
                   Use this when the business is not on Mitho yet and you want to create the listing from scratch.
                 </p>
                 <MithoButton className="mt-6" asChild>
-                  <Link href="/add-business">
+                  <Link href="/dashboard/businesses/new">
                     Start a new listing
                     <MoveRight className="h-4 w-4" />
                   </Link>
