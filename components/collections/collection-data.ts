@@ -98,7 +98,7 @@ export const ownedCollections: CollectionRecord[] = [
     id: "my-food-bucket-list",
     title: "My Food Bucket List",
     description: "Places I still want to try properly before I keep recommending them to anyone else.",
-    visibility: "private",
+    visibility: "public",
     updatedLabel: "Updated last week",
     owner: currentCustomer,
     items: [

@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Bookmark,
+  CheckCircle2,
   Copy,
   Globe,
   GripVertical,
@@ -30,6 +31,7 @@ import {
   type CollectionRecord,
   type CollectionVisibility,
 } from "@/components/collections/collection-data"
+import { GoogleSignInDialog } from "@/components/auth/google-sign-in-dialog"
 import { ProfileNavigation } from "@/components/profile/profile-navigation"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -89,46 +91,13 @@ function VisibilityBadge({ visibility }: { visibility: CollectionVisibility }) {
 function CollectionCard({ collection, href }: { collection: CollectionRecord; href: string }) {
   const coverImages = getCollectionCoverImages(collection)
   const itemCount = getCollectionPlaceCount(collection)
-  const centerImage = coverImages[0]
-  const leftImage = coverImages[1]
-  const rightImage = coverImages[2]
 
   return (
     <Link
       href={href}
       className="group block rounded-[1.7rem] border border-brand-deep-green/10 bg-white p-5 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_16px_34px_rgba(10,70,53,0.09)]"
     >
-      <div className="relative mx-auto h-40 max-w-[290px]">
-        <div className="absolute left-4 top-5 h-28 w-[34%] -rotate-[7deg] overflow-hidden rounded-[1rem] border border-brand-deep-green/10 bg-[#fff7eb] shadow-[0_10px_24px_rgba(10,70,53,0.06)] transition-transform duration-200 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
-          {leftImage ? (
-            <img src={leftImage} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center text-brand-deep-green/38">
-              <Bookmark className="h-5 w-5" />
-            </div>
-          )}
-        </div>
-
-        <div className="absolute right-4 top-5 h-28 w-[34%] rotate-[7deg] overflow-hidden rounded-[1rem] border border-brand-deep-green/10 bg-[#fff7eb] shadow-[0_10px_24px_rgba(10,70,53,0.06)] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-          {rightImage ? (
-            <img src={rightImage} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center text-brand-deep-green/38">
-              <Bookmark className="h-5 w-5" />
-            </div>
-          )}
-        </div>
-
-        <div className="absolute inset-x-0 top-0 mx-auto h-36 w-[58%] overflow-hidden rounded-[1.2rem] border border-brand-deep-green/12 bg-brand-soft-beige/50 shadow-[0_16px_34px_rgba(10,70,53,0.08)] transition-transform duration-300 group-hover:-translate-y-1">
-          {centerImage ? (
-            <img src={centerImage} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center text-brand-deep-green/45">
-              <Bookmark className="h-6 w-6" />
-            </div>
-          )}
-        </div>
-      </div>
+      <CollectionDeckCover collection={collection} className="mx-auto max-w-[290px]" />
 
       <div className="space-y-3 border-t border-brand-deep-green/10 pt-5">
         <div className="flex flex-wrap items-center gap-2">
@@ -148,6 +117,69 @@ function CollectionCard({ collection, href }: { collection: CollectionRecord; hr
         </div>
       </div>
     </Link>
+  )
+}
+
+function CollectionDeckCover({
+  collection,
+  className,
+  size = "card",
+}: {
+  collection: CollectionRecord
+  className?: string
+  size?: "card" | "hero"
+}) {
+  const coverImages = getCollectionCoverImages(collection)
+  const centerImage = coverImages[0]
+  const leftImage = coverImages[1]
+  const rightImage = coverImages[2]
+  const dimensions =
+    size === "hero"
+      ? {
+          frame: "h-52 max-w-[360px] sm:h-60 sm:max-w-[420px]",
+          side: "top-8 h-36 w-[34%] rounded-[1.15rem]",
+          center: "h-44 w-[60%] rounded-[1.35rem] sm:h-52",
+          icon: "h-7 w-7",
+        }
+      : {
+          frame: "h-40 max-w-[290px]",
+          side: "top-5 h-28 w-[34%] rounded-[1rem]",
+          center: "h-36 w-[58%] rounded-[1.2rem]",
+          icon: "h-6 w-6",
+        }
+
+  return (
+    <div className={cn("relative", dimensions.frame, className)}>
+      <div className={cn("absolute left-4 -rotate-[7deg] overflow-hidden border border-brand-deep-green/10 bg-[#fff7eb] shadow-[0_10px_24px_rgba(10,70,53,0.06)]", dimensions.side)}>
+        {leftImage ? (
+          <img src={leftImage} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center text-brand-deep-green/38">
+            <Bookmark className="h-5 w-5" />
+          </div>
+        )}
+      </div>
+
+      <div className={cn("absolute right-4 rotate-[7deg] overflow-hidden border border-brand-deep-green/10 bg-[#fff7eb] shadow-[0_10px_24px_rgba(10,70,53,0.06)]", dimensions.side)}>
+        {rightImage ? (
+          <img src={rightImage} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center text-brand-deep-green/38">
+            <Bookmark className="h-5 w-5" />
+          </div>
+        )}
+      </div>
+
+      <div className={cn("absolute inset-x-0 top-0 mx-auto overflow-hidden border border-brand-deep-green/12 bg-brand-soft-beige/50 shadow-[0_16px_34px_rgba(10,70,53,0.08)]", dimensions.center)}>
+        {centerImage ? (
+          <img src={centerImage} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-brand-deep-green/45">
+            <Bookmark className={dimensions.icon} />
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -557,6 +589,159 @@ export function CollectionDetailPage({
           </div>
         </section>
       </div>
+    </div>
+  )
+}
+
+export function PublicCollectionDetailPage({ collection }: { collection: CollectionRecord }) {
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false)
+  const [isSignInOpen, setIsSignInOpen] = React.useState(false)
+  const [pendingCopyAfterAuth, setPendingCopyAfterAuth] = React.useState(false)
+  const [copySuccess, setCopySuccess] = React.useState(false)
+
+  const copiedCollection = React.useMemo(() => buildCopiedCollection(collection), [collection])
+
+  const handleCopy = React.useCallback(() => {
+    setCopySuccess(true)
+  }, [])
+
+  const handleCopyPress = () => {
+    if (!isAuthenticated) {
+      setPendingCopyAfterAuth(true)
+      setIsSignInOpen(true)
+      return
+    }
+
+    handleCopy()
+  }
+
+  React.useEffect(() => {
+    if (!isAuthenticated || !pendingCopyAfterAuth) return
+
+    handleCopy()
+    setPendingCopyAfterAuth(false)
+  }, [handleCopy, isAuthenticated, pendingCopyAfterAuth])
+
+  return (
+    <div className="container mx-auto px-4 py-10 md:py-12">
+      <div className="space-y-6">
+        <section className={cn(sectionCardClass, "overflow-hidden bg-[linear-gradient(180deg,#fffdf8_0%,#fff8ee_100%)]")}>
+          <div className="grid gap-8 px-6 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
+            <div className="space-y-5">
+              <Link
+                href="/collections"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Explore more collections
+              </Link>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <VisibilityBadge visibility={collection.visibility} />
+                <MithoBadge variant="muted">{getCollectionPlaceCount(collection)} places</MithoBadge>
+                <span className="text-sm text-muted-foreground">{collection.updatedLabel}</span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <img
+                  src={collection.owner.avatarUrl}
+                  alt={collection.owner.name}
+                  className="h-12 w-12 rounded-full border border-brand-deep-green/10 object-cover"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-brand-dark-green">{collection.owner.name}</p>
+                  <p className="text-sm text-muted-foreground">@{collection.owner.username}</p>
+                </div>
+              </div>
+
+              <div>
+                <h1 className="type-page-title text-brand-dark-green">{collection.title}</h1>
+                {collection.description ? (
+                  <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">{collection.description}</p>
+                ) : null}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <MithoButton onClick={handleCopyPress}>
+                  <Copy className="h-4 w-4" />
+                  Copy collection
+                </MithoButton>
+                <p className="text-sm leading-7 text-muted-foreground">
+                  Copy this list into your own account and shape it into your next food plan.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white/78 px-5 py-6 shadow-[0_16px_36px_rgba(10,70,53,0.06)]">
+              <CollectionDeckCover collection={collection} size="hero" className="mx-auto" />
+              <div className="mt-6 space-y-3 rounded-[1.35rem] border border-brand-deep-green/10 bg-white/84 p-4">
+                <p className="type-eyebrow text-brand-deep-green/68">Collection feel</p>
+                <p className="text-sm leading-7 text-muted-foreground">
+                  A public shortlist built to be shared, copied, and revisited when someone wants a quicker answer than an endless food debate.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {copySuccess ? (
+          <section className="rounded-[1.75rem] border border-success/18 bg-success/8 shadow-[0_12px_30px_rgba(10,70,53,0.05)]">
+            <div className="flex flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+                <div>
+                  <p className="text-base font-semibold text-brand-dark-green">Collection copied to your account.</p>
+                  <p className="mt-1 text-sm leading-7 text-muted-foreground">
+                    Your copy is private, independent, and ready to rename or expand whenever you want.
+                  </p>
+                </div>
+              </div>
+              <MithoButton variant="outline-secondary" asChild>
+                <Link href={`/collections/${copiedCollection.id}`}>
+                  Open copied collection
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </MithoButton>
+            </div>
+          </section>
+        ) : null}
+
+        <section className={sectionCardClass}>
+          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+            <h2 className="text-2xl font-semibold text-brand-dark-green">Places in this collection</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+              {collection.items.length > 0
+                ? "A collection is only useful if each stop earns its place, so every entry here should help someone decide faster and eat better."
+                : "This public list does not have any places yet."}
+            </p>
+          </div>
+
+          <div className="space-y-4 px-6 py-6 sm:px-8">
+            {collection.items.length > 0 ? (
+              collection.items.map((item) => <CollectionItemRow key={item.id} item={item} />)
+            ) : (
+              <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+                <p className="text-base font-semibold text-brand-dark-green">No places are published in this collection yet.</p>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                  Check back later or explore other public collections for fresher food routes and neighborhood shortlists.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+
+      <GoogleSignInDialog
+        open={isSignInOpen}
+        onOpenChange={setIsSignInOpen}
+        title="Sign in to copy this collection."
+        description="Use Google so Mitho can save this collection under the same account you use for reviews, places, and future business actions."
+        helperCopy="After sign-in, Mitho will copy this collection right here and keep you on the same page."
+        onContinue={() => {
+          setIsAuthenticated(true)
+          setIsSignInOpen(false)
+        }}
+      />
     </div>
   )
 }

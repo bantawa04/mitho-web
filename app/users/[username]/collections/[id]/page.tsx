@@ -1,7 +1,7 @@
 import { Footer } from "@/components/home/footer"
 import { Header } from "@/components/home/header"
 import { getPublicCollectionByUsernameAndId } from "@/components/collections/collection-data"
-import { CollectionDetailPage } from "@/components/collections/collection-pages"
+import { PublicCollectionDetailPage } from "@/components/collections/collection-pages"
 
 export default async function PublicCollectionRoute({
   params,
@@ -34,11 +34,7 @@ export default async function PublicCollectionRoute({
     <div className="page-shell-customer min-h-screen">
       <Header />
       <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf7ee_26%,#fffdfa_100%)] pb-20">
-        <CollectionDetailPage
-          collection={collection}
-          isOwner={false}
-          publicSourceHref={`/users/${collection.owner.username}/collections/${collection.id}`}
-        />
+        <PublicCollectionDetailPage collection={collection} />
       </main>
       <Footer />
     </div>
