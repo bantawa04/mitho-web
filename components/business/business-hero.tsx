@@ -57,7 +57,7 @@ export function BusinessHero({
 
       <div className="container mx-auto px-4">
         <div className="relative -mt-16 rounded-[2rem] border border-brand-deep-green/10 bg-[linear-gradient(180deg,rgba(255,252,246,0.98)_0%,rgba(255,248,237,0.94)_100%)] p-5 shadow-[0_18px_48px_rgba(10,70,53,0.1)] sm:-mt-20 sm:p-6 lg:p-7">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-8 md:grid md:grid-cols-[minmax(0,1fr)_240px] md:items-start md:gap-6 lg:grid-cols-[minmax(0,1fr)_224px] lg:gap-8">
             <div className="max-w-3xl flex-1">
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 {isOpen ? <OpenNowBadge /> : <ClosedBadge />}
@@ -104,7 +104,7 @@ export function BusinessHero({
               </div>
             </div>
 
-            <div className="flex w-full max-w-md flex-col gap-3 lg:w-[224px] lg:max-w-none">
+            <div className="flex w-full flex-col gap-3 md:max-w-[240px] md:self-start lg:max-w-[224px]">
               <MithoButton
                 size="lg"
                 className="w-full justify-center"

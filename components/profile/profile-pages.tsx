@@ -37,7 +37,7 @@ function StatsStrip() {
   const stats = [
     { label: "Reviews written", value: mockCustomerProfile.reviewCount, accent: "text-brand-orange" },
     { label: "Collections", value: mockCustomerProfile.collectionCount, accent: "text-brand-deep-green" },
-    { label: "Places saved", value: mockCustomerProfile.savedPlaceCount, accent: "text-brand-dark-green" },
+    { label: "Places across collections", value: mockCustomerProfile.placeCountAcrossCollections, accent: "text-brand-dark-green" },
     { label: "Cities explored", value: mockCustomerProfile.citiesExplored, accent: "text-brand-dark-green" },
   ]
 
@@ -67,7 +67,7 @@ function QuickLinkGrid() {
       href: "/collections",
       icon: Bookmark,
       title: "Collections",
-      description: "Keep quick saves inside Saved, then turn stronger patterns into public or private place lists worth reusing.",
+      description: "Build personal food lists, keep private planning boards, and copy strong public collections into your own account.",
     },
     {
       href: "/profile/settings",
@@ -337,7 +337,7 @@ export function ProfileHubPage() {
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
                   <li className="flex gap-3">
                     <Bookmark className="mt-0.5 h-4 w-4 text-brand-deep-green" />
-                    Quick-save now lands in the default Saved collection before you turn it into stronger public or private lists.
+                    Collections are the place to keep shortlists, bucket lists, and copied public finds in one calmer system.
                   </li>
                   <li className="flex gap-3">
                     <MessageSquare className="mt-0.5 h-4 w-4 text-brand-deep-green" />

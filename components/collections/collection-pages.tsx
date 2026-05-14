@@ -14,6 +14,7 @@ import {
   MapPin,
   PencilLine,
   Plus,
+  Search,
   Share2,
   Trash2,
 } from "lucide-react"
@@ -30,13 +31,13 @@ import {
   type CollectionVisibility,
 } from "@/components/collections/collection-data"
 import { ProfileNavigation } from "@/components/profile/profile-navigation"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { MithoBadge } from "@/components/ui/mitho-badge"
 import { MithoButton } from "@/components/ui/mitho-button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ToggleSwitch } from "@/components/ui/mitho-toggle-switch"
 import { Textarea } from "@/components/ui/textarea"
 import { collectionSchema, collectionVisibilityOptions, type CollectionFormValues } from "@/lib/validators/collection"
 import { cn } from "@/lib/utils"
@@ -87,48 +88,64 @@ function VisibilityBadge({ visibility }: { visibility: CollectionVisibility }) {
 
 function CollectionCard({ collection, href }: { collection: CollectionRecord; href: string }) {
   const coverImages = getCollectionCoverImages(collection)
+  const itemCount = getCollectionPlaceCount(collection)
+  const centerImage = coverImages[0]
+  const leftImage = coverImages[1]
+  const rightImage = coverImages[2]
 
   return (
     <Link
       href={href}
-      className="group rounded-[1.5rem] border border-brand-deep-green/10 bg-white p-5 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_12px_28px_rgba(10,70,53,0.08)]"
+      className="group block rounded-[1.7rem] border border-brand-deep-green/10 bg-white p-5 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_16px_34px_rgba(10,70,53,0.09)]"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <VisibilityBadge visibility={collection.visibility} />
-            {collection.isDefault ? <MithoBadge variant="success">Default</MithoBadge> : null}
-            {collection.provenance ? <MithoBadge variant="outline-orange">Copied</MithoBadge> : null}
-          </div>
-          <h2 className="mt-4 text-xl font-semibold text-brand-dark-green">{collection.title}</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            {collection.description ?? "A place list you can keep private, share, or keep shaping over time."}
-          </p>
+      <div className="relative mx-auto h-40 max-w-[290px]">
+        <div className="absolute left-4 top-5 h-28 w-[34%] -rotate-[7deg] overflow-hidden rounded-[1rem] border border-brand-deep-green/10 bg-[#fff7eb] shadow-[0_10px_24px_rgba(10,70,53,0.06)] transition-transform duration-200 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
+          {leftImage ? (
+            <img src={leftImage} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-brand-deep-green/38">
+              <Bookmark className="h-5 w-5" />
+            </div>
+          )}
         </div>
-        <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />
+
+        <div className="absolute right-4 top-5 h-28 w-[34%] rotate-[7deg] overflow-hidden rounded-[1rem] border border-brand-deep-green/10 bg-[#fff7eb] shadow-[0_10px_24px_rgba(10,70,53,0.06)] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+          {rightImage ? (
+            <img src={rightImage} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-brand-deep-green/38">
+              <Bookmark className="h-5 w-5" />
+            </div>
+          )}
+        </div>
+
+        <div className="absolute inset-x-0 top-0 mx-auto h-36 w-[58%] overflow-hidden rounded-[1.2rem] border border-brand-deep-green/12 bg-brand-soft-beige/50 shadow-[0_16px_34px_rgba(10,70,53,0.08)] transition-transform duration-300 group-hover:-translate-y-1">
+          {centerImage ? (
+            <img src={centerImage} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-brand-deep-green/45">
+              <Bookmark className="h-6 w-6" />
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="mt-5 flex items-center gap-2">
-        {coverImages.length > 0 ? (
-          coverImages.map((imageUrl, index) => (
-            <img
-              key={`${collection.id}-${index}`}
-              src={imageUrl}
-              alt=""
-              className="h-14 w-14 rounded-[1rem] border border-brand-deep-green/10 object-cover"
-            />
-          ))
-        ) : (
-          <div className="flex h-14 w-14 items-center justify-center rounded-[1rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] text-brand-deep-green/50">
-            <Bookmark className="h-5 w-5" />
+      <div className="space-y-3 border-t border-brand-deep-green/10 pt-5">
+        <div className="flex flex-wrap items-center gap-2">
+          <VisibilityBadge visibility={collection.visibility} />
+          <MithoBadge variant="muted">{itemCount} places</MithoBadge>
+          <span className="text-sm text-muted-foreground">{collection.updatedLabel}</span>
+        </div>
+
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="line-clamp-2 text-xl font-semibold text-brand-dark-green">{collection.title}</h2>
+            {collection.description ? (
+              <p className="mt-1 line-clamp-1 text-sm leading-6 text-muted-foreground">{collection.description}</p>
+            ) : null}
           </div>
-        )}
-      </div>
-
-      <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-        <span>{getCollectionPlaceCount(collection)} places</span>
-        <span>{collection.updatedLabel}</span>
-        {collection.provenance ? <span>Copied from @{collection.provenance.copiedFromUser}</span> : null}
+          <ArrowRight className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />
+        </div>
       </div>
     </Link>
   )
@@ -326,38 +343,105 @@ function CreateCollectionModal({
 
 export function CollectionsIndexPage({ collections }: { collections: CollectionRecord[] }) {
   const [isCreateOpen, setIsCreateOpen] = React.useState(false)
+  const [query, setQuery] = React.useState("")
+  const [sortOrder, setSortOrder] = React.useState<"recent" | "alpha" | "size">("recent")
+
+  const filteredCollections = React.useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase()
+    const matchingCollections = normalizedQuery
+      ? collections.filter((collection) =>
+          [collection.title, collection.description ?? "", collection.provenance?.sourceTitle ?? ""].some((value) =>
+            value.toLowerCase().includes(normalizedQuery),
+          ),
+        )
+      : collections
+
+    return [...matchingCollections].sort((a, b) => {
+      if (sortOrder === "alpha") {
+        return a.title.localeCompare(b.title)
+      }
+
+      if (sortOrder === "size") {
+        return b.items.length - a.items.length
+      }
+
+      return 0
+    })
+  }, [collections, query, sortOrder])
 
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
         <PageIntro
           eyebrow="Collection module"
-          title="Collections are the real saving system now."
-          description="Use the default private Saved collection for quick taps, then build stronger public or private lists when a place deserves more intentional curation."
+          title="Curate the places worth keeping."
+          description="Build food shortlists, private planning boards, and copied public finds in one calmer system that feels more intentional than one-off saves."
         />
 
         <section className={sectionCardClass}>
-          <div className="flex flex-col gap-5 border-b border-brand-deep-green/10 px-6 py-6 sm:flex-row sm:items-start sm:justify-between sm:px-8">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <MithoBadge variant="neutral">Default Saved collection included</MithoBadge>
-                <MithoBadge variant="muted">{collections.length} collections total</MithoBadge>
+          <div className="flex flex-col gap-4 border-b border-brand-deep-green/10 px-6 py-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-1 flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  className={cn(inputClassName, "pl-11")}
+                  placeholder="Search collections"
+                />
               </div>
-              <h2 className="mt-4 text-2xl font-semibold text-brand-dark-green">Start fast with Saved, then split places into lists that are actually useful.</h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
-                Quick-save drops a place into the default Saved collection. Later you can create more intentional lists like food bucket lists, pizza shortlists, or neighborhood crawls.
-              </p>
+
+              <Select value={sortOrder} onValueChange={(value: "recent" | "alpha" | "size") => setSortOrder(value)}>
+                <SelectTrigger className={cn(selectTriggerClassName, "sm:w-[190px]")}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recent">Recently updated</SelectItem>
+                  <SelectItem value="alpha">A-Z</SelectItem>
+                  <SelectItem value="size">Most places</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <MithoButton onClick={() => setIsCreateOpen(true)}>
-              <Plus className="h-4 w-4" />
-              Create collection
-            </MithoButton>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <MithoBadge variant="muted">{collections.length} collections</MithoBadge>
+              <MithoButton onClick={() => setIsCreateOpen(true)}>
+                <Plus className="h-4 w-4" />
+                Create collection
+              </MithoButton>
+            </div>
           </div>
 
-          <div className="grid gap-4 px-6 py-6 md:grid-cols-2 sm:px-8">
-            {collections.map((collection) => (
-              <CollectionCard key={collection.id} collection={collection} href={`/collections/${collection.id}`} />
-            ))}
+          <div className="space-y-5 px-6 py-6 sm:px-8">
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="type-eyebrow text-brand-deep-green/68">All collections</p>
+                <h2 className="mt-2 text-2xl font-semibold text-brand-dark-green">One place for the lists you make, shape, and keep coming back to.</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
+                  Search and scan everything in one stream so collections feel easy to browse, easy to grow, and easy to page later.
+                </p>
+              </div>
+              <span className="text-sm text-muted-foreground">{filteredCollections.length} showing</span>
+            </div>
+
+            {filteredCollections.length > 0 ? (
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {filteredCollections.map((collection) => (
+                  <CollectionCard key={collection.id} collection={collection} href={`/collections/${collection.id}`} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[1.5rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+                <p className="text-base font-semibold text-brand-dark-green">
+                  {query ? "No collections match this search." : "Start your first collection here."}
+                </p>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                  {query
+                    ? "Try another collection title or clear the search to see everything again."
+                    : "Create a collection for the places you want to keep returning to, comparing, or sharing later."}
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -390,8 +474,6 @@ export function CollectionDetailPage({
 
             <div className="mt-5 flex flex-wrap items-center gap-2">
               <VisibilityBadge visibility={visibility} />
-              {collection.isDefault ? <MithoBadge variant="success">Default Saved collection</MithoBadge> : null}
-              {collection.provenance ? <MithoBadge variant="outline-orange">Copied snapshot</MithoBadge> : null}
             </div>
             <h1 className="type-page-title mt-4 text-brand-dark-green">{collection.title}</h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
@@ -414,13 +496,19 @@ export function CollectionDetailPage({
                     Edit collection
                   </Link>
                 </MithoButton>
-                <MithoButton
-                  variant="ghost"
-                  onClick={() => setVisibility((current) => (current === "public" ? "private" : "public"))}
-                  disabled={collection.isDefault}
-                >
-                  {visibility === "public" ? "Make private" : "Make public"}
-                </MithoButton>
+                <div className="flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-2">
+                  <div>
+                    <p className="text-sm font-semibold text-brand-dark-green">Public</p>
+                    <p className="text-xs text-muted-foreground">
+                      {visibility === "public" ? "Anyone can view this collection." : "Only you can view this collection."}
+                    </p>
+                  </div>
+                  <ToggleSwitch
+                    checked={visibility === "public"}
+                    onCheckedChange={(checked) => setVisibility(checked ? "public" : "private")}
+                    aria-label="Toggle collection visibility"
+                  />
+                </div>
                 {visibility === "public" ? (
                   <MithoButton variant="ghost" asChild>
                     <Link href={`/users/${currentCustomer.username}/collections/${collection.id}`}>
@@ -440,25 +528,6 @@ export function CollectionDetailPage({
             )}
           </div>
         </section>
-
-        {collection.provenance ? (
-          <section className={sectionCardClass}>
-            <div className="px-6 py-6 sm:px-8">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-orange/10 text-brand-orange">
-                  <Copy className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="type-eyebrow text-brand-deep-green/68">Copied collection</p>
-                  <h2 className="mt-1 text-xl font-semibold text-brand-dark-green">This list is a snapshot, not a live sync.</h2>
-                </div>
-              </div>
-              <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                Copied from @{collection.provenance.copiedFromUser}'s {collection.provenance.sourceTitle}. Future edits to the original collection do not change this one.
-              </p>
-            </div>
-          </section>
-        ) : null}
 
         <section className={sectionCardClass}>
           <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
@@ -566,9 +635,7 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
               <div>
                 <h2 className="text-2xl font-semibold text-brand-dark-green">Collection details</h2>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  {collection.isDefault
-                    ? "Saved stays stable as the default private bucket, so renaming and visibility changes stay locked here in v1."
-                    : "Edit the collection identity here, then adjust the items below before saving."}
+                  Edit the collection identity here, then adjust the items below before saving.
                 </p>
               </div>
               {saved ? <span className="text-sm font-medium text-success">Changes are updated in this mock screen.</span> : null}
@@ -586,7 +653,7 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
                       <FormItem>
                         <FormLabel>Collection title</FormLabel>
                         <FormControl>
-                          <Input {...field} className={inputClassName} disabled={collection.isDefault} />
+                          <Input {...field} className={inputClassName} />
                         </FormControl>
                         <FormDescription>Keep the title readable when someone sees it in profile or on a copied public version later.</FormDescription>
                         <FormMessage />
@@ -600,7 +667,7 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Visibility</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={collection.isDefault}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className={selectTriggerClassName}>
                               <SelectValue placeholder="Choose visibility" />
@@ -631,7 +698,6 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
                         <Textarea
                           {...field}
                           className="min-h-28 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
-                          disabled={collection.isDefault}
                         />
                       </FormControl>
                       <FormDescription>A short description helps explain why these places belong together when the list is shared or copied.</FormDescription>
@@ -679,23 +745,17 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
           <div className="border-b border-danger/12 px-6 py-6 sm:px-8">
             <h2 className="text-2xl font-semibold text-brand-dark-green">Danger zone</h2>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
-              Default Saved should stay stable in v1, but regular collections can still expose the future delete pattern here.
+              Keep destructive actions separate so editing a collection never feels confused with removing it entirely.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-6 sm:px-8">
             <div>
               <p className="text-base font-semibold text-brand-dark-green">Delete this collection</p>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                {collection.isDefault
-                  ? "Saved cannot be deleted in v1 because it is the fallback collection for quick-save behavior."
-                  : "Use a separated destructive action so users do not confuse editing the list with deleting it entirely."}
+                Use a separated destructive action so users do not confuse editing the list with deleting it entirely.
               </p>
             </div>
-            <MithoButton
-              variant="outline-danger"
-              onClick={() => setDeleted(true)}
-              disabled={collection.isDefault}
-            >
+            <MithoButton variant="outline-danger" onClick={() => setDeleted(true)}>
               <Trash2 className="h-4 w-4" />
               Delete collection
             </MithoButton>

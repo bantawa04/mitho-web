@@ -41,7 +41,6 @@ export interface CollectionRecord {
   updatedLabel: string
   owner: CollectionOwner
   items: CollectionItem[]
-  isDefault?: boolean
   provenance?: CollectionProvenance
 }
 
@@ -58,53 +57,6 @@ const publicCreator: CollectionOwner = {
 }
 
 export const ownedCollections: CollectionRecord[] = [
-  {
-    id: "saved",
-    title: "Saved",
-    description: "The default private bucket for places you want to keep close before you sort them into more intentional lists.",
-    visibility: "private",
-    updatedLabel: "Updated today",
-    owner: currentCustomer,
-    isDefault: true,
-    items: [
-      {
-        id: "saved-item-1",
-        businessName: "Himalayan Flavors",
-        location: "Thamel, Kathmandu",
-        category: "Nepali · Tibetan",
-        note: "Dependable stop when you want the momo plate first.",
-        imageUrl: "/steamed-momo-nepali-dumplings.jpg",
-        publicHref: "/business/himalayan-flavors",
-      },
-      {
-        id: "saved-item-2",
-        businessName: "Thakali Kitchen",
-        location: "Lakeside, Pokhara",
-        category: "Local cuisine",
-        note: "Worth revisiting for the dal bhat and the calm lunch rhythm.",
-        imageUrl: "/dal-bhat-nepali-meal-set.jpg",
-        publicHref: "/business/thakali-kitchen",
-      },
-      {
-        id: "saved-item-3",
-        businessName: "Patan Courtyard Kitchen",
-        location: "Mangal Bazaar, Lalitpur",
-        category: "Newari",
-        note: "Feels like a stronger dinner recommendation than a quick snack stop.",
-        imageUrl: "/restaurant-interior-cozy.jpg",
-        publicHref: "/business/demo-empty",
-      },
-      {
-        id: "saved-item-4",
-        businessName: "Momo Central",
-        location: "New Road, Kathmandu",
-        category: "Street food",
-        note: "Shortlist for fast dumplings near the center.",
-        imageUrl: "/momos-dumplings.jpg",
-        publicHref: "/business/momo-central",
-      },
-    ],
-  },
   {
     id: "best-pizza-places",
     title: "Best Pizza Places",
@@ -317,17 +269,11 @@ export function getCollectionPlaceCount(collection: CollectionRecord) {
 export function searchOwnedCollections(collections: CollectionRecord[], query: string) {
   const normalized = query.trim().toLowerCase()
 
-  const results = normalized
+  return normalized
     ? collections.filter((collection) =>
         [collection.title, collection.description ?? ""].some((value) => value.toLowerCase().includes(normalized)),
       )
     : collections
-
-  return [...results].sort((a, b) => {
-    if (a.isDefault && !b.isDefault) return -1
-    if (!a.isDefault && b.isDefault) return 1
-    return 0
-  })
 }
 
 export function collectionContainsBusiness(collection: CollectionRecord, candidate: CollectionCandidate) {

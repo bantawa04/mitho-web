@@ -24,7 +24,7 @@ export interface CustomerProfileData {
   trustCue: string
   reviewCount: number
   collectionCount: number
-  savedPlaceCount: number
+  placeCountAcrossCollections: number
   citiesExplored: number
   recentReviews: ProfileReviewPreview[]
   businessContext: ProfileBusinessContext
@@ -38,7 +38,7 @@ export const mockCustomerProfile: CustomerProfileData = {
   trustCue: "12 local reviews and counting",
   reviewCount: 12,
   collectionCount: ownedCollections.length,
-  savedPlaceCount: ownedCollections.reduce((total, collection) => total + collection.items.length, 0),
+  placeCountAcrossCollections: ownedCollections.reduce((total, collection) => total + collection.items.length, 0),
   citiesExplored: 4,
   recentReviews: [
     {

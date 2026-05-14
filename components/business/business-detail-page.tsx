@@ -130,7 +130,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
       items: [buildCollectionItemFromCandidate(collectionCandidate)],
     }
 
-    setCollections((current) => [current[0], newCollection, ...current.slice(1)])
+    setCollections((current) => [newCollection, ...current])
     setLastAddedMessage(`Created ${newCollectionTitle} and added this place.`)
   }
 
