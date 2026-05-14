@@ -2,5 +2,11 @@ import { BusinessDetailPage } from "@/components/business/business-detail-page"
 import { emptyBusinessPageData } from "@/components/business/business-detail-data"
 
 export default function DemoEmptyBusinessPage() {
-  return <BusinessDetailPage pageData={emptyBusinessPageData} claimHref="/business/claim?listing=patan-courtyard-kitchen" />
+  return (
+    <BusinessDetailPage
+      pageData={emptyBusinessPageData}
+      claimHref="/business/claim?listing=patan-courtyard-kitchen"
+      publicHref="/business/demo-empty"
+    />
+  )
 }

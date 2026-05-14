@@ -1,5 +1,5 @@
-import { ProfileSavedPage } from "@/components/profile/profile-pages"
+import { redirect } from "next/navigation"
 
 export default function ProfileSavedRoute() {
-  return <ProfileSavedPage />
+  redirect("/collections")
 }

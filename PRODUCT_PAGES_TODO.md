@@ -19,7 +19,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/cities/[slug]` City detail / listings
 - [x] `/profile` Customer profile
 - [ ] `/profile/reviews` My reviews
-- [ ] `/profile/saved` Saved places / collections
+- [x] `/profile/saved` Redirect to collections
 - [ ] `/profile/settings` Account settings
 
 ### Business
@@ -54,13 +54,13 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [ ] `/nearby` Nearby recommendations
 - [ ] `/reviews/[id]` Shareable review detail page
 - [ ] `/reviews/[id]/media` Review media viewer
-- [ ] `/collections` My collections index
-- [ ] `/collections/[id]` Collection detail page
-- [ ] `/collections/[id]/edit` Edit collection
-- [ ] `/collections/[id]/copy` Copy / fork collection confirmation
+- [x] `/collections` My collections index
+- [x] `/collections/[id]` Collection detail page
+- [x] `/collections/[id]/edit` Edit collection
+- [x] `/collections/[id]/copy` Copy / fork collection confirmation
 - [ ] `/feed` Following / social discovery feed
 - [ ] `/users/[username]` Public user profile
-- [ ] `/users/[username]/collections/[id]` Public collection detail
+- [x] `/users/[username]/collections/[id]` Public collection detail
 - [ ] `/notifications` Notifications center
 
 ### Business
@@ -100,7 +100,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [ ] Finalize business dashboard sidebar structure
 - [ ] Finalize admin dashboard sidebar structure
 - [ ] Decide which pages need SEO-friendly public routes first
-- [ ] Decide whether saved places and collections are the same MVP feature or separate
+- [x] Replace flat saved places with the collection module; quick-save flows into the default private `Saved` collection
 
 ## Notes
 - Pages you explicitly called out and are confirmed in this tracker:

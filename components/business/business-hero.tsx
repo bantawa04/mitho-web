@@ -1,6 +1,5 @@
 "use client"
 import { BadgeCheck, Bookmark, MapPin, PenLine, Share2 } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { MithoBadge, OpenNowBadge, ClosedBadge } from "@/components/ui/mitho-badge"
 import { StarRating } from "@/components/ui/mitho-rating"
 import { MithoButton } from "@/components/ui/mitho-button"
@@ -17,8 +16,7 @@ interface BusinessHeroProps {
   location: string
   isOpen: boolean
   heroNote: string
-  isSaved?: boolean
-  onSave?: () => void
+  onAddToCollection?: () => void
   onWriteReview?: () => void
   onShare?: () => void
 }
@@ -34,8 +32,7 @@ export function BusinessHero({
   location,
   isOpen,
   heroNote,
-  isSaved = false,
-  onSave,
+  onAddToCollection,
   onWriteReview,
   onShare,
 }: BusinessHeroProps) {
@@ -117,13 +114,13 @@ export function BusinessHero({
                 Write a Review
               </MithoButton>
               <MithoButton
-                variant={isSaved ? "secondary" : "outline-secondary"}
+                variant="outline-secondary"
                 size="lg"
                 className="w-full justify-center"
-                leftIcon={<Bookmark className={cn("h-5 w-5", isSaved && "fill-white")} />}
-                onClick={onSave}
+                leftIcon={<Bookmark className="h-5 w-5" />}
+                onClick={onAddToCollection}
               >
-                {isSaved ? "Saved" : "Save Place"}
+                Add to collection
               </MithoButton>
               <button
                 type="button"

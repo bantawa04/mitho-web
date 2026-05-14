@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 const profileNavItems = [
   { href: "/profile", label: "Overview" },
   { href: "/profile/reviews", label: "My reviews" },
-  { href: "/profile/saved", label: "Saved places" },
+  { href: "/collections", label: "Collections" },
   { href: "/profile/settings", label: "Account settings" },
 ]
 
@@ -18,7 +18,8 @@ export function ProfileNavigation() {
     <nav className="overflow-x-auto pb-1" aria-label="Profile sections">
       <div className="flex min-w-max gap-2">
         {profileNavItems.map((item) => {
-          const isActive = pathname === item.href
+          const isCollectionsItem = item.href === "/collections"
+          const isActive = isCollectionsItem ? pathname.startsWith("/collections") : pathname === item.href
 
           return (
             <Link

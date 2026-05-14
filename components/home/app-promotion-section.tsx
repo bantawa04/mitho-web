@@ -114,7 +114,7 @@ export function AppPromotionSection() {
             </div>
 
             <p className="relative z-10 mt-4 text-sm leading-6 text-brand-dark-green/78">
-              The app keeps nearby picks, saved places, and practical dinner decisions in one calmer flow.
+              The app keeps nearby picks, collections, and practical dinner decisions in one calmer flow.
             </p>
           </div>
         </Device>

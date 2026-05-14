@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Heart, MapPin, MessageSquare, Settings, Star } from "lucide-react"
+import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Settings, Star } from "lucide-react"
+import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/components/collections/collection-data"
 import { mockCustomerProfile } from "@/components/profile/profile-data"
 import { ProfileNavigation } from "@/components/profile/profile-navigation"
 import { MithoBadge } from "@/components/ui/mitho-badge"
@@ -35,7 +36,8 @@ function PageIntro({
 function StatsStrip() {
   const stats = [
     { label: "Reviews written", value: mockCustomerProfile.reviewCount, accent: "text-brand-orange" },
-    { label: "Saved places", value: mockCustomerProfile.savedCount, accent: "text-brand-deep-green" },
+    { label: "Collections", value: mockCustomerProfile.collectionCount, accent: "text-brand-deep-green" },
+    { label: "Places saved", value: mockCustomerProfile.savedPlaceCount, accent: "text-brand-dark-green" },
     { label: "Cities explored", value: mockCustomerProfile.citiesExplored, accent: "text-brand-dark-green" },
   ]
 
@@ -62,10 +64,10 @@ function QuickLinkGrid() {
       description: "Revisit what you have already shared and where your local notes are helping others decide.",
     },
     {
-      href: "/profile/saved",
-      icon: Heart,
-      title: "Saved places",
-      description: "Keep the shortlist of places you want to revisit, compare, or send to someone before dinner.",
+      href: "/collections",
+      icon: Bookmark,
+      title: "Collections",
+      description: "Keep quick saves inside Saved, then turn stronger patterns into public or private place lists worth reusing.",
     },
     {
       href: "/profile/settings",
@@ -216,40 +218,60 @@ function ReviewPreviewList() {
   )
 }
 
-function SavedPreviewList() {
+function CollectionPreviewList() {
   return (
     <section className={sectionCardClass}>
       <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="type-eyebrow text-brand-deep-green/68">Saved places</p>
-            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">A tighter shortlist of places you want to revisit, compare, or share.</h2>
+            <p className="type-eyebrow text-brand-deep-green/68">Collections</p>
+            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">The place lists you can keep private, publish, or copy forward into better plans.</h2>
           </div>
           <MithoButton variant="outline-secondary" asChild>
-            <Link href="/profile/saved">Open saved places</Link>
+            <Link href="/collections">Open collections</Link>
           </MithoButton>
         </div>
       </div>
 
       <div className="grid gap-4 px-6 py-6 md:grid-cols-2 sm:px-8">
-        {mockCustomerProfile.savedPlaces.slice(0, 4).map((place) => (
+        {ownedCollections.slice(0, 3).map((collection) => (
           <Link
-            key={place.id}
-            href={place.publicHref}
-            className="flex gap-4 rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-4 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_12px_28px_rgba(10,70,53,0.06)]"
+            key={collection.id}
+            href={`/collections/${collection.id}`}
+            className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-4 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_12px_28px_rgba(10,70,53,0.06)]"
           >
-            <img src={place.imageUrl} alt={place.name} className="h-20 w-20 rounded-[1rem] object-cover" />
-            <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-3">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h3 className="line-clamp-1 text-base font-semibold text-brand-dark-green">{place.name}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{place.cuisine}</p>
+                  <h3 className="line-clamp-1 text-base font-semibold text-brand-dark-green">{collection.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {collection.description ?? "A place list you can refine once it starts filling out."}
+                  </p>
                 </div>
-                <Heart className="mt-0.5 h-4 w-4 fill-brand-orange text-brand-orange" />
+                <div className="flex flex-wrap items-center gap-2">
+                  {collection.visibility === "public" ? (
+                    <MithoBadge variant="neutral" className="gap-1">
+                      <Globe className="h-3.5 w-3.5" />
+                      Public
+                    </MithoBadge>
+                  ) : (
+                    <MithoBadge variant="muted" className="gap-1">
+                      <Lock className="h-3.5 w-3.5" />
+                      Private
+                    </MithoBadge>
+                  )}
+                  {collection.provenance ? <MithoBadge variant="outline-orange" className="gap-1"><Copy className="h-3.5 w-3.5" />Copied</MithoBadge> : null}
+                </div>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">{place.location}</p>
-              <p className="mt-2 text-xs font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">{place.savedDate}</p>
             </div>
+            <div className="mt-4 flex items-center gap-2">
+              {getCollectionCoverImages(collection).slice(0, 3).map((imageUrl, index) => (
+                <img key={`${collection.id}-${index}`} src={imageUrl} alt="" className="h-14 w-14 rounded-[1rem] object-cover" />
+              ))}
+            </div>
+            <p className="mt-4 text-xs font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
+              {getCollectionPlaceCount(collection)} places · {collection.updatedLabel}
+            </p>
           </Link>
         ))}
       </div>
@@ -302,7 +324,7 @@ export function ProfileHubPage() {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-6">
             <ReviewPreviewList />
-            <SavedPreviewList />
+            <CollectionPreviewList />
           </div>
 
           <div className="space-y-6">
@@ -315,7 +337,7 @@ export function ProfileHubPage() {
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
                   <li className="flex gap-3">
                     <Bookmark className="mt-0.5 h-4 w-4 text-brand-deep-green" />
-                    Saved places stay quick to scan here before you move into the fuller list.
+                    Quick-save now lands in the default Saved collection before you turn it into stronger public or private lists.
                   </li>
                   <li className="flex gap-3">
                     <MessageSquare className="mt-0.5 h-4 w-4 text-brand-deep-green" />
@@ -371,45 +393,6 @@ export function ProfileReviewsPage() {
                 </div>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">{review.excerpt}</p>
               </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </div>
-  )
-}
-
-export function ProfileSavedPage() {
-  return (
-    <div className="container mx-auto px-4 py-10 md:py-12">
-      <div className="space-y-6">
-        <PageIntro
-          eyebrow="Customer account"
-          title="Saved places you want to keep close."
-          description="This is the shortlist you can revisit before dinner plans firm up, or before you send someone a quick recommendation."
-        />
-
-        <section className={sectionCardClass}>
-          <div className="grid gap-4 px-6 py-6 md:grid-cols-2 sm:px-8">
-            {mockCustomerProfile.savedPlaces.map((place) => (
-              <Link
-                key={place.id}
-                href={place.publicHref}
-                className="flex gap-4 rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-4 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_12px_28px_rgba(10,70,53,0.06)]"
-              >
-                <img src={place.imageUrl} alt={place.name} className="h-24 w-24 rounded-[1rem] object-cover" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h2 className="line-clamp-1 text-lg font-semibold text-brand-dark-green">{place.name}</h2>
-                      <p className="mt-1 text-sm text-muted-foreground">{place.cuisine}</p>
-                    </div>
-                    <Heart className="mt-0.5 h-4 w-4 fill-brand-orange text-brand-orange" />
-                  </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{place.location}</p>
-                  <p className="mt-3 text-xs font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">{place.savedDate}</p>
-                </div>
-              </Link>
             ))}
           </div>
         </section>
