@@ -88,7 +88,7 @@ function VisibilityBadge({ visibility }: { visibility: CollectionVisibility }) {
   )
 }
 
-function CollectionCard({ collection, href }: { collection: CollectionRecord; href: string }) {
+export function CollectionCard({ collection, href }: { collection: CollectionRecord; href: string }) {
   const coverImages = getCollectionCoverImages(collection)
   const itemCount = getCollectionPlaceCount(collection)
 

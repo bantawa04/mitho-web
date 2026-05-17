@@ -1,0 +1,22 @@
+# Dokploy configuration for ecommerce-customer
+
+build:
+  provider: railpack
+  context: .
+
+ports:
+  - container: 3000
+    host: 3000
+
+environment:
+  - NODE_ENV=production
+  - RAILPACK_NODE_VERSION=20.19.0
+  - RAILPACK_PACKAGES=node@20.19.0
+  - RAILPACK_BUILD_CMD=bun run build
+  - RAILPACK_START_CMD=bun run start
+
+healthcheck:
+  path: /
+  interval: 30
+  timeout: 10
+  retries: 3

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Settings, Star } from "lucide-react"
 import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/components/collections/collection-data"
-import { mockCustomerProfile } from "@/components/profile/profile-data"
+import { getPublicProfileByUsername, mockCustomerProfile, type PublicUserProfileData } from "@/components/profile/profile-data"
 import { ProfileNavigation } from "@/components/profile/profile-navigation"
 import { MithoBadge } from "@/components/ui/mitho-badge"
 import { MithoButton } from "@/components/ui/mitho-button"
@@ -440,6 +440,232 @@ export function ProfileSettingsPage() {
             ))}
           </div>
         </section>
+      </div>
+    </div>
+  )
+}
+
+function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
+  const stats = [
+    { label: "Public reviews", value: profile.reviewCount, accent: "text-brand-orange" },
+    { label: "Public collections", value: profile.collectionCount, accent: "text-brand-deep-green" },
+  ]
+
+  return (
+    <section className={sectionCardClass}>
+      <div className="grid gap-4 px-6 py-6 sm:grid-cols-2 sm:px-8">
+        {stats.map((stat) => (
+          <div key={stat.label} className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5">
+            <p className="text-sm text-muted-foreground">{stat.label}</p>
+            <p className={`mt-2 text-3xl font-semibold ${stat.accent}`}>{stat.value}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData }) {
+  return (
+    <section className={sectionCardClass}>
+      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+        <p className="type-eyebrow text-brand-deep-green/68">Public collections</p>
+        <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">
+          Food lists worth sharing, copying, or borrowing for the next meal plan.
+        </h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+          These are the lists {profile.name.split(" ")[0]} chose to publish so other people can browse them like ready-made local shortcuts.
+        </p>
+      </div>
+
+      <div className="px-6 py-6 sm:px-8">
+        {profile.publicCollections.length > 0 ? (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {profile.publicCollections.map((collection) => (
+              <PublicCollectionFeatureCard
+                key={collection.id}
+                collection={collection}
+                username={profile.username}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+            <p className="text-base font-semibold text-brand-dark-green">No public collections yet.</p>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+              Public place lists will appear here once {profile.name.split(" ")[0]} decides a shortlist is worth sharing more widely.
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+function PublicCollectionFeatureCard({
+  collection,
+  username,
+}: {
+  collection: (typeof ownedCollections)[number]
+  username: string
+}) {
+  const coverImages = getCollectionCoverImages(collection)
+  const itemCount = getCollectionPlaceCount(collection)
+  const coverImage = coverImages[0]
+
+  return (
+    <Link
+      href={`/users/${username}/collections/${collection.id}`}
+      className="group block overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_24px_rgba(10,70,53,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-deep-green/16 hover:shadow-[0_16px_32px_rgba(10,70,53,0.08)]"
+    >
+      <div className="overflow-hidden">
+        {coverImage ? (
+          <img
+            src={coverImage}
+            alt=""
+            className="h-52 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          />
+        ) : (
+          <div className="flex h-52 w-full items-center justify-center bg-[#fff8ef] text-brand-deep-green/38">
+            <Bookmark className="h-8 w-8" />
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4 px-5 py-5">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          <span className="font-medium text-brand-dark-green">{itemCount} places</span>
+          <span className="h-1 w-1 rounded-full bg-brand-deep-green/24" />
+          <span>{collection.updatedLabel}</span>
+        </div>
+
+        <h3 className="line-clamp-2 text-[1.45rem] font-semibold leading-tight text-brand-dark-green">
+          {collection.title}
+        </h3>
+
+        {collection.description ? (
+          <p className="line-clamp-1 text-sm leading-7 text-muted-foreground">{collection.description}</p>
+        ) : null}
+
+        <div className="flex justify-end pt-1">
+          <ArrowRight className="h-5 w-5 text-brand-deep-green/56 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-brand-deep-green" />
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function PublicReviewsSection({ profile }: { profile: PublicUserProfileData }) {
+  return (
+    <section className={sectionCardClass}>
+      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+        <p className="type-eyebrow text-brand-deep-green/68">Recent reviews</p>
+        <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">
+          Local notes that help the next person decide faster.
+        </h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+          Recent public reviews stay short, useful, and food-first so the strongest recommendation signal is easy to scan.
+        </p>
+      </div>
+
+      <div className="px-6 py-2 sm:px-8">
+        {profile.recentPublicReviews.length > 0 ? (
+          <div className="divide-y divide-brand-deep-green/10">
+            {profile.recentPublicReviews.map((review) => (
+              <div key={review.id} className="py-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <Link href={review.publicHref} className="text-lg font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
+                      {review.businessName}
+                    </Link>
+                    <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        {review.location}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-brand-orange text-brand-orange" />
+                        {review.rating.toFixed(1)}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Clock3 className="h-4 w-4" />
+                        {review.date}
+                      </span>
+                    </div>
+                  </div>
+                  <MithoBadge variant="muted">Review</MithoBadge>
+                </div>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{review.excerpt}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+            <p className="text-base font-semibold text-brand-dark-green">No public reviews yet.</p>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+              Once public reviews are posted, this page will turn into a stronger local discovery signal.
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+export function PublicUserProfilePage({ username }: { username: string }) {
+  const profile = getPublicProfileByUsername(username)
+
+  if (!profile) {
+    return (
+      <div className="container mx-auto px-4 py-12 md:py-16">
+        <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white px-6 py-8 shadow-[0_12px_30px_rgba(10,70,53,0.05)] sm:px-8">
+          <h1 className="type-page-title text-brand-dark-green">This public profile is not available.</h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
+            The user may not have published anything yet, or the profile link may no longer point to an active public page.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-10 md:py-12">
+      <div className="space-y-6">
+        <section className={sectionCardClass}>
+          <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1fr)_220px] sm:px-8">
+            <div className="flex items-start gap-4">
+              <img
+                src={profile.avatarUrl}
+                alt={profile.name}
+                className="h-20 w-20 rounded-full border-4 border-brand-soft-beige object-cover sm:h-24 sm:w-24"
+              />
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <MithoBadge variant="neutral">Public profile</MithoBadge>
+                  <MithoBadge variant="muted">{profile.trustCue}</MithoBadge>
+                </div>
+                <h1 className="type-page-title mt-4 text-brand-dark-green">{profile.name}</h1>
+                <p className="mt-2 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
+                  @{profile.username} · {profile.joinedLabel}
+                </p>
+                <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{profile.bio}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start justify-end lg:justify-start">
+              <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5">
+                <p className="type-eyebrow text-brand-deep-green/68">Profile signal</p>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                  Public collections and recent reviews stay at the center here so the page feels useful before it ever feels social.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <PublicStatsStrip profile={profile} />
+        <PublicCollectionsSection profile={profile} />
+        <PublicReviewsSection profile={profile} />
       </div>
     </div>
   )
