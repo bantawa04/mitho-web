@@ -467,8 +467,8 @@ function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
 
 function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData }) {
   return (
-    <section className={sectionCardClass}>
-      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+    <section className="space-y-5">
+      <div className="px-1">
         <p className="type-eyebrow text-brand-deep-green/68">Public collections</p>
         <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">
           Food lists worth sharing, copying, or borrowing for the next meal plan.
@@ -478,29 +478,29 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
         </p>
       </div>
 
-      <div className="px-6 py-6 sm:px-8">
-        {profile.publicCollections.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {profile.publicCollections.map((collection) => (
-              <PublicCollectionFeatureCard
-                key={collection.id}
-                collection={collection}
-                username={profile.username}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
-            <p className="text-base font-semibold text-brand-dark-green">No public collections yet.</p>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
-              Public place lists will appear here once {profile.name.split(" ")[0]} decides a shortlist is worth sharing more widely.
-            </p>
-          </div>
-        )}
-      </div>
+      {profile.publicCollections.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {profile.publicCollections.map((collection) => (
+            <PublicCollectionFeatureCard
+              key={collection.id}
+              collection={collection}
+              username={profile.username}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+          <p className="text-base font-semibold text-brand-dark-green">No public collections yet.</p>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+            Public place lists will appear here once {profile.name.split(" ")[0]} decides a shortlist is worth sharing more widely.
+          </p>
+        </div>
+      )}
     </section>
   )
 }
+
+
 
 function PublicCollectionFeatureCard({
   collection,
@@ -516,39 +516,49 @@ function PublicCollectionFeatureCard({
   return (
     <Link
       href={`/users/${username}/collections/${collection.id}`}
-      className="group block overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_24px_rgba(10,70,53,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-deep-green/16 hover:shadow-[0_16px_32px_rgba(10,70,53,0.08)]"
+      className="group relative block aspect-[4/5] overflow-hidden rounded-[1.35rem] shadow-[0_8px_24px_rgba(10,70,53,0.10)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(10,70,53,0.14)]"
     >
-      <div className="overflow-hidden">
-        {coverImage ? (
-          <img
-            src={coverImage}
-            alt=""
-            className="h-52 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-          />
-        ) : (
-          <div className="flex h-52 w-full items-center justify-center bg-[#fff8ef] text-brand-deep-green/38">
-            <Bookmark className="h-8 w-8" />
-          </div>
-        )}
+      {/* Cover image */}
+      {coverImage ? (
+        <img
+          src={coverImage}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a5c42] to-[#0a4635]" />
+      )}
+
+      {/* Gradient overlay — strong at the bottom, fades to transparent at top */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+      {/* Place count pill — top left */}
+      <div className="absolute left-4 top-4">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/18 px-3 py-1.5 text-[0.72rem] font-semibold tracking-wide text-white backdrop-blur-sm">
+          <Bookmark className="h-3 w-3" />
+          {itemCount} {itemCount === 1 ? "place" : "places"}
+        </span>
       </div>
 
-      <div className="space-y-4 px-5 py-5">
-        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-          <span className="font-medium text-brand-dark-green">{itemCount} places</span>
-          <span className="h-1 w-1 rounded-full bg-brand-deep-green/24" />
-          <span>{collection.updatedLabel}</span>
-        </div>
+      {/* Updated label — top right */}
+      <div className="absolute right-4 top-4">
+        <span className="rounded-full bg-white/12 px-2.5 py-1.5 text-[0.68rem] font-medium text-white/80 backdrop-blur-sm">
+          {collection.updatedLabel}
+        </span>
+      </div>
 
-        <h3 className="line-clamp-2 text-[1.45rem] font-semibold leading-tight text-brand-dark-green">
+      {/* Title + meta overlay */}
+      <div className="absolute bottom-0 left-0 right-0 px-5 pb-5 pt-12">
+        <h3 className="font-heading text-[1.25rem] font-bold leading-snug tracking-tight text-white">
           {collection.title}
         </h3>
-
-        {collection.description ? (
-          <p className="line-clamp-1 text-sm leading-7 text-muted-foreground">{collection.description}</p>
-        ) : null}
-
-        <div className="flex justify-end pt-1">
-          <ArrowRight className="h-5 w-5 text-brand-deep-green/56 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-brand-deep-green" />
+        <div className="mt-3 flex items-center justify-between gap-3 text-[0.72rem] font-semibold text-white/78 transition-all duration-200 group-hover:text-white">
+          <div className="flex items-center gap-2">
+            <span>{itemCount} {itemCount === 1 ? "place" : "places"}</span>
+            <span className="h-1 w-1 rounded-full bg-white/45" />
+            <span>{collection.updatedLabel}</span>
+          </div>
+          <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
         </div>
       </div>
     </Link>

@@ -115,7 +115,10 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
   ],
 }
 
-const publicProfileMetadata = {
+const publicProfileMetadata: Record<
+  string,
+  Omit<PublicUserProfileData, "collectionCount" | "publicCollections" | "recentPublicReviews">
+> = {
   aaratieats: {
     name: mockCustomerProfile.name,
     username: mockCustomerProfile.username,
@@ -136,10 +139,7 @@ const publicProfileMetadata = {
     citiesExplored: 3,
     reviewCount: 8,
   },
-} satisfies Record<
-  string,
-  Omit<PublicUserProfileData, "collectionCount" | "publicCollections" | "recentPublicReviews">
->
+}
 
 export function getPublicProfileByUsername(username: string): PublicUserProfileData | null {
   const metadata = publicProfileMetadata[username]

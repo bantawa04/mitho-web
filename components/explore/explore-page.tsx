@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { Filter, Flame, Search, Store } from "lucide-react"
 import { Header } from "@/components/home/header"
 import { Footer } from "@/components/home/footer"

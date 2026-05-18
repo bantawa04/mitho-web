@@ -3,7 +3,7 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { ArrowRight, ArrowUpRight, Filter, Search } from "lucide-react"
 import type { CategorySlug } from "@/components/categories/category-taxonomy"
 import { CATEGORY_METADATA, getCategoryBySlug, getCategoryIcon } from "@/components/categories/category-taxonomy"
