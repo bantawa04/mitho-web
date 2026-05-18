@@ -32,6 +32,7 @@ import {
   type CollectionVisibility,
 } from "@/components/collections/collection-data"
 import { GoogleSignInDialog } from "@/components/auth/google-sign-in-dialog"
+import { CollectionShowcaseCard } from "@/components/collections/collection-showcase-card"
 import { ProfileNavigation } from "@/components/profile/profile-navigation"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -89,34 +90,8 @@ function VisibilityBadge({ visibility }: { visibility: CollectionVisibility }) {
 }
 
 export function CollectionCard({ collection, href }: { collection: CollectionRecord; href: string }) {
-  const coverImages = getCollectionCoverImages(collection)
-  const itemCount = getCollectionPlaceCount(collection)
-
   return (
-    <Link
-      href={href}
-      className="group block rounded-[1.7rem] border border-brand-deep-green/10 bg-white p-5 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_16px_34px_rgba(10,70,53,0.09)]"
-    >
-      <CollectionDeckCover collection={collection} className="mx-auto max-w-[290px]" />
-
-      <div className="space-y-3 border-t border-brand-deep-green/10 pt-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <VisibilityBadge visibility={collection.visibility} />
-          <MithoBadge variant="muted">{itemCount} places</MithoBadge>
-          <span className="text-sm text-muted-foreground">{collection.updatedLabel}</span>
-        </div>
-
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className="line-clamp-2 text-xl font-semibold text-brand-dark-green">{collection.title}</h2>
-            {collection.description ? (
-              <p className="mt-1 line-clamp-1 text-sm leading-6 text-muted-foreground">{collection.description}</p>
-            ) : null}
-          </div>
-          <ArrowRight className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />
-        </div>
-      </div>
-    </Link>
+    <CollectionShowcaseCard collection={collection} href={href} showStatus />
   )
 }
 
@@ -457,7 +432,7 @@ export function CollectionsIndexPage({ collections }: { collections: CollectionR
             </div>
 
             {filteredCollections.length > 0 ? (
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {filteredCollections.map((collection) => (
                   <CollectionCard key={collection.id} collection={collection} href={`/collections/${collection.id}`} />
                 ))}

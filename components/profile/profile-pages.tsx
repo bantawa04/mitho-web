@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Settings, Star } from "lucide-react"
 import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/components/collections/collection-data"
+import { CollectionShowcaseCard } from "@/components/collections/collection-showcase-card"
 import { getPublicProfileByUsername, mockCustomerProfile, type PublicUserProfileData } from "@/components/profile/profile-data"
 import { ProfileNavigation } from "@/components/profile/profile-navigation"
 import { MithoBadge } from "@/components/ui/mitho-badge"
@@ -446,20 +447,27 @@ export function ProfileSettingsPage() {
 }
 
 function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
-  const stats = [
-    { label: "Public reviews", value: profile.reviewCount, accent: "text-brand-orange" },
-    { label: "Public collections", value: profile.collectionCount, accent: "text-brand-deep-green" },
-  ]
-
   return (
     <section className={sectionCardClass}>
-      <div className="grid gap-4 px-6 py-6 sm:grid-cols-2 sm:px-8">
-        {stats.map((stat) => (
-          <div key={stat.label} className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5">
-            <p className="text-sm text-muted-foreground">{stat.label}</p>
-            <p className={`mt-2 text-3xl font-semibold ${stat.accent}`}>{stat.value}</p>
+      <div className="grid grid-cols-2 divide-x divide-brand-deep-green/10 px-6 py-6 sm:px-8">
+        <div className="flex items-center justify-center gap-4 px-2 sm:px-4">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-orange/10">
+            <Star className="h-5 w-5 text-brand-orange" />
+          </span>
+          <div>
+            <p className="text-2xl font-bold leading-none text-brand-orange">{profile.reviewCount}</p>
+            <p className="mt-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">Public reviews</p>
           </div>
-        ))}
+        </div>
+        <div className="flex items-center justify-center gap-4 px-2 sm:px-4">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-deep-green/10">
+            <Bookmark className="h-5 w-5 text-brand-deep-green" />
+          </span>
+          <div>
+            <p className="text-2xl font-bold leading-none text-brand-deep-green">{profile.collectionCount}</p>
+            <p className="mt-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">Public collections</p>
+          </div>
+        </div>
       </div>
     </section>
   )
@@ -467,8 +475,8 @@ function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
 
 function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData }) {
   return (
-    <section className="space-y-5">
-      <div className="px-1">
+    <section className={sectionCardClass}>
+      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
         <p className="type-eyebrow text-brand-deep-green/68">Public collections</p>
         <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">
           Food lists worth sharing, copying, or borrowing for the next meal plan.
@@ -478,93 +486,26 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
         </p>
       </div>
 
-      {profile.publicCollections.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {profile.publicCollections.map((collection) => (
-            <PublicCollectionFeatureCard
-              key={collection.id}
-              collection={collection}
-              username={profile.username}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
-          <p className="text-base font-semibold text-brand-dark-green">No public collections yet.</p>
-          <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+      <div className="px-6 py-6 sm:px-8">
+        {profile.publicCollections.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {profile.publicCollections.map((collection) => (
+              <CollectionShowcaseCard
+                key={collection.id}
+                collection={collection}
+                href={`/users/${profile.username}/collections/${collection.id}`}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm leading-7 text-muted-foreground">
             Public place lists will appear here once {profile.name.split(" ")[0]} decides a shortlist is worth sharing more widely.
           </p>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   )
 }
-
-
-
-function PublicCollectionFeatureCard({
-  collection,
-  username,
-}: {
-  collection: (typeof ownedCollections)[number]
-  username: string
-}) {
-  const coverImages = getCollectionCoverImages(collection)
-  const itemCount = getCollectionPlaceCount(collection)
-  const coverImage = coverImages[0]
-
-  return (
-    <Link
-      href={`/users/${username}/collections/${collection.id}`}
-      className="group relative block aspect-[4/5] overflow-hidden rounded-[1.35rem] shadow-[0_8px_24px_rgba(10,70,53,0.10)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(10,70,53,0.14)]"
-    >
-      {/* Cover image */}
-      {coverImage ? (
-        <img
-          src={coverImage}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.06]"
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1a5c42] to-[#0a4635]" />
-      )}
-
-      {/* Gradient overlay — strong at the bottom, fades to transparent at top */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-      {/* Place count pill — top left */}
-      <div className="absolute left-4 top-4">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/18 px-3 py-1.5 text-[0.72rem] font-semibold tracking-wide text-white backdrop-blur-sm">
-          <Bookmark className="h-3 w-3" />
-          {itemCount} {itemCount === 1 ? "place" : "places"}
-        </span>
-      </div>
-
-      {/* Updated label — top right */}
-      <div className="absolute right-4 top-4">
-        <span className="rounded-full bg-white/12 px-2.5 py-1.5 text-[0.68rem] font-medium text-white/80 backdrop-blur-sm">
-          {collection.updatedLabel}
-        </span>
-      </div>
-
-      {/* Title + meta overlay */}
-      <div className="absolute bottom-0 left-0 right-0 px-5 pb-5 pt-12">
-        <h3 className="font-heading text-[1.25rem] font-bold leading-snug tracking-tight text-white">
-          {collection.title}
-        </h3>
-        <div className="mt-3 flex items-center justify-between gap-3 text-[0.72rem] font-semibold text-white/78 transition-all duration-200 group-hover:text-white">
-          <div className="flex items-center gap-2">
-            <span>{itemCount} {itemCount === 1 ? "place" : "places"}</span>
-            <span className="h-1 w-1 rounded-full bg-white/45" />
-            <span>{collection.updatedLabel}</span>
-          </div>
-          <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
-        </div>
-      </div>
-    </Link>
-  )
-}
-
 function PublicReviewsSection({ profile }: { profile: PublicUserProfileData }) {
   return (
     <section className={sectionCardClass}>
