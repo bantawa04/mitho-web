@@ -591,10 +591,6 @@ export function PublicUserProfilePage({ username }: { username: string }) {
                 className="h-20 w-20 rounded-full border-4 border-brand-soft-beige object-cover sm:h-24 sm:w-24"
               />
               <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <MithoBadge variant="neutral">Public profile</MithoBadge>
-                  <MithoBadge variant="muted">{profile.trustCue}</MithoBadge>
-                </div>
                 <h1 className="type-page-title mt-4 text-brand-dark-green">{profile.name}</h1>
                 <p className="mt-2 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
                   @{profile.username} · {profile.joinedLabel}
@@ -603,14 +599,6 @@ export function PublicUserProfilePage({ username }: { username: string }) {
               </div>
             </div>
 
-            <div className="flex items-start justify-end lg:justify-start">
-              <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5">
-                <p className="type-eyebrow text-brand-deep-green/68">Profile signal</p>
-                <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  Public collections and recent reviews stay at the center here so the page feels useful before it ever feels social.
-                </p>
-              </div>
-            </div>
           </div>
         </section>
 
