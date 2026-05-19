@@ -27,6 +27,19 @@ function statusBadge(status: ManagedBusiness["status"]) {
   }
 }
 
+function lifecycleBadge(status: ManagedBusiness["lifecycleStatus"]) {
+  switch (status) {
+    case "temporarily_closed":
+      return <MithoBadge variant="warning">Temporarily closed</MithoBadge>
+    case "permanently_closed":
+      return <MithoBadge variant="muted">Permanently closed</MithoBadge>
+    case "unclaimed":
+      return <MithoBadge variant="neutral">Unclaimed listing</MithoBadge>
+    default:
+      return null
+  }
+}
+
 function BusinessCard({
   business,
   scenario,
@@ -42,6 +55,7 @@ function BusinessCard({
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             {statusBadge(business.status)}
+            {lifecycleBadge(business.lifecycleStatus)}
             {business.role ? <MithoBadge variant="neutral">{business.role === "owner" ? "Owner access" : "Manager access"}</MithoBadge> : null}
           </div>
 

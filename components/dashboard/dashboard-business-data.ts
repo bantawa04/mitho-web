@@ -1,4 +1,12 @@
 export type ManagedBusinessStatus = "active" | "setup-needed" | "claim-pending"
+export type BusinessLifecycleStatus =
+  | "active"
+  | "temporarily_closed"
+  | "permanently_closed"
+  | "unclaimed"
+  | "archived"
+  | "draft"
+  | "suspended"
 export type ManagedBusinessRole = "owner" | "manager"
 export type DashboardScenario = "empty" | "single" | "multi"
 
@@ -7,6 +15,7 @@ export interface ManagedBusiness {
   name: string
   location: string
   status: ManagedBusinessStatus
+  lifecycleStatus?: BusinessLifecycleStatus
   role?: ManagedBusinessRole
   claimStatus?: "pending-review"
   profileCompleteness?: number
@@ -44,6 +53,7 @@ function getNewListingPreviewBusiness(id: string): ManagedBusiness | undefined {
     name: titleCaseFromSlug(slug),
     location: "Setup in progress",
     status: "setup-needed",
+    lifecycleStatus: "draft",
     role: "owner",
     profileCompleteness: 12,
     lastActivity: "Business info, hours, and photos still need to be completed.",
@@ -59,6 +69,7 @@ export const DASHBOARD_MOCK_BUSINESSES: Record<DashboardScenario, ManagedBusines
       name: "The Himalayan Kitchen",
       location: "Thamel, Kathmandu",
       status: "active",
+      lifecycleStatus: "active",
       role: "owner",
       profileCompleteness: 86,
       lastActivity: "2 new reviews this week",
@@ -71,6 +82,7 @@ export const DASHBOARD_MOCK_BUSINESSES: Record<DashboardScenario, ManagedBusines
       name: "The Himalayan Kitchen",
       location: "Thamel, Kathmandu",
       status: "active",
+      lifecycleStatus: "active",
       role: "owner",
       profileCompleteness: 86,
       lastActivity: "2 new reviews this week",
@@ -81,6 +93,7 @@ export const DASHBOARD_MOCK_BUSINESSES: Record<DashboardScenario, ManagedBusines
       name: "Patan Sekuwa House",
       location: "Patan, Lalitpur",
       status: "setup-needed",
+      lifecycleStatus: "active",
       role: "owner",
       profileCompleteness: 54,
       lastActivity: "Photos and hours still missing",
@@ -91,6 +104,7 @@ export const DASHBOARD_MOCK_BUSINESSES: Record<DashboardScenario, ManagedBusines
       name: "New Road Momo Corner",
       location: "New Road, Kathmandu",
       status: "claim-pending",
+      lifecycleStatus: "unclaimed",
       role: "manager",
       claimStatus: "pending-review",
       profileCompleteness: 0,

@@ -1,8 +1,7 @@
 import Link from "next/link"
-import { ArrowRight, Clock3, MessageSquare, Sparkles, Star } from "lucide-react"
+import { MessageSquare, Sparkles } from "lucide-react"
 import { KeyMetrics } from "@/components/dashboard/key-metrics"
 import type { ManagedBusiness } from "@/components/dashboard/dashboard-business-data"
-import { MithoButton } from "@/components/ui/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/ui/mitho-card"
 import { StarRating } from "@/components/ui/mitho-rating"
 
@@ -39,7 +38,6 @@ export function BusinessOverviewPage({ business }: BusinessOverviewPageProps) {
           </div>
           <div className="flex flex-wrap gap-2">
             <span className="capsule-cluster">Profile score {business.profileCompleteness ?? 75}%</span>
-            <span className="capsule-cluster">{business.reviewCount ?? 47} customer reviews</span>
           </div>
         </div>
       </section>
@@ -109,47 +107,6 @@ export function BusinessOverviewPage({ business }: BusinessOverviewPageProps) {
                     <p className="text-sm leading-6 text-foreground">{item}</p>
                   </div>
                 ))}
-              </div>
-            </MithoCardContent>
-          </MithoCard>
-
-          <MithoCard surface="business" interactive="subtle" className="bg-white">
-            <MithoCardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                  <Clock3 className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="type-card-title text-foreground">Fast actions</h2>
-                  <p className="type-meta">Go straight to the sections that usually need attention first.</p>
-                </div>
-              </div>
-            </MithoCardHeader>
-            <MithoCardContent>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <MithoButton variant="outline-secondary" asChild>
-                  <Link href={`/dashboard/businesses/${business.id}/edit`}>Business info</Link>
-                </MithoButton>
-                <MithoButton variant="outline-secondary" asChild>
-                  <Link href={`/dashboard/businesses/${business.id}/hours`}>Opening hours</Link>
-                </MithoButton>
-                <MithoButton variant="outline-secondary" asChild>
-                  <Link href={`/dashboard/businesses/${business.id}/photos`}>Photos</Link>
-                </MithoButton>
-                <MithoButton variant="outline-secondary" asChild>
-                  <Link href={`/dashboard/businesses/${business.id}/analytics`}>Analytics</Link>
-                </MithoButton>
-              </div>
-
-              <div className="mt-5 rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 shadow-[0_6px_18px_rgba(10,70,53,0.04)]">
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-brand-orange" />
-                  <p className="text-sm font-semibold text-foreground">Current rating snapshot</p>
-                </div>
-                <div className="mt-3 flex items-center gap-3">
-                  <span className="text-3xl font-bold text-brand-dark-green">4.6</span>
-                  <StarRating rating={4.6} size="sm" />
-                </div>
               </div>
             </MithoCardContent>
           </MithoCard>
