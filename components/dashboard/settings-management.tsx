@@ -1,19 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Settings, Bell, User, ExternalLink } from "lucide-react"
-import { useMockAuth } from "@/components/auth/mock-auth-provider"
+import { Settings, Bell, ExternalLink, User } from "lucide-react"
 import { MithoCard, MithoCardHeader, MithoCardContent } from "@/components/ui/mitho-card"
-import { MithoButton } from "@/components/ui/mitho-button"
 
 interface SettingsManagementProps {
   businessId: string
 }
 
 export function SettingsManagement({ businessId }: SettingsManagementProps) {
-  const router = useRouter()
-  const { currentUser, signOut } = useMockAuth()
   const settingsLinks = [
     {
       icon: <User className="h-5 w-5" />,
@@ -67,46 +62,6 @@ export function SettingsManagement({ businessId }: SettingsManagementProps) {
                 </div>
               </Link>
             ))}
-          </div>
-        </MithoCardContent>
-      </MithoCard>
-
-      <MithoCard surface="business" interactive="subtle" className="mt-6">
-        <MithoCardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-              <User className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="type-card-title text-foreground">Account & session</h3>
-              <p className="type-meta">This business workspace is tied to the same Mitho identity you use across the app.</p>
-            </div>
-          </div>
-        </MithoCardHeader>
-        <MithoCardContent>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <img
-                src={currentUser?.avatarUrl || "/placeholder.svg"}
-                alt={currentUser?.name || "Current user"}
-                className="h-12 w-12 rounded-full border-4 border-brand-soft-beige object-cover"
-              />
-              <div>
-                <p className="font-semibold text-foreground">{currentUser?.name || "Signed-in account"}</p>
-                <p className="text-sm text-muted-foreground">Log out here if you need to leave both customer and business-owner tools.</p>
-              </div>
-            </div>
-            <MithoButton
-              type="button"
-              variant="outline-secondary"
-              className="border-danger/20 text-danger hover:bg-danger/10 hover:text-danger"
-              onClick={() => {
-                signOut()
-                router.push("/")
-              }}
-            >
-              Log out
-            </MithoButton>
           </div>
         </MithoCardContent>
       </MithoCard>

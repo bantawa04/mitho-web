@@ -25,7 +25,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 ### Business
 - [x] `/add-business` Add business listing flow
 - [x] `/business/claim` Claim business flow
-- [ ] `/business/claim/status` Claim business submission status / follow-up
 - [x] `/dashboard` Business dashboard home
 - [x] `/dashboard/businesses` Business list / switcher
 - [x] `/dashboard/businesses/new` Add business from dashboard
