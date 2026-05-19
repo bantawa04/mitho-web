@@ -19,7 +19,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/cities/[slug]` City detail / listings
 - [x] `/profile` Customer profile
 - [x] `/profile/reviews` My reviews
-- [x] `/profile/saved` Redirect to collections
 - [x] `/profile/settings` Account settings
 
 ### Business
@@ -28,7 +27,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/dashboard` Business dashboard home
 - [x] `/dashboard/businesses` Business list / switcher
 - [x] `/dashboard/businesses/new` Add business from dashboard
-- [x] `/dashboard/businesses/[id]` Business detail route / overview redirect
 - [x] `/dashboard/businesses/[id]/overview` Business overview
 - [x] `/dashboard/businesses/[id]/edit` Edit business profile
 - [x] `/dashboard/businesses/[id]/hours` Manage business hours
@@ -36,7 +34,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/dashboard/businesses/[id]/reviews` Review management / replies
 - [x] `/dashboard/businesses/[id]/analytics` Business analytics
 - [x] `/dashboard/businesses/[id]/settings` Business settings
-- [ ] `/dashboard/settings` Business account settings
 
 ### Admin / Superadmin
 - [ ] `/admin` Admin dashboard home
@@ -58,7 +55,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/collections` My collections index
 - [x] `/collections/[id]` Collection detail page
 - [x] `/collections/[id]/edit` Edit collection
-- [x] `/collections/[id]/copy` Copy / fork collection confirmation
 - [x] `/profile/following` Following list
 - [ ] `/feed` Following / social discovery feed
 - [x] `/users` Creator discovery / search
@@ -123,4 +119,5 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - Current product direction is discovery-first: trusted local food reviews in Nepal.
 - Reviews, moderation, and business replies are product-critical and should shape both business and admin surfaces.
 - Auth direction: one shared Google OAuth flow, then redirect users based on role and intended destination.
+- Compatibility/redirect routes are intentionally not tracked as standalone product pages here.
 - This tracker is intentionally page-focused; backend implementation tracking lives in [BACKEND_API_TODO.md](/Users/pawan/projects/mitho/mitho-api/BACKEND_API_TODO.md).

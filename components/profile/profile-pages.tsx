@@ -3,7 +3,7 @@
 import Link from "next/link"
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Search, Settings, Star, UserCheck, UserPlus, Users } from "lucide-react"
+import { ArrowRight, Bookmark, Building2, Camera, ChevronRight, Clock3, Copy, Globe, Lock, Mail, MapPin, MessageSquare, Search, Settings, ShieldAlert, Star, Trash2, UserCheck, UserPlus, Users } from "lucide-react"
 import { GoogleSignInDialog } from "@/components/auth/google-sign-in-dialog"
 import { useMockAuth } from "@/components/auth/mock-auth-provider"
 import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/components/collections/collection-data"
@@ -21,10 +21,23 @@ import {
   type PublicUserProfileData,
 } from "@/components/profile/profile-data"
 import { ProfileNavigation } from "@/components/profile/profile-navigation"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { MithoBadge } from "@/components/ui/mitho-badge"
 import { MithoButton } from "@/components/ui/mitho-button"
 import { MithoCard, MithoCardContent } from "@/components/ui/mitho-card"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 const sectionCardClass =
   "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
@@ -426,73 +439,298 @@ export function ProfileReviewsPage() {
 export function ProfileSettingsPage() {
   const router = useRouter()
   const { currentUser, signOut } = useMockAuth()
-  const settingsCards = [
-    {
-      title: "Profile details",
-      description: "Display name, avatar, and short profile notes will eventually be edited here rather than on the overview page.",
-    },
-    {
-      title: "Account email",
-      description: "Google sign-in and account contact details should stay easy to confirm without mixing them into business settings.",
-    },
-    {
-      title: "Notifications",
-      description: "Review replies, save reminders, and business-claim status updates can eventually live under the same customer account settings.",
-    },
-  ]
+  const initialForm = React.useMemo(
+    () => ({
+      name: currentUser?.name ?? mockCustomerProfile.name,
+      avatarUrl: currentUser?.avatarUrl ?? mockCustomerProfile.avatarUrl,
+      bio: mockCustomerProfile.bio,
+      mobileNumber: mockCustomerProfile.mobileNumber,
+      address: mockCustomerProfile.address,
+    }),
+    [currentUser],
+  )
+  const [form, setForm] = React.useState(initialForm)
+  const [saved, setSaved] = React.useState(false)
+  const [isDeleteBlockedOpen, setIsDeleteBlockedOpen] = React.useState(false)
+  const [accountDeletionComplete, setAccountDeletionComplete] = React.useState(false)
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null)
+  const hasManagedBusinesses =
+    mockCustomerProfile.businessContext.status === "approved" && (mockCustomerProfile.businessContext.managedCount ?? 0) > 0
+
+  React.useEffect(() => {
+    setForm(initialForm)
+  }, [initialForm])
+
+  const updateForm = (field: keyof typeof form, value: string) => {
+    setSaved(false)
+    setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        updateForm("avatarUrl", reader.result)
+      }
+    }
+    reader.readAsDataURL(file)
+    event.target.value = ""
+  }
+
+  if (accountDeletionComplete) {
+    return (
+      <div className="container mx-auto px-4 py-10 md:py-12">
+        <div className="space-y-6">
+          <PageIntro
+            eyebrow="Account deletion"
+            title="Your account deletion request has been captured in this mock flow."
+            description="In the full product, this is where Mitho would confirm the request, sign you out, and continue the deletion workflow according to account and business-ownership policy."
+          />
+
+          <section className={sectionCardClass}>
+            <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+              <MithoBadge variant="warning">Deletion request staged</MithoBadge>
+              <h2 className="mt-4 text-2xl font-semibold text-brand-dark-green">This account would now move into the deletion flow.</h2>
+            </div>
+            <div className="space-y-4 px-6 py-6 sm:px-8">
+              <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
+                Personal profile access, collections, follows, and review identity would be handled here according to Mitho&apos;s future backend deletion rules.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <MithoButton
+                  onClick={() => {
+                    signOut()
+                    router.push("/")
+                  }}
+                >
+                  Return home
+                </MithoButton>
+                <MithoButton variant="outline-secondary" onClick={() => setAccountDeletionComplete(false)}>
+                  Back to settings
+                </MithoButton>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
         <PageIntro
           eyebrow="Customer account"
-          title="Account settings will own profile editing."
-          description="The overview page stays read-only on purpose. This route is where personal details and preferences can deepen when the backend account model is ready."
+          title="Keep your Mitho identity tidy without touching public account rules."
+          description="Update the profile basics people see, review the locked account credentials tied to Google sign-in, and manage account lifecycle actions from one clear place."
         />
 
         <section className={sectionCardClass}>
           <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-            <p className="type-eyebrow text-brand-deep-green/68">Account session</p>
-            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Signed in with one Mitho account across everything.</h2>
+            <p className="type-eyebrow text-brand-deep-green/68">Profile details</p>
+            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Edit the basics people connect to your account.</h2>
           </div>
-          <div className="flex flex-col gap-5 px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-            <div className="flex items-center gap-4">
-              <img
-                src={currentUser?.avatarUrl || "/placeholder.svg"}
-                alt={currentUser?.name || "Current user"}
-                className="h-14 w-14 rounded-full border-4 border-brand-soft-beige object-cover"
-              />
-              <div>
-                <p className="text-lg font-semibold text-brand-dark-green">{currentUser?.name ?? mockCustomerProfile.name}</p>
-                <p className="mt-1 text-sm text-muted-foreground">Use this same account for reviews, collections, follows, and business tools.</p>
+          <div className="grid gap-6 px-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)] sm:px-8">
+            <div className="space-y-4">
+              <div className="rounded-[1.5rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                <div className="mx-auto w-fit rounded-full border border-brand-deep-green/10 bg-white p-2 shadow-[0_8px_20px_rgba(10,70,53,0.06)]">
+                  <img src={form.avatarUrl} alt={form.name} className="h-28 w-28 rounded-full object-cover" />
+                </div>
+                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-brand-dark-green">
+                  <Camera className="h-4 w-4 text-brand-orange" />
+                  Upload a profile photo
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
+                <div className="mt-4 space-y-3">
+                  <MithoButton type="button" variant="outline-secondary" onClick={() => fileInputRef.current?.click()}>
+                    Upload image
+                  </MithoButton>
+                  <p className="text-xs leading-6 text-muted-foreground">Use a clear square photo that still looks good at small sizes.</p>
+                </div>
               </div>
             </div>
-            <MithoButton
-              type="button"
-              variant="outline-secondary"
-              className="border-danger/20 text-danger hover:bg-danger/10 hover:text-danger"
-              onClick={() => {
-                signOut()
-                router.push("/")
-              }}
-            >
-              Log out
-            </MithoButton>
+
+            <div className="space-y-5">
+              <label className="block space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Display name</span>
+                <Input
+                  value={form.name}
+                  onChange={(event) => updateForm("name", event.target.value)}
+                  className="h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                />
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Short bio</span>
+                <Textarea
+                  value={form.bio}
+                  onChange={(event) => updateForm("bio", event.target.value)}
+                  rows={5}
+                  className="rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                />
+              </label>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <label className="block space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Mobile number</span>
+                  <Input
+                    value={form.mobileNumber}
+                    onChange={(event) => updateForm("mobileNumber", event.target.value)}
+                    className="h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Address</span>
+                  <Input
+                    value={form.address}
+                    onChange={(event) => updateForm("address", event.target.value)}
+                    className="h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  />
+                </label>
+              </div>
+
+              <div className="flex flex-col gap-3 border-t border-brand-deep-green/10 pt-5 sm:flex-row sm:items-center sm:justify-end">
+                {saved ? <span className="text-sm font-medium text-success">Profile details updated in this mock flow.</span> : null}
+                <MithoButton
+                  variant="outline-secondary"
+                  onClick={() => {
+                    setForm(initialForm)
+                    setSaved(false)
+                  }}
+                >
+                  Discard changes
+                </MithoButton>
+                <MithoButton onClick={() => setSaved(true)}>Save changes</MithoButton>
+              </div>
+            </div>
           </div>
         </section>
 
         <section className={sectionCardClass}>
-          <div className="grid gap-4 px-6 py-6 md:grid-cols-3 sm:px-8">
-            {settingsCards.map((card) => (
-              <MithoCard key={card.title} surface="customer" interactive="subtle" className="h-full rounded-[1.35rem]">
-                <MithoCardContent className="flex h-full flex-col justify-between p-5">
-                  <div>
-                    <h2 className="text-lg font-semibold text-brand-dark-green">{card.title}</h2>
-                    <p className="mt-3 text-sm leading-7 text-muted-foreground">{card.description}</p>
-                  </div>
-                </MithoCardContent>
-              </MithoCard>
-            ))}
+          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+            <p className="type-eyebrow text-brand-deep-green/68">Account credentials</p>
+            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Locked details tied to sign-in and account identity.</h2>
+          </div>
+          <div className="grid gap-4 px-6 py-6 md:grid-cols-2 sm:px-8">
+            <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-brand-dark-green">
+                <Mail className="h-4 w-4 text-brand-orange" />
+                Account email
+              </div>
+              <Input value={mockCustomerProfile.email} disabled className="mt-4 h-12 rounded-[1rem] border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">This comes from Google sign-in and stays read-only here for trust and account recovery consistency.</p>
+            </div>
+
+            <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-brand-dark-green">
+                <Lock className="h-4 w-4 text-brand-orange" />
+                Username
+              </div>
+              <Input value={`@${mockCustomerProfile.username}`} disabled className="mt-4 h-12 rounded-[1rem] border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">Username is fixed for now so public profile links and creator identity do not unexpectedly change.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className={`${sectionCardClass} border-danger/18`}>
+          <div className="border-b border-danger/12 px-6 py-6 sm:px-8">
+            <p className="type-eyebrow text-danger/75">Account lifecycle</p>
+            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Delete your account deliberately.</h2>
+          </div>
+          <div className="space-y-5 px-6 py-6 sm:px-8">
+            <div className="rounded-[1.35rem] border border-danger/15 bg-danger/5 p-5">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
+                  <Trash2 className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-base font-semibold text-brand-dark-green">Delete account</p>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                    Use this when you want Mitho to remove your account under a GDPR-style self-serve flow. This is separate from logging out.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                {hasManagedBusinesses ? (
+                  <>
+                    <MithoButton variant="outline-danger" onClick={() => setIsDeleteBlockedOpen(true)}>
+                      Review deletion requirements
+                    </MithoButton>
+                    <Dialog open={isDeleteBlockedOpen} onOpenChange={setIsDeleteBlockedOpen}>
+                      <DialogContent className="sm:max-w-xl">
+                        <DialogHeader>
+                          <DialogTitle>Account deletion is blocked until business responsibility is resolved.</DialogTitle>
+                          <DialogDescription>
+                            This account currently manages {mockCustomerProfile.businessContext.managedCount} business workspace. Mitho should not delete the account until ownership or management responsibility has been handled safely.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="rounded-[1rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+                            <div className="flex items-start gap-3">
+                              <ShieldAlert className="mt-0.5 h-4 w-4 text-brand-orange" />
+                              <div className="text-sm leading-7 text-muted-foreground">
+                                Before final deletion, the user should transfer ownership, remove themselves from managed businesses, or resolve sole-owner cases according to Mitho&apos;s business lifecycle policy.
+                              </div>
+                            </div>
+                          </div>
+                          <div className="space-y-2 text-sm leading-7 text-muted-foreground">
+                            <p>Required next steps:</p>
+                            <p>1. Transfer ownership if another eligible user should take over.</p>
+                            <p>2. Remove yourself from managed businesses if you are not the long-term operator.</p>
+                            <p>3. If you are the last owner, convert the business to an unclaimed state before account deletion.</p>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <MithoButton variant="outline-secondary" onClick={() => setIsDeleteBlockedOpen(false)}>
+                            Back
+                          </MithoButton>
+                          <MithoButton asChild>
+                            <Link href="/dashboard/businesses">Manage businesses first</Link>
+                          </MithoButton>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </>
+                ) : (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <MithoButton variant="outline-danger">Delete account</MithoButton>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete this Mitho account?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This would begin the self-serve deletion flow for your profile, reviews, follows, and private account state. This action is more final than logging out.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Keep account</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-danger text-danger-foreground hover:bg-danger/90"
+                          onClick={() => setAccountDeletionComplete(true)}
+                        >
+                          Continue deletion
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </div>
+            </div>
           </div>
         </section>
       </div>

@@ -18,8 +18,11 @@ export interface ProfileBusinessContext {
 
 export interface CustomerProfileData {
   name: string
+  email: string
   username: string
   avatarUrl: string
+  mobileNumber: string
+  address: string
   joinedLabel: string
   bio: string
   trustCue: string
@@ -85,8 +88,11 @@ export interface PublicCreatorDirectoryPage {
 
 export const mockCustomerProfile: CustomerProfileData = {
   name: "Aarati Shrestha",
+  email: "aarati.shrestha@gmail.com",
   username: currentCustomer.username,
   avatarUrl: "/woman-portrait.png",
+  mobileNumber: "+977 9800000000",
+  address: "Thamel, Kathmandu, Nepal",
   joinedLabel: "Joined March 2025",
   bio: "Usually chasing strong momo plates, calmer brunch spots, and the kinds of places worth sending to friends without a long explanation.",
   trustCue: "12 local reviews and counting",

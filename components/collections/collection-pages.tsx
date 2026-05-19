@@ -23,7 +23,6 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { useMockAuth } from "@/components/auth/mock-auth-provider"
 import {
-  buildCopiedCollection,
   buildDraftCollection,
   createCollectionId,
   currentCustomer,
@@ -51,7 +50,7 @@ const sectionCardClass =
 const inputClassName =
   "h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 const selectTriggerClassName =
-  "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none data-[size=default]:h-12 data-[size=sm]:h-12 focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
 function PageIntro({
   eyebrow,
@@ -412,7 +411,6 @@ export function CollectionsIndexPage({ collections }: { collections: CollectionR
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <MithoBadge variant="muted">{collections.length} collections</MithoBadge>
               <MithoButton onClick={() => setIsCreateOpen(true)}>
                 <Plus className="h-4 w-4" />
                 Create collection
@@ -528,7 +526,7 @@ export function CollectionDetailPage({
               </>
             ) : (
               <MithoButton asChild>
-                <Link href={`/collections/${collection.id}/copy?sourceUser=${collection.owner.username}`}>
+                <Link href={`/users/${collection.owner.username}/collections/${collection.id}`}>
                   <Copy className="h-4 w-4" />
                   Copy collection
                 </Link>
@@ -926,102 +924,6 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
               <Trash2 className="h-4 w-4" />
               Delete collection
             </MithoButton>
-          </div>
-        </section>
-      </div>
-    </div>
-  )
-}
-
-export function CollectionCopyPage({ sourceCollection }: { sourceCollection: CollectionRecord }) {
-  const destinationCollection = buildCopiedCollection(sourceCollection)
-  const [copied, setCopied] = React.useState(false)
-
-  if (copied) {
-    return (
-      <div className="container mx-auto px-4 py-10 md:py-12">
-        <section className={sectionCardClass}>
-          <div className="px-6 py-8 sm:px-8">
-            <MithoBadge variant="success">Collection copied</MithoBadge>
-            <h1 className="type-page-title mt-4 text-brand-dark-green">The copied collection is ready on your account.</h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
-              This new list is independent from @{sourceCollection.owner.username}'s original collection. Future edits on their side will not change your copy.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <MithoButton asChild>
-                <Link href={`/collections/${destinationCollection.id}`}>
-                  Open copied collection
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </MithoButton>
-              <MithoButton variant="outline-secondary" asChild>
-                <Link href={`/users/${sourceCollection.owner.username}/collections/${sourceCollection.id}`}>Back to original collection</Link>
-              </MithoButton>
-            </div>
-          </div>
-        </section>
-      </div>
-    )
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-10 md:py-12">
-      <div className="space-y-6">
-        <PageIntro
-          eyebrow="Collection copy"
-          title="Copy this public collection into your own account."
-          description="Copied collections are snapshots. They keep the source attribution, but they do not live-sync when the original owner changes the list later."
-        />
-
-        <section className={sectionCardClass}>
-          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-            <div className="flex flex-wrap items-center gap-2">
-              <MithoBadge variant="neutral">@{sourceCollection.owner.username}</MithoBadge>
-              <MithoBadge variant="outline-orange">Snapshot copy</MithoBadge>
-            </div>
-            <h2 className="mt-4 text-2xl font-semibold text-brand-dark-green">{sourceCollection.title}</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
-              {sourceCollection.description ?? "This public list is eligible to be copied into your own private account."}
-            </p>
-          </div>
-
-          <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1fr)_320px] sm:px-8">
-            <div className="space-y-4">
-              <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
-                <p className="type-eyebrow text-brand-deep-green/68">What gets copied</p>
-                <div className="mt-3 space-y-2 text-sm leading-7 text-muted-foreground">
-                  <p>{getCollectionPlaceCount(sourceCollection)} places move into your own private copy.</p>
-                  <p>The title starts as <span className="font-semibold text-brand-dark-green">{destinationCollection.title}</span>.</p>
-                  <p>The source attribution stays visible so you remember where the list came from.</p>
-                </div>
-              </div>
-
-              <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-5">
-                <p className="text-base font-semibold text-brand-dark-green">Snapshot behavior</p>
-                <ul className="mt-3 space-y-2 text-sm leading-7 text-muted-foreground">
-                  <li>The copied list is independent from the original immediately.</li>
-                  <li>Changes to the source collection do not update your copy.</li>
-                  <li>You can rename, reorder, and expand your version freely afterward.</li>
-                </ul>
-              </div>
-            </div>
-
-            <aside className="space-y-4 rounded-[1.5rem] border border-brand-deep-green/10 bg-white p-5">
-              <div>
-                <p className="type-eyebrow text-brand-deep-green/68">Destination preview</p>
-                <h3 className="mt-3 text-xl font-semibold text-brand-dark-green">{destinationCollection.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">Private collection on @{currentCustomer.username}</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {getCollectionCoverImages(sourceCollection).map((imageUrl, index) => (
-                  <img key={`${imageUrl}-${index}`} src={imageUrl} alt="" className="h-16 w-16 rounded-[1rem] object-cover" />
-                ))}
-              </div>
-              <MithoButton className="w-full" onClick={() => setCopied(true)}>
-                <Copy className="h-4 w-4" />
-                Copy collection
-              </MithoButton>
-            </aside>
           </div>
         </section>
       </div>
