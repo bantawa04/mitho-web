@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { CheckCircle2 } from "lucide-react"
+import { useMockAuth } from "@/components/auth/mock-auth-provider"
 import { GoogleSignInDialog } from "@/components/auth/google-sign-in-dialog"
 import { Header } from "@/components/home/header"
 import { Footer } from "@/components/home/footer"
@@ -34,7 +35,7 @@ interface BusinessDetailPageProps {
 
 export function BusinessDetailPage({ pageData, claimHref = "/business/claim", publicHref }: BusinessDetailPageProps) {
   const [sortOrder, setSortOrder] = React.useState("all")
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false)
+  const { currentUser, isAuthenticated, signIn } = useMockAuth()
   const [collections, setCollections] = React.useState<CollectionRecord[]>(ownedCollections)
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = React.useState(false)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
@@ -143,7 +144,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
 
   return (
     <div className="page-shell-customer min-h-screen">
-      <Header signedInUser={isAuthenticated ? { name: currentCustomer.name, avatarUrl: currentCustomer.avatarUrl, href: "/profile" } : undefined} />
+      <Header signedInUser={currentUser ?? undefined} />
 
       <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fffaf3_30%,#ffffff_68%,#fffdf9_100%)] pb-20">
         <div className="container mx-auto px-4 py-5 md:py-6">
@@ -232,7 +233,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         description="Use Google so Mitho can keep your collections, reviews, and future business actions under the same account."
         helperCopy="Once sign-in is connected for real, this same flow will bring you back to the collection picker without losing the business you were trying to save."
         onContinue={() => {
-          setIsAuthenticated(true)
+          signIn()
           setIsSignInOpen(false)
         }}
       />

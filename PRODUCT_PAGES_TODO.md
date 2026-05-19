@@ -1,6 +1,6 @@
 # Mitho Product Pages TODO
 
-Last reviewed: 2026-05-02
+Last reviewed: 2026-05-19
 
 This file tracks page creation progress for Mitho Cha across customer, business, and admin/superadmin surfaces.
 
@@ -18,23 +18,25 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/categories/[slug]` Category detail / listings
 - [x] `/cities/[slug]` City detail / listings
 - [x] `/profile` Customer profile
-- [ ] `/profile/reviews` My reviews
+- [x] `/profile/reviews` My reviews
 - [x] `/profile/saved` Redirect to collections
-- [ ] `/profile/settings` Account settings
+- [x] `/profile/settings` Account settings
 
 ### Business
 - [x] `/add-business` Add business listing flow
 - [x] `/business/claim` Claim business flow
 - [ ] `/business/claim/status` Claim business submission status / follow-up
-- [ ] `/dashboard` Business dashboard home
+- [x] `/dashboard` Business dashboard home
 - [x] `/dashboard/businesses` Business list / switcher
 - [x] `/dashboard/businesses/new` Add business from dashboard
-- [ ] `/dashboard/businesses/[id]/overview` Business overview
-- [ ] `/dashboard/businesses/[id]/edit` Edit business profile
-- [ ] `/dashboard/businesses/[id]/hours` Manage business hours
-- [ ] `/dashboard/businesses/[id]/photos` Manage media
-- [ ] `/dashboard/businesses/[id]/reviews` Review management / replies
-- [ ] `/dashboard/businesses/[id]/analytics` Business analytics
+- [x] `/dashboard/businesses/[id]` Business detail route / overview redirect
+- [x] `/dashboard/businesses/[id]/overview` Business overview
+- [x] `/dashboard/businesses/[id]/edit` Edit business profile
+- [x] `/dashboard/businesses/[id]/hours` Manage business hours
+- [x] `/dashboard/businesses/[id]/photos` Manage media
+- [x] `/dashboard/businesses/[id]/reviews` Review management / replies
+- [x] `/dashboard/businesses/[id]/analytics` Business analytics
+- [x] `/dashboard/businesses/[id]/settings` Business settings
 - [ ] `/dashboard/settings` Business account settings
 
 ### Admin / Superadmin
@@ -58,6 +60,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/collections/[id]` Collection detail page
 - [x] `/collections/[id]/edit` Edit collection
 - [x] `/collections/[id]/copy` Copy / fork collection confirmation
+- [x] `/profile/following` Following list
 - [ ] `/feed` Following / social discovery feed
 - [x] `/users` Creator discovery / search
 - [x] `/users/[username]` Public user profile
@@ -101,7 +104,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [ ] Finalize business dashboard sidebar structure
 - [ ] Finalize admin dashboard sidebar structure
 - [ ] Decide which pages need SEO-friendly public routes first
-- [x] Replace flat saved places with the collection module; quick-save flows into the default private `Saved` collection
+- [x] Replace flat saved places with the collection module; add-to-collection is now collection-first with no default `Saved` bucket
 
 ## Notes
 - Pages you explicitly called out and are confirmed in this tracker:
@@ -112,6 +115,12 @@ This file tracks page creation progress for Mitho Cha across customer, business,
   - customer profiles
   - add business
   - claim business
+- Existing tracker now also includes newer live routes for:
+  - public creator discovery
+  - public user profiles
+  - public collection detail
+  - profile following
+  - business detail sub-routes under the dashboard
 - Current product direction is discovery-first: trusted local food reviews in Nepal.
 - Reviews, moderation, and business replies are product-critical and should shape both business and admin surfaces.
 - Auth direction: one shared Google OAuth flow, then redirect users based on role and intended destination.

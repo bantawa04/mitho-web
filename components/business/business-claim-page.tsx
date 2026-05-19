@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight, CheckCircle2, FileBadge2, Search, ShieldCheck } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
+import { useMockAuth } from "@/components/auth/mock-auth-provider"
 import { CLAIMABLE_BUSINESSES, getClaimableBusinessById, type ClaimableBusiness } from "@/components/business/business-claim-data"
 import { GoogleSignInDialog } from "@/components/auth/google-sign-in-dialog"
 import { claimRoleOptions, businessClaimSchema, type BusinessClaimFormValues } from "@/lib/validators/business-claim"
@@ -158,13 +159,13 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
 export function BusinessClaimPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { isAuthenticated, signIn } = useMockAuth()
   const prefilledListingId = searchParams.get("listing")
   const prefilledBusiness = getClaimableBusinessById(prefilledListingId)
 
   const [query, setQuery] = React.useState("")
   const [selectedBusiness, setSelectedBusiness] = React.useState<ClaimableBusiness | null>(prefilledBusiness)
   const [step, setStep] = React.useState<1 | 2>(prefilledBusiness ? 2 : 1)
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingSubmission, setPendingSubmission] = React.useState<BusinessClaimFormValues | null>(null)
   const [submittedBusiness, setSubmittedBusiness] = React.useState<ClaimableBusiness | null>(null)
@@ -588,7 +589,7 @@ export function BusinessClaimPage() {
         description="Use Google so Mitho can tie this ownership request to the same account you use for reviews, listings, and future business management."
         helperCopy="You can browse and choose the listing first. We only ask you to sign in when you are ready to submit the claim for admin review."
         onContinue={() => {
-          setIsAuthenticated(true)
+          signIn()
           setIsSignInOpen(false)
         }}
       />

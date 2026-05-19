@@ -2,8 +2,10 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Menu, X } from "lucide-react"
+import { AccountMenu } from "@/components/auth/account-menu"
+import { useMockAuth } from "@/components/auth/mock-auth-provider"
 import { cn } from "@/lib/utils"
 import { GoogleSignInDialog } from "@/components/auth/google-sign-in-dialog"
 import { MithoButton } from "@/components/ui/mitho-button"
@@ -30,6 +32,11 @@ export function Header({ signedInUser }: HeaderProps = {}) {
   const [isScrolled, setIsScrolled] = React.useState(false)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+  const { currentUser, isAuthenticated, isHydrated, signIn, signOut, hasBusinessAccess } = useMockAuth()
+
+  const effectiveUser = isHydrated ? (isAuthenticated ? currentUser : null) : signedInUser
+  const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : Boolean(signedInUser)
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -78,18 +85,10 @@ export function Header({ signedInUser }: HeaderProps = {}) {
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              {signedInUser ? (
-                <Link
-                  href={signedInUser.href ?? "/profile"}
-                  className="hidden items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/88 px-3 py-2 text-sm font-semibold text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.06)] transition-colors hover:border-brand-deep-green/18 hover:bg-brand-soft-beige/45 sm:inline-flex"
-                >
-                  <img
-                    src={signedInUser.avatarUrl || "/placeholder.svg"}
-                    alt={signedInUser.name}
-                    className="h-8 w-8 rounded-full border border-brand-soft-beige object-cover"
-                  />
-                  <span className="max-w-[10rem] truncate">{signedInUser.name}</span>
-                </Link>
+              {effectiveUser ? (
+                <div className="hidden sm:block">
+                  <AccountMenu fallbackUser={signedInUser} />
+                </div>
               ) : (
                 <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex" onClick={openSignInModal}>
                   Sign in
@@ -122,19 +121,62 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                 ))}
               </nav>
               <div className="mt-4 flex flex-col gap-2 border-t border-brand-deep-green/10 pt-4">
-                {signedInUser ? (
-                  <Link
-                    href={signedInUser.href ?? "/profile"}
-                    className="flex items-center gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-3 text-sm font-semibold text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.05)]"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <img
-                      src={signedInUser.avatarUrl || "/placeholder.svg"}
-                      alt={signedInUser.name}
-                      className="h-10 w-10 rounded-full border border-brand-soft-beige object-cover"
-                    />
-                    <span className="truncate">{signedInUser.name}</span>
-                  </Link>
+                {effectiveUser ? (
+                  <>
+                    <Link
+                      href={effectiveUser.href ?? "/profile"}
+                      className="flex items-center gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-3 text-sm font-semibold text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.05)]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <img
+                        src={effectiveUser.avatarUrl || "/placeholder.svg"}
+                        alt={effectiveUser.name}
+                        className="h-10 w-10 rounded-full border border-brand-soft-beige object-cover"
+                      />
+                      <span className="truncate">{effectiveUser.name}</span>
+                    </Link>
+                    <Link
+                      href="/collections"
+                      className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Collections
+                    </Link>
+                    <Link
+                      href="/profile/following"
+                      className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Following
+                    </Link>
+                    {effectiveHasBusinessAccess ? (
+                      <Link
+                        href="/dashboard/businesses"
+                        className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Manage businesses
+                      </Link>
+                    ) : null}
+                    <Link
+                      href="/profile/settings"
+                      className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Account settings
+                    </Link>
+                    <MithoButton
+                      variant="outline-secondary"
+                      className="w-full border-danger/20 text-danger hover:bg-danger/10 hover:text-danger"
+                      onClick={() => {
+                        setIsMenuOpen(false)
+                        signOut()
+                        router.push("/")
+                      }}
+                    >
+                      Log out
+                    </MithoButton>
+                  </>
                 ) : (
                   <MithoButton variant="primary" className="w-full" onClick={openSignInModal}>
                     Sign in
@@ -154,7 +196,10 @@ export function Header({ signedInUser }: HeaderProps = {}) {
       <GoogleSignInDialog
         open={isSignInOpen}
         onOpenChange={setIsSignInOpen}
-        onContinue={() => setIsSignInOpen(false)}
+        onContinue={() => {
+          signIn()
+          setIsSignInOpen(false)
+        }}
       />
     </>
   )

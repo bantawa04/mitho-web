@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Chivo, Poppins } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { MockAuthProvider } from "@/components/auth/mock-auth-provider"
 import "./globals.css"
 
 const poppins = Poppins({
@@ -66,7 +67,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className} ${poppins.variable} ${chivo.variable} font-sans antialiased`}>
-        {children}
+        <MockAuthProvider>{children}</MockAuthProvider>
         <Analytics />
       </body>
     </html>

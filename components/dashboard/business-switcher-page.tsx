@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Building2, CirclePlus, FileCheck2, LayoutDashboard, MoveRight, ShieldCheck } from "lucide-react"
+import { AuthSessionInitializer } from "@/components/auth/mock-auth-provider"
 import {
   type DashboardScenario,
   type ManagedBusiness,
@@ -7,6 +8,7 @@ import {
 } from "@/components/dashboard/dashboard-business-data"
 import { DashboardFooter } from "@/components/dashboard/dashboard-footer"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { mockCustomerProfile } from "@/components/profile/profile-data"
 import { MithoBadge } from "@/components/ui/mitho-badge"
 import { MithoButton } from "@/components/ui/mitho-button"
 
@@ -106,7 +108,12 @@ export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
 
   return (
     <div className="page-shell-business min-h-screen">
-      <DashboardHeader businessName="Manage businesses" location="Choose a workspace or start a new listing" />
+      <AuthSessionInitializer />
+      <DashboardHeader
+        businessName="Manage businesses"
+        location="Choose a workspace or start a new listing"
+        signedInUser={{ name: mockCustomerProfile.name, avatarUrl: mockCustomerProfile.avatarUrl, href: "/profile" }}
+      />
 
       <main className="container mx-auto px-4 pb-12 pt-8">
         <section className="mb-8 rounded-[2rem] border border-brand-deep-green/10 bg-surface-business p-6 shadow-[0_12px_36px_rgba(10,70,53,0.06)]">

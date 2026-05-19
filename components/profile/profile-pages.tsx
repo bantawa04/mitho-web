@@ -2,8 +2,10 @@
 
 import Link from "next/link"
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Search, Settings, Star, UserCheck, UserPlus, Users } from "lucide-react"
 import { GoogleSignInDialog } from "@/components/auth/google-sign-in-dialog"
+import { useMockAuth } from "@/components/auth/mock-auth-provider"
 import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/components/collections/collection-data"
 import { CollectionShowcaseCard } from "@/components/collections/collection-showcase-card"
 import {
@@ -422,6 +424,8 @@ export function ProfileReviewsPage() {
 }
 
 export function ProfileSettingsPage() {
+  const router = useRouter()
+  const { currentUser, signOut } = useMockAuth()
   const settingsCards = [
     {
       title: "Profile details",
@@ -445,6 +449,37 @@ export function ProfileSettingsPage() {
           title="Account settings will own profile editing."
           description="The overview page stays read-only on purpose. This route is where personal details and preferences can deepen when the backend account model is ready."
         />
+
+        <section className={sectionCardClass}>
+          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+            <p className="type-eyebrow text-brand-deep-green/68">Account session</p>
+            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Signed in with one Mitho account across everything.</h2>
+          </div>
+          <div className="flex flex-col gap-5 px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+            <div className="flex items-center gap-4">
+              <img
+                src={currentUser?.avatarUrl || "/placeholder.svg"}
+                alt={currentUser?.name || "Current user"}
+                className="h-14 w-14 rounded-full border-4 border-brand-soft-beige object-cover"
+              />
+              <div>
+                <p className="text-lg font-semibold text-brand-dark-green">{currentUser?.name ?? mockCustomerProfile.name}</p>
+                <p className="mt-1 text-sm text-muted-foreground">Use this same account for reviews, collections, follows, and business tools.</p>
+              </div>
+            </div>
+            <MithoButton
+              type="button"
+              variant="outline-secondary"
+              className="border-danger/20 text-danger hover:bg-danger/10 hover:text-danger"
+              onClick={() => {
+                signOut()
+                router.push("/")
+              }}
+            >
+              Log out
+            </MithoButton>
+          </div>
+        </section>
 
         <section className={sectionCardClass}>
           <div className="grid gap-4 px-6 py-6 md:grid-cols-3 sm:px-8">
@@ -919,13 +954,12 @@ export function PublicUserDiscoveryPage() {
 }
 
 export function PublicUserProfilePage({ username }: { username: string }) {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false)
+  const { isAuthenticated, signIn } = useMockAuth()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
   const [profile, setProfile] = React.useState(() => getPublicProfileByUsername(username))
 
   React.useEffect(() => {
-    setIsAuthenticated(false)
     setIsSignInOpen(false)
     setPendingFollowAfterAuth(false)
     setProfile(getPublicProfileByUsername(username))
@@ -969,7 +1003,7 @@ export function PublicUserProfilePage({ username }: { username: string }) {
   }
 
   const handleFollowAuthContinue = () => {
-    setIsAuthenticated(true)
+    signIn()
     setIsSignInOpen(false)
 
     if (pendingFollowAfterAuth) {

@@ -14,9 +14,11 @@ import {
   MessageSquare,
   Settings,
 } from "lucide-react"
+import { AuthSessionInitializer } from "@/components/auth/mock-auth-provider"
 import type { ManagedBusiness } from "@/components/dashboard/dashboard-business-data"
 import { DashboardFooter } from "@/components/dashboard/dashboard-footer"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { mockCustomerProfile } from "@/components/profile/profile-data"
 import { MithoButton } from "@/components/ui/mitho-button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
@@ -87,9 +89,11 @@ export function BusinessWorkspaceShell({ business, children }: BusinessWorkspace
 
   return (
     <div className="page-shell-business min-h-screen">
+      <AuthSessionInitializer />
       <DashboardHeader
         businessName={business.name}
         location={business.location}
+        signedInUser={{ name: mockCustomerProfile.name, avatarUrl: mockCustomerProfile.avatarUrl, href: "/profile" }}
         actions={
           <Sheet>
             <SheetTrigger asChild>
