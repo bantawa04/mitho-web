@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { MapPin } from "lucide-react"
+import { ArrowUpRight, MapPin } from "lucide-react"
 import { MithoSection } from "@/components/ui/mitho-section"
 import { MithoCarousel } from "@/components/ui/mitho-carousel"
 import { MithoButton } from "@/components/ui/mitho-button"
@@ -17,6 +17,7 @@ const sponsoredListings = [
     location: "Thamel, Kathmandu",
     imageUrl: "/restaurant-interior-cozy.jpg",
     offer: "20% off on first visit",
+    href: "/business/everest-dine",
   },
   {
     name: "Himalayan Rooftop",
@@ -26,6 +27,7 @@ const sponsoredListings = [
     location: "Basantapur, Kathmandu",
     imageUrl: "/himalayan-java-coffee-cafe-nepal.jpg",
     offer: "Free dessert with meal",
+    href: "/business/himalayan-rooftop",
   },
   {
     name: "Spice Garden",
@@ -35,6 +37,7 @@ const sponsoredListings = [
     location: "Jhamsikhel, Lalitpur",
     imageUrl: "/chef-cooking-nepali-food.jpg",
     offer: "Happy hour 4-6 PM",
+    href: "/business/spice-garden",
   },
 ]
 
@@ -48,7 +51,7 @@ export function SponsoredListingsSection() {
       density="compact"
       action={
         <MithoButton variant="link" asChild>
-          <Link href="#for-business">Ask about featured placement</Link>
+          <Link href="/business/claim">Ask about featured placement</Link>
         </MithoButton>
       }
     >
@@ -91,6 +94,14 @@ export function SponsoredListingsSection() {
               </div>
 
               <p className="text-sm leading-6 text-foreground">{listing.offer}</p>
+
+              <Link
+                href={listing.href}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+              >
+                See this listing
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
             </div>
           </article>
         ))}

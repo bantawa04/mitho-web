@@ -10,11 +10,11 @@ import { MithoButton } from "@/components/ui/mitho-button"
 import { BrandLogo } from "@/components/ui/brand-logo"
 
 const navLinks = [
-  { href: "/#reviews", label: "Reviews" },
-  { href: "/#trending", label: "Trending" },
-  { href: "/#nearby", label: "Nearby" },
-  { href: "/#categories", label: "Cravings" },
-  { href: "/#for-business", label: "For Business" },
+  { href: "/users/aaratieats", label: "Reviews" },
+  { href: "/explore", label: "Trending" },
+  { href: "/cities/kathmandu", label: "Nearby" },
+  { href: "/categories/restaurants", label: "Cravings" },
+  { href: "/business/claim", label: "For Business" },
 ]
 
 interface HeaderProps {

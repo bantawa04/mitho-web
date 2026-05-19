@@ -6,18 +6,19 @@ const footerLinks = {
   discover: {
     title: "Discover",
     links: [
-      { id: "discover-trending", label: "Trending picks", href: "/#trending" },
-      { id: "discover-reviews", label: "Local reviews", href: "/#reviews" },
-      { id: "discover-nearby", label: "Nearby favorites", href: "/#nearby" },
-      { id: "discover-cravings", label: "Cravings", href: "/#categories" },
+      { id: "discover-trending", label: "Trending picks", href: "/explore" },
+      { id: "discover-reviews", label: "Local reviews", href: "/users/aaratieats" },
+      { id: "discover-nearby", label: "Nearby favorites", href: "/cities/kathmandu" },
+      { id: "discover-cravings", label: "Cravings", href: "/categories/restaurants" },
+      { id: "discover-creators", label: "Browse creators", href: "/users" },
     ],
   },
   forBusiness: {
     title: "For Business",
     links: [
-      { id: "business-claim", label: "Claim your business", href: "/#for-business" },
-      { id: "business-placement", label: "Featured placement", href: "/#partners" },
-      { id: "business-team", label: "Talk to the team", href: "#" },
+      { id: "business-claim", label: "Claim your business", href: "/business/claim" },
+      { id: "business-placement", label: "Featured placement", href: "/business/claim" },
+      { id: "business-team", label: "Talk to the team", href: "/add-business" },
     ],
   },
   product: {

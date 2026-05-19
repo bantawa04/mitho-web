@@ -110,7 +110,7 @@ export function HeroV2() {
                 <Link href={buildExploreHref("", location)}>Explore local picks</Link>
               </MithoButton>
               <Link
-                href="#for-business"
+                href="/business/claim"
                 className="text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
               >
                 For restaurant owners

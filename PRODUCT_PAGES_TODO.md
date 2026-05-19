@@ -59,6 +59,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/collections/[id]/edit` Edit collection
 - [x] `/collections/[id]/copy` Copy / fork collection confirmation
 - [ ] `/feed` Following / social discovery feed
+- [x] `/users` Creator discovery / search
 - [x] `/users/[username]` Public user profile
 - [x] `/users/[username]/collections/[id]` Public collection detail
 - [ ] `/notifications` Notifications center

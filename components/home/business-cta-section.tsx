@@ -29,10 +29,10 @@ export function BusinessCtaSection() {
 
           <div className="mt-7 flex flex-wrap gap-3">
             <MithoButton size="lg" asChild>
-              <Link href="#">Claim your business</Link>
+              <Link href="/business/claim">Claim your business</Link>
             </MithoButton>
             <MithoButton variant="outline-secondary" size="lg" asChild>
-              <Link href="#">Talk to the team</Link>
+              <Link href="/add-business">Talk to the team</Link>
             </MithoButton>
           </div>
         </div>

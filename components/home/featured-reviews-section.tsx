@@ -16,6 +16,7 @@ const reviews = [
     when: "2 days ago",
     city: "New Road, Kathmandu",
     mediaUrl: "/nepali-momos-dumplings-plate.jpg",
+    href: "/business/momo-central",
   },
   {
     author: "Rajan Shrestha",
@@ -27,6 +28,7 @@ const reviews = [
     when: "5 days ago",
     city: "Bhaktapur",
     mediaUrl: "/newari-food-choila-plate.jpg",
+    href: "/business/newari-bhoj",
   },
   {
     author: "Sita Gurung",
@@ -38,6 +40,7 @@ const reviews = [
     when: "1 week ago",
     city: "Patan, Lalitpur",
     mediaUrl: "",
+    href: "/business/sel-roti-house",
   },
 ]
 
@@ -57,7 +60,7 @@ export function FeaturedReviewsSection() {
       subtitle="Short, specific notes on what to order, how the place feels, and whether the trip is worth it."
       action={
         <MithoButton variant="link" asChild>
-          <Link href="#trending">See what people are saving now</Link>
+          <Link href="/collections">See what people are saving now</Link>
         </MithoButton>
       }
       density="feature"
@@ -130,7 +133,7 @@ export function FeaturedReviewsSection() {
                 <p className="mt-4 max-w-[62ch] text-sm leading-7 text-foreground">{review.text}</p>
 
                 <Link
-                  href="#"
+                  href={review.href}
                   className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
                 >
                   Read the full review

@@ -27,6 +27,7 @@ const SAMPLE_ROUTE_MAP: Record<string, string> = {
   "/collections/[id]": `/collections/${ownedCollections[0]?.id ?? "best-pizza-places"}`,
   "/collections/[id]/edit": `/collections/${ownedCollections[0]?.id ?? "best-pizza-places"}/edit`,
   "/collections/[id]/copy": `/collections/${ownedCollections[0]?.id ?? "best-pizza-places"}/copy`,
+  "/users": "/users",
   "/users/[username]": `/users/${mockCustomerProfile.username}`,
   "/users/[username]/collections/[id]": `/users/${publicCollections[0]?.owner.username ?? "nabin-eats"}/collections/${publicCollections[0]?.id ?? "kathmandu-momo-crawl"}`,
 }

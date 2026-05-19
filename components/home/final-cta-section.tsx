@@ -19,13 +19,13 @@ export function FinalCtaSection() {
 
           <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
             <MithoButton size="lg" asChild>
-              <Link href="#trending">
+              <Link href="/explore">
                 <Compass className="h-5 w-5" />
                 Explore places
               </Link>
             </MithoButton>
             <MithoButton variant="outline-secondary" size="lg" asChild>
-              <Link href="#for-business">
+              <Link href="/add-business">
                 <Store className="h-5 w-5" />
                 Add your business
               </Link>

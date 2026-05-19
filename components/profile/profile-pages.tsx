@@ -1,15 +1,29 @@
+"use client"
+
 import Link from "next/link"
-import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Settings, Star } from "lucide-react"
+import * as React from "react"
+import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Search, Settings, Star } from "lucide-react"
 import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/components/collections/collection-data"
 import { CollectionShowcaseCard } from "@/components/collections/collection-showcase-card"
-import { getPublicProfileByUsername, mockCustomerProfile, type PublicUserProfileData } from "@/components/profile/profile-data"
+import {
+  getPublicCreatorDirectoryPage,
+  getPublicProfileByUsername,
+  getPublicProfileCollectionsPage,
+  mockCustomerProfile,
+  type PublicCreatorDiscoveryItem,
+  type PublicUserProfileData,
+} from "@/components/profile/profile-data"
 import { ProfileNavigation } from "@/components/profile/profile-navigation"
 import { MithoBadge } from "@/components/ui/mitho-badge"
 import { MithoButton } from "@/components/ui/mitho-button"
 import { MithoCard, MithoCardContent } from "@/components/ui/mitho-card"
+import { Input } from "@/components/ui/input"
 
 const sectionCardClass =
   "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
+const PUBLIC_COLLECTION_PAGE_SIZE = 12
+const PUBLIC_COLLECTION_SEARCH_THRESHOLD = 6
+const PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE = 4
 
 function PageIntro({
   eyebrow,
@@ -474,6 +488,60 @@ function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
 }
 
 function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData }) {
+  const [query, setQuery] = React.useState("")
+  const deferredQuery = React.useDeferredValue(query.trim())
+  const [isPending, startTransition] = React.useTransition()
+  const [collectionsPage, setCollectionsPage] = React.useState(() =>
+    getPublicProfileCollectionsPage({
+      username: profile.username,
+      limit: PUBLIC_COLLECTION_PAGE_SIZE,
+    }),
+  )
+
+  const showSearch = profile.collectionCount > PUBLIC_COLLECTION_SEARCH_THRESHOLD
+
+  React.useEffect(() => {
+    setQuery("")
+  }, [profile.username])
+
+  React.useEffect(() => {
+    startTransition(() => {
+      setCollectionsPage(
+        getPublicProfileCollectionsPage({
+          username: profile.username,
+          query: deferredQuery,
+          limit: PUBLIC_COLLECTION_PAGE_SIZE,
+        }),
+      )
+    })
+  }, [deferredQuery, profile.username])
+
+  const handleShowMore = () => {
+    if (!collectionsPage.nextCursor) return
+
+    startTransition(() => {
+      const nextPage = getPublicProfileCollectionsPage({
+        username: profile.username,
+        query: deferredQuery,
+        limit: PUBLIC_COLLECTION_PAGE_SIZE,
+        cursor: collectionsPage.nextCursor,
+      })
+
+      setCollectionsPage((currentPage) => ({
+        items: [...currentPage.items, ...nextPage.items],
+        totalCount: nextPage.totalCount,
+        nextCursor: nextPage.nextCursor,
+        hasMore: nextPage.hasMore,
+      }))
+    })
+  }
+
+  const hasNoCollections = collectionsPage.totalCount === 0
+  const isSearching = deferredQuery.length > 0
+  const resultLabel = isSearching
+    ? `${collectionsPage.totalCount} matching ${collectionsPage.totalCount === 1 ? "collection" : "collections"}`
+    : `Showing ${collectionsPage.items.length} of ${collectionsPage.totalCount} collections`
+
   return (
     <section className={sectionCardClass}>
       <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
@@ -486,16 +554,58 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
         </p>
       </div>
 
-      <div className="px-6 py-6 sm:px-8">
-        {profile.publicCollections.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {profile.publicCollections.map((collection) => (
-              <CollectionShowcaseCard
-                key={collection.id}
-                collection={collection}
-                href={`/users/${profile.username}/collections/${collection.id}`}
+      {profile.collectionCount > 0 ? (
+        <div className="flex flex-col gap-3 border-b border-brand-deep-green/10 px-6 py-4 sm:px-8 md:flex-row md:items-center md:justify-between">
+          {showSearch ? (
+            <div className="relative w-full md:max-w-sm">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                className="h-11 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] pl-11 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                placeholder="Search public collections"
               />
-            ))}
+            </div>
+          ) : (
+            <p className="text-sm leading-7 text-muted-foreground">
+              Browse {profile.name.split(" ")[0]}'s public lists as ready-made shortcuts for the next meal plan.
+            </p>
+          )}
+          <span className="text-sm text-muted-foreground">{resultLabel}</span>
+        </div>
+      ) : null}
+
+      <div className="px-6 py-6 sm:px-8">
+        {!hasNoCollections ? (
+          <div className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {collectionsPage.items.map((collection) => (
+                <CollectionShowcaseCard
+                  key={collection.id}
+                  collection={collection}
+                  href={`/users/${profile.username}/collections/${collection.id}`}
+                />
+              ))}
+            </div>
+            {collectionsPage.hasMore ? (
+              <div className="flex justify-center">
+                <MithoButton
+                  type="button"
+                  variant="outline-secondary"
+                  onClick={handleShowMore}
+                  disabled={isPending}
+                >
+                  {isPending ? "Loading more..." : "Show more"}
+                </MithoButton>
+              </div>
+            ) : null}
+          </div>
+        ) : isSearching ? (
+          <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+            <p className="text-base font-semibold text-brand-dark-green">No public collections match this search.</p>
+            <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+              Try another collection title, place name, or clear the search to see everything again.
+            </p>
           </div>
         ) : (
           <p className="text-sm leading-7 text-muted-foreground">
@@ -563,6 +673,180 @@ function PublicReviewsSection({ profile }: { profile: PublicUserProfileData }) {
   )
 }
 
+function CreatorDiscoveryCard({ creator }: { creator: PublicCreatorDiscoveryItem }) {
+  return (
+    <Link
+      href={`/users/${creator.username}`}
+      className="group flex h-full flex-col rounded-[1.55rem] border border-brand-deep-green/10 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-deep-green/18 hover:shadow-[0_16px_34px_rgba(10,70,53,0.08)]"
+    >
+      <div className="flex items-start gap-4">
+        <img
+          src={creator.avatarUrl}
+          alt={creator.name}
+          className="h-16 w-16 rounded-full border-4 border-brand-soft-beige object-cover"
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <MithoBadge variant="neutral">{creator.publicCollectionCount} collections</MithoBadge>
+            <MithoBadge variant="muted">{creator.reviewCount} reviews</MithoBadge>
+          </div>
+          <h2 className="mt-3 line-clamp-2 text-xl font-semibold text-brand-dark-green">{creator.name}</h2>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
+            @{creator.username}
+          </p>
+          <p className="mt-3 line-clamp-3 text-sm leading-7 text-muted-foreground">{creator.bio}</p>
+        </div>
+      </div>
+
+      <div className="mt-5 border-t border-brand-deep-green/10 pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
+            Public collection previews
+          </p>
+          <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />
+        </div>
+
+        {creator.collectionPreviewItems.length > 0 ? (
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {creator.collectionPreviewItems.map((collection) => {
+              const coverImage = getCollectionCoverImages(collection)[0]
+
+              return (
+                <div key={collection.id} className="space-y-2">
+                  <div className="aspect-[5/4] overflow-hidden rounded-[0.95rem] bg-[#f6ede0]">
+                    {coverImage ? (
+                      <img src={coverImage} alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-brand-deep-green/30">
+                        <Bookmark className="h-4 w-4" />
+                      </div>
+                    )}
+                  </div>
+                  <p className="line-clamp-2 text-xs font-medium leading-5 text-brand-dark-green">{collection.title}</p>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">
+            Public lists will start appearing here once this creator publishes their first collection.
+          </p>
+        )}
+      </div>
+    </Link>
+  )
+}
+
+export function PublicUserDiscoveryPage() {
+  const [query, setQuery] = React.useState("")
+  const deferredQuery = React.useDeferredValue(query.trim())
+  const [isPending, startTransition] = React.useTransition()
+  const [directoryPage, setDirectoryPage] = React.useState(() =>
+    getPublicCreatorDirectoryPage({ limit: PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE }),
+  )
+
+  React.useEffect(() => {
+    startTransition(() => {
+      setDirectoryPage(
+        getPublicCreatorDirectoryPage({
+          query: deferredQuery,
+          limit: PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE,
+        }),
+      )
+    })
+  }, [deferredQuery])
+
+  const handleShowMore = () => {
+    if (!directoryPage.nextCursor) return
+
+    startTransition(() => {
+      const nextPage = getPublicCreatorDirectoryPage({
+        query: deferredQuery,
+        limit: PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE,
+        cursor: directoryPage.nextCursor,
+      })
+
+      setDirectoryPage((currentPage) => ({
+        items: [...currentPage.items, ...nextPage.items],
+        totalCount: nextPage.totalCount,
+        nextCursor: nextPage.nextCursor,
+        hasMore: nextPage.hasMore,
+      }))
+    })
+  }
+
+  const isSearching = deferredQuery.length > 0
+  const resultLabel = isSearching
+    ? `${directoryPage.totalCount} matching ${directoryPage.totalCount === 1 ? "creator" : "creators"}`
+    : `Showing ${directoryPage.items.length} of ${directoryPage.totalCount} creators`
+
+  return (
+    <div className="container mx-auto px-4 py-10 md:py-12">
+      <div className="space-y-6">
+        <section className={sectionCardClass}>
+          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+            <p className="type-eyebrow text-brand-deep-green/68">Creator discovery</p>
+            <h1 className="type-page-title mt-3 text-brand-dark-green">Browse the people building the best public food lists on Mitho.</h1>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
+              Search by name or username, then follow the public collections and review signals that feel worth borrowing for your next plan.
+            </p>
+          </div>
+
+          <div className="space-y-5 px-6 py-6 sm:px-8">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="relative w-full md:max-w-md">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  className="h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] pl-11 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  placeholder="Search creators by name or username"
+                />
+              </div>
+              <span className="text-sm text-muted-foreground">{resultLabel}</span>
+            </div>
+
+            {!directoryPage.totalCount ? (
+              <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+                <p className="text-base font-semibold text-brand-dark-green">
+                  {isSearching ? "No creators match this search." : "Public creators will appear here soon."}
+                </p>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                  {isSearching
+                    ? "Try another name or username to keep browsing public profiles."
+                    : "Once more people publish their collections and reviews, this page will become a stronger discovery layer."}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {directoryPage.items.map((creator) => (
+                    <CreatorDiscoveryCard key={creator.username} creator={creator} />
+                  ))}
+                </div>
+
+                {directoryPage.hasMore ? (
+                  <div className="flex justify-center">
+                    <MithoButton
+                      type="button"
+                      variant="outline-secondary"
+                      onClick={handleShowMore}
+                      disabled={isPending}
+                    >
+                      {isPending ? "Loading more..." : "Show more"}
+                    </MithoButton>
+                  </div>
+                ) : null}
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
+
 export function PublicUserProfilePage({ username }: { username: string }) {
   const profile = getPublicProfileByUsername(username)
 
@@ -596,6 +880,13 @@ export function PublicUserProfilePage({ username }: { username: string }) {
                   @{profile.username} · {profile.joinedLabel}
                 </p>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{profile.bio}</p>
+                <div className="mt-5 flex flex-wrap items-center gap-3">
+                  <MithoBadge variant="neutral">{profile.collectionCount} public collections</MithoBadge>
+                  <MithoBadge variant="muted">{profile.reviewCount} public reviews</MithoBadge>
+                  <MithoButton variant="outline-secondary" size="sm" asChild>
+                    <Link href="/users">Browse more creators</Link>
+                  </MithoButton>
+                </div>
               </div>
             </div>
 

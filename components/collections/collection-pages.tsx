@@ -627,6 +627,12 @@ export function PublicCollectionDetailPage({ collection }: { collection: Collect
                   <p className="text-sm font-semibold text-brand-dark-green">{collection.owner.name}</p>
                   <p className="text-sm text-muted-foreground">@{collection.owner.username}</p>
                 </div>
+                <Link
+                  href="/users"
+                  className="ml-auto text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+                >
+                  Browse more creators
+                </Link>
               </div>
 
               <div>

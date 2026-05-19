@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { MapPin, Navigation } from "lucide-react"
+import { ArrowUpRight, MapPin, Navigation } from "lucide-react"
 import { MithoSection } from "@/components/ui/mitho-section"
 import { MithoCarousel } from "@/components/ui/mitho-carousel"
 import { StarRating } from "@/components/ui/mitho-rating"
@@ -16,6 +16,7 @@ const nearbyPlaces = [
     distance: "0.5 km",
     imageUrl: "/nepali-restaurant-traditional-interior.jpg",
     note: "A practical call when you want a full meal nearby and not another cafe stop.",
+    href: "/business/bhojan-griha",
   },
   {
     name: "Chiya Pasal",
@@ -24,6 +25,7 @@ const nearbyPlaces = [
     distance: "0.8 km",
     imageUrl: "/nepali-tea-house-chiya.jpg",
     note: "Good for a slower tea break and small plates when the crowd matters less than the mood.",
+    href: "/business/chiya-pasal",
   },
   {
     name: "Sel Roti House",
@@ -32,6 +34,7 @@ const nearbyPlaces = [
     distance: "1.2 km",
     imageUrl: "/nepali-sel-roti-street-food.jpg",
     note: "Worth the short detour if you want something local, filling, and easy on the budget.",
+    href: "/business/sel-roti-house",
   },
   {
     name: "Himalayan Java",
@@ -40,6 +43,7 @@ const nearbyPlaces = [
     distance: "1.5 km",
     imageUrl: "/himalayan-java-coffee-cafe-nepal.jpg",
     note: "Reliable when you need a familiar coffee stop without spending too much time choosing.",
+    href: "/business/himalayan-java",
   },
 ]
 
@@ -54,7 +58,7 @@ export function PopularNearYouSection() {
       density="compact"
       action={
         <MithoButton variant="outline-secondary" size="sm" asChild>
-          <Link href="#">
+          <Link href="/cities/kathmandu">
             <Navigation className="h-4 w-4" />
             Update location
           </Link>
@@ -93,6 +97,14 @@ export function PopularNearYouSection() {
               </div>
 
               <p className="text-sm leading-6 text-foreground">{place.note}</p>
+
+              <Link
+                href={place.href}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+              >
+                View place
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
             </div>
           </article>
         ))}

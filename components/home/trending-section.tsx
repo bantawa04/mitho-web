@@ -17,6 +17,7 @@ const trendingPlaces = [
     location: "Thamel, Kathmandu",
     imageUrl: "/nepali-restaurant-thakali-food.jpg",
     note: "Come for the achar and generous plates, especially when you need a dependable group dinner.",
+    href: "/business/himalayan-flavors",
   },
   {
     name: "Momo Central",
@@ -26,6 +27,7 @@ const trendingPlaces = [
     location: "New Road, Kathmandu",
     imageUrl: "/nepali-momo-dumplings-restaurant.jpg",
     note: "Busy, fast-moving, and still one of the easiest late-evening momo calls in the city.",
+    href: "/business/momo-central",
   },
   {
     name: "Lakeside Cafe",
@@ -35,6 +37,7 @@ const trendingPlaces = [
     location: "Lakeside, Pokhara",
     imageUrl: "/lakeside-cafe-pokhara-nepal.jpg",
     note: "Good for a slower coffee stop when you want a view without sacrificing the food.",
+    href: "/business/lakeside-cafe",
   },
   {
     name: "Newari Bhoj",
@@ -44,6 +47,7 @@ const trendingPlaces = [
     location: "Bhaktapur",
     imageUrl: "/newari-traditional-food-nepal.jpg",
     note: "A strong pick when the goal is real smoke, spice, and a meal that feels rooted in place.",
+    href: "/business/newari-bhoj",
   },
 ]
 
@@ -58,7 +62,7 @@ export function TrendingSection() {
       density="feature"
       action={
         <MithoButton variant="link" asChild>
-          <Link href="#">Browse all local picks</Link>
+          <Link href="/explore">Browse all local picks</Link>
         </MithoButton>
       }
     >
@@ -105,7 +109,7 @@ export function TrendingSection() {
               <p className="text-sm leading-6 text-foreground">{place.note}</p>
 
               <Link
-                href="#"
+                href={place.href}
                 className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
               >
                 Open this pick
