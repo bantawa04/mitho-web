@@ -2,14 +2,19 @@
 
 import Link from "next/link"
 import * as React from "react"
-import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Search, Settings, Star } from "lucide-react"
+import { ArrowRight, Bookmark, Building2, ChevronRight, Clock3, Copy, Globe, Lock, MapPin, MessageSquare, Search, Settings, Star, UserCheck, UserPlus, Users } from "lucide-react"
+import { GoogleSignInDialog } from "@/components/auth/google-sign-in-dialog"
 import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/components/collections/collection-data"
 import { CollectionShowcaseCard } from "@/components/collections/collection-showcase-card"
 import {
+  followPublicProfile,
+  getFollowingProfiles,
   getPublicCreatorDirectoryPage,
   getPublicProfileByUsername,
   getPublicProfileCollectionsPage,
   mockCustomerProfile,
+  unfollowPublicProfile,
+  type FollowingProfileListItem,
   type PublicCreatorDiscoveryItem,
   type PublicUserProfileData,
 } from "@/components/profile/profile-data"
@@ -460,11 +465,113 @@ export function ProfileSettingsPage() {
   )
 }
 
+export function ProfileFollowingPage() {
+  const [followingProfiles, setFollowingProfiles] = React.useState<FollowingProfileListItem[]>(() => getFollowingProfiles())
+
+  const handleUnfollow = (username: string) => {
+    unfollowPublicProfile(username)
+    setFollowingProfiles(getFollowingProfiles())
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-10 md:py-12">
+      <div className="space-y-6">
+        <PageIntro
+          eyebrow="People you follow"
+          title="Keep your trusted creators close."
+          description="Following is a lightweight way to remember whose public collections and reviews keep leading you to better food decisions."
+        />
+
+        <section className={sectionCardClass}>
+          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="type-eyebrow text-brand-deep-green/68">Following</p>
+                <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Creators you chose to keep up with.</h2>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
+                  Their public collections and review signals can stay easy to revisit from one signed-in place.
+                </p>
+              </div>
+              <MithoBadge variant="neutral">{followingProfiles.length} following</MithoBadge>
+            </div>
+          </div>
+
+          <div className="px-6 py-6 sm:px-8">
+            {followingProfiles.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {followingProfiles.map((profile) => (
+                  <div
+                    key={profile.userId}
+                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.04)]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <Link href={`/users/${profile.username}`} className="flex min-w-0 items-start gap-4">
+                        <img
+                          src={profile.avatarUrl}
+                          alt={profile.name}
+                          className="h-14 w-14 rounded-full border-4 border-brand-soft-beige object-cover"
+                        />
+                        <div className="min-w-0">
+                          <h3 className="truncate text-lg font-semibold text-brand-dark-green">{profile.name}</h3>
+                          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
+                            @{profile.username}
+                          </p>
+                        </div>
+                      </Link>
+
+                      <MithoButton
+                        type="button"
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={() => handleUnfollow(profile.username)}
+                      >
+                        <UserCheck className="h-4 w-4" />
+                        Following
+                      </MithoButton>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <MithoBadge variant="muted">{profile.followerCount} followers</MithoBadge>
+                      <MithoBadge variant="neutral">{profile.publicCollectionCount} collections</MithoBadge>
+                      <MithoBadge variant="muted">{profile.reviewCount} reviews</MithoBadge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+                <p className="text-base font-semibold text-brand-dark-green">You are not following anyone yet.</p>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                  Follow public creators whose collections and reviews feel worth revisiting, and they will appear here for quick access.
+                </p>
+                <div className="mt-4">
+                  <MithoButton variant="outline-secondary" asChild>
+                    <Link href="/users">Browse creators</Link>
+                  </MithoButton>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
+
 function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
   return (
     <section className={sectionCardClass}>
-      <div className="grid grid-cols-2 divide-x divide-brand-deep-green/10 px-6 py-6 sm:px-8">
-        <div className="flex items-center justify-center gap-4 px-2 sm:px-4">
+      <div className="grid divide-y divide-brand-deep-green/10 px-6 py-2 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-8">
+        <div className="flex items-center gap-4 py-5 sm:px-4">
+            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-dark-green/10">
+              <Users className="h-5 w-5 text-brand-dark-green" />
+            </span>
+            <div>
+              <p className="text-2xl font-bold leading-none text-brand-dark-green">{profile.followerCount}</p>
+              <p className="mt-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">Followers</p>
+            </div>
+        </div>
+        <div className="flex items-center gap-4 py-5 sm:px-4 sm:justify-center">
           <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-orange/10">
             <Star className="h-5 w-5 text-brand-orange" />
           </span>
@@ -473,7 +580,7 @@ function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
             <p className="mt-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">Public reviews</p>
           </div>
         </div>
-        <div className="flex items-center justify-center gap-4 px-2 sm:px-4">
+        <div className="flex items-center gap-4 py-5 sm:px-4 sm:justify-end">
           <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-deep-green/10">
             <Bookmark className="h-5 w-5 text-brand-deep-green" />
           </span>
@@ -687,6 +794,7 @@ function CreatorDiscoveryCard({ creator }: { creator: PublicCreatorDiscoveryItem
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
+            <MithoBadge variant="muted">{creator.followerCount} followers</MithoBadge>
             <MithoBadge variant="neutral">{creator.publicCollectionCount} collections</MithoBadge>
             <MithoBadge variant="muted">{creator.reviewCount} reviews</MithoBadge>
           </div>
@@ -694,44 +802,7 @@ function CreatorDiscoveryCard({ creator }: { creator: PublicCreatorDiscoveryItem
           <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
             @{creator.username}
           </p>
-          <p className="mt-3 line-clamp-3 text-sm leading-7 text-muted-foreground">{creator.bio}</p>
         </div>
-      </div>
-
-      <div className="mt-5 border-t border-brand-deep-green/10 pt-4">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
-            Public collection previews
-          </p>
-          <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />
-        </div>
-
-        {creator.collectionPreviewItems.length > 0 ? (
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            {creator.collectionPreviewItems.map((collection) => {
-              const coverImage = getCollectionCoverImages(collection)[0]
-
-              return (
-                <div key={collection.id} className="space-y-2">
-                  <div className="aspect-[5/4] overflow-hidden rounded-[0.95rem] bg-[#f6ede0]">
-                    {coverImage ? (
-                      <img src={coverImage} alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-brand-deep-green/30">
-                        <Bookmark className="h-4 w-4" />
-                      </div>
-                    )}
-                  </div>
-                  <p className="line-clamp-2 text-xs font-medium leading-5 text-brand-dark-green">{collection.title}</p>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          <p className="mt-3 text-sm leading-7 text-muted-foreground">
-            Public lists will start appearing here once this creator publishes their first collection.
-          </p>
-        )}
       </div>
     </Link>
   )
@@ -848,7 +919,17 @@ export function PublicUserDiscoveryPage() {
 }
 
 export function PublicUserProfilePage({ username }: { username: string }) {
-  const profile = getPublicProfileByUsername(username)
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false)
+  const [isSignInOpen, setIsSignInOpen] = React.useState(false)
+  const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
+  const [profile, setProfile] = React.useState(() => getPublicProfileByUsername(username))
+
+  React.useEffect(() => {
+    setIsAuthenticated(false)
+    setIsSignInOpen(false)
+    setPendingFollowAfterAuth(false)
+    setProfile(getPublicProfileByUsername(username))
+  }, [username])
 
   if (!profile) {
     return (
@@ -863,40 +944,111 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     )
   }
 
+  const isOwnProfile = isAuthenticated && profile.username === mockCustomerProfile.username
+
+  const syncProfile = () => {
+    setProfile(getPublicProfileByUsername(username))
+  }
+
+  const handleFollowToggle = () => {
+    if (isOwnProfile) return
+
+    if (!isAuthenticated) {
+      setPendingFollowAfterAuth(true)
+      setIsSignInOpen(true)
+      return
+    }
+
+    if (profile.isFollowedByCurrentUser) {
+      unfollowPublicProfile(profile.username)
+    } else {
+      followPublicProfile(profile.username)
+    }
+
+    syncProfile()
+  }
+
+  const handleFollowAuthContinue = () => {
+    setIsAuthenticated(true)
+    setIsSignInOpen(false)
+
+    if (pendingFollowAfterAuth) {
+      followPublicProfile(profile.username)
+      setPendingFollowAfterAuth(false)
+      syncProfile()
+    }
+  }
+
   return (
-    <div className="container mx-auto px-4 py-10 md:py-12">
-      <div className="space-y-6">
+    <>
+      <div className="container mx-auto px-4 py-10 md:py-12">
+        <div className="space-y-6">
         <section className={sectionCardClass}>
-          <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1fr)_220px] sm:px-8">
+          <div className="px-6 py-6 sm:px-8">
             <div className="flex items-start gap-4">
-              <img
-                src={profile.avatarUrl}
-                alt={profile.name}
-                className="h-20 w-20 rounded-full border-4 border-brand-soft-beige object-cover sm:h-24 sm:w-24"
-              />
-              <div>
+                <img
+                  src={profile.avatarUrl}
+                  alt={profile.name}
+                  className="h-20 w-20 rounded-full border-4 border-brand-soft-beige object-cover sm:h-24 sm:w-24"
+                />
+                <div className="min-w-0 flex-1">
                 <h1 className="type-page-title mt-4 text-brand-dark-green">{profile.name}</h1>
                 <p className="mt-2 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
                   @{profile.username} · {profile.joinedLabel}
                 </p>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{profile.bio}</p>
-                <div className="mt-5 flex flex-wrap items-center gap-3">
-                  <MithoBadge variant="neutral">{profile.collectionCount} public collections</MithoBadge>
-                  <MithoBadge variant="muted">{profile.reviewCount} public reviews</MithoBadge>
-                  <MithoButton variant="outline-secondary" size="sm" asChild>
-                    <Link href="/users">Browse more creators</Link>
-                  </MithoButton>
+                <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+                  <p className="max-w-2xl text-base leading-7 text-muted-foreground">{profile.bio}</p>
+                  <div className="shrink-0">
+                    {!isOwnProfile ? (
+                      <MithoButton
+                        type="button"
+                        variant={profile.isFollowedByCurrentUser ? "outline-secondary" : "secondary"}
+                        onClick={handleFollowToggle}
+                      >
+                        {profile.isFollowedByCurrentUser ? (
+                          <>
+                            <UserCheck className="h-4 w-4" />
+                            Following
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="h-4 w-4" />
+                            Follow
+                          </>
+                        )}
+                      </MithoButton>
+                    ) : (
+                      <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                        <Users className="h-4 w-4" />
+                        This is your public profile
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
+            </div>
+          </section>
 
-          </div>
-        </section>
-
-        <PublicStatsStrip profile={profile} />
-        <PublicCollectionsSection profile={profile} />
-        <PublicReviewsSection profile={profile} />
+          <PublicStatsStrip profile={profile} />
+          <PublicCollectionsSection profile={profile} />
+          <PublicReviewsSection profile={profile} />
+        </div>
       </div>
-    </div>
+
+      <GoogleSignInDialog
+        open={isSignInOpen}
+        onOpenChange={(open) => {
+          setIsSignInOpen(open)
+          if (!open) {
+            setPendingFollowAfterAuth(false)
+          }
+        }}
+        onContinue={handleFollowAuthContinue}
+        title="Sign in to follow creators whose taste you want to keep up with."
+        description="Use Google to follow public Mitho creators, revisit their profiles, and keep their collections and reviews easy to find."
+        helperCopy="For now, this is still a mocked Google sign-in flow. Once real auth is connected, the same modal can complete the follow and keep your creator list in sync."
+      />
+    </>
   )
 }

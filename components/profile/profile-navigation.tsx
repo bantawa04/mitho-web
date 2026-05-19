@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 const profileNavItems = [
   { href: "/profile", label: "Overview" },
   { href: "/profile/reviews", label: "My reviews" },
+  { href: "/profile/following", label: "Following" },
   { href: "/collections", label: "Collections" },
   { href: "/profile/settings", label: "Account settings" },
 ]

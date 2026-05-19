@@ -32,6 +32,7 @@ export interface CustomerProfileData {
 }
 
 export interface PublicUserProfileData {
+  userId: string
   name: string
   username: string
   avatarUrl: string
@@ -40,6 +41,8 @@ export interface PublicUserProfileData {
   trustCue: string
   reviewCount: number
   collectionCount: number
+  followerCount: number
+  isFollowedByCurrentUser: boolean
   citiesExplored: number
   recentPublicReviews: ProfileReviewPreview[]
 }
@@ -52,13 +55,25 @@ export interface PublicProfileCollectionsPage {
 }
 
 export interface PublicCreatorDiscoveryItem {
+  userId: string
   name: string
   username: string
   avatarUrl: string
   bio: string
+  followerCount: number
   reviewCount: number
   publicCollectionCount: number
   collectionPreviewItems: CollectionRecord[]
+}
+
+export interface FollowingProfileListItem {
+  userId: string
+  name: string
+  username: string
+  avatarUrl: string
+  followerCount: number
+  publicCollectionCount: number
+  reviewCount: number
 }
 
 export interface PublicCreatorDirectoryPage {
@@ -184,9 +199,10 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
 
 const publicProfileMetadata: Record<
   string,
-  Omit<PublicUserProfileData, "collectionCount" | "recentPublicReviews">
+  Omit<PublicUserProfileData, "collectionCount" | "recentPublicReviews" | "followerCount" | "isFollowedByCurrentUser">
 > = {
   aaratieats: {
+    userId: "user-aaratieats",
     name: mockCustomerProfile.name,
     username: mockCustomerProfile.username,
     avatarUrl: mockCustomerProfile.avatarUrl,
@@ -197,6 +213,7 @@ const publicProfileMetadata: Record<
     reviewCount: mockCustomerProfile.reviewCount,
   },
   "nabin-eats": {
+    userId: "user-nabin-eats",
     name: "Nabin Eats",
     username: "nabin-eats",
     avatarUrl: "/thoughtful-man-portrait.png",
@@ -207,6 +224,7 @@ const publicProfileMetadata: Record<
     reviewCount: 8,
   },
   "samriddhi-bites": {
+    userId: "user-samriddhi-bites",
     name: "Samriddhi Bites",
     username: "samriddhi-bites",
     avatarUrl: "/woman-portrait.png",
@@ -217,6 +235,7 @@ const publicProfileMetadata: Record<
     reviewCount: 6,
   },
   "prerna-plates": {
+    userId: "user-prerna-plates",
     name: "Prerna Plates",
     username: "prerna-plates",
     avatarUrl: "/woman-portrait.png",
@@ -227,6 +246,7 @@ const publicProfileMetadata: Record<
     reviewCount: 5,
   },
   "roshan-routes": {
+    userId: "user-roshan-routes",
     name: "Roshan Routes",
     username: "roshan-routes",
     avatarUrl: "/thoughtful-man-portrait.png",
@@ -237,6 +257,7 @@ const publicProfileMetadata: Record<
     reviewCount: 7,
   },
   "sushant-snacks": {
+    userId: "user-sushant-snacks",
     name: "Sushant Snacks",
     username: "sushant-snacks",
     avatarUrl: "/thoughtful-man-portrait.png",
@@ -248,6 +269,17 @@ const publicProfileMetadata: Record<
   },
 }
 
+const followerCountByUsername: Record<string, number> = {
+  aaratieats: 128,
+  "nabin-eats": 86,
+  "samriddhi-bites": 42,
+  "prerna-plates": 31,
+  "roshan-routes": 27,
+  "sushant-snacks": 19,
+}
+
+const currentFollowingUsernames = new Set<string>(["nabin-eats", "samriddhi-bites"])
+
 export function getPublicProfileByUsername(username: string): PublicUserProfileData | null {
   const metadata = publicProfileMetadata[username]
 
@@ -258,6 +290,8 @@ export function getPublicProfileByUsername(username: string): PublicUserProfileD
   return {
     ...metadata,
     collectionCount: collections.length,
+    followerCount: followerCountByUsername[username] ?? 0,
+    isFollowedByCurrentUser: currentFollowingUsernames.has(username),
     recentPublicReviews: publicProfileReviews[username] ?? [],
   }
 }
@@ -320,14 +354,56 @@ function buildPublicCreatorDiscoveryItem(username: string): PublicCreatorDiscove
   const publicCollections = getAllPublicCollectionsForUsername(username)
 
   return {
+    userId: metadata.userId,
     name: metadata.name,
     username: metadata.username,
     avatarUrl: metadata.avatarUrl,
     bio: metadata.bio,
+    followerCount: followerCountByUsername[username] ?? 0,
     reviewCount: metadata.reviewCount,
     publicCollectionCount: publicCollections.length,
     collectionPreviewItems: publicCollections.slice(0, 3),
   }
+}
+
+export function followPublicProfile(username: string) {
+  if (username === currentCustomer.username) return getPublicProfileByUsername(username)
+  if (!publicProfileMetadata[username]) return null
+
+  if (!currentFollowingUsernames.has(username)) {
+    currentFollowingUsernames.add(username)
+    followerCountByUsername[username] = (followerCountByUsername[username] ?? 0) + 1
+  }
+
+  return getPublicProfileByUsername(username)
+}
+
+export function unfollowPublicProfile(username: string) {
+  if (username === currentCustomer.username) return getPublicProfileByUsername(username)
+  if (!publicProfileMetadata[username]) return null
+
+  if (currentFollowingUsernames.has(username)) {
+    currentFollowingUsernames.delete(username)
+    followerCountByUsername[username] = Math.max(0, (followerCountByUsername[username] ?? 0) - 1)
+  }
+
+  return getPublicProfileByUsername(username)
+}
+
+export function getFollowingProfiles(): FollowingProfileListItem[] {
+  return Array.from(currentFollowingUsernames)
+    .map((username) => getPublicProfileByUsername(username))
+    .filter((profile): profile is PublicUserProfileData => profile !== null)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((profile) => ({
+      userId: profile.userId,
+      name: profile.name,
+      username: profile.username,
+      avatarUrl: profile.avatarUrl,
+      followerCount: profile.followerCount,
+      publicCollectionCount: profile.collectionCount,
+      reviewCount: profile.reviewCount,
+    }))
 }
 
 export function getPublicProfileCollectionsPage({
