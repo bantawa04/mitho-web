@@ -50,8 +50,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 
 ### Customer
 - [ ] `/nearby` Nearby recommendations
-- [ ] `/reviews/[id]` Shareable review detail page
-- [ ] `/reviews/[id]/media` Review media viewer
 - [x] `/collections` My collections index
 - [x] `/collections/[id]` Collection detail page
 - [x] `/collections/[id]/edit` Edit collection

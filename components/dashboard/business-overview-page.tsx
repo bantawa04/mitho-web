@@ -1,7 +1,8 @@
 import Link from "next/link"
-import { MessageSquare, Sparkles } from "lucide-react"
+import { ArrowRight, MessageSquare, Sparkles } from "lucide-react"
 import { KeyMetrics } from "@/components/dashboard/key-metrics"
 import type { ManagedBusiness } from "@/components/dashboard/dashboard-business-data"
+import { MithoButton } from "@/components/ui/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/ui/mitho-card"
 import { StarRating } from "@/components/ui/mitho-rating"
 
