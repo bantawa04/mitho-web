@@ -86,11 +86,11 @@ export function Header({ signedInUser }: HeaderProps = {}) {
 
             <div className="flex items-center gap-2 sm:gap-3">
               {effectiveUser ? (
-                <div className="hidden sm:block">
+                <div className="hidden lg:block">
                   <AccountMenu fallbackUser={signedInUser} />
                 </div>
               ) : (
-                <MithoButton variant="primary" size="sm" className="hidden sm:inline-flex" onClick={openSignInModal}>
+                <MithoButton variant="primary" size="sm" className="hidden lg:inline-flex" onClick={openSignInModal}>
                   Sign in
                 </MithoButton>
               )}

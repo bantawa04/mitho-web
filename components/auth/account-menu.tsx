@@ -47,7 +47,7 @@ export function AccountMenu({ fallbackUser, className }: AccountMenuProps) {
             alt={effectiveUser.name}
             className="h-8 w-8 rounded-full border border-brand-soft-beige object-cover"
           />
-          <span className="max-w-[10rem] truncate">{effectiveUser.name}</span>
+          <span className="hidden max-w-[10rem] truncate sm:inline">{effectiveUser.name}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

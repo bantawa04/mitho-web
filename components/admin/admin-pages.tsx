@@ -42,7 +42,7 @@ function QueuePanel({
     <section className="rounded-[1.7rem] surface-admin-panel p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-brand-dark-green shadow-[0_8px_24px_rgba(10,70,53,0.05)]">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-soft-beige/70 text-brand-dark-green">
             <Icon className="h-5 w-5" />
           </div>
           <div>
@@ -53,12 +53,12 @@ function QueuePanel({
         <MithoBadge variant="moderation">{count} pending</MithoBadge>
       </div>
 
-      <div className="mt-5 space-y-3">
+      <div className="mt-5 border-t border-brand-deep-green/10">
         {items.map((item) => (
           <Link
             key={item.id}
             href={item.href}
-            className="block rounded-[1.2rem] border border-brand-deep-green/10 bg-white/88 px-4 py-4 transition-colors hover:bg-white"
+            className="block border-b border-brand-deep-green/10 py-4 last:border-b-0 transition-colors hover:bg-brand-soft-beige/18"
           >
             <p className="font-semibold text-brand-dark-green">{item.title}</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.subtitle}</p>
@@ -82,22 +82,6 @@ function QueuePanel({
 export function AdminHomePage() {
   return (
     <div className="space-y-6 pb-12">
-      <section className="rounded-[2rem] surface-admin-panel p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/55">Admin dashboard</p>
-        <div className="mt-4 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div className="max-w-4xl">
-            <h1 className="type-page-title text-brand-dark-green">Keep business access moving and review trust signals clean.</h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
-              Start with the queues that affect listing trust the fastest: ownership claims, flagged reviews, and reported content that needs an operator decision.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <MithoBadge variant="moderation">Moderation-first</MithoBadge>
-            <MithoBadge variant="neutral">No role-gating yet</MithoBadge>
-          </div>
-        </div>
-      </section>
-
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard label="Pending business claims" value={String(mockAdminHomeData.pendingClaimsCount)} helper="Ownership requests waiting on verification or an approval pass." />
         <SummaryCard label="Flagged reviews" value={String(mockAdminHomeData.flaggedReviewsCount)} helper="Reviews that may need policy, duplication, or abuse review." />
@@ -132,7 +116,7 @@ export function AdminHomePage() {
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <div className="rounded-[1.8rem] surface-admin-panel p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-brand-dark-green shadow-[0_8px_24px_rgba(10,70,53,0.05)]">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-soft-beige/70 text-brand-dark-green">
               <Activity className="h-5 w-5" />
             </div>
             <div>
@@ -141,9 +125,9 @@ export function AdminHomePage() {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <div className="mt-5 border-t border-brand-deep-green/10">
             {mockAdminHomeData.healthStats.map((stat) => (
-              <div key={stat.id} className="rounded-[1.25rem] border border-brand-deep-green/10 bg-white/88 p-4">
+              <div key={stat.id} className="border-b border-brand-deep-green/10 py-4 last:border-b-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">{stat.label}</p>
                 <p className="mt-3 text-3xl font-semibold text-brand-dark-green">{stat.value}</p>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{stat.note}</p>
@@ -161,9 +145,9 @@ export function AdminHomePage() {
             <MithoBadge variant="neutral">Latest decisions</MithoBadge>
           </div>
 
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 border-t border-brand-deep-green/10">
             {mockAdminHomeData.recentAdminActions.map((item) => (
-              <div key={item.id} className="rounded-[1.2rem] border border-brand-deep-green/10 bg-white/88 px-4 py-4">
+              <div key={item.id} className="border-b border-brand-deep-green/10 py-4 last:border-b-0">
                 <p className="font-semibold text-brand-dark-green">{item.action}</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.target}</p>
                 <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/55">
