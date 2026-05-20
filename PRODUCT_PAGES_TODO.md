@@ -1,6 +1,6 @@
 # Mitho Product Pages TODO
 
-Last reviewed: 2026-05-19
+Last reviewed: 2026-05-20
 
 This file tracks page creation progress for Mitho Cha across customer, business, and admin/superadmin surfaces.
 
@@ -36,7 +36,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/dashboard/businesses/[id]/settings` Business settings
 
 ### Admin / Superadmin
-- [ ] `/admin` Admin dashboard home
+- [x] `/admin` Admin dashboard home
 - [ ] `/admin/reviews/moderation` Review moderation queue
 - [ ] `/admin/business-claims` Business claim approvals / rejections
 - [ ] `/admin/businesses` Business management

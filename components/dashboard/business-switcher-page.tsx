@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { Building2, CirclePlus, FileCheck2, LayoutDashboard, MoveRight, ShieldCheck } from "lucide-react"
-import { AuthSessionInitializer } from "@/components/auth/mock-auth-provider"
 import {
   type DashboardScenario,
   type ManagedBusiness,
@@ -121,8 +120,7 @@ export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
   const showStateHint = scenario !== "multi"
 
   return (
-    <div className="page-shell-business min-h-screen">
-      <AuthSessionInitializer />
+    <>
       <DashboardHeader
         businessName="Manage businesses"
         location="Choose a workspace or start a new listing"
@@ -277,6 +275,6 @@ export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
       </main>
 
       <DashboardFooter />
-    </div>
+    </>
   )
 }

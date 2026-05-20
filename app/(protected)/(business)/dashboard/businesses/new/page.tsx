@@ -1,13 +1,11 @@
 import { AddBusinessFlow } from "@/components/business/add-business-flow"
-import { AuthSessionInitializer } from "@/components/auth/mock-auth-provider"
 import { DashboardFooter } from "@/components/dashboard/dashboard-footer"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { mockCustomerProfile } from "@/components/profile/profile-data"
 
 export default function DashboardAddBusinessPage() {
   return (
-    <div className="page-shell-business min-h-screen">
-      <AuthSessionInitializer />
+    <>
       <DashboardHeader
         businessName="Add business"
         location="Create a new listing from the same Mitho account"
@@ -19,6 +17,6 @@ export default function DashboardAddBusinessPage() {
       </main>
 
       <DashboardFooter />
-    </div>
+    </>
   )
 }

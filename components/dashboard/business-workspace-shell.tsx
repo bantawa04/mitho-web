@@ -14,7 +14,6 @@ import {
   MessageSquare,
   Settings,
 } from "lucide-react"
-import { AuthSessionInitializer } from "@/components/auth/mock-auth-provider"
 import type { ManagedBusiness } from "@/components/dashboard/dashboard-business-data"
 import { DashboardFooter } from "@/components/dashboard/dashboard-footer"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
@@ -88,8 +87,7 @@ export function BusinessWorkspaceShell({ business, children }: BusinessWorkspace
   const activeItem = navItems.find((item) => pathname.endsWith(`/${item.segment}`))
 
   return (
-    <div className="page-shell-business min-h-screen">
-      <AuthSessionInitializer />
+    <>
       <DashboardHeader
         businessName={business.name}
         location={business.location}
@@ -133,6 +131,6 @@ export function BusinessWorkspaceShell({ business, children }: BusinessWorkspace
       </div>
 
       <DashboardFooter />
-    </div>
+    </>
   )
 }

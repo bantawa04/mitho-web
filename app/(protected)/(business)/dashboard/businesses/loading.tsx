@@ -1,4 +1,3 @@
-import { AuthSessionInitializer } from "@/components/auth/mock-auth-provider"
 import { DashboardFooter } from "@/components/dashboard/dashboard-footer"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { mockCustomerProfile } from "@/components/profile/profile-data"
@@ -6,8 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function DashboardBusinessesLoading() {
   return (
-    <div className="page-shell-business min-h-screen">
-      <AuthSessionInitializer />
+    <>
       <DashboardHeader
         businessName="Manage businesses"
         location="Loading your business workspaces"
@@ -53,6 +51,6 @@ export default function DashboardBusinessesLoading() {
       </main>
 
       <DashboardFooter />
-    </div>
+    </>
   )
 }
