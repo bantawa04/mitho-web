@@ -21,9 +21,10 @@ interface AccountMenuProps {
     href?: string
   } | null
   className?: string
+  scope?: "default" | "admin"
 }
 
-export function AccountMenu({ fallbackUser, className }: AccountMenuProps) {
+export function AccountMenu({ fallbackUser, className, scope = "default" }: AccountMenuProps) {
   const router = useRouter()
   const { currentUser, hasBusinessAccess, isAuthenticated, isHydrated, signOut } = useMockAuth()
 
@@ -77,25 +78,29 @@ export function AccountMenu({ fallbackUser, className }: AccountMenuProps) {
               Profile
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/collections">
-              <Bookmark className="h-4 w-4" />
-              Collections
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/profile/following">
-              <Users className="h-4 w-4" />
-              Following
-            </Link>
-          </DropdownMenuItem>
-          {effectiveHasBusinessAccess ? (
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard/businesses">
-                <Building2 className="h-4 w-4" />
-                Manage businesses
-              </Link>
-            </DropdownMenuItem>
+          {scope === "default" ? (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href="/collections">
+                  <Bookmark className="h-4 w-4" />
+                  Collections
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/profile/following">
+                  <Users className="h-4 w-4" />
+                  Following
+                </Link>
+              </DropdownMenuItem>
+              {effectiveHasBusinessAccess ? (
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/businesses">
+                    <Building2 className="h-4 w-4" />
+                    Manage businesses
+                  </Link>
+                </DropdownMenuItem>
+              ) : null}
+            </>
           ) : null}
           <DropdownMenuItem asChild>
             <Link href="/profile/settings">
