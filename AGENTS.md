@@ -30,6 +30,7 @@ Mitho Cha is a Nepal-focused food discovery and review platform. This Next.js ap
 ## Stack
 
 - **Framework:** Next.js (App Router)
+- **Package manager:** Bun
 - **UI components:** Radix UI primitives, wrapped in internal components
 - **Styling:** (add here: Tailwind CSS / CSS Modules / etc.)
 - **Forms:** React Hook Form + Zod
@@ -37,6 +38,19 @@ Mitho Cha is a Nepal-focused food discovery and review platform. This Next.js ap
 - **Global state:** Zustand
 - **Auth:** JWT access token + refresh token (storage strategy TBD — see Auth section)
 - **Language:** TypeScript (strict mode expected)
+
+### Bun Usage Rule
+
+This repository should use **Bun as the default package manager and script runner**.
+
+- Use `bun install` for installing dependencies
+- Use `bun add <pkg>` / `bun add -d <pkg>` for adding packages
+- Use `bun remove <pkg>` for removing packages
+- Use `bun run <script>` for package scripts
+- Prefer `bun run build` over `npm run build`
+- Prefer `bun run dev` over `npm run dev`
+
+Do not introduce `npm` or `yarn` commands in implementation notes, automation, or future runbook updates unless there is a repo-specific exception.
 
 ---
 
