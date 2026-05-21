@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, Building2, Flag, MessageSquareWarning, ShieldCheck, Users } from "lucide-react"
+import { ArrowRight, Building2, Flag, MessageSquareWarning, ShieldCheck, UserRound, Users } from "lucide-react"
 import { mockAdminHomeData } from "@/components/admin/admin-data"
 import { MithoButton } from "@/components/ui/mitho-button"
 
@@ -47,13 +47,14 @@ export function AdminPlaceholderPage({
   description: string
   href: string
   ctaLabel: string
-  icon: "claims" | "reviews" | "reports" | "businesses" | "users"
+  icon: "claims" | "reviews" | "reports" | "businesses" | "customers" | "users"
 }) {
   const iconMap = {
     claims: ShieldCheck,
     reviews: MessageSquareWarning,
     reports: Flag,
     businesses: Building2,
+    customers: UserRound,
     users: Users,
   }
   const Icon = iconMap[icon]

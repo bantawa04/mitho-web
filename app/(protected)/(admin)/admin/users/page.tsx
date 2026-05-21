@@ -4,8 +4,8 @@ export default function AdminUsersPage() {
   return (
     <AdminPlaceholderPage
       eyebrow="Users"
-      title="Review customer and creator accounts without leaving the admin workspace."
-      description="This future page will support user lookup, profile moderation context, follow/report history, and account intervention actions when needed."
+      title="Manage internal staff and admin access without mixing it into customer operations."
+      description="This future page will support internal user lookup, admin roles, workspace access, and staff-level intervention tools for Mitho operators."
       href="/admin"
       ctaLabel="Back to admin home"
       icon="users"

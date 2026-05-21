@@ -1,14 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { Building2, Flag, LayoutDashboard, MessageSquareWarning, ShieldCheck, Users } from "lucide-react"
+import { Building2, LayoutDashboard, MessageSquareWarning, UserRound, Users } from "lucide-react"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -18,29 +15,22 @@ import {
 import { cn } from "@/lib/utils"
 
 export const adminNavSections = [
-  {
-    label: "Overview",
-    items: [{ href: "/admin", label: "Dashboard home", icon: LayoutDashboard }],
-  },
-  {
-    label: "Moderation queues",
-    items: [
-      { href: "/admin/business-claims", label: "Business claims", icon: ShieldCheck },
-      { href: "/admin/reviews/moderation", label: "Review moderation", icon: MessageSquareWarning },
-      { href: "/admin/reported-content", label: "Reported content", icon: Flag },
-    ],
-  },
-  {
-    label: "Directory",
-    items: [
-      { href: "/admin/businesses", label: "Businesses", icon: Building2 },
-      { href: "/admin/users", label: "Users", icon: Users },
-    ],
-  },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/businesses", label: "Businesses", icon: Building2 },
+  { href: "/admin/reviews/moderation", label: "Review Moderation", icon: MessageSquareWarning },
+  { href: "/admin/customers", label: "Customers", icon: UserRound },
+  { href: "/admin/users", label: "Users", icon: Users },
 ] as const
 
+const adminHiddenRouteItems = [
+  { href: "/admin/business-claims", label: "Business Claims", icon: Building2 },
+  { href: "/admin/reported-content", label: "Reported Content", icon: MessageSquareWarning },
+] as const
+
+const adminRouteItems = [...adminNavSections, ...adminHiddenRouteItems]
+
 export function getActiveAdminItem(pathname: string) {
-  return adminNavSections.flatMap((section) => section.items).find((item) => item.href === pathname) ?? adminNavSections[0].items[0]
+  return adminRouteItems.find((item) => item.href === pathname) ?? adminNavSections[0]
 }
 
 export function AdminSidebarBrand({ compact = false }: { compact?: boolean }) {
@@ -72,42 +62,31 @@ export function AdminSidebarBrand({ compact = false }: { compact?: boolean }) {
 
 export function AdminSidebarNav({ pathname }: { pathname: string }) {
   return (
-    <div className="space-y-6">
-      {adminNavSections.map((section) => (
-        <SidebarGroup key={section.label} className="p-0">
-          <SidebarGroupLabel className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-deep-green/55">
-            {section.label}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-2">
-              {section.items.map((item) => {
-                const Icon = item.icon
-                const isActive = pathname === item.href
+    <SidebarMenu className="gap-2">
+      {adminNavSections.map((item) => {
+        const Icon = item.icon
+        const isActive = pathname === item.href
 
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive}
-                      tooltip={item.label}
-                      size="lg"
-                      className={cn(
-                        "rounded-[0.95rem] px-4 text-sm font-medium text-brand-dark-green transition-colors duration-200 hover:bg-white/72 hover:text-brand-dark-green data-[active=true]:bg-brand-dark-green data-[active=true]:text-white group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2",
-                      )}
-                    >
-                      <Link href={item.href} aria-current={isActive ? "page" : undefined}>
-                        <Icon className="h-4 w-4" />
-                        <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                )
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      ))}
-    </div>
+        return (
+          <SidebarMenuItem key={item.href}>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive}
+              tooltip={item.label}
+              size="lg"
+              className={cn(
+                "rounded-[0.95rem] px-4 text-sm font-medium text-brand-dark-green transition-colors duration-200 hover:bg-white/72 hover:text-brand-dark-green data-[active=true]:bg-brand-dark-green data-[active=true]:text-white group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2",
+              )}
+            >
+              <Link href={item.href} aria-current={isActive ? "page" : undefined}>
+                <Icon className="h-4 w-4" />
+                <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )
+      })}
+    </SidebarMenu>
   )
 }
 
