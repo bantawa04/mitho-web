@@ -37,13 +37,12 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 
 ### Admin / Superadmin
 - [x] `/admin` Admin dashboard home
-- [ ] `/admin/reviews/moderation` Review moderation queue
-- [ ] `/admin/business-claims` Business claim approvals / rejections
-- [ ] `/admin/businesses` Business management
+- [x] `/admin/reviews/moderation` Review moderation queue
+
+- [x] `/admin/businesses` Business management
 - [ ] `/admin/businesses/[id]` Business detail / moderation view
-- [ ] `/admin/users` User management
+- [x] `/admin/users` User management
 - [ ] `/admin/establishment-types` Establishment type management
-- [ ] `/admin/reported-content` Reports / abuse handling
 - [ ] `/admin/settings` Admin settings
 
 ## Phase 2
@@ -61,7 +60,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [ ] `/notifications` Notifications center
 
 ### Business
-- [ ] `/dashboard/businesses/[id]/offers` Offers / deals management
 - [ ] `/dashboard/team` Team members / permissions
 - [ ] `/dashboard/billing` Billing and plans
 - [ ] `/dashboard/campaigns` Promotions / sponsored placements
@@ -78,13 +76,6 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 ### Customer
 - [ ] `/chat` AI-assisted discovery page
 - [ ] `/search/conversation` Conversational search results / follow-up suggestions
-
-### Business
-- [ ] `/dashboard/businesses/[id]/review-media` Review media moderation / management
-
-### Admin / Superadmin
-- [ ] `/admin/reviews/[id]` Review detail moderation page
-- [ ] `/admin/review-media` Review media moderation queue
 
 ## Cross-cutting decisions to track
 - [x] Use a single Google OAuth entry point at `/login`

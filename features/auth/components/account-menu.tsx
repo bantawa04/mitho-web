@@ -32,6 +32,11 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
     isHydrated ? (isAuthenticated ? currentUser : null) : fallbackUser
 
   const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : Boolean(fallbackUser)
+  const settingsHref = scope === "admin" ? "/admin/settings" : "/profile/settings"
+  const menuSubtitle =
+    scope === "admin"
+      ? "Internal Mitho admin access"
+      : "Same Mitho account across customer and business tools"
 
   if (!effectiveUser) return null
 
@@ -64,7 +69,7 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
             />
             <div className="min-w-0">
               <p className="truncate font-semibold text-brand-dark-green">{effectiveUser.name}</p>
-              <p className="truncate text-xs text-muted-foreground">Same Mitho account across customer and business tools</p>
+              <p className="truncate text-xs text-muted-foreground">{menuSubtitle}</p>
             </div>
           </div>
         </DropdownMenuLabel>
@@ -72,12 +77,14 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/profile">
-              <User className="h-4 w-4" />
-              Profile
-            </Link>
-          </DropdownMenuItem>
+          {scope === "default" ? (
+            <DropdownMenuItem asChild>
+              <Link href="/profile">
+                <User className="h-4 w-4" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+          ) : null}
           {scope === "default" ? (
             <>
               <DropdownMenuItem asChild>
@@ -103,7 +110,7 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
             </>
           ) : null}
           <DropdownMenuItem asChild>
-            <Link href="/profile/settings">
+            <Link href={settingsHref}>
               <Settings className="h-4 w-4" />
               Account settings
             </Link>

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Building2, LayoutDashboard, MessageSquareWarning, UserRound, Users } from "lucide-react"
+import { Building2, LayoutDashboard, MessageSquareWarning, Settings, UserRound, Users } from "lucide-react"
 import { BrandLogo } from "@/components/mitho/brand-logo"
 import {
   Sidebar,
@@ -25,6 +25,7 @@ export const adminNavSections = [
 const adminHiddenRouteItems = [
   { href: "/admin/business-claims", label: "Business Claims", icon: Building2 },
   { href: "/admin/reported-content", label: "Reported Content", icon: MessageSquareWarning },
+  { href: "/admin/settings", label: "Account Settings", icon: Settings },
 ] as const
 
 const adminRouteItems = [...adminNavSections, ...adminHiddenRouteItems]

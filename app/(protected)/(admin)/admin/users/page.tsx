@@ -1,14 +1,5 @@
-import { AdminPlaceholderPage } from "@/features/admin/screens/admin-pages"
+import { AdminUsersPage as AdminUsersManagementPage } from "@/features/admin/screens/admin-users-page"
 
 export default function AdminUsersPage() {
-  return (
-    <AdminPlaceholderPage
-      eyebrow="Users"
-      title="Manage internal staff and admin access without mixing it into customer operations."
-      description="This future page will support internal user lookup, admin roles, workspace access, and staff-level intervention tools for Mitho operators."
-      href="/admin"
-      ctaLabel="Back to admin home"
-      icon="users"
-    />
-  )
+  return <AdminUsersManagementPage />
 }

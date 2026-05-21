@@ -58,6 +58,46 @@ export interface AdminCustomerItem {
   collectionsCount: number
 }
 
+export type AdminInternalUserStatus = "Invited" | "Active" | "Disabled"
+export type AdminRoleType = "System" | "Custom"
+
+export type AdminPermissionResource = "Business" | "Reviews" | "Customer" | "Users" | "Roles"
+export type AdminPermissionAction = "Create" | "Read" | "Update" | "Delete"
+
+export interface AdminRolePermissions {
+  resources: Record<AdminPermissionResource, Partial<Record<AdminPermissionAction, boolean>>>
+  notifications: boolean
+}
+
+export interface AdminRoleItem {
+  id: string
+  name: string
+  type: AdminRoleType
+  permissions: AdminRolePermissions
+}
+
+export interface AdminInternalUserItem {
+  id: string
+  name: string
+  email: string
+  roleId: string
+  status: AdminInternalUserStatus
+  joinedAt: string
+  notifyByEmail: boolean
+}
+
+export interface AdminSettingsProfile {
+  name: string
+  email: string
+  address: string
+  mobileNumber: string
+  notifications: {
+    claimEscalations: boolean
+    moderationAlerts: boolean
+    dailyDigest: boolean
+  }
+}
+
 export type AdminReviewModerationFlag =
   | "Abusive wording"
   | "Potential duplicate"
@@ -105,6 +145,49 @@ export const adminBusinessStatusOptions: Array<"All" | AdminBusinessStatus> = [
   "Claim request",
   "Pending",
   "Unclaimed",
+]
+
+export const adminInternalUserStatusOptions: Array<"All" | AdminInternalUserStatus> = [
+  "All",
+  "Invited",
+  "Active",
+  "Disabled",
+]
+
+export const adminRoleTypeOptions: Array<"All" | AdminRoleType> = ["All", "System", "Custom"]
+
+export const adminPermissionActions: AdminPermissionAction[] = ["Create", "Read", "Update", "Delete"]
+
+export const adminPermissionMatrix: Array<{
+  resource: AdminPermissionResource
+  label: string
+  actions: AdminPermissionAction[]
+}> = [
+  {
+    resource: "Business",
+    label: "Business",
+    actions: ["Create", "Read", "Update"],
+  },
+  {
+    resource: "Reviews",
+    label: "Reviews",
+    actions: ["Create", "Read", "Update", "Delete"],
+  },
+  {
+    resource: "Customer",
+    label: "Customer",
+    actions: ["Read"],
+  },
+  {
+    resource: "Users",
+    label: "Users",
+    actions: ["Create", "Read", "Update", "Delete"],
+  },
+  {
+    resource: "Roles",
+    label: "Roles",
+    actions: ["Create", "Read", "Update", "Delete"],
+  },
 ]
 
 export const mockAdminNotifications: AdminNotificationItem[] = [
@@ -224,6 +307,120 @@ export const mockAdminCustomers: AdminCustomerItem[] = [
     collectionsCount: 1,
   },
 ]
+
+export const mockAdminRoles: AdminRoleItem[] = [
+  {
+    id: "role-1",
+    name: "Super admin",
+    type: "System",
+    permissions: {
+      resources: {
+        Business: { Create: true, Read: true, Update: true },
+        Reviews: { Create: true, Read: true, Update: true, Delete: true },
+        Customer: { Read: true },
+        Users: { Create: true, Read: true, Update: true, Delete: true },
+        Roles: { Create: true, Read: true, Update: true, Delete: true },
+      },
+      notifications: true,
+    },
+  },
+  {
+    id: "role-2",
+    name: "Moderation lead",
+    type: "System",
+    permissions: {
+      resources: {
+        Business: { Read: true },
+        Reviews: { Create: true, Read: true, Update: true, Delete: true },
+        Customer: { Read: true },
+        Users: { Read: true },
+        Roles: { Read: true },
+      },
+      notifications: true,
+    },
+  },
+  {
+    id: "role-3",
+    name: "Business ops",
+    type: "Custom",
+    permissions: {
+      resources: {
+        Business: { Create: true, Read: true, Update: true },
+        Reviews: { Read: true, Update: true },
+        Customer: { Read: true },
+        Users: { Read: true },
+        Roles: { Read: true },
+      },
+      notifications: true,
+    },
+  },
+  {
+    id: "role-4",
+    name: "Support coordinator",
+    type: "Custom",
+    permissions: {
+      resources: {
+        Business: { Read: true },
+        Reviews: { Read: true, Update: true },
+        Customer: { Read: true },
+        Users: { Read: true },
+        Roles: {},
+      },
+      notifications: true,
+    },
+  },
+]
+
+export const mockAdminInternalUsers: AdminInternalUserItem[] = [
+  {
+    id: "admin-user-1",
+    name: "Aarati Shrestha",
+    email: "aarati.shrestha@mithocha.com",
+    roleId: "role-1",
+    status: "Active",
+    joinedAt: "May 2, 2026 · 9:10 AM",
+    notifyByEmail: true,
+  },
+  {
+    id: "admin-user-2",
+    name: "Roshan Gurung",
+    email: "roshan.gurung@mithocha.com",
+    roleId: "role-2",
+    status: "Active",
+    joinedAt: "May 7, 2026 · 11:32 AM",
+    notifyByEmail: true,
+  },
+  {
+    id: "admin-user-3",
+    name: "Nima Bista",
+    email: "nima.bista@mithocha.com",
+    roleId: "role-3",
+    status: "Invited",
+    joinedAt: "May 18, 2026 · 4:20 PM",
+    notifyByEmail: true,
+  },
+  {
+    id: "admin-user-4",
+    name: "Sabina Shahi",
+    email: "sabina.shahi@mithocha.com",
+    roleId: "role-4",
+    status: "Disabled",
+    joinedAt: "Apr 27, 2026 · 3:05 PM",
+    notifyByEmail: false,
+  },
+]
+
+export const mockAdminSettingsProfile: AdminSettingsProfile = {
+  name: "Aarati Shrestha",
+  email: "aarati.shrestha@mithocha.com",
+  address: "Thamel, Kathmandu, Nepal",
+  mobileNumber: "+977 9800000000",
+  notifications: {
+    claimEscalations: true,
+    moderationAlerts: true,
+    dailyDigest: false,
+  },
+}
 
 export const mockAdminReviewModeration: AdminReviewModerationItem[] = [
   {
