@@ -40,10 +40,10 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [x] `/admin/reviews/moderation` Review moderation queue
 
 - [x] `/admin/businesses` Business management
-- [ ] `/admin/businesses/[id]` Business detail / moderation view
+- [x] `/admin/businesses/[id]` Business detail / moderation view
 - [x] `/admin/users` User management
-- [ ] `/admin/establishment-types` Establishment type management
-- [ ] `/admin/settings` Admin settings
+- [x] `/admin/establishment-types` Establishment type management
+- [x] `/admin/settings` Admin settings
 
 ## Phase 2
 
@@ -66,7 +66,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 
 ### Admin / Superadmin
 - [ ] `/admin/staff` Staff management
-- [ ] `/admin/audit-logs` Audit logs
+- [x] `/admin/activity-logs` Activity logs
 - [ ] `/admin/featured-content` Featured content curation
 - [ ] `/admin/promotions` Promotion / sponsored content management
 - [ ] `/admin/analytics` Platform analytics

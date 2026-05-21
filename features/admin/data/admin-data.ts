@@ -35,6 +35,74 @@ export interface AdminBusinessListItem {
   href: string
 }
 
+export type AdminBusinessLifecycleStatus =
+  | "Active"
+  | "Temporarily closed"
+  | "Permanently closed"
+  | "Unclaimed"
+  | "Draft"
+  | "Suspended"
+
+export interface AdminBusinessReviewPreview {
+  id: string
+  title: string
+  rating: number
+  author: string
+  submittedAt: string
+}
+
+export interface AdminBusinessSignalPreview {
+  id: string
+  label: string
+  detail: string
+  when: string
+  tone: "info" | "success" | "warning"
+}
+
+export interface AdminBusinessDetailItem extends AdminBusinessListItem {
+  lifecycleStatus: AdminBusinessLifecycleStatus
+  establishmentType: string
+  primaryCategory: string
+  description: string
+  neighborhood: string
+  city: string
+  fullAddress: string
+  phone: string
+  email: string
+  website: string
+  ownerName: string
+  ownerEmail: string
+  claimStateNote: string
+  createdAt: string
+  claimedAt: string
+  averageRating: number
+  reviewCount: number
+  profileViews30d: number
+  recentReviews: AdminBusinessReviewPreview[]
+  recentSignals: AdminBusinessSignalPreview[]
+  publicHref: string
+  ownerWorkspaceHref: string
+}
+
+export type AdminActivityLogScope =
+  | "Businesses"
+  | "Reviews"
+  | "Users"
+  | "Roles"
+  | "Establishment Types"
+  | "Settings"
+
+export interface AdminActivityLogItem {
+  id: string
+  actorName: string
+  actorRole: string
+  actionLabel: string
+  scope: AdminActivityLogScope
+  targetLabel: string
+  occurredAt: string
+  summary: string
+}
+
 export interface AdminNotificationItem {
   id: string
   title: string
@@ -58,10 +126,20 @@ export interface AdminCustomerItem {
   collectionsCount: number
 }
 
+export type AdminEstablishmentTypeStatus = "Active" | "Disabled"
+
+export interface AdminEstablishmentTypeItem {
+  id: string
+  name: string
+  status: AdminEstablishmentTypeStatus
+  listingsCount: number
+  updatedAt: string
+}
+
 export type AdminInternalUserStatus = "Invited" | "Active" | "Disabled"
 export type AdminRoleType = "System" | "Custom"
 
-export type AdminPermissionResource = "Business" | "Reviews" | "Customer" | "Users" | "Roles"
+export type AdminPermissionResource = "Business" | "Reviews" | "Customer" | "Users" | "Roles" | "Establishment Types"
 export type AdminPermissionAction = "Create" | "Read" | "Update" | "Delete"
 
 export interface AdminRolePermissions {
@@ -147,6 +225,22 @@ export const adminBusinessStatusOptions: Array<"All" | AdminBusinessStatus> = [
   "Unclaimed",
 ]
 
+export const adminActivityLogScopeOptions: Array<"All" | AdminActivityLogScope> = [
+  "All",
+  "Businesses",
+  "Reviews",
+  "Users",
+  "Roles",
+  "Establishment Types",
+  "Settings",
+]
+
+export const adminEstablishmentTypeStatusOptions: Array<"All" | AdminEstablishmentTypeStatus> = [
+  "All",
+  "Active",
+  "Disabled",
+]
+
 export const adminInternalUserStatusOptions: Array<"All" | AdminInternalUserStatus> = [
   "All",
   "Invited",
@@ -186,6 +280,11 @@ export const adminPermissionMatrix: Array<{
   {
     resource: "Roles",
     label: "Roles",
+    actions: ["Create", "Read", "Update", "Delete"],
+  },
+  {
+    resource: "Establishment Types",
+    label: "Establishment Types",
     actions: ["Create", "Read", "Update", "Delete"],
   },
 ]
@@ -308,6 +407,65 @@ export const mockAdminCustomers: AdminCustomerItem[] = [
   },
 ]
 
+export const mockAdminEstablishmentTypes: AdminEstablishmentTypeItem[] = [
+  {
+    id: "establishment-type-1",
+    name: "Restaurant",
+    status: "Active",
+    listingsCount: 248,
+    updatedAt: "May 21, 2026 · 2:10 PM",
+  },
+  {
+    id: "establishment-type-2",
+    name: "Cafe",
+    status: "Active",
+    listingsCount: 132,
+    updatedAt: "May 20, 2026 · 11:42 AM",
+  },
+  {
+    id: "establishment-type-3",
+    name: "Street Food Stall",
+    status: "Active",
+    listingsCount: 87,
+    updatedAt: "May 20, 2026 · 9:05 AM",
+  },
+  {
+    id: "establishment-type-4",
+    name: "Bakery",
+    status: "Active",
+    listingsCount: 54,
+    updatedAt: "May 18, 2026 · 4:30 PM",
+  },
+  {
+    id: "establishment-type-5",
+    name: "Food Court Counter",
+    status: "Disabled",
+    listingsCount: 12,
+    updatedAt: "May 17, 2026 · 3:18 PM",
+  },
+  {
+    id: "establishment-type-6",
+    name: "Tea House",
+    status: "Active",
+    listingsCount: 61,
+    updatedAt: "May 16, 2026 · 8:22 AM",
+  },
+  {
+    id: "establishment-type-7",
+    name: "Dessert Shop",
+    status: "Active",
+    listingsCount: 39,
+    updatedAt: "May 15, 2026 · 12:56 PM",
+  },
+  {
+    id: "establishment-type-8",
+    name: "Pop-up Kitchen",
+    status: "Disabled",
+    listingsCount: 6,
+    updatedAt: "May 12, 2026 · 6:15 PM",
+  },
+]
+
 export const mockAdminRoles: AdminRoleItem[] = [
   {
     id: "role-1",
@@ -320,6 +478,7 @@ export const mockAdminRoles: AdminRoleItem[] = [
         Customer: { Read: true },
         Users: { Create: true, Read: true, Update: true, Delete: true },
         Roles: { Create: true, Read: true, Update: true, Delete: true },
+        "Establishment Types": { Create: true, Read: true, Update: true, Delete: true },
       },
       notifications: true,
     },
@@ -335,6 +494,7 @@ export const mockAdminRoles: AdminRoleItem[] = [
         Customer: { Read: true },
         Users: { Read: true },
         Roles: { Read: true },
+        "Establishment Types": { Read: true, Update: true },
       },
       notifications: true,
     },
@@ -350,6 +510,7 @@ export const mockAdminRoles: AdminRoleItem[] = [
         Customer: { Read: true },
         Users: { Read: true },
         Roles: { Read: true },
+        "Establishment Types": { Create: true, Read: true, Update: true },
       },
       notifications: true,
     },
@@ -365,6 +526,7 @@ export const mockAdminRoles: AdminRoleItem[] = [
         Customer: { Read: true },
         Users: { Read: true },
         Roles: {},
+        "Establishment Types": { Read: true },
       },
       notifications: true,
     },
@@ -522,6 +684,239 @@ export const mockAdminBusinesses: AdminBusinessListItem[] = [
   { id: "business-10", name: "Bhaktapur Bricks Cafe", slug: "bhaktapur-bricks-cafe", avatarUrl: "/placeholder-logo.png", location: "Bhaktapur", status: "Unclaimed", ownershipLabel: "Awaiting first claim", updatedAt: "Updated 5 days ago", href: "/admin/businesses" },
   { id: "business-11", name: "Lakeside Momo Map", slug: "lakeside-momo-map", avatarUrl: "/lakeside-cafe-pokhara-nepal.jpg", location: "Pokhara", status: "Pending", ownershipLabel: "Details verification pending", updatedAt: "Updated 5 days ago", href: "/admin/businesses" },
   { id: "business-12", name: "Roshan Rooftop Grill", slug: "roshan-rooftop-grill", avatarUrl: "/bbq-food-truck-smoking.jpg", location: "Boudha, Kathmandu", status: "Claim request", ownershipLabel: "New business claim submitted", updatedAt: "Submitted yesterday", href: "/admin/business-claims" },
+]
+
+function statusToLifecycle(status: AdminBusinessStatus): AdminBusinessLifecycleStatus {
+  switch (status) {
+    case "Verified":
+      return "Active"
+    case "Claim request":
+      return "Unclaimed"
+    case "Pending":
+      return "Draft"
+    case "Unclaimed":
+      return "Unclaimed"
+  }
+}
+
+function categoryFromBusinessName(name: string) {
+  if (name.toLowerCase().includes("cafe") || name.toLowerCase().includes("coffee")) return "Cafe"
+  if (name.toLowerCase().includes("brunch")) return "Brunch spot"
+  if (name.toLowerCase().includes("momo")) return "Momo spot"
+  if (name.toLowerCase().includes("bakery")) return "Bakery"
+  return "Restaurant"
+}
+
+function establishmentTypeFromCategory(category: string) {
+  if (category === "Cafe") return "Cafe"
+  return "Restaurant"
+}
+
+function ownerContextForStatus(status: AdminBusinessStatus) {
+  switch (status) {
+    case "Verified":
+      return {
+        ownerName: "Aarati Shrestha",
+        ownerEmail: "aarati.shrestha@mithocha.com",
+        claimStateNote: "Claim approved and mapped to an active owner workspace.",
+      }
+    case "Claim request":
+      return {
+        ownerName: "Pending claimant",
+        ownerEmail: "claim-review@mithocha.com",
+        claimStateNote: "Ownership documents are waiting on admin review before business access unlocks.",
+      }
+    case "Pending":
+      return {
+        ownerName: "Listing in review",
+        ownerEmail: "ops@mithocha.com",
+        claimStateNote: "The listing still needs a quality and storefront verification pass.",
+      }
+    case "Unclaimed":
+      return {
+        ownerName: "No owner linked",
+        ownerEmail: "unclaimed@mithocha.com",
+        claimStateNote: "This listing is public but not tied to an active owner account.",
+      }
+  }
+}
+
+function buildRecentReviews(name: string): AdminBusinessReviewPreview[] {
+  return [
+    {
+      id: `${name}-review-1`,
+      title: `${name} still gets strong weekday traffic`,
+      rating: 4,
+      author: "Nabin Karki",
+      submittedAt: "May 21, 2026 · 11:18 AM",
+    },
+    {
+      id: `${name}-review-2`,
+      title: `Guests keep mentioning service clarity at ${name}`,
+      rating: 3,
+      author: "Aarushi Rai",
+      submittedAt: "May 20, 2026 · 6:42 PM",
+    },
+  ]
+}
+
+function buildRecentSignals(business: AdminBusinessListItem): AdminBusinessSignalPreview[] {
+  if (business.status === "Claim request") {
+    return [
+      {
+        id: `${business.id}-signal-1`,
+        label: "Claim submitted",
+        detail: "A claimant uploaded ownership documents and is waiting on verification.",
+        when: "Today",
+        tone: "warning",
+      },
+      {
+        id: `${business.id}-signal-2`,
+        label: "Directory still public",
+        detail: "Customers can still find the listing while the request is being reviewed.",
+        when: "This week",
+        tone: "info",
+      },
+    ]
+  }
+
+  if (business.status === "Pending") {
+    return [
+      {
+        id: `${business.id}-signal-1`,
+        label: "Verification pending",
+        detail: "Storefront or detail quality still needs an admin pass before the listing is treated as fully healthy.",
+        when: "Yesterday",
+        tone: "warning",
+      },
+      {
+        id: `${business.id}-signal-2`,
+        label: "Listing edits paused",
+        detail: "Business-facing quality work is still waiting on the admin review queue.",
+        when: "This week",
+        tone: "info",
+      },
+    ]
+  }
+
+  return [
+    {
+      id: `${business.id}-signal-1`,
+      label: "Listing healthy",
+      detail: "No current claim or trust blockers are preventing normal business access.",
+      when: "Today",
+      tone: "success",
+    },
+    {
+      id: `${business.id}-signal-2`,
+      label: "Recent customer activity",
+      detail: "Reviews and profile traffic continue to arrive without unusual moderation flags.",
+      when: "This week",
+      tone: "info",
+    },
+  ]
+}
+
+export const mockAdminBusinessDetails: AdminBusinessDetailItem[] = mockAdminBusinesses.map((business, index) => {
+  const [neighborhood = business.location, city = "Kathmandu"] = business.location.split(",").map((part) => part.trim())
+  const category = categoryFromBusinessName(business.name)
+  const ownerContext = ownerContextForStatus(business.status)
+
+  return {
+    ...business,
+    lifecycleStatus: statusToLifecycle(business.status),
+    establishmentType: establishmentTypeFromCategory(category),
+    primaryCategory: category,
+    description:
+      business.slug === "the-himalayan-kitchen"
+        ? "A warm Himalayan comfort-food listing with strong momo, thali, and dinner traffic in the Thamel neighborhood."
+        : `${business.name} is currently represented in the Mitho directory as a ${category.toLowerCase()} serving local discovery traffic.`,
+    neighborhood,
+    city,
+    fullAddress: `${business.location}, Nepal`,
+    phone: "+977 9800000000",
+    email: `${business.slug}@mithocha.example`,
+    website: `https://mithocha.example/business/${business.slug}`,
+    ownerName: ownerContext.ownerName,
+    ownerEmail: ownerContext.ownerEmail,
+    claimStateNote: ownerContext.claimStateNote,
+    createdAt: `May ${10 - (index % 4)}, 2026 · 9:00 AM`,
+    claimedAt: business.status === "Verified" ? `May ${14 - (index % 5)}, 2026 · 1:40 PM` : "Not yet approved",
+    averageRating: business.status === "Unclaimed" ? 4.1 : 4.5,
+    reviewCount: 12 + index * 3,
+    profileViews30d: 820 + index * 91,
+    recentReviews: buildRecentReviews(business.name),
+    recentSignals: buildRecentSignals(business),
+    publicHref: `/business/${business.slug}`,
+    ownerWorkspaceHref: `/dashboard/businesses/${business.slug}/overview`,
+  }
+})
+
+export function getAdminBusinessDetailBySlug(slug: string) {
+  return mockAdminBusinessDetails.find((business) => business.slug === slug) ?? null
+}
+
+export const mockAdminActivityLogs: AdminActivityLogItem[] = [
+  {
+    id: "activity-log-1",
+    actorName: "Aarati Shrestha",
+    actorRole: "Super admin",
+    actionLabel: "Approved business claim",
+    scope: "Businesses",
+    targetLabel: "Himalayan Java Courtyard",
+    occurredAt: "May 21, 2026 · 3:12 PM",
+    summary: "Approved the latest ownership request after validating the storefront and VAT documents.",
+  },
+  {
+    id: "activity-log-2",
+    actorName: "Roshan Gurung",
+    actorRole: "Moderation lead",
+    actionLabel: "Rejected flagged review",
+    scope: "Reviews",
+    targetLabel: "Owner started arguing at the table",
+    occurredAt: "May 21, 2026 · 1:48 PM",
+    summary: "Rejected the review after confirming abusive language and removed it from the public experience.",
+  },
+  {
+    id: "activity-log-3",
+    actorName: "Aarati Shrestha",
+    actorRole: "Super admin",
+    actionLabel: "Updated internal user role",
+    scope: "Users",
+    targetLabel: "Sabina Shahi",
+    occurredAt: "May 21, 2026 · 11:24 AM",
+    summary: "Changed the assigned role from Support coordinator to Moderation lead.",
+  },
+  {
+    id: "activity-log-4",
+    actorName: "Roshan Gurung",
+    actorRole: "Moderation lead",
+    actionLabel: "Edited custom role",
+    scope: "Roles",
+    targetLabel: "Business ops",
+    occurredAt: "May 20, 2026 · 6:16 PM",
+    summary: "Added read access for Users and update access for Establishment Types.",
+  },
+  {
+    id: "activity-log-5",
+    actorName: "Aarati Shrestha",
+    actorRole: "Super admin",
+    actionLabel: "Created establishment type",
+    scope: "Establishment Types",
+    targetLabel: "Dessert Shop",
+    occurredAt: "May 20, 2026 · 1:22 PM",
+    summary: "Added a new establishment type for dessert-first businesses in the directory.",
+  },
+  {
+    id: "activity-log-6",
+    actorName: "Aarati Shrestha",
+    actorRole: "Super admin",
+    actionLabel: "Updated notification preferences",
+    scope: "Settings",
+    targetLabel: "Admin account settings",
+    occurredAt: "May 19, 2026 · 9:03 AM",
+    summary: "Enabled moderation alerts and disabled the daily digest for the current operator profile.",
+  },
 ]
 
 export const mockAdminHomeData: AdminHomeData = {

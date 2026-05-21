@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Building2, LayoutDashboard, MessageSquareWarning, Settings, UserRound, Users } from "lucide-react"
+import { Building2, History, LayoutDashboard, MessageSquareWarning, Settings, Shapes, UserRound, Users } from "lucide-react"
 import { BrandLogo } from "@/components/mitho/brand-logo"
 import {
   Sidebar,
@@ -17,9 +17,11 @@ import { cn } from "@/lib/utils"
 export const adminNavSections = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/businesses", label: "Businesses", icon: Building2 },
+  { href: "/admin/establishment-types", label: "Establishment Types", icon: Shapes },
   { href: "/admin/reviews/moderation", label: "Review Moderation", icon: MessageSquareWarning },
   { href: "/admin/customers", label: "Customers", icon: UserRound },
   { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/activity-logs", label: "Activity Logs", icon: History },
 ] as const
 
 const adminHiddenRouteItems = [
@@ -31,7 +33,12 @@ const adminHiddenRouteItems = [
 const adminRouteItems = [...adminNavSections, ...adminHiddenRouteItems]
 
 export function getActiveAdminItem(pathname: string) {
-  return adminRouteItems.find((item) => item.href === pathname) ?? adminNavSections[0]
+  return (
+    adminRouteItems
+      .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+      .sort((left, right) => right.href.length - left.href.length)[0]
+    ?? adminNavSections[0]
+  )
 }
 
 export function AdminSidebarBrand({ compact = false }: { compact?: boolean }) {

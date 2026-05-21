@@ -752,7 +752,7 @@ export function AdminUsersPage() {
                               <Checkbox
                                 checked={Boolean(rolePermissions.resources[resource]?.[action])}
                                 onCheckedChange={(checked) => togglePermission(resource, action, checked === true)}
-                                className="mx-auto border-brand-deep-green/18 data-[state=checked]:border-brand-dark-green data-[state=checked]:bg-brand-dark-green"
+                                className="mx-auto border-brand-deep-green/18 text-white data-[state=checked]:border-brand-orange data-[state=checked]:bg-brand-orange"
                               />
                             ) : (
                               <span className="text-sm text-muted-foreground">-</span>

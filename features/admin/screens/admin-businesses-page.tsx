@@ -124,12 +124,12 @@ export function AdminBusinessesPage() {
                 {
                   label: "View",
                   icon: <Eye className="h-4 w-4" />,
-                  onSelect: () => router.push(business.href),
+                  onSelect: () => router.push(`/admin/businesses/${business.slug}`),
                 },
                 {
                   label: "Edit",
                   icon: <Pencil className="h-4 w-4" />,
-                  onSelect: () => router.push(`/dashboard/businesses/${business.slug}/edit`),
+                  onSelect: () => router.push(`/admin/businesses/${business.slug}/edit`),
                 },
               ]}
             />
