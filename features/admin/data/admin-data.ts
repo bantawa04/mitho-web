@@ -44,6 +44,20 @@ export interface AdminNotificationItem {
   kind: "claim" | "review" | "business"
 }
 
+export type AdminCustomerOauthType = "Google" | "Apple"
+
+export interface AdminCustomerItem {
+  id: string
+  name: string
+  email: string
+  oauthType: AdminCustomerOauthType
+  hasBusiness: boolean
+  joinedAt: string
+  businessNames: string[]
+  reviewsCount: number
+  collectionsCount: number
+}
+
 export type AdminReviewModerationFlag =
   | "Abusive wording"
   | "Potential duplicate"
@@ -117,6 +131,97 @@ export const mockAdminNotifications: AdminNotificationItem[] = [
     when: "Today",
     href: "/admin/businesses",
     kind: "business",
+  },
+]
+
+export const mockAdminCustomers: AdminCustomerItem[] = [
+  {
+    id: "customer-1",
+    name: "Nabin Karki",
+    email: "nabin.karki@gmail.com",
+    oauthType: "Google",
+    hasBusiness: true,
+    joinedAt: "May 20, 2026 · 8:10 PM",
+    businessNames: ["Momo Central"],
+    reviewsCount: 14,
+    collectionsCount: 5,
+  },
+  {
+    id: "customer-2",
+    name: "Aarushi Rai",
+    email: "aarushi.rai@icloud.com",
+    oauthType: "Apple",
+    hasBusiness: false,
+    joinedAt: "May 19, 2026 · 3:45 PM",
+    businessNames: [],
+    reviewsCount: 8,
+    collectionsCount: 2,
+  },
+  {
+    id: "customer-3",
+    name: "Roshan Shrestha",
+    email: "roshan.shrestha@gmail.com",
+    oauthType: "Google",
+    hasBusiness: true,
+    joinedAt: "May 18, 2026 · 10:22 AM",
+    businessNames: ["Himalayan Java Courtyard", "Roshan Rooftop Grill"],
+    reviewsCount: 6,
+    collectionsCount: 1,
+  },
+  {
+    id: "customer-4",
+    name: "Mina Tamang",
+    email: "mina.tamang@icloud.com",
+    oauthType: "Apple",
+    hasBusiness: false,
+    joinedAt: "May 15, 2026 · 7:32 PM",
+    businessNames: [],
+    reviewsCount: 21,
+    collectionsCount: 7,
+  },
+  {
+    id: "customer-5",
+    name: "Sujan Maharjan",
+    email: "sujan.maharjan@gmail.com",
+    oauthType: "Google",
+    hasBusiness: false,
+    joinedAt: "May 12, 2026 · 9:18 AM",
+    businessNames: [],
+    reviewsCount: 4,
+    collectionsCount: 0,
+  },
+  {
+    id: "customer-6",
+    name: "Puja Basnet",
+    email: "puja.basnet@icloud.com",
+    oauthType: "Apple",
+    hasBusiness: true,
+    joinedAt: "May 9, 2026 · 1:06 PM",
+    businessNames: ["Brick Lane Brunch"],
+    reviewsCount: 11,
+    collectionsCount: 3,
+  },
+  {
+    id: "customer-7",
+    name: "Sanjog Shakya",
+    email: "sanjog.shakya@gmail.com",
+    oauthType: "Google",
+    hasBusiness: false,
+    joinedAt: "May 7, 2026 · 6:54 PM",
+    businessNames: [],
+    reviewsCount: 9,
+    collectionsCount: 4,
+  },
+  {
+    id: "customer-8",
+    name: "Asmita Gurung",
+    email: "asmita.gurung@icloud.com",
+    oauthType: "Apple",
+    hasBusiness: false,
+    joinedAt: "May 4, 2026 · 11:40 AM",
+    businessNames: [],
+    reviewsCount: 3,
+    collectionsCount: 1,
   },
 ]
 
