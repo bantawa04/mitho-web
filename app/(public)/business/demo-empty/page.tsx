@@ -1,5 +1,5 @@
-import { BusinessDetailPage } from "@/components/business/business-detail-page"
-import { emptyBusinessPageData } from "@/components/business/business-detail-data"
+import { BusinessDetailPage } from "@/features/business/screens/business-detail-page"
+import { emptyBusinessPageData } from "@/features/business/data/business-detail-data"
 
 export default function DemoEmptyBusinessPage() {
   return (

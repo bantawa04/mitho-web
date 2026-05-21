@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import type { ReactNode } from "react"
-import { getManagedBusinessByIdAny } from "@/components/dashboard/dashboard-business-data"
-import { BusinessWorkspaceShell } from "@/components/dashboard/business-workspace-shell"
+import { getManagedBusinessByIdAny } from "@/features/dashboard/data/dashboard-business-data"
+import { BusinessWorkspaceShell } from "@/features/dashboard/components/business-workspace-shell"
 
 interface DashboardBusinessLayoutProps {
   children: ReactNode

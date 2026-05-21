@@ -1,6 +1,6 @@
-import { Footer } from "@/components/home/footer"
-import { Header } from "@/components/home/header"
-import { AddBusinessFlow } from "@/components/business/add-business-flow"
+import { Footer } from "@/features/home/components/footer"
+import { Header } from "@/features/home/components/header"
+import { AddBusinessFlow } from "@/features/business/screens/add-business-flow"
 
 export default function AddBusinessPage() {
   return (

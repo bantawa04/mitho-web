@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { CATEGORY_METADATA } from "@/components/categories/category-taxonomy"
-import { CITY_METADATA, STATE_OPTIONS } from "@/components/cities/city-taxonomy"
+import { CATEGORY_METADATA } from "@/content/taxonomy/category-taxonomy"
+import { CITY_METADATA, STATE_OPTIONS } from "@/content/taxonomy/city-taxonomy"
 
 const categorySlugs = new Set(CATEGORY_METADATA.map((category) => category.slug))
 const cityLabels = new Set(CITY_METADATA.map((city) => city.label))

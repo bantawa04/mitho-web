@@ -1,6 +1,6 @@
-import { Footer } from "@/components/home/footer"
-import { Header } from "@/components/home/header"
-import { PublicUserDiscoveryPage } from "@/components/profile/profile-pages"
+import { Footer } from "@/features/home/components/footer"
+import { Header } from "@/features/home/components/header"
+import { PublicUserDiscoveryPage } from "@/features/profile/screens/profile-pages"
 
 export default function PublicUserDiscoveryRoute() {
   return (

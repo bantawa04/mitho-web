@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { AdminShell } from "@/components/admin/admin-shell"
+import { AdminShell } from "@/features/admin/components/admin-shell"
 
 export default function AdminProtectedLayout({ children }: { children: ReactNode }) {
   return (

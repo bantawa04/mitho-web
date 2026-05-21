@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
-import { buildCopiedCollection, buildDraftCollection, getCollectionById, getPublicCollectionByUsernameAndId } from "@/components/collections/collection-data"
-import { CollectionDetailPage } from "@/components/collections/collection-pages"
+import { buildCopiedCollection, buildDraftCollection, getCollectionById, getPublicCollectionByUsernameAndId } from "@/features/collections/data/collection-data"
+import { CollectionDetailPage } from "@/features/collections/screens/collection-pages"
 
 function readValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value

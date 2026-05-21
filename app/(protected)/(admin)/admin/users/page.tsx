@@ -1,4 +1,4 @@
-import { AdminPlaceholderPage } from "@/components/admin/admin-pages"
+import { AdminPlaceholderPage } from "@/features/admin/screens/admin-pages"
 
 export default function AdminUsersPage() {
   return (

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
-import { getCollectionById } from "@/components/collections/collection-data"
-import { CollectionEditPage } from "@/components/collections/collection-pages"
+import { getCollectionById } from "@/features/collections/data/collection-data"
+import { CollectionEditPage } from "@/features/collections/screens/collection-pages"
 
 export default async function CollectionEditRoute({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

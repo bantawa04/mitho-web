@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { ExplorePage } from "@/components/explore/explore-page"
+import { ExplorePage } from "@/features/discovery/explore/explore-page"
 
 export const metadata: Metadata = {
   title: "Explore Local Food Picks | Mitho Cha!",

@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { Footer } from "@/components/home/footer"
-import { Header } from "@/components/home/header"
-import { MithoButton } from "@/components/ui/mitho-button"
+import { Footer } from "@/features/home/components/footer"
+import { Header } from "@/features/home/components/header"
+import { MithoButton } from "@/components/mitho/mitho-button"
 
 export default function CategoryNotFound() {
   return (

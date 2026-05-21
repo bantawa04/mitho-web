@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
-import { SettingsRoutePage } from "@/components/dashboard/business-route-pages"
-import { getManagedBusinessByIdAny } from "@/components/dashboard/dashboard-business-data"
+import { SettingsRoutePage } from "@/features/dashboard/screens/business-route-pages"
+import { getManagedBusinessByIdAny } from "@/features/dashboard/data/dashboard-business-data"
 
 interface DashboardBusinessSettingsPageProps {
   params: Promise<{ id: string }>

@@ -1,4 +1,4 @@
-import { PhotosRoutePage } from "@/components/dashboard/business-route-pages"
+import { PhotosRoutePage } from "@/features/dashboard/screens/business-route-pages"
 
 export default function DashboardBusinessPhotosPage() {
   return <PhotosRoutePage />

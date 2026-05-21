@@ -1,6 +1,6 @@
-import { DashboardFooter } from "@/components/dashboard/dashboard-footer"
-import { DashboardHeader } from "@/components/dashboard/dashboard-header"
-import { mockCustomerProfile } from "@/components/profile/profile-data"
+import { DashboardFooter } from "@/features/dashboard/components/dashboard-footer"
+import { DashboardHeader } from "@/features/dashboard/components/dashboard-header"
+import { mockCustomerProfile } from "@/features/profile/data/profile-data"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function DashboardBusinessesLoading() {

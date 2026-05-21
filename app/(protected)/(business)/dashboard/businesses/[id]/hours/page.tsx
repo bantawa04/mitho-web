@@ -1,4 +1,4 @@
-import { HoursRoutePage } from "@/components/dashboard/business-route-pages"
+import { HoursRoutePage } from "@/features/dashboard/screens/business-route-pages"
 
 interface DashboardBusinessHoursPageProps {
   params: Promise<{ id: string }>

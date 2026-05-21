@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { getDashboardScenario, getManagedBusinesses } from "@/components/dashboard/dashboard-business-data"
+import { getDashboardScenario, getManagedBusinesses } from "@/features/dashboard/data/dashboard-business-data"
 
 interface DashboardPageProps {
   searchParams: Promise<{ state?: string }>

@@ -1,7 +1,7 @@
-import { AddBusinessFlow } from "@/components/business/add-business-flow"
-import { DashboardFooter } from "@/components/dashboard/dashboard-footer"
-import { DashboardHeader } from "@/components/dashboard/dashboard-header"
-import { mockCustomerProfile } from "@/components/profile/profile-data"
+import { AddBusinessFlow } from "@/features/business/screens/add-business-flow"
+import { DashboardFooter } from "@/features/dashboard/components/dashboard-footer"
+import { DashboardHeader } from "@/features/dashboard/components/dashboard-header"
+import { mockCustomerProfile } from "@/features/profile/data/profile-data"
 
 export default function DashboardAddBusinessPage() {
   return (

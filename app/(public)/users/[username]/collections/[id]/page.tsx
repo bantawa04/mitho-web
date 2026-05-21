@@ -1,7 +1,7 @@
-import { Footer } from "@/components/home/footer"
-import { Header } from "@/components/home/header"
-import { getPublicCollectionByUsernameAndId } from "@/components/collections/collection-data"
-import { PublicCollectionDetailPage } from "@/components/collections/collection-pages"
+import { Footer } from "@/features/home/components/footer"
+import { Header } from "@/features/home/components/header"
+import { getPublicCollectionByUsernameAndId } from "@/features/collections/data/collection-data"
+import { PublicCollectionDetailPage } from "@/features/collections/screens/collection-pages"
 
 export default async function PublicCollectionRoute({
   params,

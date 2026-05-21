@@ -1,5 +1,5 @@
-import { ownedCollections } from "@/components/collections/collection-data"
-import { CollectionsIndexPage } from "@/components/collections/collection-pages"
+import { ownedCollections } from "@/features/collections/data/collection-data"
+import { CollectionsIndexPage } from "@/features/collections/screens/collection-pages"
 
 export default function CollectionsRoute() {
   return <CollectionsIndexPage collections={ownedCollections} />

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
-import { CategoryDetailPage } from "@/components/categories/category-detail-page"
-import { CATEGORY_METADATA, isCategorySlug } from "@/components/categories/category-taxonomy"
+import { CategoryDetailPage } from "@/features/discovery/categories/category-detail-page"
+import { CATEGORY_METADATA, isCategorySlug } from "@/content/taxonomy/category-taxonomy"
 
 interface CategoryRouteProps {
   params: Promise<{ slug: string }>

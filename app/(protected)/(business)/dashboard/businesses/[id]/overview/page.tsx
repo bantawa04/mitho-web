@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
-import { BusinessOverviewPage } from "@/components/dashboard/business-overview-page"
-import { getManagedBusinessByIdAny } from "@/components/dashboard/dashboard-business-data"
+import { BusinessOverviewPage } from "@/features/dashboard/screens/business-overview-page"
+import { getManagedBusinessByIdAny } from "@/features/dashboard/data/dashboard-business-data"
 
 interface DashboardBusinessOverviewPageProps {
   params: Promise<{ id: string }>

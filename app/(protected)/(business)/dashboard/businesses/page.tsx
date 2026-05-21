@@ -1,5 +1,5 @@
-import { BusinessSwitcherPage } from "@/components/dashboard/business-switcher-page"
-import { getDashboardScenario } from "@/components/dashboard/dashboard-business-data"
+import { BusinessSwitcherPage } from "@/features/dashboard/screens/business-switcher-page"
+import { getDashboardScenario } from "@/features/dashboard/data/dashboard-business-data"
 
 interface DashboardBusinessesPageProps {
   searchParams: Promise<{ state?: string }>

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
-import { Footer } from "@/components/home/footer"
-import { Header } from "@/components/home/header"
-import { mockCustomerProfile } from "@/components/profile/profile-data"
+import { Footer } from "@/features/home/components/footer"
+import { Header } from "@/features/home/components/header"
+import { mockCustomerProfile } from "@/features/profile/data/profile-data"
 
 export default function CustomerProtectedLayout({ children }: { children: ReactNode }) {
   return (

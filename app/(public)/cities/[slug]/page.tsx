@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
-import { CityDetailPage } from "@/components/cities/city-detail-page"
-import { CITY_METADATA, isCitySlug } from "@/components/cities/city-taxonomy"
+import { CityDetailPage } from "@/features/discovery/cities/city-detail-page"
+import { CITY_METADATA, isCitySlug } from "@/content/taxonomy/city-taxonomy"
 
 interface CityRouteProps {
   params: Promise<{ slug: string }>

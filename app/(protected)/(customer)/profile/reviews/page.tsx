@@ -1,4 +1,4 @@
-import { ProfileReviewsPage } from "@/components/profile/profile-pages"
+import { ProfileReviewsPage } from "@/features/profile/screens/profile-pages"
 
 export default function ProfileReviewsRoute() {
   return <ProfileReviewsPage />

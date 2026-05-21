@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Chivo, Poppins } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { MockAuthProvider } from "@/components/auth/mock-auth-provider"
+import { MockAuthProvider } from "@/features/auth/components/mock-auth-provider"
 import "./globals.css"
 
 const poppins = Poppins({

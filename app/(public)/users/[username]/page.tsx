@@ -1,6 +1,6 @@
-import { Footer } from "@/components/home/footer"
-import { Header } from "@/components/home/header"
-import { PublicUserProfilePage } from "@/components/profile/profile-pages"
+import { Footer } from "@/features/home/components/footer"
+import { Header } from "@/features/home/components/header"
+import { PublicUserProfilePage } from "@/features/profile/screens/profile-pages"
 
 export default async function PublicUserProfileRoute({
   params,

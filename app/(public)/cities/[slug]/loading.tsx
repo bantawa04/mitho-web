@@ -1,5 +1,5 @@
-import { Footer } from "@/components/home/footer"
-import { Header } from "@/components/home/header"
+import { Footer } from "@/features/home/components/footer"
+import { Header } from "@/features/home/components/header"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function CityLoading() {
