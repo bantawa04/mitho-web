@@ -5,11 +5,10 @@ import Link from "next/link"
 import { ChevronRight, Eye, Trash2 } from "lucide-react"
 import { AdminRowActions } from "@/components/admin/admin-row-actions"
 import { AdminConfirmModal, AdminModal } from "@/components/admin/admin-modal"
-import { AdminTable } from "@/components/admin/admin-table"
+import { AdminTable, type AdminTableColumn } from "@/components/admin/admin-table"
 import { mockAdminReviewModeration, type AdminReviewModerationFlag, type AdminReviewModerationItem, type AdminReviewModerationStatus } from "@/components/admin/admin-data"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TableCell } from "@/components/ui/table"
 
 const pageSize = 6
 
@@ -42,6 +41,7 @@ function getModerationStatusTone(status: AdminReviewModerationStatus) {
 export function AdminReviewModerationPage() {
   const [query, setQuery] = useState("")
   const [reviews, setReviews] = useState(mockAdminReviewModeration)
+  const [statusFilter, setStatusFilter] = useState<"All" | AdminReviewModerationStatus>("All")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null)
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null)
@@ -52,9 +52,11 @@ export function AdminReviewModerationPage() {
     const normalizedQuery = query.trim().toLowerCase()
 
     return reviews.filter((review) => {
-      if (normalizedQuery.length === 0) return true
-
-      return [
+      const matchesStatus = statusFilter === "All" ? true : review.moderationStatus === statusFilter
+      const matchesQuery =
+        normalizedQuery.length === 0
+          ? true
+          : [
         review.businessName,
         review.reviewerName,
         review.reviewTitle,
@@ -62,17 +64,19 @@ export function AdminReviewModerationPage() {
         review.reviewBody,
         review.flagLabel,
       ]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedQuery)
+              .join(" ")
+              .toLowerCase()
+              .includes(normalizedQuery)
+
+      return matchesStatus && matchesQuery
     })
-  }, [query, reviews])
+  }, [query, reviews, statusFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredReviews.length / pageSize))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [query])
+  }, [query, statusFilter])
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -107,15 +111,91 @@ export function AdminReviewModerationPage() {
       ? "No flagged reviews match this search."
       : `Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, filteredReviews.length)} of ${filteredReviews.length}`
 
-  const columns = [
-    { id: "review", label: "Review", className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "status", label: "Status", className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "business", label: "Business", className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "reviewer", label: "Reviewer", className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "flag", label: "Flag", className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "submitted", label: "Submitted", className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "action", label: "Action", className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-  ]
+  const columns = useMemo<AdminTableColumn<AdminReviewModerationItem>[]>(
+    () => [
+      {
+        id: "review",
+        label: "Review",
+        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "px-6 py-5 align-top",
+        cell: (review) => (
+          <div className="space-y-1">
+            <p className="max-w-[24rem] text-sm font-semibold leading-6 text-brand-dark-green">{review.reviewTitle}</p>
+            <p className="text-sm text-muted-foreground">{review.rating}/5</p>
+          </div>
+        ),
+      },
+      {
+        id: "status",
+        label: "Status",
+        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 align-top",
+        cell: (review) => (
+          <span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getModerationStatusTone(review.moderationStatus)}`}>
+            {review.moderationStatus}
+          </span>
+        ),
+      },
+      {
+        id: "business",
+        label: "Business",
+        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 align-top text-sm font-medium text-brand-dark-green",
+        cell: (review) => review.businessName,
+      },
+      {
+        id: "reviewer",
+        label: "Reviewer",
+        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        cell: (review) => review.reviewerName,
+      },
+      {
+        id: "flag",
+        label: "Flag",
+        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 align-top",
+        cell: (review) => (
+          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getFlagTone(review.flagLabel)}`}>
+            {review.flagLabel}
+          </span>
+        ),
+      },
+      {
+        id: "submitted",
+        label: "Submitted",
+        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        cell: (review) => review.submittedAt,
+      },
+      {
+        id: "action",
+        label: "Action",
+        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 pr-6 align-top text-right",
+        cell: (review) => (
+          <div className="flex justify-end">
+            <AdminRowActions
+              items={[
+                {
+                  label: "View",
+                  icon: <Eye className="h-4 w-4" />,
+                  onSelect: () => setSelectedReviewId(review.id),
+                },
+                {
+                  label: "Delete",
+                  icon: <Trash2 className="h-4 w-4" />,
+                  onSelect: () => setDeleteReviewId(review.id),
+                  variant: "destructive",
+                },
+              ]}
+            />
+          </div>
+        ),
+      },
+    ],
+    [],
+  )
 
   function applyModerationDecision() {
     if (!selectedReview) return
@@ -144,51 +224,6 @@ export function AdminReviewModerationPage() {
     }
   }
 
-  function renderReviewRow(review: AdminReviewModerationItem) {
-    return (
-      <>
-        <TableCell className="px-6 py-5 align-top">
-          <div className="space-y-1">
-            <p className="max-w-[24rem] text-sm font-semibold leading-6 text-brand-dark-green">{review.reviewTitle}</p>
-            <p className="text-sm text-muted-foreground">{review.rating}/5</p>
-          </div>
-        </TableCell>
-        <TableCell className="py-5 align-top">
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getModerationStatusTone(review.moderationStatus)}`}>
-            {review.moderationStatus}
-          </span>
-        </TableCell>
-        <TableCell className="py-5 align-top text-sm font-medium text-brand-dark-green">{review.businessName}</TableCell>
-        <TableCell className="py-5 align-top text-sm text-muted-foreground">{review.reviewerName}</TableCell>
-        <TableCell className="py-5 align-top">
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getFlagTone(review.flagLabel)}`}>
-            {review.flagLabel}
-          </span>
-        </TableCell>
-        <TableCell className="py-5 align-top text-sm text-muted-foreground">{review.submittedAt}</TableCell>
-        <TableCell className="py-5 pr-6 align-top text-right">
-          <div className="flex justify-end">
-            <AdminRowActions
-              items={[
-                {
-                  label: "View",
-                  icon: <Eye className="h-4 w-4" />,
-                  onSelect: () => setSelectedReviewId(review.id),
-                },
-                {
-                  label: "Delete",
-                  icon: <Trash2 className="h-4 w-4" />,
-                  onSelect: () => setDeleteReviewId(review.id),
-                  variant: "destructive",
-                },
-              ]}
-            />
-          </div>
-        </TableCell>
-      </>
-    )
-  }
-
   return (
     <>
       <div className="space-y-6">
@@ -212,10 +247,26 @@ export function AdminReviewModerationPage() {
           columns={columns}
           data={paginatedReviews}
           rowKey={(review) => review.id}
-          renderRow={renderReviewRow}
           searchValue={query}
           onSearchChange={setQuery}
           searchPlaceholder="Search flagged reviews, businesses, or reviewers"
+          leftToolbarContent={
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-muted-foreground">Status</span>
+              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as "All" | AdminReviewModerationStatus)}>
+                <SelectTrigger className="h-11 w-[190px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(["All", "Pending", "Accepted", "Rejected"] as Array<"All" | AdminReviewModerationStatus>).map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          }
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}

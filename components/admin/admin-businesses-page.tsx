@@ -5,10 +5,9 @@ import { useEffect, useMemo, useState } from "react"
 import { ChevronRight, Eye, Pencil, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AdminRowActions } from "@/components/admin/admin-row-actions"
-import { AdminTable } from "@/components/admin/admin-table"
+import { AdminTable, type AdminTableColumn } from "@/components/admin/admin-table"
 import { adminBusinessStatusOptions, mockAdminBusinesses, type AdminBusinessListItem, type AdminBusinessStatus } from "@/components/admin/admin-data"
 import { Button } from "@/components/ui/button"
-import { TableCell } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const pageSize = 6
@@ -68,18 +67,14 @@ export function AdminBusinessesPage() {
       ? "No businesses match the current search and status filters."
       : `Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, filteredBusinesses.length)} of ${filteredBusinesses.length}`
 
-  const columns = [
-    { id: "business", label: "Business", className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "location", label: "Location", className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "status", label: "Status", className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "updated", label: "Updated", className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-    { id: "action", label: "Action", className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55" },
-  ]
-
-  function renderBusinessRow(business: AdminBusinessListItem) {
-    return (
-      <>
-        <TableCell className="px-6 py-5 align-top">
+  const columns = useMemo<AdminTableColumn<AdminBusinessListItem>[]>(
+    () => [
+      {
+        id: "business",
+        label: "Business",
+        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "px-6 py-5 align-top",
+        cell: (business) => (
           <div className="flex items-start gap-3">
             <img
               src={business.avatarUrl}
@@ -90,15 +85,39 @@ export function AdminBusinessesPage() {
               <p className="font-semibold text-brand-dark-green">{business.name}</p>
             </div>
           </div>
-        </TableCell>
-        <TableCell className="py-5 align-top text-sm text-muted-foreground">{business.location}</TableCell>
-        <TableCell className="py-5 align-top">
+        ),
+      },
+      {
+        id: "location",
+        label: "Location",
+        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        cell: (business) => business.location,
+      },
+      {
+        id: "status",
+        label: "Status",
+        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 align-top",
+        cell: (business) => (
           <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(business.status)}`}>
             {business.status}
           </span>
-        </TableCell>
-        <TableCell className="py-5 align-top text-sm text-muted-foreground">{business.updatedAt}</TableCell>
-        <TableCell className="py-5 pr-6 align-top text-right">
+        ),
+      },
+      {
+        id: "updated",
+        label: "Updated",
+        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        cell: (business) => business.updatedAt,
+      },
+      {
+        id: "action",
+        label: "Action",
+        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
+        cellClassName: "py-5 pr-6 align-top text-right",
+        cell: (business) => (
           <div className="flex justify-end">
             <AdminRowActions
               items={[
@@ -115,10 +134,11 @@ export function AdminBusinessesPage() {
               ]}
             />
           </div>
-        </TableCell>
-      </>
-    )
-  }
+        ),
+      },
+    ],
+    [router],
+  )
 
   return (
     <div className="space-y-6">
@@ -142,7 +162,6 @@ export function AdminBusinessesPage() {
         columns={columns}
         data={paginatedBusinesses}
         rowKey={(business) => business.id}
-        renderRow={renderBusinessRow}
         searchValue={query}
         onSearchChange={setQuery}
         searchPlaceholder="Search businesses by name or location"

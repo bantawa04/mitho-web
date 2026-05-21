@@ -13,17 +13,18 @@ import {
 } from "@/components/ui/pagination"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-export interface AdminTableColumn {
+export interface AdminTableColumn<TData> {
   id: string
   label: string
   className?: string
+  cellClassName?: string
+  cell: (item: TData) => ReactNode
 }
 
 interface AdminTableProps<TData> {
-  columns: AdminTableColumn[]
+  columns: AdminTableColumn<TData>[]
   data: TData[]
   rowKey: (item: TData) => string
-  renderRow: (item: TData) => ReactNode
   searchValue: string
   onSearchChange: (value: string) => void
   searchPlaceholder?: string
@@ -41,7 +42,6 @@ export function AdminTable<TData>({
   columns,
   data,
   rowKey,
-  renderRow,
   searchValue,
   onSearchChange,
   searchPlaceholder = "Search...",
@@ -90,7 +90,15 @@ export function AdminTable<TData>({
           </TableHeader>
           <TableBody>
             {data.length > 0 ? (
-              data.map((item) => <TableRow key={rowKey(item)} className="border-brand-deep-green/10 hover:bg-brand-soft-beige/14">{renderRow(item)}</TableRow>)
+              data.map((item) => (
+                <TableRow key={rowKey(item)} className="border-brand-deep-green/10 hover:bg-brand-soft-beige/14">
+                  {columns.map((column) => (
+                    <TableCell key={column.id} className={column.cellClassName}>
+                      {column.cell(item)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : (
               <TableRow className="border-brand-deep-green/10 hover:bg-transparent">
                 <TableCell colSpan={columns.length} className="px-6 py-12 text-center">
