@@ -65,7 +65,7 @@ This file tracks page creation progress for Mitho Cha across customer, business,
 - [ ] `/dashboard/campaigns` Promotions / sponsored placements
 
 ### Admin / Superadmin
-- [ ] `/admin/staff` Staff management
+- [x] `/admin/users` Internal User management
 - [x] `/admin/activity-logs` Activity logs
 - [ ] `/admin/featured-content` Featured content curation
 - [ ] `/admin/promotions` Promotion / sponsored content management
