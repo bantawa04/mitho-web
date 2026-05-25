@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { CheckCircle2 } from "lucide-react"
 import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { Header } from "@/features/home/components/header"
@@ -15,8 +14,8 @@ import {
   type CollectionCandidate,
   type CollectionRecord,
 } from "@/features/collections/data/collection-data"
+import { toast } from "@/hooks/use-toast"
 import { MithoBreadcrumb } from "@/components/mitho/mitho-breadcrumb"
-import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { BusinessHero } from "@/features/business/components/business-hero"
 import { InfoPanel } from "@/features/business/components/info-panel"
 import { MenuHighlights } from "@/features/business/components/menu-highlights"
@@ -26,6 +25,7 @@ import { AddReviewForm } from "@/features/business/components/add-review-form"
 import { SimilarPlaces } from "@/features/business/components/similar-places"
 import { ClaimReport } from "@/features/business/components/claim-report"
 import type { BusinessPageData } from "@/features/business/business-detail-types"
+import { isBusinessEarlyListing } from "@/features/business/business-detail-utils"
 
 interface BusinessDetailPageProps {
   pageData: BusinessPageData
@@ -40,14 +40,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = React.useState(false)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [reopenCollectionDialogAfterAuth, setReopenCollectionDialogAfterAuth] = React.useState(false)
-  const [lastAddedMessage, setLastAddedMessage] = React.useState<string | null>(null)
-  const isEarlyListing =
-    pageData.sourceBadge === "mitho" &&
-    !pageData.coverImage &&
-    !pageData.ratingsData &&
-    pageData.reviews.length === 0 &&
-    pageData.galleryItems.length === 0 &&
-    pageData.menuItems.length === 0
+  const isEarlyListing = isBusinessEarlyListing(pageData)
 
   const scrollToReview = () => {
     document.getElementById("add-review")?.scrollIntoView({ behavior: "smooth" })
@@ -87,8 +80,6 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   }, [pageData.categories, pageData.coverImage, pageData.galleryItems, pageData.heroNote, pageData.location, pageData.name, publicHref])
 
   const handleAddToCollectionPress = () => {
-    setLastAddedMessage(null)
-
     if (!isAuthenticated) {
       setReopenCollectionDialogAfterAuth(true)
       setIsSignInOpen(true)
@@ -116,7 +107,10 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
     )
 
     setIsCollectionDialogOpen(false)
-    setLastAddedMessage(`Added to ${addedCollectionTitle}.`)
+    toast({
+      title: "Collection updated",
+      description: `Added ${pageData.name} to ${addedCollectionTitle}.`,
+    })
   }
 
   const handleCreateCollectionAndAdd = (values: { title: string; description?: string; visibility: "private" | "public" }) => {
@@ -132,7 +126,11 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
     }
 
     setCollections((current) => [newCollection, ...current])
-    setLastAddedMessage(`Created ${newCollectionTitle} and added this place.`)
+    setIsCollectionDialogOpen(false)
+    toast({
+      title: "Collection created",
+      description: `Created ${newCollectionTitle} and added ${pageData.name}.`,
+    })
   }
 
   React.useEffect(() => {
@@ -166,16 +164,6 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
           onWriteReview={scrollToReview}
           onShare={handleShare}
         />
-
-        {lastAddedMessage ? (
-          <div className="container mx-auto mt-5 px-4">
-            <div className="flex flex-wrap items-center gap-3 rounded-[1.35rem] border border-success/18 bg-success/8 px-5 py-4 text-sm text-brand-dark-green">
-              <CheckCircle2 className="h-5 w-5 text-success" />
-              <MithoBadge variant="success">Collection updated</MithoBadge>
-              <p className="font-medium">{lastAddedMessage}</p>
-            </div>
-          </div>
-        ) : null}
 
         <div className="mt-10">
           <InfoPanel

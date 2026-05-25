@@ -40,7 +40,7 @@ export function AppPromotionSection() {
             {appBenefits.map((benefit) => (
               <div
                 key={benefit.title}
-                className="rounded-[1.55rem] border border-white/10 bg-white/7 px-5 py-5 backdrop-blur-sm"
+                className="rounded-[1.55rem] border border-[#f6d9ae]/30 bg-[#fff1d9]/12 px-5 py-5 shadow-[0_16px_38px_rgba(9,29,20,0.12)] backdrop-blur-sm"
               >
                 <div className="flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-soft-beige text-brand-dark-green">

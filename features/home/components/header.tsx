@@ -10,14 +10,7 @@ import { cn } from "@/lib/utils"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { BrandLogo } from "@/components/mitho/brand-logo"
-
-const navLinks = [
-  { href: "/users/aaratieats", label: "Reviews" },
-  { href: "/explore", label: "Trending" },
-  { href: "/cities/kathmandu", label: "Nearby" },
-  { href: "/categories/restaurants", label: "Cravings" },
-  { href: "/business/claim", label: "For Business" },
-]
+import { headerNavLinks } from "@/features/home/data/header-nav-links"
 
 interface HeaderProps {
   signedInUser?: {
@@ -73,7 +66,7 @@ export function Header({ signedInUser }: HeaderProps = {}) {
             </Link>
 
             <nav className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => (
+              {headerNavLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
@@ -109,7 +102,7 @@ export function Header({ signedInUser }: HeaderProps = {}) {
           {isMenuOpen && (
             <div className="border-t border-brand-deep-green/10 bg-background/98 py-4 lg:hidden">
               <nav className="space-y-1">
-                {navLinks.map((link) => (
+                {headerNavLinks.map((link) => (
                   <Link
                     key={link.label}
                     href={link.href}
