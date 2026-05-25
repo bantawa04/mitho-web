@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowUpRight, ChevronRight, Eye, Globe, Mail, MapPin, Pencil, Phone, ShieldCheck, Sparkles, UserRound } from "lucide-react"
+import { ChevronRight, Eye, Globe, Mail, MapPin, Pencil, Phone, ShieldCheck } from "lucide-react"
 import type { AdminBusinessDetailItem, AdminBusinessLifecycleStatus, AdminBusinessStatus } from "@/features/admin/data/admin-data"
 import { Button } from "@/components/ui/button"
 
@@ -29,17 +29,6 @@ function getLifecycleTone(status: AdminBusinessLifecycleStatus) {
     case "Draft":
     case "Suspended":
       return "bg-stone-100 text-stone-700 border-stone-200"
-  }
-}
-
-function getSignalTone(tone: AdminBusinessDetailItem["recentSignals"][number]["tone"]) {
-  switch (tone) {
-    case "success":
-      return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    case "warning":
-      return "bg-amber-50 text-amber-700 border-amber-100"
-    case "info":
-      return "bg-sky-50 text-sky-700 border-sky-100"
   }
 }
 
@@ -126,12 +115,6 @@ export function AdminBusinessDetailPage({ business }: { business: AdminBusinessD
                 Open public page
               </Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40">
-              <Link href={business.ownerWorkspaceHref}>
-                <ArrowUpRight className="h-4 w-4" />
-                Open owner workspace
-              </Link>
-            </Button>
           </div>
         </div>
       </section>
@@ -193,35 +176,6 @@ export function AdminBusinessDetailPage({ business }: { business: AdminBusinessD
               </div>
             </div>
           </section>
-
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-brand-dark-green">Recent reviews snapshot</h2>
-                <p className="text-sm text-muted-foreground">A quick trust read before you decide whether to intervene.</p>
-              </div>
-            </div>
-            <div className="mt-6 space-y-4 border-t border-brand-deep-green/10 pt-6">
-              {business.recentReviews.map((review) => (
-                <div key={review.id} className="rounded-[1rem] border border-brand-deep-green/10 px-4 py-4">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="font-semibold text-brand-dark-green">{review.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{review.author}</p>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      <span className="font-semibold text-brand-dark-green">{review.rating}/5</span>
-                      <span className="mx-2 text-brand-deep-green/30">·</span>
-                      {review.submittedAt}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
 
         <div className="space-y-6">
@@ -248,31 +202,6 @@ export function AdminBusinessDetailPage({ business }: { business: AdminBusinessD
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Claim state</p>
                 <p className="mt-2 text-sm leading-6 text-brand-dark-green">{business.claimStateNote}</p>
               </div>
-            </div>
-          </section>
-
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                <UserRound className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-brand-dark-green">Recent signals</h2>
-                <p className="text-sm text-muted-foreground">The latest business and trust cues around this listing.</p>
-              </div>
-            </div>
-            <div className="mt-6 space-y-3 border-t border-brand-deep-green/10 pt-6">
-              {business.recentSignals.map((signal) => (
-                <div key={signal.id} className="rounded-[1rem] border border-brand-deep-green/10 px-4 py-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getSignalTone(signal.tone)}`}>
-                      {signal.label}
-                    </span>
-                    <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">{signal.when}</span>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{signal.detail}</p>
-                </div>
-              ))}
             </div>
           </section>
         </div>

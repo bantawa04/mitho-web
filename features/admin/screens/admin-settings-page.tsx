@@ -9,17 +9,17 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 
 const notificationFieldLabels: Record<keyof AdminSettingsProfile["notifications"], { title: string; description: string }> = {
-  claimEscalations: {
-    title: "Claim escalations",
-    description: "Get notified when ownership claims need direct operator attention.",
+  newBusinessSignup: {
+    title: "New business signup",
+    description: "Get notified when a new business signs up and needs admin review or onboarding.",
   },
-  moderationAlerts: {
-    title: "Moderation alerts",
-    description: "Receive review moderation and trust-signal alerts as they land.",
+  claimRequest: {
+    title: "Claim request",
+    description: "Get notified when a business owner submits a new ownership claim for review.",
   },
-  dailyDigest: {
-    title: "Daily digest",
-    description: "Receive a once-daily summary of admin activity and open issues.",
+  newReview: {
+    title: "New review",
+    description: "Receive an alert whenever a fresh customer review lands on the platform.",
   },
 }
 
@@ -29,6 +29,17 @@ export function AdminSettingsPage() {
   const [hasSaved, setHasSaved] = useState(false)
 
   const isDirty = useMemo(() => JSON.stringify(savedProfile) !== JSON.stringify(draftProfile), [draftProfile, savedProfile])
+
+  function updateAddressField(field: keyof AdminSettingsProfile["address"], value: string) {
+    setHasSaved(false)
+    setDraftProfile((current) => ({
+      ...current,
+      address: {
+        ...current.address,
+        [field]: value,
+      },
+    }))
+  }
 
   function handleSave() {
     setSavedProfile(draftProfile)
@@ -81,13 +92,42 @@ export function AdminSettingsPage() {
               />
             </label>
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Address</span>
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Address line</span>
               <Input
-                value={draftProfile.address}
-                onChange={(event) => {
-                  setHasSaved(false)
-                  setDraftProfile((current) => ({ ...current, address: event.target.value }))
-                }}
+                value={draftProfile.address.addressLine}
+                onChange={(event) => updateAddressField("addressLine", event.target.value)}
+                className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Area / locality</span>
+              <Input
+                value={draftProfile.address.area}
+                onChange={(event) => updateAddressField("area", event.target.value)}
+                className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">City</span>
+              <Input
+                value={draftProfile.address.city}
+                onChange={(event) => updateAddressField("city", event.target.value)}
+                className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">State / province</span>
+              <Input
+                value={draftProfile.address.state}
+                onChange={(event) => updateAddressField("state", event.target.value)}
+                className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+              />
+            </label>
+            <label className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Country</span>
+              <Input
+                value={draftProfile.address.country}
+                onChange={(event) => updateAddressField("country", event.target.value)}
                 className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
               />
             </label>

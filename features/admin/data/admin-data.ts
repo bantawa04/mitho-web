@@ -167,12 +167,18 @@ export interface AdminInternalUserItem {
 export interface AdminSettingsProfile {
   name: string
   email: string
-  address: string
+  address: {
+    addressLine: string
+    area: string
+    city: string
+    state: string
+    country: string
+  }
   mobileNumber: string
   notifications: {
-    claimEscalations: boolean
-    moderationAlerts: boolean
-    dailyDigest: boolean
+    newBusinessSignup: boolean
+    claimRequest: boolean
+    newReview: boolean
   }
 }
 
@@ -575,12 +581,18 @@ export const mockAdminInternalUsers: AdminInternalUserItem[] = [
 export const mockAdminSettingsProfile: AdminSettingsProfile = {
   name: "Aarati Shrestha",
   email: "aarati.shrestha@mithocha.com",
-  address: "Thamel, Kathmandu, Nepal",
+  address: {
+    addressLine: "Amrit Marg",
+    area: "Thamel",
+    city: "Kathmandu",
+    state: "Bagmati",
+    country: "Nepal",
+  },
   mobileNumber: "+977 9800000000",
   notifications: {
-    claimEscalations: true,
-    moderationAlerts: true,
-    dailyDigest: false,
+    newBusinessSignup: true,
+    claimRequest: true,
+    newReview: true,
   },
 }
 
