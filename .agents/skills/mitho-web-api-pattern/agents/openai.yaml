@@ -1,0 +1,7 @@
+interface:
+  display_name: "Mitho Web API Pattern"
+  short_description: "Type-safe API pattern for mitho-web"
+  default_prompt: "Use $mitho-web-api-pattern to add or refactor a mitho-web backend integration with the query -> service -> Axios flow."
+
+policy:
+  allow_implicit_invocation: true
