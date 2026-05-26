@@ -6,9 +6,8 @@ import {
   useGoogleLoginMutation,
   useLogoutSessionMutation,
 } from "@/queries/authQuery"
+import { authStoreSelectors, useAuthStore } from "@/store/authStore"
 import type { AuthUser } from "@/types/auth"
-
-type SessionState = "loading" | "authenticated" | "signed-out"
 
 interface AuthContextValue {
   isHydrated: boolean
@@ -43,7 +42,15 @@ export function MockAuthProvider({ children }: { children: React.ReactNode }) {
   const sessionQuery = useCurrentSessionQuery()
   const googleLoginMutation = useGoogleLoginMutation()
   const logoutMutation = useLogoutSessionMutation()
-  const authUser = sessionQuery.data ?? null
+  const authUser = useAuthStore(authStoreSelectors.authUser)
+  const sessionState = useAuthStore(authStoreSelectors.sessionState)
+  const isHydrated = useAuthStore(authStoreSelectors.isHydrated)
+  const isAuthenticated = useAuthStore(authStoreSelectors.isAuthenticated)
+  const isAdmin = useAuthStore(authStoreSelectors.isAdmin)
+  const hasBusinessAccess = useAuthStore(authStoreSelectors.hasBusinessAccess)
+  const setSessionLoading = useAuthStore((state) => state.setSessionLoading)
+  const setAuthenticatedUser = useAuthStore((state) => state.setAuthenticatedUser)
+  const clearAuth = useAuthStore((state) => state.clearAuth)
 
   React.useEffect(() => {
     if (sessionQuery.error) {
@@ -51,11 +58,19 @@ export function MockAuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [sessionQuery.error])
 
-  const sessionState: SessionState = sessionQuery.isPending
-    ? "loading"
-    : authUser
-      ? "authenticated"
-      : "signed-out"
+  React.useEffect(() => {
+    if (sessionQuery.isPending) {
+      setSessionLoading()
+      return
+    }
+
+    if (sessionQuery.data) {
+      setAuthenticatedUser(sessionQuery.data)
+      return
+    }
+
+    clearAuth()
+  }, [clearAuth, sessionQuery.data, sessionQuery.isPending, setAuthenticatedUser, setSessionLoading])
 
   const signInWithGoogleCredential = React.useCallback(async (idToken: string) => {
     await googleLoginMutation.mutateAsync(idToken)
@@ -71,9 +86,9 @@ export function MockAuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = React.useMemo<AuthContextValue>(
     () => ({
-      isHydrated: sessionState !== "loading",
-      isAuthenticated: sessionState === "authenticated",
-      isAdmin: authUser?.type === "admin",
+      isHydrated,
+      isAuthenticated,
+      isAdmin,
       currentUser: authUser
         ? {
             name: buildDisplayName(authUser),
@@ -81,13 +96,13 @@ export function MockAuthProvider({ children }: { children: React.ReactNode }) {
           }
         : null,
       authUser,
-      hasBusinessAccess: sessionState === "authenticated" && authUser?.type !== "admin",
+      hasBusinessAccess,
       signInWithGoogleCredential,
       signOut,
       refreshSession,
       ensureDemoSignedIn: () => {},
     }),
-    [authUser, refreshSession, sessionState, signInWithGoogleCredential, signOut],
+    [authUser, hasBusinessAccess, isAdmin, isAuthenticated, isHydrated, refreshSession, signInWithGoogleCredential, signOut],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

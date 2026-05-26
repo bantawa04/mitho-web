@@ -1,40 +1,35 @@
-import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios"
+import axios, { AxiosError } from "axios"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/+$/, "")
+function buildApiBaseUrl() {
+  const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
+  if (!rawBaseUrl) return "/api"
+
+  const normalizedBaseUrl = rawBaseUrl.replace(/\/+$/, "")
+  return normalizedBaseUrl.endsWith("/api") ? normalizedBaseUrl : `${normalizedBaseUrl}/api`
+}
 
 const API = axios.create({
-  baseURL: API_URL,
+  baseURL: buildApiBaseUrl(),
   withCredentials: true,
+  timeout: 15000,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
+    "X-Requested-With": "XMLHttpRequest",
   },
 })
 
-API.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => config,
-  (error: AxiosError) => Promise.reject(error),
-)
+API.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    config.headers.set?.("Content-Type", undefined)
+  }
+
+  return config
+})
 
 API.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  async (error: AxiosError) => {
-    if (error.response?.status === 404) {
-      if (typeof window === "undefined") {
-        const navigation = await import("next/navigation")
-        navigation.notFound()
-      }
-
-      if (typeof window !== "undefined") {
-        window.location.assign("/404")
-        return new Promise(() => {
-          // Keep pending to avoid downstream UI flashes after navigation.
-        })
-      }
-    }
-
-    return Promise.reject(error)
-  },
+  (response) => response,
+  (error: AxiosError) => Promise.reject(error),
 )
 
 export default API
