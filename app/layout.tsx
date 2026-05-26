@@ -1,12 +1,10 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
-
 import {chivo, poppins} from "@/config/fonts"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
 import { RootProvider } from "@/providers/RootProvider"
-// @ts-ignore
 import "./globals.css"
 
 

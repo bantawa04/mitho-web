@@ -13,8 +13,17 @@ export async function fetchCurrentSession(): Promise<AuthUser | null> {
     const { data } = await API.get<ISuccessResponse<AuthUser>>("/auth/me")
     return data.data
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 401) {
-      return null
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 401) {
+        return null
+      }
+
+      // Session hydration should fail soft when the API is unreachable
+      // so the app can still render as signed out instead of surfacing a
+      // root-level bootstrap error.
+      if (!error.response) {
+        return null
+      }
     }
 
     throw error

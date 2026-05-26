@@ -35,12 +35,6 @@ export function useCurrentSession() {
     clearAuth()
   }, [clearAuth, query.data, query.isPending, setAuthenticatedUser, setSessionLoading])
 
-  React.useEffect(() => {
-    if (query.error) {
-      console.error("Failed to hydrate Mitho session", query.error)
-    }
-  }, [query.error])
-
   return query
 }
 
