@@ -1,23 +1,14 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
-import { Chivo, Poppins } from "next/font/google"
+
+import {chivo, poppins} from "@/config/fonts"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
 import { RootProvider } from "@/providers/RootProvider"
+// @ts-ignore
 import "./globals.css"
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins",
-})
-
-const chivo = Chivo({
-  subsets: ["latin"],
-  weight: ["700", "800", "900"],
-  variable: "--font-chivo",
-})
 
 export const metadata: Metadata = {
   title: "Mitho Cha! - Discover the Real Taste of Nepal",
