@@ -7,12 +7,13 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { BrandLogo } from "@/components/mitho/brand-logo"
 import { Footer } from "@/features/home/components/footer"
 import { Header } from "@/features/home/components/header"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot, useGoogleLogin } from "@/hooks/use-auth-session"
 
 export function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { isHydrated, isAuthenticated, signInWithGoogleCredential } = useMockAuth()
+  const { isHydrated, isAuthenticated } = useAuthSnapshot()
+  const googleLogin = useGoogleLogin()
   const [error, setError] = React.useState<string | null>(null)
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim()
   const redirect = searchParams.get("redirect")
@@ -63,7 +64,7 @@ export function LoginPage() {
 
                       try {
                         setError(null)
-                        await signInWithGoogleCredential(credentialResponse.credential)
+                        await googleLogin.mutateAsync(credentialResponse.credential)
                       } catch (signInError) {
                         setError(signInError instanceof Error ? signInError.message : "Google sign-in failed.")
                       }

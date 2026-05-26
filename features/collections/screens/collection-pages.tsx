@@ -21,7 +21,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import {
   buildCopiedCollection,
   buildDraftCollection,
@@ -569,7 +569,7 @@ export function CollectionDetailPage({
 }
 
 export function PublicCollectionDetailPage({ collection }: { collection: CollectionRecord }) {
-  const { isAuthenticated } = useMockAuth()
+  const { isAuthenticated } = useAuthSnapshot()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingCopyAfterAuth, setPendingCopyAfterAuth] = React.useState(false)
   const [copySuccess, setCopySuccess] = React.useState(false)

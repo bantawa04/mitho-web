@@ -10,7 +10,7 @@ import { CITY_METADATA, STATE_OPTIONS, getCityByLabel } from "@/content/taxonomy
 import { buildNewListingPreviewId } from "@/features/dashboard/data/dashboard-business-data"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { addBusinessSchema, BUSINESS_ROLE_OPTIONS, type AddBusinessFormValues } from "@/lib/validators/business"
 import { cn } from "@/lib/utils"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
@@ -138,7 +138,7 @@ function AddBusinessSuccess({
 }
 
 export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
-  const { isAuthenticated } = useMockAuth()
+  const { isAuthenticated } = useAuthSnapshot()
   const form = useForm<AddBusinessFormValues>({
     resolver: zodResolver(addBusinessSchema),
     defaultValues: {

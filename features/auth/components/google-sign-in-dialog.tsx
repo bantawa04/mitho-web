@@ -3,7 +3,7 @@
 import * as React from "react"
 import { GoogleLogin } from "@react-oauth/google"
 import { BrandLogo } from "@/components/mitho/brand-logo"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useGoogleLogin } from "@/hooks/use-auth-session"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface GoogleSignInDialogProps {
@@ -29,7 +29,7 @@ export function GoogleSignInDialog({
   description = defaultDescription,
   helperCopy = defaultHelperCopy,
 }: GoogleSignInDialogProps) {
-  const { signInWithGoogleCredential } = useMockAuth()
+  const googleLogin = useGoogleLogin()
   const [error, setError] = React.useState<string | null>(null)
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim()
 
@@ -71,7 +71,7 @@ export function GoogleSignInDialog({
 
                   try {
                     setError(null)
-                    await signInWithGoogleCredential(credentialResponse.credential)
+                    await googleLogin.mutateAsync(credentialResponse.credential)
                     onOpenChange(false)
                     onContinue?.()
                   } catch (signInError) {

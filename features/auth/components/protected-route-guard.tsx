@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
 
 interface ProtectedRouteGuardProps {
   children: React.ReactNode
@@ -13,7 +13,7 @@ export function ProtectedRouteGuard({ children, requireAdmin = false }: Protecte
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const { isHydrated, isAuthenticated, isAdmin } = useMockAuth()
+  const { isHydrated, isAuthenticated, isAdmin } = useAuthSnapshot()
 
   React.useEffect(() => {
     if (!isHydrated) return

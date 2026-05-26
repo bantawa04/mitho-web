@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { Header } from "@/features/home/components/header"
 import { Footer } from "@/features/home/components/footer"
@@ -35,7 +35,7 @@ interface BusinessDetailPageProps {
 
 export function BusinessDetailPage({ pageData, claimHref = "/business/claim", publicHref }: BusinessDetailPageProps) {
   const [sortOrder, setSortOrder] = React.useState("all")
-  const { currentUser, isAuthenticated } = useMockAuth()
+  const { isAuthenticated } = useAuthSnapshot()
   const [collections, setCollections] = React.useState<CollectionRecord[]>(ownedCollections)
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = React.useState(false)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
@@ -142,7 +142,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
 
   return (
     <div className="page-shell-customer min-h-screen">
-      <Header signedInUser={currentUser ?? undefined} />
+      <Header />
 
       <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fffaf3_30%,#ffffff_68%,#fffdf9_100%)] pb-20">
         <div className="container mx-auto px-4 py-5 md:py-6">

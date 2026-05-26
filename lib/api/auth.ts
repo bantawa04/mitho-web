@@ -3,12 +3,12 @@ import API from "@/config/api"
 import type { AuthUser, LoginWithGooglePayload } from "@/types/auth"
 import type { ISuccessResponse } from "@/types/response"
 
-export const loginWithGoogle = async (payload: LoginWithGooglePayload): Promise<AuthUser> => {
+export async function loginWithGoogle(payload: LoginWithGooglePayload): Promise<AuthUser> {
   const { data } = await API.post<ISuccessResponse<AuthUser>>("/auth/google", payload)
   return data.data
 }
 
-export const fetchCurrentSession = async (): Promise<AuthUser | null> => {
+export async function fetchCurrentSession(): Promise<AuthUser | null> {
   try {
     const { data } = await API.get<ISuccessResponse<AuthUser>>("/auth/me")
     return data.data
@@ -21,7 +21,7 @@ export const fetchCurrentSession = async (): Promise<AuthUser | null> => {
   }
 }
 
-export const logoutSession = async (): Promise<void> => {
+export async function logoutSession(): Promise<void> {
   try {
     await API.post<ISuccessResponse<null>>("/auth/logout")
   } catch (error) {

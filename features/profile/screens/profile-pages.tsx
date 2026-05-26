@@ -5,7 +5,7 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Bookmark, Building2, Camera, ChevronRight, Clock3, Copy, Globe, Lock, Mail, MapPin, MessageSquare, Search, Settings, ShieldAlert, Star, Trash2, UserCheck, UserPlus, Users } from "lucide-react"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/features/collections/data/collection-data"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
 import {
@@ -438,7 +438,8 @@ export function ProfileReviewsPage() {
 
 export function ProfileSettingsPage() {
   const router = useRouter()
-  const { currentUser, signOut } = useMockAuth()
+  const { currentUser } = useAuthSnapshot()
+  const logout = useLogout()
   const initialForm = React.useMemo(
     () => ({
       name: currentUser?.name ?? mockCustomerProfile.name,
@@ -505,7 +506,7 @@ export function ProfileSettingsPage() {
               <div className="flex flex-wrap gap-3">
                 <MithoButton
                   onClick={async () => {
-                    await signOut()
+                    await logout.mutateAsync()
                     router.push("/")
                   }}
                 >
@@ -1192,7 +1193,7 @@ export function PublicUserDiscoveryPage() {
 }
 
 export function PublicUserProfilePage({ username }: { username: string }) {
-  const { isAuthenticated } = useMockAuth()
+  const { isAuthenticated } = useAuthSnapshot()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
   const [profile, setProfile] = React.useState(() => getPublicProfileByUsername(username))

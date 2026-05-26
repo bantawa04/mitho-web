@@ -3,7 +3,13 @@
 import { create } from "zustand"
 import type { AuthUser } from "@/types/auth"
 
-type SessionState = "loading" | "authenticated" | "signed-out"
+export type SessionState = "loading" | "authenticated" | "signed-out"
+
+export interface AuthDisplayUser {
+  name: string
+  avatarUrl?: string
+  href: string
+}
 
 interface AuthStoreState {
   authUser: AuthUser | null
@@ -29,12 +35,30 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
     }),
 }))
 
+function buildDisplayName(user: AuthUser) {
+  const fullName = user.fullName?.trim()
+  if (fullName) return fullName
+
+  const firstName = user.firstName?.trim()
+  const lastName = user.lastName?.trim()
+  const combined = [firstName, lastName].filter(Boolean).join(" ").trim()
+
+  return combined || user.email
+}
+
+function buildCurrentUser(user: AuthUser): AuthDisplayUser {
+  return {
+    name: buildDisplayName(user),
+    href: user.type === "admin" ? "/admin" : "/profile",
+  }
+}
+
 export const authStoreSelectors = {
   authUser: (state: AuthStoreState) => state.authUser,
   sessionState: (state: AuthStoreState) => state.sessionState,
   isHydrated: (state: AuthStoreState) => state.sessionState !== "loading",
   isAuthenticated: (state: AuthStoreState) => state.sessionState === "authenticated",
-  isAdmin: (state: AuthStoreState) => state.authUser?.type === "admin",
-  hasBusinessAccess: (state: AuthStoreState) =>
-    state.sessionState === "authenticated" && state.authUser?.type !== "admin",
+  isAdmin: (state: AuthStoreState) => state.sessionState === "authenticated" && state.authUser?.type === "admin",
+  currentUser: (state: AuthStoreState) => (state.authUser ? buildCurrentUser(state.authUser) : null),
+  hasBusinessAccess: () => false,
 }

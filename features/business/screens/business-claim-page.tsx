@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight, CheckCircle2, FileBadge2, Search, ShieldCheck } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { CLAIMABLE_BUSINESSES, getClaimableBusinessById, type ClaimableBusiness } from "@/features/business/data/business-claim-data"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { claimRoleOptions, businessClaimSchema, type BusinessClaimFormValues } from "@/lib/validators/business-claim"
@@ -159,7 +159,7 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
 export function BusinessClaimPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { isAuthenticated } = useMockAuth()
+  const { isAuthenticated } = useAuthSnapshot()
   const prefilledListingId = searchParams.get("listing")
   const prefilledBusiness = getClaimableBusinessById(prefilledListingId)
 

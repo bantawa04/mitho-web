@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from "next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Chivo, Poppins } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { MockAuthProvider } from "@/features/auth/components/mock-auth-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { RootProvider } from "@/providers/RootProvider"
 import "./globals.css"
@@ -75,10 +74,10 @@ export default function RootLayout({
         <RootProvider>
           {googleClientId ? (
             <GoogleOAuthProvider clientId={googleClientId}>
-              <MockAuthProvider>{children}</MockAuthProvider>
+              {children}
             </GoogleOAuthProvider>
           ) : (
-            <MockAuthProvider>{children}</MockAuthProvider>
+            children
           )}
           <Toaster />
         </RootProvider>
