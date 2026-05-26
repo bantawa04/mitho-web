@@ -66,8 +66,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`${poppins.className} ${poppins.variable} ${chivo.variable} font-sans antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${poppins.className} ${poppins.variable} ${chivo.variable} font-sans antialiased`} suppressHydrationWarning>
         <MockAuthProvider>{children}</MockAuthProvider>
         <Toaster />
         <Analytics />
