@@ -1,11 +1,6 @@
 import type { ReactNode } from "react"
-import { AuthSessionInitializer } from "@/features/auth/components/mock-auth-provider"
+import { ProtectedRouteGuard } from "@/features/auth/components/protected-route-guard"
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
-  return (
-    <>
-      <AuthSessionInitializer />
-      {children}
-    </>
-  )
+  return <ProtectedRouteGuard>{children}</ProtectedRouteGuard>
 }

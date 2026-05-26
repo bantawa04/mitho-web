@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { AccountMenu } from "@/features/auth/components/account-menu"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import { cn } from "@/lib/utils"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { MithoButton } from "@/components/mitho/mitho-button"
@@ -26,10 +26,11 @@ export function Header({ signedInUser }: HeaderProps = {}) {
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const { currentUser, isAuthenticated, isHydrated, signIn, signOut, hasBusinessAccess } = useMockAuth()
+  const { currentUser, isAuthenticated, isHydrated, hasBusinessAccess } = useAuthSnapshot()
+  const logout = useLogout()
 
   const effectiveUser = isHydrated ? (isAuthenticated ? currentUser : null) : signedInUser
-  const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : Boolean(signedInUser)
+  const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : false
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -161,9 +162,9 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                     <MithoButton
                       variant="outline-secondary"
                       className="w-full border-danger/20 text-danger hover:bg-danger/10 hover:text-danger"
-                      onClick={() => {
+                      onClick={async () => {
                         setIsMenuOpen(false)
-                        signOut()
+                        await logout.mutateAsync()
                         router.push("/")
                       }}
                     >
@@ -190,7 +191,6 @@ export function Header({ signedInUser }: HeaderProps = {}) {
         open={isSignInOpen}
         onOpenChange={setIsSignInOpen}
         onContinue={() => {
-          signIn()
           setIsSignInOpen(false)
         }}
       />

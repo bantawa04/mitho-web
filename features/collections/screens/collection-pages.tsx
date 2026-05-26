@@ -21,8 +21,9 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import {
+  buildCopiedCollection,
   buildDraftCollection,
   createCollectionId,
   currentCustomer,
@@ -568,7 +569,7 @@ export function CollectionDetailPage({
 }
 
 export function PublicCollectionDetailPage({ collection }: { collection: CollectionRecord }) {
-  const { isAuthenticated, signIn } = useMockAuth()
+  const { isAuthenticated } = useAuthSnapshot()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingCopyAfterAuth, setPendingCopyAfterAuth] = React.useState(false)
   const [copySuccess, setCopySuccess] = React.useState(false)
@@ -718,7 +719,6 @@ export function PublicCollectionDetailPage({ collection }: { collection: Collect
         description="Use Google so Mitho can save this collection under the same account you use for reviews, places, and future business actions."
         helperCopy="After sign-in, Mitho will copy this collection right here and keep you on the same page."
         onContinue={() => {
-          signIn()
           setIsSignInOpen(false)
         }}
       />

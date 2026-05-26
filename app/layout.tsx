@@ -1,22 +1,12 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
-import { Chivo, Poppins } from "next/font/google"
+import { GoogleOAuthProvider } from "@react-oauth/google"
+import {chivo, poppins} from "@/config/fonts"
 import { Analytics } from "@vercel/analytics/next"
-import { MockAuthProvider } from "@/features/auth/components/mock-auth-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { RootProvider } from "@/providers/RootProvider"
 import "./globals.css"
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins",
-})
-
-const chivo = Chivo({
-  subsets: ["latin"],
-  weight: ["700", "800", "900"],
-  variable: "--font-chivo",
-})
 
 export const metadata: Metadata = {
   title: "Mitho Cha! - Discover the Real Taste of Nepal",
@@ -65,11 +55,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.className} ${poppins.variable} ${chivo.variable} font-sans antialiased`} suppressHydrationWarning>
-        <MockAuthProvider>{children}</MockAuthProvider>
-        <Toaster />
+    <html lang="en">
+      <body className={`${poppins.className} ${poppins.variable} ${chivo.variable} font-sans antialiased`}>
+        <RootProvider>
+          {googleClientId ? (
+            <GoogleOAuthProvider clientId={googleClientId}>
+              {children}
+            </GoogleOAuthProvider>
+          ) : (
+            children
+          )}
+          <Toaster />
+        </RootProvider>
         <Analytics />
       </body>
     </html>
