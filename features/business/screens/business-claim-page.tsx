@@ -159,7 +159,7 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
 export function BusinessClaimPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { isAuthenticated, signIn } = useMockAuth()
+  const { isAuthenticated } = useMockAuth()
   const prefilledListingId = searchParams.get("listing")
   const prefilledBusiness = getClaimableBusinessById(prefilledListingId)
 
@@ -178,7 +178,7 @@ export function BusinessClaimPage() {
       businessPhone: "",
       businessEmail: "",
       panVatNumber: "",
-      verificationDocument: null,
+      verificationDocument: undefined,
       authorizationConfirmed: false,
     },
   })
@@ -589,7 +589,6 @@ export function BusinessClaimPage() {
         description="Use Google so Mitho can tie this ownership request to the same account you use for reviews, listings, and future business management."
         helperCopy="You can browse and choose the listing first. We only ask you to sign in when you are ready to submit the claim for admin review."
         onContinue={() => {
-          signIn()
           setIsSignInOpen(false)
         }}
       />

@@ -504,8 +504,8 @@ export function ProfileSettingsPage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <MithoButton
-                  onClick={() => {
-                    signOut()
+                  onClick={async () => {
+                    await signOut()
                     router.push("/")
                   }}
                 >
@@ -1192,7 +1192,7 @@ export function PublicUserDiscoveryPage() {
 }
 
 export function PublicUserProfilePage({ username }: { username: string }) {
-  const { isAuthenticated, signIn } = useMockAuth()
+  const { isAuthenticated } = useMockAuth()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
   const [profile, setProfile] = React.useState(() => getPublicProfileByUsername(username))
@@ -1202,6 +1202,15 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     setPendingFollowAfterAuth(false)
     setProfile(getPublicProfileByUsername(username))
   }, [username])
+
+  React.useEffect(() => {
+    if (!isAuthenticated || !pendingFollowAfterAuth || !profile || profile.isFollowedByCurrentUser) return
+
+    followPublicProfile(profile.username)
+    setPendingFollowAfterAuth(false)
+    setIsSignInOpen(false)
+    setProfile(getPublicProfileByUsername(username))
+  }, [isAuthenticated, pendingFollowAfterAuth, profile, username])
 
   if (!profile) {
     return (
@@ -1238,17 +1247,6 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     }
 
     syncProfile()
-  }
-
-  const handleFollowAuthContinue = () => {
-    signIn()
-    setIsSignInOpen(false)
-
-    if (pendingFollowAfterAuth) {
-      followPublicProfile(profile.username)
-      setPendingFollowAfterAuth(false)
-      syncProfile()
-    }
   }
 
   return (
@@ -1316,10 +1314,12 @@ export function PublicUserProfilePage({ username }: { username: string }) {
             setPendingFollowAfterAuth(false)
           }
         }}
-        onContinue={handleFollowAuthContinue}
+        onContinue={() => {
+          setIsSignInOpen(false)
+        }}
         title="Sign in to follow creators whose taste you want to keep up with."
         description="Use Google to follow public Mitho creators, revisit their profiles, and keep their collections and reviews easy to find."
-        helperCopy="For now, this is still a mocked Google sign-in flow. Once real auth is connected, the same modal can complete the follow and keep your creator list in sync."
+        helperCopy="Once sign-in completes, Mitho will keep you on this profile and finish the follow action automatically."
       />
     </>
   )

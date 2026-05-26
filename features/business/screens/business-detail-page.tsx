@@ -35,7 +35,7 @@ interface BusinessDetailPageProps {
 
 export function BusinessDetailPage({ pageData, claimHref = "/business/claim", publicHref }: BusinessDetailPageProps) {
   const [sortOrder, setSortOrder] = React.useState("all")
-  const { currentUser, isAuthenticated, signIn } = useMockAuth()
+  const { currentUser, isAuthenticated } = useMockAuth()
   const [collections, setCollections] = React.useState<CollectionRecord[]>(ownedCollections)
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = React.useState(false)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
@@ -221,7 +221,6 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         description="Use Google so Mitho can keep your collections, reviews, and future business actions under the same account."
         helperCopy="Once sign-in is connected for real, this same flow will bring you back to the collection picker without losing the business you were trying to save."
         onContinue={() => {
-          signIn()
           setIsSignInOpen(false)
         }}
       />

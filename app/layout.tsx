@@ -1,9 +1,11 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
+import { GoogleOAuthProvider } from "@react-oauth/google"
 import { Chivo, Poppins } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { MockAuthProvider } from "@/features/auth/components/mock-auth-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { RootProvider } from "@/providers/RootProvider"
 import "./globals.css"
 
 const poppins = Poppins({
@@ -65,11 +67,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""
+
   return (
     <html lang="en">
       <body className={`${poppins.className} ${poppins.variable} ${chivo.variable} font-sans antialiased`}>
-        <MockAuthProvider>{children}</MockAuthProvider>
-        <Toaster />
+        <RootProvider>
+          {googleClientId ? (
+            <GoogleOAuthProvider clientId={googleClientId}>
+              <MockAuthProvider>{children}</MockAuthProvider>
+            </GoogleOAuthProvider>
+          ) : (
+            <MockAuthProvider>{children}</MockAuthProvider>
+          )}
+          <Toaster />
+        </RootProvider>
         <Analytics />
       </body>
     </html>

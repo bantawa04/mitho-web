@@ -26,7 +26,7 @@ export function Header({ signedInUser }: HeaderProps = {}) {
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const { currentUser, isAuthenticated, isHydrated, signIn, signOut, hasBusinessAccess } = useMockAuth()
+  const { currentUser, isAuthenticated, isHydrated, signOut, hasBusinessAccess } = useMockAuth()
 
   const effectiveUser = isHydrated ? (isAuthenticated ? currentUser : null) : signedInUser
   const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : Boolean(signedInUser)
@@ -161,9 +161,9 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                     <MithoButton
                       variant="outline-secondary"
                       className="w-full border-danger/20 text-danger hover:bg-danger/10 hover:text-danger"
-                      onClick={() => {
+                      onClick={async () => {
                         setIsMenuOpen(false)
-                        signOut()
+                        await signOut()
                         router.push("/")
                       }}
                     >
@@ -190,7 +190,6 @@ export function Header({ signedInUser }: HeaderProps = {}) {
         open={isSignInOpen}
         onOpenChange={setIsSignInOpen}
         onContinue={() => {
-          signIn()
           setIsSignInOpen(false)
         }}
       />

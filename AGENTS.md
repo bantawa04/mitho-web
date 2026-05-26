@@ -36,7 +36,7 @@ Mitho Cha is a Nepal-focused food discovery and review platform. This Next.js ap
 - **Forms:** React Hook Form + Zod
 - **API calls:** Axios (via a central instance) + TanStack Query
 - **Global state:** Zustand
-- **Auth:** JWT access token + refresh token (storage strategy TBD — see Auth section)
+- **Auth:** Google login plus backend-owned `httpOnly` session cookie
 - **Language:** TypeScript (strict mode expected)
 
 ### Bun Usage Rule
@@ -164,9 +164,8 @@ All API calls must go through the central Axios instance at `lib/api/client.ts`.
 
 The instance must:
 - Set `baseURL` from `process.env.NEXT_PUBLIC_API_URL`
-- Attach the JWT access token to every request via a request interceptor
-- Handle `401` responses via a response interceptor that attempts token refresh, then retries the original request once
-- On refresh failure, clear auth state and redirect to login
+- Send `credentials: "include"` so the Mitho session cookie is attached automatically
+- Handle `401` responses by clearing auth state and redirecting to login when appropriate
 
 ```ts
 // lib/api/client.ts (pattern reference)
@@ -175,18 +174,12 @@ const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// attach token via request interceptor
-// handle 401 + refresh via response interceptor
+// always include credentials so the Mitho session cookie is sent
 ```
 
-### Auth Token Storage
+### Auth Session Storage
 
-**Decision pending.** Until decided, do not hardcode a storage strategy. Keep token read/write behind a single abstraction in `lib/api/auth-tokens.ts` that exports `getAccessToken`, `setAccessToken`, `getRefreshToken`, `setRefreshToken`, `clearTokens`. This isolates any future storage change to one file.
-
-Candidates under consideration:
-- `httpOnly` cookies (recommended for XSS safety — requires backend to set `Set-Cookie`)
-- In-memory + Zustand (safe from XSS but lost on refresh — requires silent refresh on mount)
-- `localStorage` (avoid unless no other option — XSS risk)
+Auth is cookie-backed. The Go API sets an `httpOnly` Mitho session cookie after successful Google login, and frontend code should treat that cookie as opaque. Do not add browser-side token storage abstractions.
 
 ### API Service Functions
 
@@ -293,16 +286,15 @@ Auth state (user profile, login status) lives in a Zustand store at `store/authS
 
 ### Route Protection
 
-Protected routes are enforced in `proxy.ts` at the Next.js edge. The middleware checks for a valid token and redirects unauthenticated users to `/login`. Do not implement route protection inside individual page components.
+Protected routes are enforced in `proxy.ts` at the Next.js edge. The middleware checks for a valid authenticated session and redirects unauthenticated users to `/login`. Do not implement route protection inside individual page components.
 
 ### Auth API Endpoints (from backend)
-- `POST /api/auth/login` — returns access token + refresh token
-- `POST /api/auth/signup` — creates account
-- `POST /api/auth/refresh` — takes refresh token, returns new access token
-- `POST /api/auth/logout` — invalidates refresh token
+- `POST /api/auth/google` — verifies Google ID token and starts a Mitho session
+- `GET /api/auth/me` — returns the current authenticated user from the session cookie
+- `POST /api/auth/logout` — revokes the current session
 
-On login success: store tokens via `lib/api/auth-tokens.ts`, update Zustand auth store.
-On logout: call logout endpoint, clear tokens, reset auth store, redirect to `/login`.
+On login success: backend sets the session cookie and the frontend updates auth state from the returned user.
+On logout: call logout endpoint, reset auth store, redirect to `/login`.
 
 ### Important business-access rule
 
@@ -357,7 +349,7 @@ All environment variables must be declared in `.env.local` (local) and documente
 - **Do not add `"use client"` to a component unnecessarily.** Default to Server Components and push the client boundary down.
 - **Do not implement route protection inside page components.** Protection belongs in `proxy.ts`.
 - **Do not hardcode the API base URL.** Always use `process.env.NEXT_PUBLIC_API_URL`.
-- **Do not store tokens in `localStorage`** until the auth storage decision is finalized. Use the `lib/api/auth-tokens.ts` abstraction.
+- **Do not store auth tokens in `localStorage`, `sessionStorage`, or Zustand.** Auth is cookie-backed.
 
 ---
 

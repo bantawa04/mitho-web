@@ -1,91 +1,102 @@
 "use client"
 
 import * as React from "react"
-import { currentCustomer } from "@/features/collections/data/collection-data"
-import { mockCustomerProfile } from "@/features/profile/data/profile-data"
+import {
+  useCurrentSessionQuery,
+  useGoogleLoginMutation,
+  useLogoutSessionMutation,
+} from "@/queries/authQuery"
+import type { AuthUser } from "@/types/auth"
 
-type SessionState = "authenticated" | "signed-out"
+type SessionState = "loading" | "authenticated" | "signed-out"
 
-interface MockAuthContextValue {
+interface AuthContextValue {
   isHydrated: boolean
   isAuthenticated: boolean
+  isAdmin: boolean
   currentUser: {
     name: string
-    avatarUrl: string
+    avatarUrl?: string
     href: string
   } | null
+  authUser: AuthUser | null
   hasBusinessAccess: boolean
-  signIn: () => void
-  signOut: () => void
+  signInWithGoogleCredential: (idToken: string) => Promise<void>
+  signOut: () => Promise<void>
+  refreshSession: () => Promise<void>
   ensureDemoSignedIn: () => void
 }
 
-const STORAGE_KEY = "mitho-mock-auth-state"
+const AuthContext = React.createContext<AuthContextValue | null>(null)
 
-const MockAuthContext = React.createContext<MockAuthContextValue | null>(null)
+function buildDisplayName(user: AuthUser) {
+  const fullName = user.fullName?.trim()
+  if (fullName) return fullName
 
-function buildCurrentUser() {
-  return {
-    name: currentCustomer.name,
-    avatarUrl: currentCustomer.avatarUrl || mockCustomerProfile.avatarUrl,
-    href: "/profile",
-  }
+  const firstName = user.firstName?.trim()
+  const lastName = user.lastName?.trim()
+  const combined = [firstName, lastName].filter(Boolean).join(" ").trim()
+  return combined || user.email
 }
 
 export function MockAuthProvider({ children }: { children: React.ReactNode }) {
-  const [isHydrated, setIsHydrated] = React.useState(false)
-  const [sessionState, setSessionState] = React.useState<SessionState>("signed-out")
+  const sessionQuery = useCurrentSessionQuery()
+  const googleLoginMutation = useGoogleLoginMutation()
+  const logoutMutation = useLogoutSessionMutation()
+  const authUser = sessionQuery.data ?? null
 
   React.useEffect(() => {
-    if (typeof window === "undefined") return
-
-    const storedState = window.localStorage.getItem(STORAGE_KEY)
-    setSessionState(storedState === "authenticated" ? "authenticated" : "signed-out")
-    setIsHydrated(true)
-  }, [])
-
-  const signIn = React.useCallback(() => {
-    setSessionState("authenticated")
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(STORAGE_KEY, "authenticated")
+    if (sessionQuery.error) {
+      console.error("Failed to hydrate Mitho session", sessionQuery.error)
     }
-  }, [])
+  }, [sessionQuery.error])
 
-  const signOut = React.useCallback(() => {
-    setSessionState("signed-out")
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(STORAGE_KEY, "signed-out")
-    }
-  }, [])
+  const sessionState: SessionState = sessionQuery.isPending
+    ? "loading"
+    : authUser
+      ? "authenticated"
+      : "signed-out"
 
-  const ensureDemoSignedIn = React.useCallback(() => {
-    if (typeof window === "undefined") return
+  const signInWithGoogleCredential = React.useCallback(async (idToken: string) => {
+    await googleLoginMutation.mutateAsync(idToken)
+  }, [googleLoginMutation])
 
-    const storedState = window.localStorage.getItem(STORAGE_KEY)
-    if (storedState !== null) return
+  const signOut = React.useCallback(async () => {
+    await logoutMutation.mutateAsync()
+  }, [logoutMutation])
 
-    window.localStorage.setItem(STORAGE_KEY, "authenticated")
-    setSessionState("authenticated")
-  }, [])
+  const refreshSession = React.useCallback(async () => {
+    await sessionQuery.refetch()
+  }, [sessionQuery])
 
-  const value = React.useMemo<MockAuthContextValue>(
+  const value = React.useMemo<AuthContextValue>(
     () => ({
-      isHydrated,
+      isHydrated: sessionState !== "loading",
       isAuthenticated: sessionState === "authenticated",
-      currentUser: sessionState === "authenticated" ? buildCurrentUser() : null,
-      hasBusinessAccess: sessionState === "authenticated" && mockCustomerProfile.businessContext.status === "approved",
-      signIn,
+      isAdmin: authUser?.type === "admin",
+      currentUser: authUser
+        ? {
+            name: buildDisplayName(authUser),
+            href: authUser.type === "admin" ? "/admin" : "/profile",
+          }
+        : null,
+      authUser,
+      hasBusinessAccess: sessionState === "authenticated" && authUser?.type !== "admin",
+      signInWithGoogleCredential,
       signOut,
-      ensureDemoSignedIn,
+      refreshSession,
+      ensureDemoSignedIn: () => {},
     }),
-    [ensureDemoSignedIn, isHydrated, sessionState, signIn, signOut],
+    [authUser, refreshSession, sessionState, signInWithGoogleCredential, signOut],
   )
 
-  return <MockAuthContext.Provider value={value}>{children}</MockAuthContext.Provider>
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+export const AuthProvider = MockAuthProvider
+
 export function useMockAuth() {
-  const context = React.useContext(MockAuthContext)
+  const context = React.useContext(AuthContext)
 
   if (!context) {
     throw new Error("useMockAuth must be used within a MockAuthProvider")
@@ -94,12 +105,8 @@ export function useMockAuth() {
   return context
 }
 
+export const useAuth = useMockAuth
+
 export function AuthSessionInitializer() {
-  const { ensureDemoSignedIn } = useMockAuth()
-
-  React.useEffect(() => {
-    ensureDemoSignedIn()
-  }, [ensureDemoSignedIn])
-
   return null
 }

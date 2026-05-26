@@ -1,7 +1,9 @@
 "use client"
 
 import * as React from "react"
+import { GoogleLogin } from "@react-oauth/google"
 import { BrandLogo } from "@/components/mitho/brand-logo"
+import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface GoogleSignInDialogProps {
@@ -27,6 +29,10 @@ export function GoogleSignInDialog({
   description = defaultDescription,
   helperCopy = defaultHelperCopy,
 }: GoogleSignInDialogProps) {
+  const { signInWithGoogleCredential } = useMockAuth()
+  const [error, setError] = React.useState<string | null>(null)
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim()
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[calc(100%-2rem)] rounded-[1.75rem] border-brand-deep-green/10 bg-white p-0 shadow-[0_22px_60px_rgba(10,70,53,0.14)] sm:max-w-[520px]">
@@ -48,21 +54,44 @@ export function GoogleSignInDialog({
             <p className="text-sm leading-7 text-muted-foreground">{helperCopy}</p>
           </div>
 
-          <button
-            type="button"
-            onClick={onContinue}
-            className="flex w-full items-center justify-center gap-3 rounded-full border border-brand-deep-green/12 bg-white px-5 py-3.5 text-sm font-semibold text-brand-dark-green shadow-[0_8px_22px_rgba(10,70,53,0.05)] transition-colors hover:bg-brand-soft-beige/45"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white">
-              <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
-                <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.5 3.8-5.5 3.8-3.3 0-6-2.8-6-6.2s2.7-6.2 6-6.2c1.9 0 3.2.8 4 1.5l2.7-2.7C17 2.7 14.8 1.8 12 1.8 6.9 1.8 2.8 6 2.8 11.2S6.9 20.6 12 20.6c6.9 0 8.6-4.8 8.6-7.2 0-.5-.1-.9-.1-1.2H12Z" />
-                <path fill="#34A853" d="M2.8 11.2c0 1.7.6 3.3 1.7 4.5l3-2.3c-.4-.6-.6-1.4-.6-2.2s.2-1.5.6-2.2l-3-2.3c-1.1 1.2-1.7 2.8-1.7 4.5Z" />
-                <path fill="#FBBC05" d="M12 20.6c2.8 0 5.1-.9 6.8-2.5l-3.2-2.6c-.9.7-2.1 1.2-3.6 1.2-2.5 0-4.6-1.7-5.4-4l-3.1 2.4c1.8 3.3 5.1 5.5 8.5 5.5Z" />
-                <path fill="#4285F4" d="M18.8 18.1c1.9-1.7 2.8-4.1 2.8-6.9 0-.5-.1-.9-.1-1.2H12v3.9h5.5c-.2 1.1-.9 2.7-2.7 3.9l4 3.1Z" />
-              </svg>
-            </span>
-            Continue with Google
-          </button>
+          {googleClientId ? (
+            <div className="flex justify-center rounded-[1.25rem] border border-brand-deep-green/12 bg-white px-4 py-4 shadow-[0_8px_22px_rgba(10,70,53,0.05)]">
+              <GoogleLogin
+                theme="outline"
+                size="large"
+                shape="pill"
+                text="continue_with"
+                logo_alignment="left"
+                width="320"
+                onSuccess={async (credentialResponse) => {
+                  if (!credentialResponse.credential) {
+                    setError("Google did not return a sign-in credential. Please try again.")
+                    return
+                  }
+
+                  try {
+                    setError(null)
+                    await signInWithGoogleCredential(credentialResponse.credential)
+                    onOpenChange(false)
+                    onContinue?.()
+                  } catch (signInError) {
+                    setError(signInError instanceof Error ? signInError.message : "Google sign-in failed.")
+                  }
+                }}
+                onError={() => {
+                  setError("Google sign-in could not be completed. Please try again.")
+                }}
+              />
+            </div>
+          ) : (
+            <div className="rounded-[1.25rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-4">
+              <p className="text-sm leading-7 text-muted-foreground">
+                Google sign-in is not configured yet. Add <code className="font-semibold text-brand-dark-green">NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> to the web env before testing login.
+              </p>
+            </div>
+          )}
+
+          {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
         </div>
       </DialogContent>
     </Dialog>

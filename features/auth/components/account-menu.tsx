@@ -121,9 +121,9 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
 
         <DropdownMenuItem
           variant="destructive"
-          onSelect={(event) => {
+          onSelect={async (event) => {
             event.preventDefault()
-            signOut()
+            await signOut()
             router.push("/")
           }}
         >
