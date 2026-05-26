@@ -3,8 +3,6 @@
 # Monorepo sibling — tracked in github.com/bantawa04/mitho-api
 /mitho-api/
 
-.DS_Store
-
 # dependencies
 /node_modules
 
@@ -33,3 +31,7 @@ next-env.d.ts
 .lock
 pnpm-lock.yaml
 bun.lock
+
+# macOS
+.DS_Store
+._*
