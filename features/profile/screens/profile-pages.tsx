@@ -5,7 +5,7 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Bookmark, Building2, Camera, ChevronRight, Clock3, Copy, Globe, Lock, Mail, MapPin, MessageSquare, Search, Settings, ShieldAlert, Star, Trash2, UserCheck, UserPlus, Users } from "lucide-react"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/features/collections/data/collection-data"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
 import {
@@ -438,7 +438,8 @@ export function ProfileReviewsPage() {
 
 export function ProfileSettingsPage() {
   const router = useRouter()
-  const { currentUser, signOut } = useMockAuth()
+  const { currentUser } = useAuthSnapshot()
+  const logout = useLogout()
   const initialForm = React.useMemo(
     () => ({
       name: currentUser?.name ?? mockCustomerProfile.name,
@@ -504,8 +505,8 @@ export function ProfileSettingsPage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <MithoButton
-                  onClick={() => {
-                    signOut()
+                  onClick={async () => {
+                    await logout.mutateAsync()
                     router.push("/")
                   }}
                 >
@@ -1192,7 +1193,7 @@ export function PublicUserDiscoveryPage() {
 }
 
 export function PublicUserProfilePage({ username }: { username: string }) {
-  const { isAuthenticated, signIn } = useMockAuth()
+  const { isAuthenticated } = useAuthSnapshot()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
   const [profile, setProfile] = React.useState(() => getPublicProfileByUsername(username))
@@ -1202,6 +1203,15 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     setPendingFollowAfterAuth(false)
     setProfile(getPublicProfileByUsername(username))
   }, [username])
+
+  React.useEffect(() => {
+    if (!isAuthenticated || !pendingFollowAfterAuth || !profile || profile.isFollowedByCurrentUser) return
+
+    followPublicProfile(profile.username)
+    setPendingFollowAfterAuth(false)
+    setIsSignInOpen(false)
+    setProfile(getPublicProfileByUsername(username))
+  }, [isAuthenticated, pendingFollowAfterAuth, profile, username])
 
   if (!profile) {
     return (
@@ -1238,17 +1248,6 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     }
 
     syncProfile()
-  }
-
-  const handleFollowAuthContinue = () => {
-    signIn()
-    setIsSignInOpen(false)
-
-    if (pendingFollowAfterAuth) {
-      followPublicProfile(profile.username)
-      setPendingFollowAfterAuth(false)
-      syncProfile()
-    }
   }
 
   return (
@@ -1316,10 +1315,12 @@ export function PublicUserProfilePage({ username }: { username: string }) {
             setPendingFollowAfterAuth(false)
           }
         }}
-        onContinue={handleFollowAuthContinue}
+        onContinue={() => {
+          setIsSignInOpen(false)
+        }}
         title="Sign in to follow creators whose taste you want to keep up with."
         description="Use Google to follow public Mitho creators, revisit their profiles, and keep their collections and reviews easy to find."
-        helperCopy="For now, this is still a mocked Google sign-in flow. Once real auth is connected, the same modal can complete the follow and keep your creator list in sync."
+        helperCopy="Once sign-in completes, Mitho will keep you on this profile and finish the follow action automatically."
       />
     </>
   )

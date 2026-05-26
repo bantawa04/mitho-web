@@ -9,6 +9,8 @@ import { CATEGORY_OPTIONS } from "@/content/taxonomy/category-taxonomy"
 import { CITY_METADATA, STATE_OPTIONS, getCityByLabel } from "@/content/taxonomy/city-taxonomy"
 import { buildNewListingPreviewId } from "@/features/dashboard/data/dashboard-business-data"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
+import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { addBusinessSchema, BUSINESS_ROLE_OPTIONS, type AddBusinessFormValues } from "@/lib/validators/business"
 import { cn } from "@/lib/utils"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
@@ -136,6 +138,7 @@ function AddBusinessSuccess({
 }
 
 export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
+  const { isAuthenticated } = useAuthSnapshot()
   const form = useForm<AddBusinessFormValues>({
     resolver: zodResolver(addBusinessSchema),
     defaultValues: {
@@ -164,6 +167,8 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
     city: string
     workspaceHref: string
   } | null>(null)
+  const [isSignInOpen, setIsSignInOpen] = useState(false)
+  const [pendingSubmission, setPendingSubmission] = useState<AddBusinessFormValues | null>(null)
 
   const watchedName = form.watch("businessName")
   const watchedCategory = form.watch("primaryCategory")
@@ -189,13 +194,31 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
     }
   }, [cityOptions, form, watchedCity])
 
-  function onSubmit(values: AddBusinessFormValues) {
+  const finalizeSubmission = (values: AddBusinessFormValues) => {
     const previewId = buildNewListingPreviewId(values.businessName)
     setCreatedListing({
       businessName: values.businessName.trim(),
       city: values.city,
       workspaceHref: `/dashboard/businesses/${previewId}/overview`,
     })
+  }
+
+  useEffect(() => {
+    if (!isAuthenticated || !pendingSubmission) return
+
+    finalizeSubmission(pendingSubmission)
+    setPendingSubmission(null)
+    setIsSignInOpen(false)
+  }, [isAuthenticated, pendingSubmission])
+
+  function onSubmit(values: AddBusinessFormValues) {
+    if (shell === "public" && !isAuthenticated) {
+      setPendingSubmission(values)
+      setIsSignInOpen(true)
+      return
+    }
+
+    finalizeSubmission(values)
   }
 
   if (createdListing) {
@@ -210,8 +233,9 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-      <div className="space-y-6">
+    <>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="space-y-6">
         <section className={sectionCardClass}>
           <div className="px-6 py-6 sm:px-8">
             <div className="flex flex-wrap items-center gap-3">
@@ -610,9 +634,9 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
             </MithoCard>
           </form>
         </Form>
-      </div>
+        </div>
 
-      <aside className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
+        <aside className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
         <MithoCard surface="customer" interactive="none" className={cn(sectionCardClass, "bg-[#fffdf8]")}>
           <MithoCardHeader>
             <p className="type-eyebrow text-brand-deep-green/68">Listing preview</p>
@@ -699,7 +723,19 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
             </div>
           </MithoCardContent>
         </MithoCard>
-      </aside>
-    </div>
+        </aside>
+      </div>
+
+      <GoogleSignInDialog
+        open={isSignInOpen}
+        onOpenChange={setIsSignInOpen}
+        title="Sign in to submit this new business listing."
+        description="Use Google so Mitho can tie this listing submission to the same account you use for reviews, shortlists, and future business actions."
+        helperCopy="You can finish the listing form first. Once sign-in completes, Mitho will submit this draft without making you re-enter the details."
+        onContinue={() => {
+          setIsSignInOpen(false)
+        }}
+      />
+    </>
   )
 }

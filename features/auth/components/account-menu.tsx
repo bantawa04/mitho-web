@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Bookmark, Building2, LogOut, Settings, User, Users } from "lucide-react"
-import { useMockAuth } from "@/features/auth/components/mock-auth-provider"
+import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,12 +26,13 @@ interface AccountMenuProps {
 
 export function AccountMenu({ fallbackUser, className, scope = "default" }: AccountMenuProps) {
   const router = useRouter()
-  const { currentUser, hasBusinessAccess, isAuthenticated, isHydrated, signOut } = useMockAuth()
+  const { currentUser, hasBusinessAccess, isAuthenticated, isHydrated } = useAuthSnapshot()
+  const logout = useLogout()
 
   const effectiveUser =
     isHydrated ? (isAuthenticated ? currentUser : null) : fallbackUser
 
-  const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : Boolean(fallbackUser)
+  const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : false
   const settingsHref = scope === "admin" ? "/admin/settings" : "/profile/settings"
   const menuSubtitle =
     scope === "admin"
@@ -121,9 +122,9 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
 
         <DropdownMenuItem
           variant="destructive"
-          onSelect={(event) => {
+          onSelect={async (event) => {
             event.preventDefault()
-            signOut()
+            await logout.mutateAsync()
             router.push("/")
           }}
         >
