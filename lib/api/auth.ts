@@ -4,8 +4,7 @@ import type { AuthUser, LoginWithGooglePayload } from "@/types/auth"
 import type { ISuccessResponse } from "@/types/response"
 
 export async function loginWithGoogle(payload: LoginWithGooglePayload): Promise<AuthUser> {
-  await API.post("/auth/google", payload)
-  const { data } = await API.get<ISuccessResponse<AuthUser>>("/auth/me")
+  const { data } = await API.post<ISuccessResponse<AuthUser>>("/auth/google", payload)
   return data.data
 }
 
