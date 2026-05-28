@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import type { AuthUser } from "@/types/auth"
+import type { AuthUser, AuthUserProfile } from "@/types/auth"
 
 export type SessionState = "loading" | "authenticated" | "signed-out"
 
@@ -13,6 +13,7 @@ export interface AuthDisplayUser {
 
 interface AuthStoreState {
   authUser: AuthUser | null
+  currentUser: AuthDisplayUser | null
   sessionState: SessionState
   setSessionLoading: () => void
   setAuthenticatedUser: (user: AuthUser) => void
@@ -21,21 +22,24 @@ interface AuthStoreState {
 
 export const useAuthStore = create<AuthStoreState>((set) => ({
   authUser: null,
+  currentUser: null,
   sessionState: "loading",
   setSessionLoading: () => set({ sessionState: "loading" }),
   setAuthenticatedUser: (user) =>
     set({
       authUser: user,
+      currentUser: buildCurrentUser(user),
       sessionState: "authenticated",
     }),
   clearAuth: () =>
     set({
       authUser: null,
+      currentUser: null,
       sessionState: "signed-out",
     }),
 }))
 
-function buildDisplayName(user: AuthUser) {
+function buildDisplayName(user: AuthUserProfile) {
   const fullName = user.fullName?.trim()
   if (fullName) return fullName
 
@@ -46,10 +50,11 @@ function buildDisplayName(user: AuthUser) {
   return combined || user.email
 }
 
-function buildCurrentUser(user: AuthUser): AuthDisplayUser {
+function buildCurrentUser(authUser: AuthUser): AuthDisplayUser {
+  const isStaff = authUser.staffRoles.some((r) => r === "admin" || r === "super_admin")
   return {
-    name: buildDisplayName(user),
-    href: user.type === "admin" ? "/admin" : "/profile",
+    name: buildDisplayName(authUser.user),
+    href: isStaff ? "/admin" : "/profile",
   }
 }
 
@@ -58,7 +63,11 @@ export const authStoreSelectors = {
   sessionState: (state: AuthStoreState) => state.sessionState,
   isHydrated: (state: AuthStoreState) => state.sessionState !== "loading",
   isAuthenticated: (state: AuthStoreState) => state.sessionState === "authenticated",
-  isAdmin: (state: AuthStoreState) => state.sessionState === "authenticated" && state.authUser?.type === "admin",
-  currentUser: (state: AuthStoreState) => (state.authUser ? buildCurrentUser(state.authUser) : null),
-  hasBusinessAccess: () => false,
+  isAdmin: (state: AuthStoreState) =>
+    state.sessionState === "authenticated" &&
+    !!state.authUser?.staffRoles.some((r) => r === "admin" || r === "super_admin"),
+  currentUser: (state: AuthStoreState) => state.currentUser,
+  hasBusinessAccess: (state: AuthStoreState) =>
+    state.sessionState === "authenticated" &&
+    (state.authUser?.businessMemberships.length ?? 0) > 0,
 }
