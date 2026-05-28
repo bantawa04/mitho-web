@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { fetchCurrentSession, loginWithGoogle, logoutSession } from "@/lib/api/auth"
-import { authStoreSelectors, useAuthStore } from "@/store/authStore"
+import { authStoreSelectors, buildCurrentUser, useAuthStore } from "@/store/authStore"
 import type { AuthUser } from "@/types/auth"
 
 export const authQueryKeys = {
@@ -66,12 +66,12 @@ export function useLogout() {
 
 export function useAuthSnapshot() {
   const authUser = useAuthStore(authStoreSelectors.authUser)
-  const currentUser = useAuthStore(authStoreSelectors.currentUser)
   const sessionState = useAuthStore(authStoreSelectors.sessionState)
   const isHydrated = useAuthStore(authStoreSelectors.isHydrated)
   const isAuthenticated = useAuthStore(authStoreSelectors.isAuthenticated)
   const isAdmin = useAuthStore(authStoreSelectors.isAdmin)
   const hasBusinessAccess = useAuthStore(authStoreSelectors.hasBusinessAccess)
+  const currentUser = React.useMemo(() => (authUser ? buildCurrentUser(authUser) : null), [authUser])
 
   return {
     authUser,

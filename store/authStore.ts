@@ -59,6 +59,7 @@ export const authStoreSelectors = {
   isHydrated: (state: AuthStoreState) => state.sessionState !== "loading",
   isAuthenticated: (state: AuthStoreState) => state.sessionState === "authenticated",
   isAdmin: (state: AuthStoreState) => state.sessionState === "authenticated" && state.authUser?.type === "admin",
-  currentUser: (state: AuthStoreState) => (state.authUser ? buildCurrentUser(state.authUser) : null),
   hasBusinessAccess: () => false,
 }
+
+export { buildCurrentUser }
