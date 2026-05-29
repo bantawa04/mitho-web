@@ -1,3 +1,5 @@
+"use client"
+
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { formatDate, getUserStatusLabel, getUserStatusTone } from "@/features/admin/utils/admin-users-utils"
 import type { AdminRole } from "@/lib/api/admin-roles"
@@ -53,12 +55,14 @@ export function AdminUserDetailModal({ user, onClose }: AdminUserDetailModalProp
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Assigned permissions</p>
               <div className="flex flex-wrap gap-2">
                 {user.roles.flatMap((r) =>
-                  (r as AdminRole).permissions?.map((p) => (
-                    <span key={p.id} className="inline-flex rounded-full border border-brand-deep-green/10 bg-white px-3 py-1.5 text-sm text-brand-dark-green">
-                      {p.name}
-                    </span>
-                  )) ?? [],
-                )}
+                  r.name === "super_admin"
+                    ? [{ id: "all", name: "All permissions (super admin)" }]
+                    : (r as AdminRole).permissions ?? [],
+                ).map((p) => (
+                  <span key={p.id} className="inline-flex rounded-full border border-brand-deep-green/10 bg-white px-3 py-1.5 text-sm text-brand-dark-green">
+                    {p.name}
+                  </span>
+                ))}
               </div>
             </div>
           )}
