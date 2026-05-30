@@ -7,25 +7,20 @@ import {
   listAdminPermissions,
   listAdminRoles,
   updateAdminRole,
-  type UpsertRolePayload,
 } from "@/lib/api/admin-roles"
-
-export const adminRolesQueryKeys = {
-  all: ["admin", "roles"] as const,
-  list: () => ["admin", "roles", "list"] as const,
-  permissions: () => ["admin", "permissions"] as const,
-}
+import { queryKeys } from "@/lib/api/query-keys"
+import type { UpsertRolePayload } from "@/types/admin-roles"
 
 export function useAdminRoles() {
   return useQuery({
-    queryKey: adminRolesQueryKeys.list(),
+    queryKey: queryKeys.admin.roles.list(),
     queryFn: listAdminRoles,
   })
 }
 
 export function useAdminPermissions() {
   return useQuery({
-    queryKey: adminRolesQueryKeys.permissions(),
+    queryKey: queryKeys.admin.permissions.list(),
     queryFn: listAdminPermissions,
   })
 }
@@ -35,7 +30,7 @@ export function useCreateAdminRole() {
   return useMutation({
     mutationFn: (payload: UpsertRolePayload) => createAdminRole(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminRolesQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.roles.all })
     },
   })
 }
@@ -45,8 +40,8 @@ export function useUpdateAdminRole() {
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpsertRolePayload }) => updateAdminRole(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminRolesQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: ["admin", "users"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.roles.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all })
     },
   })
 }
@@ -56,8 +51,8 @@ export function useDeleteAdminRole() {
   return useMutation({
     mutationFn: (id: string) => deleteAdminRole(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminRolesQueryKeys.all })
-      queryClient.invalidateQueries({ queryKey: ["admin", "users"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.roles.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all })
     },
   })
 }

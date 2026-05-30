@@ -1,11 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import { AdminModal } from "@/features/admin/components/admin-modal"
-import type { AdminRole } from "@/lib/api/admin-roles"
-import type { InviteAdminUserPayload } from "@/lib/api/admin-users"
+import type { AdminRole } from "@/types/admin-roles"
+import type { InviteAdminUserPayload } from "@/types/admin-users"
+import { inviteAdminUserSchema, type InviteAdminUserFormValues } from "@/lib/validators/admin"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface AdminInviteUserModalProps {
@@ -17,28 +20,45 @@ interface AdminInviteUserModalProps {
 }
 
 export function AdminInviteUserModal({ open, onOpenChange, roles, isPending, onInvite }: AdminInviteUserModalProps) {
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [roleId, setRoleId] = useState("")
+  const form = useForm<InviteAdminUserFormValues>({
+    resolver: zodResolver(inviteAdminUserSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      roleIds: [],
+    },
+  })
+
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        firstName: "",
+        lastName: "",
+        email: "",
+        roleIds: roles[0]?.id ? [roles[0].id] : [],
+      })
+    }
+  }, [form, open, roles])
 
   function reset() {
-    setFirstName("")
-    setLastName("")
-    setEmail("")
-    setRoleId(roles[0]?.id ?? "")
+    form.reset({
+      firstName: "",
+      lastName: "",
+      email: "",
+      roleIds: roles[0]?.id ? [roles[0].id] : [],
+    })
   }
 
-  async function handleConfirm() {
-    if (!email.trim() || !roleId) return
+  const handleConfirm = form.handleSubmit(async (values) => {
     await onInvite({
-      email: email.trim(),
-      firstName: firstName.trim() || undefined,
-      lastName: lastName.trim() || undefined,
-      roleIds: [roleId],
+      email: values.email,
+      firstName: values.firstName || undefined,
+      lastName: values.lastName || undefined,
+      roleIds: values.roleIds,
     })
     reset()
-  }
+  })
 
   return (
     <AdminModal
@@ -48,59 +68,83 @@ export function AdminInviteUserModal({ open, onOpenChange, roles, isPending, onI
       description="Create a new internal admin/staff account invite and assign the right role from the start."
       confirmLabel={isPending ? "Sending…" : "Send invite"}
       onConfirm={handleConfirm}
-      isConfirmDisabled={!email.trim() || !roleId || isPending}
+      isConfirmDisabled={!form.watch("email").trim() || form.watch("roleIds").length === 0 || isPending}
       size="lg"
     >
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="invite-first-name">First name</Label>
-          <Input
-            id="invite-first-name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="First name"
-            className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+      <Form {...form}>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="First name" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Last name" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="invite-last-name">Last name</Label>
-          <Input
-            id="invite-last-name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="Last name"
-            className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
-          />
-        </div>
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="invite-email">Email</Label>
-        <Input
-          id="invite-email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="name@mithocha.com"
-          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder="name@mithocha.com"
+                  className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div className="space-y-2">
-        <Label>Role</Label>
-        <Select value={roleId} onValueChange={setRoleId}>
-          <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
-            <SelectValue placeholder="Choose a role" />
-          </SelectTrigger>
-          <SelectContent>
-            {roles.map((role) => (
-              <SelectItem key={role.id} value={role.id}>
-                {role.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        <FormField
+          control={form.control}
+          name="roleIds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Role</FormLabel>
+              <Select value={field.value[0] ?? ""} onValueChange={(value) => field.onChange([value])}>
+                <FormControl>
+                  <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                    <SelectValue placeholder="Choose a role" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {roles.map((role) => (
+                    <SelectItem key={role.id} value={role.id}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </Form>
     </AdminModal>
   )
 }

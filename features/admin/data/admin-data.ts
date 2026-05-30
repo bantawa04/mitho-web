@@ -271,7 +271,7 @@ export const adminPermissionMatrix: Array<{
   {
     resource: "Reviews",
     label: "Reviews",
-    actions: ["Create", "Read", "Update", "Delete"],
+    actions: ["Read", "Update", "Delete"],
   },
   {
     resource: "Customer",
