@@ -1,50 +1,12 @@
 import API from "@/config/api"
+import type {
+  AdminUserItem,
+  InviteAdminUserPayload,
+  ListAdminUsersParams,
+  PaginatedAdminUsers,
+  UpdateAdminUserPayload,
+} from "@/types/admin-users"
 import type { ISuccessResponse } from "@/types/response"
-
-export interface AdminUserRole {
-  id: string
-  name: string
-  description: string | null
-  isSystem: boolean
-}
-
-export interface AdminUserItem {
-  id: string
-  email: string
-  firstName: string | null
-  lastName: string | null
-  fullName: string
-  status: string
-  createdAt: string
-  updatedAt: string
-  roles: AdminUserRole[]
-}
-
-export interface AdminUsersMeta {
-  page: number
-  totalPages: number
-  perPage: number
-  totalItems: number
-}
-
-export interface PaginatedAdminUsers {
-  users: AdminUserItem[]
-  meta: AdminUsersMeta
-}
-
-export interface ListAdminUsersParams {
-  page?: number
-  per_page?: number
-  query?: string
-  status?: string
-}
-
-export interface InviteAdminUserPayload {
-  email: string
-  firstName?: string
-  lastName?: string
-  roleIds: string[]
-}
 
 export async function listAdminUsers(params: ListAdminUsersParams = {}): Promise<PaginatedAdminUsers> {
   const { data } = await API.get<ISuccessResponse<PaginatedAdminUsers>>("/admin/users", { params })
@@ -53,6 +15,11 @@ export async function listAdminUsers(params: ListAdminUsersParams = {}): Promise
 
 export async function inviteAdminUser(payload: InviteAdminUserPayload): Promise<AdminUserItem> {
   const { data } = await API.post<ISuccessResponse<AdminUserItem>>("/admin/users", payload)
+  return data.data
+}
+
+export async function updateAdminUser(id: string, payload: UpdateAdminUserPayload): Promise<AdminUserItem> {
+  const { data } = await API.put<ISuccessResponse<AdminUserItem>>(`/users/${id}`, payload)
   return data.data
 }
 

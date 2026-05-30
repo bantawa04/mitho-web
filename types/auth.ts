@@ -3,6 +3,7 @@ export interface AuthUserProfile {
   firstName?: string | null
   lastName?: string | null
   email: string
+  avatarUrl?: string | null
   status: string
   fullName?: string
   socialProvider?: string | null

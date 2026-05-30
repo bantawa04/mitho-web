@@ -1,25 +1,6 @@
 import API from "@/config/api"
+import type { AdminPermission, AdminRole, UpsertRolePayload } from "@/types/admin-roles"
 import type { ISuccessResponse } from "@/types/response"
-
-export interface AdminPermission {
-  id: string
-  name: string
-  description: string | null
-}
-
-export interface AdminRole {
-  id: string
-  name: string
-  description: string | null
-  isSystem: boolean
-  permissions: AdminPermission[]
-}
-
-export interface UpsertRolePayload {
-  name: string
-  description?: string
-  permissionIds: string[]
-}
 
 export async function listAdminRoles(): Promise<AdminRole[]> {
   const { data } = await API.get<ISuccessResponse<AdminRole[]>>("/admin/roles")

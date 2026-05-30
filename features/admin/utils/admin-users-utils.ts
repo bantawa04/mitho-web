@@ -1,5 +1,5 @@
 import { adminPermissionMatrix, type AdminPermissionAction, type AdminPermissionResource } from "@/features/admin/data/admin-data"
-import type { AdminPermission } from "@/lib/api/admin-roles"
+import type { AdminPermission } from "@/types/admin-roles"
 
 export type UserStatusFilter = "All" | "active" | "invited" | "inactive"
 
@@ -13,11 +13,17 @@ export const userStatusOptions: Array<{ value: UserStatusFilter; label: string }
 // Maps each matrix cell to the backend permission name it represents.
 // null means no matching backend permission exists yet.
 export const PERMISSION_MATRIX_MAP: Partial<Record<AdminPermissionResource, Partial<Record<AdminPermissionAction, string | null>>>> = {
-  Business: { Create: "businesses.manage", Read: null, Update: "businesses.manage" },
-  Customer: { Read: "users.read" },
-  Users: { Create: "users.manage", Read: "users.read", Update: "users.manage", Delete: "users.manage" },
-  Roles: { Create: "roles.manage", Read: "roles.read", Update: "roles.manage", Delete: "roles.manage" },
-  "Establishment Types": { Create: "establishment_types.manage", Read: null, Update: "establishment_types.manage", Delete: "establishment_types.manage" },
+  Business: { Create: "businesses.create", Read: "businesses.read", Update: "businesses.update" },
+  Reviews: { Read: "reviews.read", Update: "reviews.update", Delete: "reviews.delete" },
+  Customer: { Read: "customers.read" },
+  Users: { Create: "users.create", Read: "users.read", Update: "users.update", Delete: "users.delete" },
+  Roles: { Create: "roles.create", Read: "roles.read", Update: "roles.update", Delete: "roles.delete" },
+  "Establishment Types": {
+    Create: "establishment_types.create",
+    Read: "establishment_types.read",
+    Update: "establishment_types.update",
+    Delete: "establishment_types.delete",
+  },
 }
 
 export type PermissionMatrix = Record<AdminPermissionResource, Partial<Record<AdminPermissionAction, boolean>>>

@@ -6,18 +6,14 @@ import {
   inviteAdminUser,
   listAdminUsers,
   replaceAdminUserRoles,
-  type InviteAdminUserPayload,
-  type ListAdminUsersParams,
+  updateAdminUser,
 } from "@/lib/api/admin-users"
-
-export const adminUsersQueryKeys = {
-  all: ["admin", "users"] as const,
-  list: (params: ListAdminUsersParams) => ["admin", "users", "list", params] as const,
-}
+import { queryKeys } from "@/lib/api/query-keys"
+import type { InviteAdminUserPayload, ListAdminUsersParams, UpdateAdminUserPayload } from "@/types/admin-users"
 
 export function useAdminUsers(params: ListAdminUsersParams = {}) {
   return useQuery({
-    queryKey: adminUsersQueryKeys.list(params),
+    queryKey: queryKeys.admin.users.list(params),
     queryFn: () => listAdminUsers(params),
   })
 }
@@ -27,7 +23,17 @@ export function useInviteAdminUser() {
   return useMutation({
     mutationFn: (payload: InviteAdminUserPayload) => inviteAdminUser(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminUsersQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all })
+    },
+  })
+}
+
+export function useUpdateAdminUser() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateAdminUserPayload }) => updateAdminUser(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all })
     },
   })
 }
@@ -37,7 +43,7 @@ export function useDeleteAdminUser() {
   return useMutation({
     mutationFn: (id: string) => deleteAdminUser(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminUsersQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all })
     },
   })
 }
@@ -47,7 +53,7 @@ export function useReplaceAdminUserRoles() {
   return useMutation({
     mutationFn: ({ id, roleIds }: { id: string; roleIds: string[] }) => replaceAdminUserRoles(id, roleIds),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: adminUsersQueryKeys.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all })
     },
   })
 }

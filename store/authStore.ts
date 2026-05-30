@@ -54,6 +54,7 @@ function buildCurrentUser(authUser: AuthUser): AuthDisplayUser {
   const isStaff = authUser.staffRoles.some((r) => r === "admin" || r === "super_admin")
   return {
     name: buildDisplayName(authUser.user),
+    avatarUrl: authUser.user.avatarUrl ?? undefined,
     href: isStaff ? "/admin" : "/profile",
   }
 }
