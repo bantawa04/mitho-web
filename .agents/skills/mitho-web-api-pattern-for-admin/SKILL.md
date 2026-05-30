@@ -1,6 +1,6 @@
 ---
-name: mitho-web-api-pattern
-description: Use this skill when adding or refactoring backend API integration in mitho-web. It defines the Mitho project boundary for typed API access, React Query hooks, server-side data functions, shared Axios usage, and avoiding raw HTTP calls from reusable UI.
+name: mitho-web-api-pattern-for-admin
+description: MUST BE USED only when adding, modifying, or refactoring mitho-web admin/backoffice pages that integrate with mitho-api. Enforces typed API access, React Query hooks for client admin components, server-only data functions for server boundaries, shared Axios usage, and no raw HTTP calls from reusable admin UI.
 ---
 
 # Mitho Web API Pattern
