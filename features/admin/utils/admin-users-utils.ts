@@ -1,5 +1,5 @@
 import { adminPermissionMatrix, type AdminPermissionAction, type AdminPermissionResource } from "@/features/admin/data/admin-data"
-import type { AdminPermission } from "@/lib/api/admin-roles"
+import type { AdminPermission } from "@/types/admin-roles"
 
 export type UserStatusFilter = "All" | "active" | "invited" | "inactive"
 
