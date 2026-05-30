@@ -1,0 +1,1 @@
+../../.agents/skills/vercel-react-best-practicesn/SKILL.md

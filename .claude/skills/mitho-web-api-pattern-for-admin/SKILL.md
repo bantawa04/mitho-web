@@ -1,0 +1,1 @@
+../../.agents/skills/mitho-web-api-pattern-for-admin/SKILL.md
