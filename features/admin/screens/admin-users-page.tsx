@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { ChevronRight, Eye, Pencil, Plus, Trash2 } from "lucide-react"
 import { AdminConfirmModal } from "@/features/admin/components/admin-modal"
+import { AdminEditUserModal } from "@/features/admin/components/admin-edit-user-modal"
 import { AdminInviteUserModal } from "@/features/admin/components/admin-invite-user-modal"
 import { AdminRoleEditorModal } from "@/features/admin/components/admin-role-editor-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
@@ -11,10 +12,11 @@ import { AdminTable, type AdminTableColumn } from "@/features/admin/components/a
 import { AdminUserDetailModal } from "@/features/admin/components/admin-user-detail-modal"
 import { adminRoleTypeOptions, type AdminRoleType } from "@/features/admin/data/admin-data"
 import { formatDate, getRoleTypeTone, getUserStatusLabel, getUserStatusTone, userStatusOptions, type UserStatusFilter } from "@/features/admin/utils/admin-users-utils"
-import { useAdminUsers, useDeleteAdminUser, useInviteAdminUser } from "@/hooks/use-admin-users"
+import { useAdminUsers, useDeleteAdminUser, useInviteAdminUser, useReplaceAdminUserRoles, useUpdateAdminUser } from "@/hooks/use-admin-users"
 import { useAdminPermissions, useAdminRoles, useCreateAdminRole, useDeleteAdminRole, useUpdateAdminRole } from "@/hooks/use-admin-roles"
-import type { AdminRole } from "@/lib/api/admin-roles"
-import type { AdminUserItem, InviteAdminUserPayload } from "@/lib/api/admin-users"
+import type { AdminRole } from "@/types/admin-roles"
+import type { AdminUserItem, InviteAdminUserPayload } from "@/types/admin-users"
+import type { EditAdminUserFormValues } from "@/lib/validators/admin"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -29,6 +31,7 @@ export function AdminUsersPage() {
   const [usersStatusFilter, setUsersStatusFilter] = useState<UserStatusFilter>("All")
   const [usersPage, setUsersPage] = useState(1)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
 
@@ -49,6 +52,8 @@ export function AdminUsersPage() {
   const permissionsResult = useAdminPermissions()
 
   const inviteUser = useInviteAdminUser()
+  const updateUser = useUpdateAdminUser()
+  const replaceUserRoles = useReplaceAdminUserRoles()
   const deleteUser = useDeleteAdminUser()
   const createRole = useCreateAdminRole()
   const updateRole = useUpdateAdminRole()
@@ -62,6 +67,7 @@ export function AdminUsersPage() {
   useEffect(() => { setUsersPage(1) }, [usersQuery, usersStatusFilter])
 
   const selectedUser = useMemo(() => users.find((u) => u.id === selectedUserId) ?? null, [users, selectedUserId])
+  const editingUser = useMemo(() => users.find((u) => u.id === editingUserId) ?? null, [users, editingUserId])
   const userPendingDelete = useMemo(() => users.find((u) => u.id === deleteUserId) ?? null, [users, deleteUserId])
 
   const filteredRoles = useMemo(() => {
@@ -150,6 +156,7 @@ export function AdminUsersPage() {
             <AdminRowActions
               items={[
                 { label: "View", icon: <Eye className="h-4 w-4" />, onSelect: () => setSelectedUserId(user.id) },
+                { label: "Edit", icon: <Pencil className="h-4 w-4" />, onSelect: () => setEditingUserId(user.id) },
                 { label: "Delete", icon: <Trash2 className="h-4 w-4" />, onSelect: () => setDeleteUserId(user.id), variant: "destructive" },
               ]}
             />
@@ -210,6 +217,21 @@ export function AdminUsersPage() {
     setInviteModalOpen(false)
   }
 
+  async function handleSaveUser(values: EditAdminUserFormValues) {
+    if (!editingUser) return
+
+    await updateUser.mutateAsync({
+      id: editingUser.id,
+      payload: {
+        firstName: values.firstName || undefined,
+        lastName: values.lastName || undefined,
+        email: values.email,
+      },
+    })
+    await replaceUserRoles.mutateAsync({ id: editingUser.id, roleIds: values.roleIds })
+    setEditingUserId(null)
+  }
+
   async function handleDeleteUser() {
     if (!userPendingDelete) return
     await deleteUser.mutateAsync(userPendingDelete.id)
@@ -217,11 +239,11 @@ export function AdminUsersPage() {
     if (selectedUserId === userPendingDelete.id) setSelectedUserId(null)
   }
 
-  async function handleSaveRole(name: string, permissionIds: string[]) {
+  async function handleSaveRole(name: string, description: string | undefined, permissionIds: string[]) {
     if (editingRole) {
-      await updateRole.mutateAsync({ id: editingRole.id, payload: { name, permissionIds } })
+      await updateRole.mutateAsync({ id: editingRole.id, payload: { name, description, permissionIds } })
     } else {
-      await createRole.mutateAsync({ name, permissionIds })
+      await createRole.mutateAsync({ name, description, permissionIds })
     }
     setRoleEditorOpen(false)
     setEditingRole(null)
@@ -359,6 +381,15 @@ export function AdminUsersPage() {
       />
 
       <AdminUserDetailModal user={selectedUser} onClose={() => setSelectedUserId(null)} />
+
+      <AdminEditUserModal
+        open={editingUser !== null}
+        onOpenChange={(open) => { if (!open) setEditingUserId(null) }}
+        user={editingUser}
+        roles={roles}
+        isPending={updateUser.isPending || replaceUserRoles.isPending}
+        onSave={handleSaveUser}
+      />
 
       <AdminConfirmModal
         open={userPendingDelete !== null}

@@ -1,73 +1,96 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
-import { ChevronRight, Eye, Pencil, Plus, Shapes, Trash2 } from "lucide-react"
+import { ChevronRight, Eye, Pencil, Plus, Trash2 } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { AdminConfirmModal, AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import {
-  adminEstablishmentTypeStatusOptions,
-  mockAdminEstablishmentTypes,
-  type AdminEstablishmentTypeItem,
-  type AdminEstablishmentTypeStatus,
-} from "@/features/admin/data/admin-data"
+  useAdminEstablishmentTypes,
+  useCreateAdminEstablishmentType,
+  useDeleteAdminEstablishmentType,
+  useUpdateAdminEstablishmentType,
+} from "@/hooks/use-admin-establishment-types"
+import type {
+  AdminEstablishmentTypeItem,
+  AdminEstablishmentTypeStatusFilter,
+  EstablishmentTypeStatus,
+} from "@/types/admin-establishment-types"
+import { establishmentTypeSchema, type EstablishmentTypeFormValues } from "@/lib/validators/admin"
 import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const pageSize = 6
 
-interface EstablishmentTypeDraft {
-  name: string
-  status: AdminEstablishmentTypeStatus
+const emptyEstablishmentTypeValues: EstablishmentTypeFormValues = {
+  label: "",
+  status: "active",
 }
 
-const emptyDraft: EstablishmentTypeDraft = {
-  name: "",
-  status: "Active",
+const statusOptions: Array<{ label: string; value: AdminEstablishmentTypeStatusFilter }> = [
+  { label: "All", value: "all" },
+  { label: "Active", value: "active" },
+  { label: "Disabled", value: "disabled" },
+]
+
+function getStatusLabel(status: EstablishmentTypeStatus) {
+  return status === "active" ? "Active" : "Disabled"
 }
 
-function getStatusTone(status: AdminEstablishmentTypeStatus) {
+function getStatusTone(status: EstablishmentTypeStatus) {
   switch (status) {
-    case "Active":
+    case "active":
       return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    case "Disabled":
+    case "disabled":
       return "bg-stone-100 text-stone-700 border-stone-200"
   }
 }
 
-function formatAdminTimestamp(date: Date) {
+function formatAdminTimestamp(dateValue: string) {
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
-  }).format(date)
+  }).format(new Date(dateValue))
 }
 
 export function AdminEstablishmentTypesPage() {
   const [query, setQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState<"All" | AdminEstablishmentTypeStatus>("All")
+  const [statusFilter, setStatusFilter] = useState<AdminEstablishmentTypeStatusFilter>("all")
   const [currentPage, setCurrentPage] = useState(1)
-  const [types, setTypes] = useState(mockAdminEstablishmentTypes)
   const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null)
   const [editingTypeId, setEditingTypeId] = useState<string | null>(null)
   const [deleteTypeId, setDeleteTypeId] = useState<string | null>(null)
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
-  const [draft, setDraft] = useState<EstablishmentTypeDraft>(emptyDraft)
+
+  const establishmentTypesResult = useAdminEstablishmentTypes()
+  const createEstablishmentType = useCreateAdminEstablishmentType()
+  const updateEstablishmentType = useUpdateAdminEstablishmentType()
+  const deleteEstablishmentType = useDeleteAdminEstablishmentType()
+
+  const form = useForm<EstablishmentTypeFormValues>({
+    resolver: zodResolver(establishmentTypeSchema),
+    defaultValues: emptyEstablishmentTypeValues,
+  })
+
+  const types = establishmentTypesResult.data ?? []
 
   const filteredTypes = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
 
     return types.filter((item) => {
-      const matchesStatus = statusFilter === "All" ? true : item.status === statusFilter
+      const matchesStatus = statusFilter === "all" ? true : item.status === statusFilter
       const matchesQuery =
         normalizedQuery.length === 0
           ? true
-          : item.name.toLowerCase().includes(normalizedQuery)
+          : [item.label, item.slug].join(" ").toLowerCase().includes(normalizedQuery)
 
       return matchesStatus && matchesQuery
     })
@@ -110,7 +133,12 @@ export function AdminEstablishmentTypesPage() {
         label: "Name",
         className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "px-6 py-5 align-top",
-        cell: (item) => <p className="text-sm font-semibold text-brand-dark-green">{item.name}</p>,
+        cell: (item) => (
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-brand-dark-green">{item.label}</p>
+            <p className="text-xs text-muted-foreground">{item.slug}</p>
+          </div>
+        ),
       },
       {
         id: "status",
@@ -119,7 +147,7 @@ export function AdminEstablishmentTypesPage() {
         cellClassName: "py-5 align-top",
         cell: (item) => (
           <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(item.status)}`}>
-            {item.status}
+            {getStatusLabel(item.status)}
           </span>
         ),
       },
@@ -142,8 +170,8 @@ export function AdminEstablishmentTypesPage() {
                   icon: <Pencil className="h-4 w-4" />,
                   onSelect: () => {
                     setEditingTypeId(item.id)
-                    setDraft({
-                      name: item.name,
+                    form.reset({
+                      label: item.label,
                       status: item.status,
                     })
                     setIsFormModalOpen(true)
@@ -164,46 +192,35 @@ export function AdminEstablishmentTypesPage() {
     [],
   )
 
-  function resetDraft() {
-    setDraft(emptyDraft)
+  function resetForm() {
+    form.reset(emptyEstablishmentTypeValues)
     setEditingTypeId(null)
   }
 
-  function handleSave() {
-    if (!draft.name.trim()) return
-
+  const handleSave = form.handleSubmit(async (values) => {
     if (editingTypeId) {
-      setTypes((current) =>
-        current.map((item) =>
-          item.id === editingTypeId
-            ? {
-                ...item,
-                name: draft.name.trim(),
-                status: draft.status,
-                updatedAt: formatAdminTimestamp(new Date()),
-              }
-            : item,
-        ),
-      )
+      await updateEstablishmentType.mutateAsync({
+        id: editingTypeId,
+        payload: {
+          label: values.label,
+          status: values.status,
+        },
+      })
     } else {
-      const nextType: AdminEstablishmentTypeItem = {
-        id: `establishment-type-${Date.now()}`,
-        name: draft.name.trim(),
-        status: draft.status,
-        listingsCount: 0,
-        updatedAt: formatAdminTimestamp(new Date()),
-      }
-      setTypes((current) => [nextType, ...current])
+      await createEstablishmentType.mutateAsync({
+        label: values.label,
+        status: values.status,
+      })
       setCurrentPage(1)
     }
 
     setIsFormModalOpen(false)
-    resetDraft()
-  }
+    resetForm()
+  })
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!typePendingDelete) return
-    setTypes((current) => current.filter((item) => item.id !== typePendingDelete.id))
+    await deleteEstablishmentType.mutateAsync(typePendingDelete.id)
     setDeleteTypeId(null)
     if (selectedTypeId === typePendingDelete.id) setSelectedTypeId(null)
   }
@@ -239,15 +256,15 @@ export function AdminEstablishmentTypesPage() {
               <span className="text-sm font-medium text-muted-foreground">Status</span>
               <Select
                 value={statusFilter}
-                onValueChange={(value) => setStatusFilter(value as "All" | AdminEstablishmentTypeStatus)}
+                onValueChange={(value) => setStatusFilter(value as AdminEstablishmentTypeStatusFilter)}
               >
                 <SelectTrigger className="h-11 w-[180px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {adminEstablishmentTypeStatusOptions.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -260,7 +277,7 @@ export function AdminEstablishmentTypesPage() {
               size="lg"
               className="h-11 rounded-xl bg-brand-dark-green px-5 text-white hover:bg-brand-dark-green/92"
               onClick={() => {
-                resetDraft()
+                resetForm()
                 setIsFormModalOpen(true)
               }}
             >
@@ -273,7 +290,11 @@ export function AdminEstablishmentTypesPage() {
           onPageChange={setCurrentPage}
           resultSummary={resultSummary}
           emptyTitle="No establishment types found"
-          emptyDescription="Try clearing the search or choosing a broader status filter."
+          emptyDescription={
+            establishmentTypesResult.isPending
+              ? "Loading establishment types..."
+              : "Try clearing the search or choosing a broader status filter."
+          }
         />
       </div>
 
@@ -292,12 +313,13 @@ export function AdminEstablishmentTypesPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Name</p>
-                <p className="text-sm font-semibold text-brand-dark-green">{selectedType.name}</p>
+                <p className="text-sm font-semibold text-brand-dark-green">{selectedType.label}</p>
+                <p className="text-xs text-muted-foreground">{selectedType.slug}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Status</p>
                 <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(selectedType.status)}`}>
-                  {selectedType.status}
+                  {getStatusLabel(selectedType.status)}
                 </span>
               </div>
             </div>
@@ -305,11 +327,11 @@ export function AdminEstablishmentTypesPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Linked listings</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedType.listingsCount}</p>
+                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedType.listingsCount ?? 0}</p>
               </div>
               <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Last updated</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedType.updatedAt}</p>
+                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{formatAdminTimestamp(selectedType.updatedAt)}</p>
               </div>
             </div>
           </div>
@@ -320,7 +342,7 @@ export function AdminEstablishmentTypesPage() {
         open={isFormModalOpen}
         onOpenChange={(open) => {
           setIsFormModalOpen(open)
-          if (!open) resetDraft()
+          if (!open) resetForm()
         }}
         title={editingTypeId ? "Edit establishment type" : "Add establishment type"}
         description={
@@ -330,40 +352,56 @@ export function AdminEstablishmentTypesPage() {
         }
         confirmLabel={editingTypeId ? "Save changes" : "Create type"}
         onConfirm={handleSave}
-        isConfirmDisabled={!draft.name.trim()}
+        isConfirmDisabled={!form.watch("label").trim()}
+        isLoading={createEstablishmentType.isPending || updateEstablishmentType.isPending}
         size="md"
       >
-        <div className="space-y-2">
-          <Label htmlFor="establishment-type-name">Name</Label>
-          <Input
-            id="establishment-type-name"
-            value={draft.name}
-            onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))}
-            placeholder="Restaurant"
-            className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+        <Form {...form}>
+          <FormField
+            control={form.control}
+            name="label"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Restaurant"
+                    className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        <div className="space-y-2">
-          <Label>Status</Label>
-          <Select
-            value={draft.status}
-            onValueChange={(value) => setDraft((current) => ({ ...current, status: value as AdminEstablishmentTypeStatus }))}
-          >
-            <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
-              <SelectValue placeholder="Choose a status" />
-            </SelectTrigger>
-            <SelectContent>
-              {adminEstablishmentTypeStatusOptions
-                .filter((status) => status !== "All")
-                .map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </div>
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <Select value={field.value} onValueChange={(value) => field.onChange(value as EstablishmentTypeStatus)}>
+                  <FormControl>
+                    <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                      <SelectValue placeholder="Choose a status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {statusOptions
+                      .filter((status) => status.value !== "all")
+                      .map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </Form>
       </AdminModal>
 
       <AdminConfirmModal
@@ -374,11 +412,12 @@ export function AdminEstablishmentTypesPage() {
         title="Delete establishment type"
         description={
           typePendingDelete
-            ? `Remove ${typePendingDelete.name} from the internal taxonomy. This is a mock delete flow for now.`
+            ? `Remove ${typePendingDelete.label} from the internal taxonomy.`
             : "Remove this establishment type from the internal taxonomy."
         }
         confirmLabel="Delete type"
         onConfirm={handleDelete}
+        isLoading={deleteEstablishmentType.isPending}
       />
     </>
   )

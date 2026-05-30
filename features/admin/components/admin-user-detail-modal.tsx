@@ -2,8 +2,8 @@
 
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { formatDate, getUserStatusLabel, getUserStatusTone } from "@/features/admin/utils/admin-users-utils"
-import type { AdminRole } from "@/lib/api/admin-roles"
-import type { AdminUserItem } from "@/lib/api/admin-users"
+import type { AdminRole } from "@/types/admin-roles"
+import type { AdminUserItem } from "@/types/admin-users"
 
 interface AdminUserDetailModalProps {
   user: AdminUserItem | null
