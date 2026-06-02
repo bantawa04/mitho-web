@@ -69,11 +69,12 @@ export function AdminSidebarBrand({ compact = false }: { compact?: boolean }) {
 }
 
 export function AdminSidebarNav({ pathname }: { pathname: string }) {
+  const activeItem = getActiveAdminItem(pathname)
   return (
     <SidebarMenu className="gap-2">
       {adminNavSections.map((item) => {
         const Icon = item.icon
-        const isActive = pathname === item.href
+        const isActive = item.href === activeItem.href
 
         return (
           <SidebarMenuItem key={item.href}>
