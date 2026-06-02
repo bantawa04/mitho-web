@@ -1,5 +1,57 @@
 import { z } from "zod"
 
+const optionalUrl = z.string().trim().url("Enter a valid URL").or(z.literal("")).default("")
+
+export const businessSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(200, "Name must be 200 characters or fewer"),
+  slug: z.string().trim().min(1, "Slug is required").max(200, "Slug must be 200 characters or fewer").regex(/^[a-z0-9-]+$/, "Slug may only contain lowercase letters, numbers, and hyphens"),
+  description: z.string().trim().max(2000, "Description must be 2000 characters or fewer").optional(),
+  status: z.enum(["pending", "active", "suspended", "rejected"]),
+  establishmentTypeId: z.string().trim().optional(),
+  logoId: z.string().optional(),
+  bannerId: z.string().optional(),
+  photos: z.array(z.string()).optional(),
+  phone: z.string().trim().min(1, "Phone is required").max(30, "Phone must be 30 characters or fewer"),
+  phoneSecondary: z.string().trim().max(30, "Phone must be 30 characters or fewer").optional(),
+  email: z.string().trim().email("Enter a valid email address").optional().or(z.literal("")),
+  state: z.string().trim().min(1, "State is required").max(100, "State must be 100 characters or fewer"),
+  district: z.string().trim().min(1, "District is required").max(100, "District must be 100 characters or fewer"),
+  city: z.string().trim().min(1, "City is required").max(100, "City must be 100 characters or fewer"),
+  area: z.string().trim().max(100, "Area must be 100 characters or fewer").optional(),
+  addressLine1: z.string().trim().min(1, "Address line 1 is required").max(200, "Address must be 200 characters or fewer"),
+  addressLine2: z.string().trim().max(200, "Address must be 200 characters or fewer").optional(),
+  landmark: z.string().trim().max(200, "Landmark must be 200 characters or fewer").optional(),
+  // Links
+  websiteUrl: optionalUrl,
+  facebookUrl: optionalUrl,
+  instagramUrl: optionalUrl,
+  twitterUrl: optionalUrl,
+  youtubeUrl: optionalUrl,
+  tiktokUrl: optionalUrl,
+  // Amenities — services
+  amenityDineIn: z.boolean().optional(),
+  amenityTakeaway: z.boolean().optional(),
+  amenityDelivery: z.boolean().optional(),
+  // Amenities — payment
+  amenityCash: z.boolean().optional(),
+  amenityCard: z.boolean().optional(),
+  amenityEsewa: z.boolean().optional(),
+  amenityKhalti: z.boolean().optional(),
+  amenityQr: z.boolean().optional(),
+  // Amenities — facilities
+  amenityParking: z.boolean().optional(),
+  amenityWifi: z.boolean().optional(),
+  amenityAirConditioning: z.boolean().optional(),
+  amenityOutdoorSeating: z.boolean().optional(),
+  amenityServiceCharge: z.boolean().optional(),
+  // Amenities — dietary
+  amenityVegetarian: z.boolean().optional(),
+  amenityVegan: z.boolean().optional(),
+  amenityHalal: z.boolean().optional(),
+})
+
+export type BusinessFormValues = z.infer<typeof businessSchema>
+
 export const establishmentTypeSchema = z.object({
   label: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be 100 characters or fewer"),
   status: z.enum(["active", "disabled"]),
