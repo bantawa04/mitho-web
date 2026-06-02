@@ -276,7 +276,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       establishmentTypeId: values.establishmentTypeId || undefined,
       logoId: values.logoId,
       bannerId: values.bannerId,
-      photos: values.photos?.length ? values.photos : undefined,
+      photos: values.photos ?? [],
       phone: values.phone,
       phoneSecondary: values.phoneSecondary || undefined,
       email: values.email || undefined,
