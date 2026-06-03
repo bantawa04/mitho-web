@@ -2,8 +2,10 @@
 
 import * as React from "react"
 import { GoogleLogin } from "@react-oauth/google"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { BrandLogo } from "@/components/mitho/brand-logo"
 import { useGoogleLogin } from "@/hooks/use-auth-session"
+import { getAuthenticatedRedirect } from "@/lib/auth/redirects"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface GoogleSignInDialogProps {
@@ -12,6 +14,7 @@ interface GoogleSignInDialogProps {
   onContinue?: () => void
   title?: string
   description?: string
+  helperCopy?: string
 }
 
 const defaultTitle = "Sign in once and keep the same Mitho account for everything."
@@ -25,7 +28,11 @@ export function GoogleSignInDialog({
   onContinue,
   title = defaultTitle,
   description = defaultDescription,
+  helperCopy,
 }: GoogleSignInDialogProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const googleLogin = useGoogleLogin()
   const [error, setError] = React.useState<string | null>(null)
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim()
@@ -65,9 +72,16 @@ export function GoogleSignInDialog({
 
                   try {
                     setError(null)
-                    await googleLogin.mutateAsync(credentialResponse.credential)
+                    const authUser = await googleLogin.mutateAsync(credentialResponse.credential)
                     onOpenChange(false)
-                    onContinue?.()
+                    const query = searchParams.toString()
+                    const redirect = query ? `${pathname}?${query}` : pathname
+                    const nextPath = getAuthenticatedRedirect(authUser, redirect)
+                    if (nextPath === redirect) {
+                      onContinue?.()
+                    } else {
+                      router.replace(nextPath)
+                    }
                   } catch (signInError) {
                     setError(signInError instanceof Error ? signInError.message : "Google sign-in failed.")
                   }
@@ -86,6 +100,7 @@ export function GoogleSignInDialog({
           )}
 
           {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
+          {helperCopy ? <p className="text-sm leading-7 text-muted-foreground">{helperCopy}</p> : null}
         </div>
       </DialogContent>
     </Dialog>

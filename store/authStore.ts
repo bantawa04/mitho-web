@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import { isInternalUser } from "@/lib/auth/access"
+import { isInternalUser, isProfileComplete } from "@/lib/auth/access"
 import type { AuthUser, AuthUserProfile } from "@/types/auth"
 
 export type SessionState = "loading" | "authenticated" | "signed-out"
@@ -55,7 +55,7 @@ function buildCurrentUser(authUser: AuthUser): AuthDisplayUser {
   return {
     name: buildDisplayName(authUser.user),
     avatarUrl: authUser.user.avatarUrl ?? undefined,
-    href: isInternalUser(authUser) ? "/admin" : "/profile",
+    href: isInternalUser(authUser) ? "/admin" : isProfileComplete(authUser) ? "/profile" : "/complete-profile",
   }
 }
 

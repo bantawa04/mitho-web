@@ -543,10 +543,6 @@ export function ProfileSettingsPage() {
                 <div className="mx-auto w-fit rounded-full border border-brand-deep-green/10 bg-white p-2 shadow-[0_8px_20px_rgba(10,70,53,0.06)]">
                   <img src={form.avatarUrl} alt={form.name} className="h-28 w-28 rounded-full object-cover" />
                 </div>
-                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-brand-dark-green">
-                  <Camera className="h-4 w-4 text-brand-orange" />
-                  Upload a profile photo
-                </div>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -554,8 +550,8 @@ export function ProfileSettingsPage() {
                   className="hidden"
                   onChange={handleAvatarUpload}
                 />
-                <div className="mt-4 space-y-3">
-                  <MithoButton type="button" variant="outline-secondary" onClick={() => fileInputRef.current?.click()}>
+                <div className="mt-4 space-y-3 flex flex-col items-center">
+                  <MithoButton type="button" variant="outline-secondary" onClick={() => fileInputRef.current?.click()} leftIcon={<Camera className="h-4 w-4" />}>
                     Upload image
                   </MithoButton>
                   <p className="text-xs leading-6 text-muted-foreground">Use a clear square photo that still looks good at small sizes.</p>

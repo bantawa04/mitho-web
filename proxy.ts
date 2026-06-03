@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { isInternalUser } from "@/lib/auth/access"
+import { isInternalUser, isProfileComplete } from "@/lib/auth/access"
 import type { AuthUser } from "@/types/auth"
 import type { ISuccessResponse } from "@/types/response"
 
@@ -61,8 +61,30 @@ function isProfilePath(pathname: string) {
   return pathname === "/profile" || pathname.startsWith("/profile/")
 }
 
+function isCollectionsPath(pathname: string) {
+  return pathname === "/collections" || pathname.startsWith("/collections/")
+}
+
+function isDashboardPath(pathname: string) {
+  return pathname === "/dashboard" || pathname.startsWith("/dashboard/")
+}
+
+function isCompleteProfilePath(pathname: string) {
+  return pathname === "/complete-profile"
+}
+
 function isProtectedAppPath(pathname: string) {
-  return isAdminPath(pathname) || isProfilePath(pathname)
+  return (
+    isAdminPath(pathname) ||
+    isProfilePath(pathname) ||
+    isCollectionsPath(pathname) ||
+    isDashboardPath(pathname) ||
+    isCompleteProfilePath(pathname)
+  )
+}
+
+function requiresCompletedCustomerProfile(pathname: string) {
+  return isProfilePath(pathname) || isCollectionsPath(pathname) || isDashboardPath(pathname)
 }
 
 function buildRedirectToLogin(request: NextRequest) {
@@ -70,6 +92,22 @@ function buildRedirectToLogin(request: NextRequest) {
   const redirectPath = `${request.nextUrl.pathname}${request.nextUrl.search}`
   loginUrl.searchParams.set("redirect", redirectPath)
   return NextResponse.redirect(loginUrl)
+}
+
+function buildCompleteProfileRedirect(request: NextRequest) {
+  const completeProfileUrl = new URL("/complete-profile", request.url)
+  const redirectPath = `${request.nextUrl.pathname}${request.nextUrl.search}`
+  completeProfileUrl.searchParams.set("redirect", redirectPath)
+  return NextResponse.redirect(completeProfileUrl)
+}
+
+function buildPostCompletionRedirect(request: NextRequest) {
+  const requestedRedirect = request.nextUrl.searchParams.get("redirect")
+  if (requestedRedirect?.startsWith("/") && !requestedRedirect.startsWith("//") && !requestedRedirect.startsWith("/login")) {
+    return NextResponse.redirect(new URL(requestedRedirect, request.url))
+  }
+
+  return NextResponse.redirect(new URL("/profile", request.url))
 }
 
 function buildApiBaseUrl(request: NextRequest) {
@@ -119,12 +157,21 @@ async function enforceRoleGates(request: NextRequest) {
   }
 
   const isInternal = isInternalUser(authUser)
-  if (isProfilePath(request.nextUrl.pathname) && isInternal) {
+  const profileComplete = isProfileComplete(authUser)
+  if ((isProfilePath(request.nextUrl.pathname) || isCompleteProfilePath(request.nextUrl.pathname)) && isInternal) {
     return NextResponse.redirect(new URL("/admin", request.url))
   }
 
   if (isAdminPath(request.nextUrl.pathname) && !isInternal) {
     return NextResponse.redirect(new URL("/", request.url))
+  }
+
+  if (!isInternal && isCompleteProfilePath(request.nextUrl.pathname) && profileComplete) {
+    return buildPostCompletionRedirect(request)
+  }
+
+  if (!isInternal && !profileComplete && requiresCompletedCustomerProfile(request.nextUrl.pathname)) {
+    return buildCompleteProfileRedirect(request)
   }
 
   return null
