@@ -1,15 +1,16 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import axios from "axios"
 import { ArrowRight, Building2, CheckCircle2, ClipboardList, ImagePlus, Mail, MapPin, Phone, Store } from "lucide-react"
 import { useForm } from "react-hook-form"
-import { CATEGORY_OPTIONS } from "@/content/taxonomy/category-taxonomy"
 import { CITY_METADATA, STATE_OPTIONS, getCityByLabel } from "@/content/taxonomy/city-taxonomy"
-import { buildNewListingPreviewId } from "@/features/dashboard/data/dashboard-business-data"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
+import { useCreateBusiness } from "@/hooks/use-businesses"
+import { useEstablishmentTypes } from "@/hooks/use-establishment-types"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { addBusinessSchema, BUSINESS_ROLE_OPTIONS, type AddBusinessFormValues } from "@/lib/validators/business"
 import { cn } from "@/lib/utils"
@@ -28,13 +29,6 @@ interface AddBusinessFlowProps {
   shell: AddBusinessShell
 }
 
-const nextSteps = [
-  "Finish business info so the listing feels credible.",
-  "Add opening hours before people make the trip.",
-  "Upload photos so the page becomes easier to trust.",
-  "Prepare the listing for its first customer reviews.",
-] as const
-
 const sectionCardClass = "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
 const inputClassName =
   "h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
@@ -43,23 +37,45 @@ const textareaClassName =
 const selectTriggerClassName =
   "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
-function titleCaseFromSlug(value: string) {
+function slugify(value: string) {
   return value
-    .split("-")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+}
+
+function normalizeOptionalUrl(value: string | undefined) {
+  const trimmed = value?.trim()
+  if (!trimmed) return undefined
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
+}
+
+function getApiErrorMessage(error: unknown) {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as { message?: string; error?: string } | undefined
+    return data?.message ?? data?.error ?? "Could not submit this business right now."
+  }
+
+  return "Could not submit this business right now."
+}
+
+function isSlugConflict(error: unknown) {
+  if (!axios.isAxiosError(error)) return false
+  const status = error.response?.status
+  const message = JSON.stringify(error.response?.data ?? "").toLowerCase()
+  return (status === 409 || status === 422 || status === 500) && message.includes("slug")
 }
 
 function AddBusinessSuccess({
   businessName,
   businessCity,
-  workspaceHref,
   shell,
 }: {
   businessName: string
   businessCity: string
-  workspaceHref: string
   shell: AddBusinessShell
 }) {
   return (
@@ -72,11 +88,11 @@ function AddBusinessSuccess({
             </div>
             <MithoBadge variant="success">Listing created</MithoBadge>
           </div>
-          <h1 className="type-page-title mt-5 text-brand-dark-green">Your listing is ready for setup.</h1>
+          <h1 className="type-page-title mt-5 text-brand-dark-green">Your listing is submitted for admin review.</h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-            <span className="font-semibold text-brand-dark-green">{businessName}</span> has been added under your Mitho
-            account. The initial record is in place, and the next step is finishing the details that make the page
-            easier for people to trust.
+            <span className="font-semibold text-brand-dark-green">{businessName}</span> has been sent to Mitho for review.
+            We will email you after the listing is approved or rejected. Approval makes the listing ready to claim, but it
+            does not unlock business dashboard access yet.
           </p>
         </div>
 
@@ -95,7 +111,12 @@ function AddBusinessSuccess({
           <div className="rounded-[1.4rem] border border-brand-deep-green/10 bg-white p-5">
             <p className="type-eyebrow text-brand-deep-green/68">What happens next</p>
             <ul className="mt-4 space-y-3">
-              {nextSteps.map((step) => (
+              {[
+                "Mitho reviews the submitted listing details.",
+                "You receive an email after approval or rejection.",
+                "After approval, use the claim flow if you need business management access.",
+                "Claim approval is the step that unlocks the business dashboard.",
+              ].map((step) => (
                 <li key={step} className="flex items-start gap-3 text-sm leading-6 text-muted-foreground">
                   <span className="mt-1 h-2.5 w-2.5 rounded-full bg-brand-orange" />
                   <span>{step}</span>
@@ -106,16 +127,17 @@ function AddBusinessSuccess({
 
           <div className="flex flex-wrap gap-3">
             <MithoButton asChild size="lg">
-              <Link href={workspaceHref}>
-                Open business workspace
+              <Link href="/">
+                Back to home
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </MithoButton>
-            {shell === "dashboard" ? (
-              <MithoButton variant="outline-secondary" size="lg" asChild>
-                <Link href="/dashboard/businesses">Back to manage businesses</Link>
-              </MithoButton>
-            ) : null}
+            <MithoButton variant="outline-secondary" size="lg" asChild>
+              <Link href="/explore">Explore places</Link>
+            </MithoButton>
+            <MithoButton variant="outline-secondary" size="lg" asChild>
+              <Link href="/business/claim">Claim an existing business</Link>
+            </MithoButton>
           </div>
         </div>
       </section>
@@ -123,13 +145,13 @@ function AddBusinessSuccess({
       <aside className={cn(sectionCardClass, "h-fit bg-[#fffdf8]")}>
         <div className="px-6 py-6">
           <p className="type-eyebrow text-brand-deep-green/68">
-            {shell === "public" ? "Business mode unlocked" : "Workspace handoff"}
+            {shell === "public" ? "Review queue" : "Admin review"}
           </p>
           <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-dark-green">
-            The same account now has a business workspace too.
+            Listing approval and business access stay separate.
           </h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">
-            You still review and browse as the same person. This listing simply adds a new business context to manage.
+            Adding a place helps Mitho grow the directory. Claiming a place later proves ownership and opens management tools.
           </p>
         </div>
       </aside>
@@ -139,6 +161,8 @@ function AddBusinessSuccess({
 
 export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const { isAuthenticated } = useAuthSnapshot()
+  const createBusiness = useCreateBusiness()
+  const establishmentTypesQuery = useEstablishmentTypes()
   const form = useForm<AddBusinessFormValues>({
     resolver: zodResolver(addBusinessSchema),
     defaultValues: {
@@ -165,10 +189,10 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const [createdListing, setCreatedListing] = useState<{
     businessName: string
     city: string
-    workspaceHref: string
   } | null>(null)
   const [isSignInOpen, setIsSignInOpen] = useState(false)
   const [pendingSubmission, setPendingSubmission] = useState<AddBusinessFormValues | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const watchedName = form.watch("businessName")
   const watchedCategory = form.watch("primaryCategory")
@@ -178,6 +202,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const watchedAddressLine2 = form.watch("addressLine2")
   const watchedLatitude = form.watch("latitude")
   const watchedLongitude = form.watch("longitude")
+  const selectedEstablishmentType = establishmentTypesQuery.data?.find((type) => type.id === watchedCategory)
   const cityOptions = CITY_METADATA.filter((city) => city.state === watchedState).map(({ label }) => label)
   const selectedCity = getCityByLabel(watchedCity) ?? CITY_METADATA[0]
   const markerPosition =
@@ -194,31 +219,80 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
     }
   }, [cityOptions, form, watchedCity])
 
-  const finalizeSubmission = (values: AddBusinessFormValues) => {
-    const previewId = buildNewListingPreviewId(values.businessName)
+  const submitBusiness = useCallback(async (values: AddBusinessFormValues) => {
+    setSubmitError(null)
+
+    const links = {
+      website: normalizeOptionalUrl(values.website),
+      facebook: normalizeOptionalUrl(values.facebookUrl),
+      instagram: normalizeOptionalUrl(values.instagramUrl),
+      tiktok: normalizeOptionalUrl(values.tiktokUrl),
+    }
+    const hasLinks = Object.values(links).some(Boolean)
+    const baseSlug = slugify(values.businessName) || "business"
+
+    const payload = {
+      name: values.businessName.trim(),
+      slug: baseSlug,
+      description: values.shortNote?.trim() || undefined,
+      phone: values.phone.trim(),
+      email: values.publicEmail.trim(),
+      state: values.state,
+      district: values.city,
+      city: values.city,
+      addressLine1: values.addressLine1.trim(),
+      addressLine2: values.addressLine2?.trim() || undefined,
+      latitude: values.latitude ?? undefined,
+      longitude: values.longitude ?? undefined,
+      establishmentTypeId: values.primaryCategory,
+      links: hasLinks ? links : undefined,
+    }
+
+    try {
+      await createBusiness.mutateAsync(payload)
+    } catch (error) {
+      if (!isSlugConflict(error)) {
+        throw error
+      }
+
+      await createBusiness.mutateAsync({
+        ...payload,
+        slug: `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`,
+      })
+    }
+
     setCreatedListing({
       businessName: values.businessName.trim(),
       city: values.city,
-      workspaceHref: `/dashboard/businesses/${previewId}/overview`,
     })
-  }
+  }, [createBusiness])
 
   useEffect(() => {
     if (!isAuthenticated || !pendingSubmission) return
 
-    finalizeSubmission(pendingSubmission)
+    const values = pendingSubmission
     setPendingSubmission(null)
-    setIsSignInOpen(false)
-  }, [isAuthenticated, pendingSubmission])
+    void submitBusiness(values)
+      .then(() => {
+        setIsSignInOpen(false)
+      })
+      .catch((error) => {
+        setSubmitError(getApiErrorMessage(error))
+      })
+  }, [isAuthenticated, pendingSubmission, submitBusiness])
 
-  function onSubmit(values: AddBusinessFormValues) {
+  async function onSubmit(values: AddBusinessFormValues) {
     if (shell === "public" && !isAuthenticated) {
       setPendingSubmission(values)
       setIsSignInOpen(true)
       return
     }
 
-    finalizeSubmission(values)
+    try {
+      await submitBusiness(values)
+    } catch (error) {
+      setSubmitError(getApiErrorMessage(error))
+    }
   }
 
   if (createdListing) {
@@ -226,7 +300,6 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       <AddBusinessSuccess
         businessName={createdListing.businessName}
         businessCity={createdListing.city}
-        workspaceHref={createdListing.workspaceHref}
         shell={shell}
       />
     )
@@ -240,13 +313,13 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
           <div className="px-6 py-6 sm:px-8">
             <div className="flex flex-wrap items-center gap-3">
               <MithoBadge variant="neutral">
-                {shell === "public" ? "Start a new business listing" : "Create a new workspace"}
+                {shell === "public" ? "Start a new business listing" : "Submit a new listing"}
               </MithoBadge>
             </div>
-            <h1 className="type-page-title mt-5 text-brand-dark-green">Add the listing first. Finish the polish after.</h1>
+            <h1 className="type-page-title mt-5 text-brand-dark-green">Add the listing first. Mitho reviews it next.</h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
-              This first pass only asks for the basics needed to create a manageable Mitho listing. Hours, photos, and
-              deeper profile work come right after inside the business workspace.
+              This first pass only asks for the basics needed to review a new Mitho listing. If it is approved, you can
+              use the separate claim flow to verify ownership and unlock management later.
             </p>
           </div>
         </section>
@@ -281,21 +354,37 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Primary category</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          disabled={establishmentTypesQuery.isLoading || establishmentTypesQuery.isError}
+                        >
                           <FormControl>
                             <SelectTrigger className={selectTriggerClassName}>
-                              <SelectValue placeholder="Choose the closest fit" />
+                              <SelectValue
+                                placeholder={
+                                  establishmentTypesQuery.isLoading
+                                    ? "Loading categories"
+                                    : establishmentTypesQuery.isError
+                                      ? "Could not load categories"
+                                      : "Choose the closest fit"
+                                }
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {CATEGORY_OPTIONS.map((category) => (
-                              <SelectItem key={category.value} value={category.value}>
+                            {establishmentTypesQuery.data?.map((category) => (
+                              <SelectItem key={category.id} value={category.id}>
                                 {category.label}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormDescription>Choose the category that best fits the listing today.</FormDescription>
+                        <FormDescription>
+                          {establishmentTypesQuery.isError
+                            ? "Refresh the page and try again before submitting the listing."
+                            : "Choose the category that best fits the listing today."}
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -610,18 +699,24 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
             <MithoCard surface="customer" interactive="none" className={sectionCardClass}>
               <MithoCardHeader>
                 <p className="type-eyebrow text-brand-deep-green/68">Submit and continue</p>
-                <MithoCardTitle className="mt-2 text-2xl">Create the listing, then finish setup in the workspace.</MithoCardTitle>
+                <MithoCardTitle className="mt-2 text-2xl">Submit the listing for Mitho review.</MithoCardTitle>
               </MithoCardHeader>
               <MithoCardContent className="space-y-5">
                 <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
                   <p className="text-sm leading-7 text-muted-foreground">
-                    After you submit, Mitho will create the listing shell first. The next screen will point you into the
-                    business workspace for hours, photos, and fuller profile polish.
+                    After you submit, Mitho will review the listing before it goes live. This step does not create
+                    dashboard access; ownership is verified later through the separate claim flow.
                   </p>
                 </div>
 
+                {submitError ? (
+                  <div className="rounded-[1.15rem] border border-danger/15 bg-danger/5 px-4 py-3 text-sm font-medium text-danger">
+                    {submitError}
+                  </div>
+                ) : null}
+
                 <div className="flex flex-wrap gap-3">
-                  <MithoButton type="submit" size="lg" loading={form.formState.isSubmitting}>
+                  <MithoButton type="submit" size="lg" loading={form.formState.isSubmitting || createBusiness.isPending}>
                     Create business listing
                   </MithoButton>
                   {shell === "dashboard" ? (
@@ -651,7 +746,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Category</p>
                   <p className="mt-1 text-sm font-semibold text-brand-dark-green">
-                    {watchedCategory ? titleCaseFromSlug(watchedCategory) : "Choose the primary category"}
+                    {selectedEstablishmentType?.label ?? "Choose the primary category"}
                   </p>
                 </div>
               </div>
@@ -701,13 +796,13 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
             <div className="rounded-[1.15rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
               <div className="flex items-center gap-2">
                 <ClipboardList className="h-4 w-4 text-brand-orange" />
-                <p className="text-sm font-semibold text-brand-dark-green">Next setup happens after creation</p>
+                <p className="text-sm font-semibold text-brand-dark-green">Review happens after submission</p>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                <MithoBadge variant="neutral">Business info</MithoBadge>
-                <MithoBadge variant="neutral">Hours</MithoBadge>
-                <MithoBadge variant="neutral">Photos</MithoBadge>
-                <MithoBadge variant="neutral">Review readiness</MithoBadge>
+                <MithoBadge variant="neutral">Admin review</MithoBadge>
+                <MithoBadge variant="neutral">Email update</MithoBadge>
+                <MithoBadge variant="neutral">Claim later</MithoBadge>
+                <MithoBadge variant="neutral">Access after approval</MithoBadge>
               </div>
             </div>
 
@@ -732,6 +827,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
         title="Sign in to submit this new business listing."
         description="Use Google so Mitho can tie this listing submission to the same account you use for reviews, shortlists, and future business actions."
         helperCopy="You can finish the listing form first. Once sign-in completes, Mitho will submit this draft without making you re-enter the details."
+        stayOnCurrentPageAfterSignIn
         onContinue={() => {
           setIsSignInOpen(false)
         }}

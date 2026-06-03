@@ -8,6 +8,10 @@ export const queryKeys = {
     list: (params?: ListBusinessesParams) => ["businesses", "list", params] as const,
     detail: (id: string) => ["businesses", "detail", id] as const,
   },
+  establishmentTypes: {
+    all: ["establishment-types"] as const,
+    list: () => ["establishment-types", "list"] as const,
+  },
   media: {
     all: ["media"] as const,
     list: (params?: ListMediaParams) => ["media", "list", params] as const,

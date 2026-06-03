@@ -11,30 +11,47 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
 import { useBusinesses } from "@/hooks/use-businesses"
-import type { Business, BusinessStatus } from "@/types/business"
+import type { Business, BusinessListingStatus, BusinessOwnershipStatus } from "@/types/business"
 
 const pageSize = 6
 
-type StatusFilterValue = "All" | BusinessStatus
+type StatusFilterValue = "All" | BusinessListingStatus
 
-const statusOptions: StatusFilterValue[] = ["All", "active", "pending", "suspended", "rejected"]
+const statusOptions: StatusFilterValue[] = ["All", "published", "pending_review", "suspended", "rejected"]
 
-const statusLabels: Record<BusinessStatus, string> = {
-  active: "Active",
-  pending: "Pending",
+const statusLabels: Record<BusinessListingStatus, string> = {
+  published: "Published",
+  pending_review: "Pending review",
   suspended: "Suspended",
   rejected: "Rejected",
 }
 
-function getStatusTone(status: BusinessStatus) {
+const ownershipLabels: Record<BusinessOwnershipStatus, string> = {
+  unclaimed: "Unclaimed",
+  claim_under_review: "Claim under review",
+  claimed: "Claimed",
+}
+
+function getStatusTone(status: BusinessListingStatus) {
   switch (status) {
-    case "active":
+    case "published":
       return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    case "pending":
+    case "pending_review":
       return "bg-sky-50 text-sky-700 border-sky-100"
     case "suspended":
       return "bg-red-50 text-red-700 border-red-100"
     case "rejected":
+      return "bg-stone-100 text-stone-700 border-stone-200"
+  }
+}
+
+function getOwnershipTone(status: BusinessOwnershipStatus) {
+  switch (status) {
+    case "claimed":
+      return "bg-emerald-50 text-emerald-700 border-emerald-100"
+    case "claim_under_review":
+      return "bg-amber-50 text-amber-700 border-amber-100"
+    case "unclaimed":
       return "bg-stone-100 text-stone-700 border-stone-200"
   }
 }
@@ -58,7 +75,7 @@ export function AdminBusinessesPage() {
     const normalizedQuery = query.trim().toLowerCase()
 
     return businesses.filter((business) => {
-      const matchesStatus = statusFilter === "All" ? true : business.status === statusFilter
+      const matchesStatus = statusFilter === "All" ? true : business.listingStatus === statusFilter
       const location = `${business.city}, ${business.district}`
       const matchesQuery =
         normalizedQuery.length === 0
@@ -135,9 +152,14 @@ export function AdminBusinessesPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (business) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(business.status)}`}>
-            {statusLabels[business.status]}
-          </span>
+          <div className="flex flex-col items-start gap-2">
+            <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(business.listingStatus)}`}>
+              {statusLabels[business.listingStatus]}
+            </span>
+            <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOwnershipTone(business.ownershipStatus)}`}>
+              {ownershipLabels[business.ownershipStatus]}
+            </span>
+          </div>
         ),
       },
       {

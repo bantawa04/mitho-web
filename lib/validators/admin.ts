@@ -6,7 +6,7 @@ export const businessSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(200, "Name must be 200 characters or fewer"),
   slug: z.string().trim().min(1, "Slug is required").max(200, "Slug must be 200 characters or fewer").regex(/^[a-z0-9-]+$/, "Slug may only contain lowercase letters, numbers, and hyphens"),
   description: z.string().trim().max(2000, "Description must be 2000 characters or fewer").optional(),
-  status: z.enum(["pending", "active", "suspended", "rejected"]),
+  listingStatus: z.enum(["pending_review", "published", "suspended", "rejected"]),
   establishmentTypeId: z.string().trim().optional(),
   logoId: z.string().optional(),
   bannerId: z.string().optional(),
