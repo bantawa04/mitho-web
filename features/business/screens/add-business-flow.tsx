@@ -6,12 +6,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { ArrowRight, Building2, CheckCircle2, ClipboardList, ImagePlus, Mail, MapPin, Phone, Store } from "lucide-react"
 import { useForm } from "react-hook-form"
-import { CITY_METADATA, STATE_OPTIONS, getCityByLabel } from "@/content/taxonomy/city-taxonomy"
+import { BusinessLocationFields } from "@/features/business/components/business-location-fields"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { useCreateBusiness } from "@/hooks/use-businesses"
 import { useEstablishmentTypes } from "@/hooks/use-establishment-types"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
+import { useMunicipalities, useProvinces } from "@/hooks/use-nepal-admin"
 import { addBusinessSchema, BUSINESS_ROLE_OPTIONS, type AddBusinessFormValues } from "@/lib/validators/business"
 import { cn } from "@/lib/utils"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
@@ -37,16 +38,6 @@ const textareaClassName =
 const selectTriggerClassName =
   "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-}
-
 function normalizeOptionalUrl(value: string | undefined) {
   const trimmed = value?.trim()
   if (!trimmed) return undefined
@@ -62,20 +53,13 @@ function getApiErrorMessage(error: unknown) {
   return "Could not submit this business right now."
 }
 
-function isSlugConflict(error: unknown) {
-  if (!axios.isAxiosError(error)) return false
-  const status = error.response?.status
-  const message = JSON.stringify(error.response?.data ?? "").toLowerCase()
-  return (status === 409 || status === 422 || status === 500) && message.includes("slug")
-}
-
 function AddBusinessSuccess({
   businessName,
-  businessCity,
+  businessMunicipality,
   shell,
 }: {
   businessName: string
-  businessCity: string
+  businessMunicipality: string
   shell: AddBusinessShell
 }) {
   return (
@@ -103,8 +87,8 @@ function AddBusinessSuccess({
               <p className="mt-2 text-lg font-semibold text-brand-dark-green">{businessName}</p>
             </div>
             <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">City</p>
-              <p className="mt-2 text-lg font-semibold text-brand-dark-green">{businessCity}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Municipality</p>
+              <p className="mt-2 text-lg font-semibold text-brand-dark-green">{businessMunicipality}</p>
             </div>
           </div>
 
@@ -169,10 +153,14 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       businessName: "",
       primaryCategory: "",
       shortNote: "",
-      state: "Bagmati Province",
-      city: "Kathmandu",
+      provinceId: "",
+      districtId: "",
+      municipalityId: "",
+      wardNo: "",
+      area: "",
       addressLine1: "",
       addressLine2: "",
+      landmark: "",
       latitude: null,
       longitude: null,
       phone: "",
@@ -188,7 +176,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
 
   const [createdListing, setCreatedListing] = useState<{
     businessName: string
-    city: string
+    municipality: string
   } | null>(null)
   const [isSignInOpen, setIsSignInOpen] = useState(false)
   const [pendingSubmission, setPendingSubmission] = useState<AddBusinessFormValues | null>(null)
@@ -196,28 +184,30 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
 
   const watchedName = form.watch("businessName")
   const watchedCategory = form.watch("primaryCategory")
-  const watchedState = form.watch("state")
-  const watchedCity = form.watch("city")
+  const watchedProvinceId = form.watch("provinceId")
+  const watchedDistrictId = form.watch("districtId")
+  const watchedMunicipalityId = form.watch("municipalityId")
+  const watchedWardNo = form.watch("wardNo")
+  const watchedArea = form.watch("area")
   const watchedAddressLine1 = form.watch("addressLine1")
   const watchedAddressLine2 = form.watch("addressLine2")
   const watchedLatitude = form.watch("latitude")
   const watchedLongitude = form.watch("longitude")
   const selectedEstablishmentType = establishmentTypesQuery.data?.find((type) => type.id === watchedCategory)
-  const cityOptions = CITY_METADATA.filter((city) => city.state === watchedState).map(({ label }) => label)
-  const selectedCity = getCityByLabel(watchedCity) ?? CITY_METADATA[0]
+  const provincesQuery = useProvinces()
+  const municipalitiesQuery = useMunicipalities(
+    watchedDistrictId && /^\d+$/.test(watchedDistrictId) ? Number(watchedDistrictId) : null,
+  )
+  const selectedProvince =
+    provincesQuery.data?.find((province) => String(province.id) === watchedProvinceId) ?? null
+  const selectedMunicipality =
+    municipalitiesQuery.data?.find((municipality) => String(municipality.id) === watchedMunicipalityId) ?? null
   const markerPosition =
     watchedLatitude !== null && watchedLongitude !== null
       ? { lat: watchedLatitude, lng: watchedLongitude }
       : null
   const mapLocationError =
     form.formState.errors.latitude?.message ?? form.formState.errors.longitude?.message
-
-  useEffect(() => {
-    if (cityOptions.length === 0) return
-    if (!cityOptions.includes(watchedCity)) {
-      form.setValue("city", cityOptions[0], { shouldValidate: true })
-    }
-  }, [cityOptions, form, watchedCity])
 
   const submitBusiness = useCallback(async (values: AddBusinessFormValues) => {
     setSubmitError(null)
@@ -229,43 +219,33 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       tiktok: normalizeOptionalUrl(values.tiktokUrl),
     }
     const hasLinks = Object.values(links).some(Boolean)
-    const baseSlug = slugify(values.businessName) || "business"
 
     const payload = {
       name: values.businessName.trim(),
-      slug: baseSlug,
       description: values.shortNote?.trim() || undefined,
       phone: values.phone.trim(),
       email: values.publicEmail.trim(),
-      state: values.state,
-      district: values.city,
-      city: values.city,
+      provinceId: Number(values.provinceId),
+      districtId: Number(values.districtId),
+      municipalityId: Number(values.municipalityId),
+      wardNo: Number(values.wardNo),
+      area: values.area?.trim() || undefined,
       addressLine1: values.addressLine1.trim(),
       addressLine2: values.addressLine2?.trim() || undefined,
+      landmark: values.landmark?.trim() || undefined,
       latitude: values.latitude ?? undefined,
       longitude: values.longitude ?? undefined,
       establishmentTypeId: values.primaryCategory,
       links: hasLinks ? links : undefined,
     }
 
-    try {
-      await createBusiness.mutateAsync(payload)
-    } catch (error) {
-      if (!isSlugConflict(error)) {
-        throw error
-      }
-
-      await createBusiness.mutateAsync({
-        ...payload,
-        slug: `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`,
-      })
-    }
+    await createBusiness.mutateAsync(payload)
 
     setCreatedListing({
       businessName: values.businessName.trim(),
-      city: values.city,
+      municipality: selectedMunicipality?.name ?? "Selected municipality",
     })
-  }, [createBusiness])
+  }, [createBusiness, selectedMunicipality?.name])
 
   useEffect(() => {
     if (!isAuthenticated || !pendingSubmission) return
@@ -299,7 +279,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
     return (
       <AddBusinessSuccess
         businessName={createdListing.businessName}
-        businessCity={createdListing.city}
+        businessMunicipality={createdListing.municipality}
         shell={shell}
       />
     )
@@ -419,99 +399,10 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
               </MithoCardHeader>
               <MithoCardContent className="grid gap-5">
                 <div className="grid gap-5 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="state"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>State</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className={selectTriggerClassName}>
-                              <SelectValue placeholder="Choose a state" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {STATE_OPTIONS.map((state) => (
-                              <SelectItem key={state} value={state}>
-                                {state}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>Pick the province/state the listing belongs to.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <SelectTrigger className={selectTriggerClassName}>
-                              <SelectValue placeholder="Choose a city" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {cityOptions.map((city) => (
-                                <SelectItem key={city} value={city}>
-                                  {city}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormDescription>Use the city customers would browse under.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid gap-5 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="addressLine1"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Address 1</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className={inputClassName}
-                            placeholder="Street, lane, building, or landmark"
-                          />
-                        </FormControl>
-                        <FormDescription>The main address line customers need first.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="addressLine2"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Address 2</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className={inputClassName}
-                            placeholder="Optional: floor, unit, courtyard, or extra cue"
-                          />
-                        </FormControl>
-                        <FormDescription>Optional. Add one more clue if it helps people find you.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                  <BusinessLocationFields
+                    form={form}
+                    inputClassName={inputClassName}
+                    selectTriggerClassName={selectTriggerClassName}
                   />
                 </div>
 
@@ -524,8 +415,8 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                   </div>
 
                   <GoogleMapPicker
-                    cityLabel={selectedCity.label}
-                    defaultCenter={selectedCity.center}
+                    cityLabel={selectedMunicipality?.name ?? "Nepal"}
+                    defaultCenter={{ lat: 27.7172, lng: 85.324 }}
                     markerPosition={markerPosition}
                     onSelect={(coordinates) => {
                       form.setValue("latitude", coordinates.lat, { shouldDirty: true, shouldValidate: true })
@@ -759,8 +650,14 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Location</p>
                   <p className="mt-1 text-sm font-semibold text-brand-dark-green">
                     {watchedAddressLine1.trim()
-                      ? `${watchedAddressLine1}${(watchedAddressLine2 ?? "").trim() ? `, ${watchedAddressLine2}` : ""}, ${watchedCity}`
-                      : `${watchedCity}, ${watchedState}`}
+                      ? [
+                          watchedAddressLine1,
+                          watchedAddressLine2?.trim() || null,
+                          watchedArea?.trim() || null,
+                          watchedWardNo ? `Ward ${watchedWardNo}` : null,
+                          selectedMunicipality?.name ?? null,
+                        ].filter(Boolean).join(", ")
+                      : [selectedMunicipality?.name, selectedProvince?.name].filter(Boolean).join(", ") || "Choose the location details"}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {markerPosition
@@ -782,7 +679,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
             <ul className="space-y-3">
               {[
                 { icon: Building2, label: "Business identity and category" },
-                { icon: MapPin, label: "State, city, address, and exact map pin" },
+                { icon: MapPin, label: "Province, district, municipality, ward, address, and exact map pin" },
                 { icon: Phone, label: "Public contact basics" },
                 { icon: Mail, label: shell === "dashboard" ? "One ownership/authorization check" : "A quick first submission, not the full setup" },
               ].map((item) => (

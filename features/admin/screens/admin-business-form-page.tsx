@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { Building2, ChevronRight, Globe, Image, Mail, MapPin, Phone, UtensilsCrossed, X } from "lucide-react"
 import { useBusiness, useCreateBusiness, useUpdateBusiness } from "@/hooks/use-businesses"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
+import { BusinessLocationFields } from "@/features/business/components/business-location-fields"
 import { businessSchema, type BusinessFormValues } from "@/lib/validators/admin"
 import type { Media } from "@/types/media"
 import { MediaPickerDialog } from "@/features/admin/components/media-picker-dialog"
@@ -53,16 +54,6 @@ const dietaryAmenityFields = [
   { name: "amenityHalal", label: "Halal" },
 ] as const
 
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-}
-
 function readAmenityFlag(record: Record<string, unknown> | undefined, snakeKey: string, camelKey: string) {
   const value = record?.[snakeKey] ?? record?.[camelKey]
   return value === true
@@ -94,7 +85,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
     resolver: zodResolver(businessSchema) as Resolver<BusinessFormValues>,
     defaultValues: {
       name: "",
-      slug: "",
       description: "",
       listingStatus: "published",
       establishmentTypeId: "",
@@ -104,9 +94,10 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       phone: "",
       phoneSecondary: "",
       email: "",
-      state: "",
-      district: "",
-      city: "",
+      provinceId: "",
+      districtId: "",
+      municipalityId: "",
+      wardNo: "",
       area: "",
       addressLine1: "",
       addressLine2: "",
@@ -146,7 +137,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
 
       form.reset({
         name: existing.name,
-        slug: existing.slug,
         description: existing.description ?? "",
         listingStatus: existing.listingStatus,
         establishmentTypeId: existing.establishmentTypeId,
@@ -156,9 +146,10 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         phone: existing.phone,
         phoneSecondary: existing.phoneSecondary ?? "",
         email: existing.email ?? "",
-        state: existing.state,
-        district: existing.district,
-        city: existing.city,
+        provinceId: String(existing.provinceId),
+        districtId: String(existing.districtId),
+        municipalityId: String(existing.municipalityId),
+        wardNo: String(existing.wardNo),
         area: existing.area ?? "",
         addressLine1: existing.addressLine1,
         addressLine2: existing.addressLine2 ?? "",
@@ -191,16 +182,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       if (existing.photos?.length) setPhotosMedia(existing.photos)
     }
   }, [existing, form])
-
-  const watchedName = form.watch("name")
-  useEffect(() => {
-    if (mode === "create") {
-      const currentSlug = form.getValues("slug")
-      if (!currentSlug || currentSlug === slugify(form.getValues("name").slice(0, -1))) {
-        form.setValue("slug", slugify(watchedName), { shouldValidate: false })
-      }
-    }
-  }, [watchedName, form, mode])
 
   function handleLogoSelect(media: Media) {
     setLogoMedia(media)
@@ -271,7 +252,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
 
     const payload = {
       name: values.name,
-      slug: values.slug,
       description: values.description || undefined,
       listingStatus: values.listingStatus,
       establishmentTypeId: values.establishmentTypeId || undefined,
@@ -282,9 +262,10 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       phoneSecondary: values.phoneSecondary || undefined,
       email: values.email || undefined,
       links: hasLinks ? links : undefined,
-      state: values.state,
-      district: values.district,
-      city: values.city,
+      provinceId: Number(values.provinceId),
+      districtId: Number(values.districtId),
+      municipalityId: Number(values.municipalityId),
+      wardNo: Number(values.wardNo),
       area: values.area || undefined,
       addressLine1: values.addressLine1,
       addressLine2: values.addressLine2 || undefined,
@@ -380,19 +361,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                     <FormLabel>Business name</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="e.g. The Himalayan Kitchen" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Slug</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. the-himalayan-kitchen" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -772,96 +740,10 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
               </div>
             </div>
             <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State / Province</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. Bagmati" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="district"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>District</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. Kathmandu" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. Kathmandu" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="area"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Area / Neighbourhood</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. Thamel" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="addressLine1"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Address line 1</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Street, building, floor…" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="addressLine2"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Address line 2</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Suite, unit, floor…" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="landmark"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Landmark</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="Near the old bus park…" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <BusinessLocationFields
+                form={form}
+                inputClassName="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                selectTriggerClassName="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none"
               />
             </div>
           </section>
