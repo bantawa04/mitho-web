@@ -3,6 +3,20 @@ import type { ListBusinessesParams } from "@/types/business"
 import type { ListMediaParams } from "@/types/media"
 
 export const queryKeys = {
+  nepalAdmin: {
+    provinces: {
+      all: ["nepal-admin", "provinces"] as const,
+      list: () => ["nepal-admin", "provinces", "list"] as const,
+    },
+    districts: {
+      all: ["nepal-admin", "districts"] as const,
+      list: (provinceId: number | null) => ["nepal-admin", "districts", provinceId] as const,
+    },
+    municipalities: {
+      all: ["nepal-admin", "municipalities"] as const,
+      list: (districtId: number | null) => ["nepal-admin", "municipalities", districtId] as const,
+    },
+  },
   businesses: {
     all: ["businesses"] as const,
     list: (params?: ListBusinessesParams) => ["businesses", "list", params] as const,

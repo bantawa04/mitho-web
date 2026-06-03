@@ -1,4 +1,5 @@
 import type { Media } from "@/types/media"
+import type { District, Municipality, Province } from "@/types/nepal-admin"
 
 export interface AmenityServices {
   dine_in?: boolean
@@ -59,9 +60,15 @@ export interface Business {
   email?: string
   phone: string
   phoneSecondary?: string
-  state: string
-  district: string
-  city: string
+  provinceId: number
+  districtId: number
+  municipalityId: number
+  wardNo: number
+  province: Pick<Province, "id" | "name">
+  district: Pick<District, "id" | "name">
+  municipality: Pick<Municipality, "id" | "name" | "wards"> & {
+    category: Municipality["category"]
+  }
   area?: string
   addressLine1: string
   addressLine2?: string
@@ -92,11 +99,11 @@ export interface Business {
 
 export interface CreateBusinessPayload {
   name: string
-  slug: string
   phone: string
-  state: string
-  district: string
-  city: string
+  provinceId: number
+  districtId: number
+  municipalityId: number
+  wardNo: number
   addressLine1: string
   description?: string
   logoId?: string

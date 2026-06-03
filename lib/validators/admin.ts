@@ -4,7 +4,6 @@ const optionalUrl = z.string().trim().url("Enter a valid URL").or(z.literal(""))
 
 export const businessSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(200, "Name must be 200 characters or fewer"),
-  slug: z.string().trim().min(1, "Slug is required").max(200, "Slug must be 200 characters or fewer").regex(/^[a-z0-9-]+$/, "Slug may only contain lowercase letters, numbers, and hyphens"),
   description: z.string().trim().max(2000, "Description must be 2000 characters or fewer").optional(),
   listingStatus: z.enum(["pending_review", "published", "suspended", "rejected"]),
   establishmentTypeId: z.string().trim().optional(),
@@ -14,9 +13,10 @@ export const businessSchema = z.object({
   phone: z.string().trim().min(1, "Phone is required").max(30, "Phone must be 30 characters or fewer"),
   phoneSecondary: z.string().trim().max(30, "Phone must be 30 characters or fewer").optional(),
   email: z.string().trim().email("Enter a valid email address").optional().or(z.literal("")),
-  state: z.string().trim().min(1, "State is required").max(100, "State must be 100 characters or fewer"),
-  district: z.string().trim().min(1, "District is required").max(100, "District must be 100 characters or fewer"),
-  city: z.string().trim().min(1, "City is required").max(100, "City must be 100 characters or fewer"),
+  provinceId: z.string().trim().min(1, "Province is required"),
+  districtId: z.string().trim().min(1, "District is required"),
+  municipalityId: z.string().trim().min(1, "Municipality is required"),
+  wardNo: z.string().trim().min(1, "Ward No. is required").regex(/^\d+$/, "Ward No. must be a whole number"),
   area: z.string().trim().max(100, "Area must be 100 characters or fewer").optional(),
   addressLine1: z.string().trim().min(1, "Address line 1 is required").max(200, "Address must be 200 characters or fewer"),
   addressLine2: z.string().trim().max(200, "Address must be 200 characters or fewer").optional(),

@@ -56,6 +56,10 @@ function getOwnershipTone(status: BusinessOwnershipStatus) {
   }
 }
 
+function formatBusinessLocation(business: Business) {
+  return `${business.municipality.name}, ${business.district.name}`
+}
+
 export function AdminBusinessesPage() {
   const router = useRouter()
   const [query, setQuery] = useState("")
@@ -76,7 +80,7 @@ export function AdminBusinessesPage() {
 
     return businesses.filter((business) => {
       const matchesStatus = statusFilter === "All" ? true : business.listingStatus === statusFilter
-      const location = `${business.city}, ${business.district}`
+      const location = `${business.municipality.name} ${business.district.name} ${business.province.name}`
       const matchesQuery =
         normalizedQuery.length === 0
           ? true
@@ -144,7 +148,7 @@ export function AdminBusinessesPage() {
         label: "Location",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (business) => `${business.city}, ${business.district}`,
+        cell: (business) => formatBusinessLocation(business),
       },
       {
         id: "status",
