@@ -60,7 +60,6 @@ function StatsStrip() {
     { label: "Reviews written", value: mockCustomerProfile.reviewCount, accent: "text-brand-orange" },
     { label: "Collections", value: mockCustomerProfile.collectionCount, accent: "text-brand-deep-green" },
     { label: "Places across collections", value: mockCustomerProfile.placeCountAcrossCollections, accent: "text-brand-dark-green" },
-    { label: "Cities explored", value: mockCustomerProfile.citiesExplored, accent: "text-brand-dark-green" },
   ]
 
   return (
