@@ -14,6 +14,7 @@ function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
   if (p.slug !== undefined) out.slug = p.slug
   if (p.description !== undefined) out.description = p.description
   if (p.status !== undefined) out.status = p.status
+  if (p.listingStatus !== undefined) out.listing_status = p.listingStatus
   if (p.phone !== undefined) out.phone = p.phone
   if (p.phoneSecondary !== undefined) out.phone_secondary = p.phoneSecondary
   if (p.email !== undefined) out.email = p.email

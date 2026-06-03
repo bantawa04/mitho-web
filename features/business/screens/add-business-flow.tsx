@@ -235,7 +235,6 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       name: values.businessName.trim(),
       slug: baseSlug,
       description: values.shortNote?.trim() || undefined,
-      status: "pending" as const,
       phone: values.phone.trim(),
       email: values.publicEmail.trim(),
       state: values.state,
