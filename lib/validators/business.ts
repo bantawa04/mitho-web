@@ -1,8 +1,4 @@
 import { z } from "zod"
-import { CITY_METADATA, STATE_OPTIONS } from "@/content/taxonomy/city-taxonomy"
-
-const cityLabels = new Set(CITY_METADATA.map((city) => city.label))
-const stateLabels = new Set(STATE_OPTIONS)
 
 const websitePattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/.*)?$/i
 const phonePattern = /^[+]?[\d\s()-]{7,}$/
@@ -28,12 +24,16 @@ export const addBusinessSchema = z.object({
     .max(140, "Short note should stay under 140 characters.")
     .optional()
     .or(z.literal("")),
-  state: z
+  provinceId: z.string().trim().min(1, "Choose a valid province."),
+  districtId: z.string().trim().min(1, "Choose a valid district."),
+  municipalityId: z.string().trim().min(1, "Choose a valid municipality."),
+  wardNo: z.string().trim().min(1, "Ward No. is required.").regex(/^\d+$/, "Ward No. must be a whole number."),
+  area: z
     .string()
-    .refine((value) => stateLabels.has(value as never), "Choose a valid state."),
-  city: z
-    .string()
-    .refine((value) => cityLabels.has(value), "Choose a valid city."),
+    .trim()
+    .max(100, "Area / Neighbourhood should stay under 100 characters.")
+    .optional()
+    .or(z.literal("")),
   addressLine1: z
     .string()
     .trim()
@@ -43,6 +43,12 @@ export const addBusinessSchema = z.object({
     .string()
     .trim()
     .max(120, "Address 2 should stay under 120 characters.")
+    .optional()
+    .or(z.literal("")),
+  landmark: z
+    .string()
+    .trim()
+    .max(120, "Landmark should stay under 120 characters.")
     .optional()
     .or(z.literal("")),
   latitude: z

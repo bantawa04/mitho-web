@@ -11,16 +11,16 @@ function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
   const p = payload as Record<string, unknown>
   const out: Record<string, unknown> = {}
   if (p.name !== undefined) out.name = p.name
-  if (p.slug !== undefined) out.slug = p.slug
   if (p.description !== undefined) out.description = p.description
   if (p.status !== undefined) out.status = p.status
   if (p.listingStatus !== undefined) out.listing_status = p.listingStatus
   if (p.phone !== undefined) out.phone = p.phone
   if (p.phoneSecondary !== undefined) out.phone_secondary = p.phoneSecondary
   if (p.email !== undefined) out.email = p.email
-  if (p.state !== undefined) out.state = p.state
-  if (p.district !== undefined) out.district = p.district
-  if (p.city !== undefined) out.city = p.city
+  if (p.provinceId !== undefined) out.province_id = p.provinceId
+  if (p.districtId !== undefined) out.district_id = p.districtId
+  if (p.municipalityId !== undefined) out.municipality_id = p.municipalityId
+  if (p.wardNo !== undefined) out.ward_no = p.wardNo
   if (p.area !== undefined) out.area = p.area
   if (p.addressLine1 !== undefined) out.address_line_1 = p.addressLine1
   if (p.addressLine2 !== undefined) out.address_line_2 = p.addressLine2
