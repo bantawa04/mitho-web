@@ -45,6 +45,8 @@ export interface BusinessLinks {
 }
 
 export type BusinessStatus = "pending" | "active" | "suspended" | "rejected"
+export type BusinessListingStatus = "pending_review" | "published" | "suspended" | "rejected"
+export type BusinessOwnershipStatus = "unclaimed" | "claim_under_review" | "claimed"
 
 export interface Business {
   id: string
@@ -77,6 +79,8 @@ export interface Business {
   amenities?: BusinessAmenities
   links?: BusinessLinks
   status: BusinessStatus
+  listingStatus: BusinessListingStatus
+  ownershipStatus: BusinessOwnershipStatus
   addedByType: string
   addedByUserId?: string
   ratingAvg?: number
@@ -116,6 +120,7 @@ export interface CreateBusinessPayload {
   amenities?: BusinessAmenities
   links?: BusinessLinks
   status?: BusinessStatus
+  listingStatus?: BusinessListingStatus
   isFeatured?: boolean
 }
 
@@ -123,6 +128,8 @@ export type UpdateBusinessPayload = Partial<CreateBusinessPayload>
 
 export interface ListBusinessesParams {
   status?: BusinessStatus
+  listingStatus?: BusinessListingStatus
+  ownershipStatus?: BusinessOwnershipStatus
   search?: string
   page?: number
   pageSize?: number

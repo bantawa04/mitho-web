@@ -3,10 +3,12 @@ export interface AuthUserProfile {
   firstName?: string | null
   lastName?: string | null
   email: string
+  username?: string | null
   avatarUrl?: string | null
   status: string
   fullName?: string
   socialProvider?: string | null
+  profileComplete: boolean
 }
 
 export interface SessionBusinessMembership {

@@ -18,7 +18,7 @@ const footerLinks = {
     links: [
       { id: "business-claim", label: "Claim your business", href: "/business/claim" },
       { id: "business-placement", label: "Featured placement", href: "/business/claim" },
-      { id: "business-team", label: "Talk to the team", href: "/add-business" },
+      { id: "business-team", label: "Add your business", href: "/add-business" },
     ],
   },
   product: {

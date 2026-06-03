@@ -1,8 +1,6 @@
 import { z } from "zod"
-import { CATEGORY_METADATA } from "@/content/taxonomy/category-taxonomy"
 import { CITY_METADATA, STATE_OPTIONS } from "@/content/taxonomy/city-taxonomy"
 
-const categorySlugs = new Set(CATEGORY_METADATA.map((category) => category.slug))
 const cityLabels = new Set(CITY_METADATA.map((city) => city.label))
 const stateLabels = new Set(STATE_OPTIONS)
 
@@ -23,7 +21,7 @@ export const addBusinessSchema = z.object({
     .max(80, "Business name should stay under 80 characters."),
   primaryCategory: z
     .string()
-    .refine((value) => categorySlugs.has(value as never), "Choose a valid business category."),
+    .min(1, "Choose a valid business category."),
   shortNote: z
     .string()
     .trim()

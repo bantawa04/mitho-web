@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import type { Resolver } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { Building2, ChevronRight, Globe, Image, Mail, MapPin, Phone, UtensilsCrossed, X } from "lucide-react"
 import { useBusiness, useCreateBusiness, useUpdateBusiness } from "@/hooks/use-businesses"
@@ -90,12 +91,12 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
   const [photosPickerOpen, setPhotosPickerOpen] = useState(false)
 
   const form = useForm<BusinessFormValues>({
-    resolver: zodResolver(businessSchema),
+    resolver: zodResolver(businessSchema) as Resolver<BusinessFormValues>,
     defaultValues: {
       name: "",
       slug: "",
       description: "",
-      status: "pending",
+      listingStatus: "published",
       establishmentTypeId: "",
       logoId: "",
       bannerId: "",
@@ -147,7 +148,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         name: existing.name,
         slug: existing.slug,
         description: existing.description ?? "",
-        status: existing.status,
+        listingStatus: existing.listingStatus,
         establishmentTypeId: existing.establishmentTypeId,
         logoId: existing.logo?.id ?? "",
         bannerId: existing.banner?.id ?? "",
@@ -272,7 +273,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       name: values.name,
       slug: values.slug,
       description: values.description || undefined,
-      status: values.status,
+      listingStatus: values.listingStatus,
       establishmentTypeId: values.establishmentTypeId || undefined,
       logoId: values.logoId,
       bannerId: values.bannerId,
@@ -367,7 +368,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-brand-dark-green">Core details</h2>
-                <p className="text-sm text-muted-foreground">The public business identity and admin status.</p>
+                <p className="text-sm text-muted-foreground">The public business identity and listing review status.</p>
               </div>
             </div>
             <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 md:grid-cols-2">
@@ -417,23 +418,23 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
               />
               <FormField
                 control={form.control}
-                name="status"
+                name="listingStatus"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
                     <Select
-                      key={`business-status-${existing?.id ?? "create"}-${field.value ?? "empty"}`}
+                      key={`business-listing-status-${existing?.id ?? "create"}-${field.value ?? "empty"}`}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
-                          <SelectValue placeholder="Choose a status" />
+                          <SelectValue placeholder="Choose a listing status" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="pending_review">Pending review</SelectItem>
+                        <SelectItem value="published">Published</SelectItem>
                         <SelectItem value="suspended">Suspended</SelectItem>
                         <SelectItem value="rejected">Rejected</SelectItem>
                       </SelectContent>

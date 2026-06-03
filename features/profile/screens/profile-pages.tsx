@@ -45,23 +45,10 @@ const PUBLIC_COLLECTION_PAGE_SIZE = 12
 const PUBLIC_COLLECTION_SEARCH_THRESHOLD = 6
 const PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE = 4
 
-function PageIntro({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string
-  title: string
-  description: string
-}) {
+function ProfileTabsPanel() {
   return (
     <section className={sectionCardClass}>
-      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-        <p className="type-eyebrow text-brand-deep-green/68">{eyebrow}</p>
-        <h1 className="type-page-title mt-3 text-brand-dark-green">{title}</h1>
-        <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">{description}</p>
-      </div>
-      <div className="px-6 py-5 sm:px-8">
+      <div className="px-4 py-4 sm:px-6">
         <ProfileNavigation />
       </div>
     </section>
@@ -73,7 +60,6 @@ function StatsStrip() {
     { label: "Reviews written", value: mockCustomerProfile.reviewCount, accent: "text-brand-orange" },
     { label: "Collections", value: mockCustomerProfile.collectionCount, accent: "text-brand-deep-green" },
     { label: "Places across collections", value: mockCustomerProfile.placeCountAcrossCollections, accent: "text-brand-dark-green" },
-    { label: "Cities explored", value: mockCustomerProfile.citiesExplored, accent: "text-brand-dark-green" },
   ]
 
   return (
@@ -330,10 +316,6 @@ export function ProfileHubPage() {
                 className="h-20 w-20 rounded-full border-4 border-brand-soft-beige object-cover sm:h-24 sm:w-24"
               />
               <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <MithoBadge variant="neutral">Customer profile</MithoBadge>
-                  <MithoBadge variant="muted">{mockCustomerProfile.trustCue}</MithoBadge>
-                </div>
                 <h1 className="type-page-title mt-4 text-brand-dark-green">{mockCustomerProfile.name}</h1>
                 <p className="mt-2 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
                   {mockCustomerProfile.joinedLabel}
@@ -392,11 +374,7 @@ export function ProfileReviewsPage() {
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
-        <PageIntro
-          eyebrow="Customer account"
-          title="Your reviews in one place."
-          description="Revisit the notes you have already shared, then jump back into the business pages where those reviews are doing the real work."
-        />
+        <ProfileTabsPanel />
 
         <section className={sectionCardClass}>
           <div className="divide-y divide-brand-deep-green/10 px-6 sm:px-8">
@@ -488,11 +466,7 @@ export function ProfileSettingsPage() {
     return (
       <div className="container mx-auto px-4 py-10 md:py-12">
         <div className="space-y-6">
-          <PageIntro
-            eyebrow="Account deletion"
-            title="Your account deletion request has been captured in this mock flow."
-            description="In the full product, this is where Mitho would confirm the request, sign you out, and continue the deletion workflow according to account and business-ownership policy."
-          />
+          <ProfileTabsPanel />
 
           <section className={sectionCardClass}>
             <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
@@ -526,11 +500,7 @@ export function ProfileSettingsPage() {
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
-        <PageIntro
-          eyebrow="Customer account"
-          title="Keep your Mitho identity tidy without touching public account rules."
-          description="Update the profile basics people see, review the locked account credentials tied to Google sign-in, and manage account lifecycle actions from one clear place."
-        />
+        <ProfileTabsPanel />
 
         <section className={sectionCardClass}>
           <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
@@ -543,10 +513,6 @@ export function ProfileSettingsPage() {
                 <div className="mx-auto w-fit rounded-full border border-brand-deep-green/10 bg-white p-2 shadow-[0_8px_20px_rgba(10,70,53,0.06)]">
                   <img src={form.avatarUrl} alt={form.name} className="h-28 w-28 rounded-full object-cover" />
                 </div>
-                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-brand-dark-green">
-                  <Camera className="h-4 w-4 text-brand-orange" />
-                  Upload a profile photo
-                </div>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -554,8 +520,8 @@ export function ProfileSettingsPage() {
                   className="hidden"
                   onChange={handleAvatarUpload}
                 />
-                <div className="mt-4 space-y-3">
-                  <MithoButton type="button" variant="outline-secondary" onClick={() => fileInputRef.current?.click()}>
+                <div className="mt-4 space-y-3 flex flex-col items-center">
+                  <MithoButton type="button" variant="outline-secondary" onClick={() => fileInputRef.current?.click()} leftIcon={<Camera className="h-4 w-4" />}>
                     Upload image
                   </MithoButton>
                   <p className="text-xs leading-6 text-muted-foreground">Use a clear square photo that still looks good at small sizes.</p>
@@ -750,11 +716,7 @@ export function ProfileFollowingPage() {
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
-        <PageIntro
-          eyebrow="People you follow"
-          title="Keep your trusted creators close."
-          description="Following is a lightweight way to remember whose public collections and reviews keep leading you to better food decisions."
-        />
+        <ProfileTabsPanel />
 
         <section className={sectionCardClass}>
           <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">

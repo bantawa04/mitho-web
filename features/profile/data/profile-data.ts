@@ -25,7 +25,7 @@ export interface CustomerProfileData {
   address: string
   joinedLabel: string
   bio: string
-  trustCue: string
+  // trustCue: string
   reviewCount: number
   collectionCount: number
   placeCountAcrossCollections: number
@@ -41,7 +41,7 @@ export interface PublicUserProfileData {
   avatarUrl: string
   joinedLabel: string
   bio: string
-  trustCue: string
+  // trustCue: string
   reviewCount: number
   collectionCount: number
   followerCount: number
@@ -95,7 +95,7 @@ export const mockCustomerProfile: CustomerProfileData = {
   address: "Thamel, Kathmandu, Nepal",
   joinedLabel: "Joined March 2025",
   bio: "Usually chasing strong momo plates, calmer brunch spots, and the kinds of places worth sending to friends without a long explanation.",
-  trustCue: "12 local reviews and counting",
+  // trustCue: "12 local reviews and counting",
   reviewCount: 12,
   collectionCount: ownedCollections.length,
   placeCountAcrossCollections: ownedCollections.reduce((total, collection) => total + collection.items.length, 0),
@@ -214,7 +214,7 @@ const publicProfileMetadata: Record<
     avatarUrl: mockCustomerProfile.avatarUrl,
     joinedLabel: mockCustomerProfile.joinedLabel,
     bio: mockCustomerProfile.bio,
-    trustCue: mockCustomerProfile.trustCue,
+    // trustCue: mockCustomerProfile.trustCue,
     citiesExplored: mockCustomerProfile.citiesExplored,
     reviewCount: mockCustomerProfile.reviewCount,
   },
@@ -225,7 +225,7 @@ const publicProfileMetadata: Record<
     avatarUrl: "/thoughtful-man-portrait.png",
     joinedLabel: "Joined January 2025",
     bio: "Usually building tight public food routes for friends who want one strong plan instead of twenty tabs and no dinner decision.",
-    trustCue: "Route-builder with practical local notes",
+    // trustCue: "Route-builder with practical local notes",
     citiesExplored: 3,
     reviewCount: 8,
   },
@@ -236,7 +236,7 @@ const publicProfileMetadata: Record<
     avatarUrl: "/woman-portrait.png",
     joinedLabel: "Joined February 2025",
     bio: "Usually comparing calmer cafes, slower breakfast rooms, and the kind of places that are better for staying than rushing.",
-    trustCue: "Cafe-first shortlist maker",
+    // trustCue: "Cafe-first shortlist maker",
     citiesExplored: 2,
     reviewCount: 6,
   },
@@ -247,7 +247,7 @@ const publicProfileMetadata: Record<
     avatarUrl: "/woman-portrait.png",
     joinedLabel: "Joined April 2025",
     bio: "Usually building softer dinner shortlists where the room matters almost as much as the food.",
-    trustCue: "Room-and-mood curator",
+    // trustCue: "Room-and-mood curator",
     citiesExplored: 2,
     reviewCount: 5,
   },
@@ -258,7 +258,7 @@ const publicProfileMetadata: Record<
     avatarUrl: "/thoughtful-man-portrait.png",
     joinedLabel: "Joined February 2025",
     bio: "Usually keeping practical lunch routes and budget-friendly local picks that still feel worth the detour.",
-    trustCue: "Budget route realist",
+    // trustCue: "Budget route realist",
     citiesExplored: 3,
     reviewCount: 7,
   },
@@ -269,7 +269,7 @@ const publicProfileMetadata: Record<
     avatarUrl: "/thoughtful-man-portrait.png",
     joinedLabel: "Joined March 2025",
     bio: "Usually saving weekday snack detours, quick comfort plates, and after-work stops that do not waste the evening.",
-    trustCue: "Weeknight snack scout",
+    // trustCue: "Weeknight snack scout",
     citiesExplored: 2,
     reviewCount: 4,
   },
