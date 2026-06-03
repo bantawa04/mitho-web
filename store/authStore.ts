@@ -1,6 +1,7 @@
 "use client"
 
 import { create } from "zustand"
+import { isInternalUser } from "@/lib/auth/access"
 import type { AuthUser, AuthUserProfile } from "@/types/auth"
 
 export type SessionState = "loading" | "authenticated" | "signed-out"
@@ -51,11 +52,10 @@ function buildDisplayName(user: AuthUserProfile) {
 }
 
 function buildCurrentUser(authUser: AuthUser): AuthDisplayUser {
-  const isStaff = authUser.staffRoles.some((r) => r === "admin" || r === "super_admin")
   return {
     name: buildDisplayName(authUser.user),
     avatarUrl: authUser.user.avatarUrl ?? undefined,
-    href: isStaff ? "/admin" : "/profile",
+    href: isInternalUser(authUser) ? "/admin" : "/profile",
   }
 }
 
@@ -65,8 +65,7 @@ export const authStoreSelectors = {
   isHydrated: (state: AuthStoreState) => state.sessionState !== "loading",
   isAuthenticated: (state: AuthStoreState) => state.sessionState === "authenticated",
   isAdmin: (state: AuthStoreState) =>
-    state.sessionState === "authenticated" &&
-    !!state.authUser?.staffRoles.some((r) => r === "admin" || r === "super_admin"),
+    state.sessionState === "authenticated" && isInternalUser(state.authUser),
   currentUser: (state: AuthStoreState) => state.currentUser,
   hasBusinessAccess: (state: AuthStoreState) =>
     state.sessionState === "authenticated" &&

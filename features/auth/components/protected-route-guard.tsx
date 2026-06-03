@@ -7,9 +7,14 @@ import { useAuthSnapshot } from "@/hooks/use-auth-session"
 interface ProtectedRouteGuardProps {
   children: React.ReactNode
   requireAdmin?: boolean
+  requireCustomer?: boolean
 }
 
-export function ProtectedRouteGuard({ children, requireAdmin = false }: ProtectedRouteGuardProps) {
+export function ProtectedRouteGuard({
+  children,
+  requireAdmin = false,
+  requireCustomer = false,
+}: ProtectedRouteGuardProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -27,8 +32,13 @@ export function ProtectedRouteGuard({ children, requireAdmin = false }: Protecte
 
     if (requireAdmin && !isAdmin) {
       router.replace("/")
+      return
     }
-  }, [isAdmin, isAuthenticated, isHydrated, pathname, requireAdmin, router, searchParams])
+
+    if (requireCustomer && isAdmin) {
+      router.replace("/admin")
+    }
+  }, [isAdmin, isAuthenticated, isHydrated, pathname, requireAdmin, requireCustomer, router, searchParams])
 
   if (!isHydrated) {
     return <div className="min-h-screen bg-transparent" />
@@ -39,6 +49,10 @@ export function ProtectedRouteGuard({ children, requireAdmin = false }: Protecte
   }
 
   if (requireAdmin && !isAdmin) {
+    return <div className="min-h-screen bg-transparent" />
+  }
+
+  if (requireCustomer && isAdmin) {
     return <div className="min-h-screen bg-transparent" />
   }
 
