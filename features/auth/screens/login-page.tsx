@@ -8,20 +8,21 @@ import { BrandLogo } from "@/components/mitho/brand-logo"
 import { Footer } from "@/features/home/components/footer"
 import { Header } from "@/features/home/components/header"
 import { useAuthSnapshot, useGoogleLogin } from "@/hooks/use-auth-session"
+import { getAuthenticatedRedirect } from "@/lib/auth/redirects"
 
 export function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { isHydrated, isAuthenticated } = useAuthSnapshot()
+  const { authUser, isHydrated, isAuthenticated } = useAuthSnapshot()
   const googleLogin = useGoogleLogin()
   const [error, setError] = React.useState<string | null>(null)
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim()
   const redirect = searchParams.get("redirect")
 
   React.useEffect(() => {
-    if (!isHydrated || !isAuthenticated) return
-    router.replace(redirect || "/")
-  }, [isAuthenticated, isHydrated, redirect, router])
+    if (!isHydrated || !isAuthenticated || !authUser) return
+    router.replace(getAuthenticatedRedirect(authUser, redirect))
+  }, [authUser, isAuthenticated, isHydrated, redirect, router])
 
   return (
     <div className="page-shell-customer min-h-screen">
@@ -64,7 +65,8 @@ export function LoginPage() {
 
                       try {
                         setError(null)
-                        await googleLogin.mutateAsync(credentialResponse.credential)
+                        const authUser = await googleLogin.mutateAsync(credentialResponse.credential)
+                        router.replace(getAuthenticatedRedirect(authUser, redirect))
                       } catch (signInError) {
                         setError(signInError instanceof Error ? signInError.message : "Google sign-in failed.")
                       }

@@ -53,23 +53,10 @@ const inputClassName =
 const selectTriggerClassName =
   "w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none data-[size=default]:h-12 data-[size=sm]:h-12 focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
-function PageIntro({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string
-  title: string
-  description: string
-}) {
+function ProfileTabsPanel() {
   return (
     <section className={sectionCardClass}>
-      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-        <p className="type-eyebrow text-brand-deep-green/68">{eyebrow}</p>
-        <h1 className="type-page-title mt-3 text-brand-dark-green">{title}</h1>
-        <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">{description}</p>
-      </div>
-      <div className="px-6 py-5 sm:px-8">
+      <div className="px-4 py-4 sm:px-6">
         <ProfileNavigation />
       </div>
     </section>
@@ -380,11 +367,7 @@ export function CollectionsIndexPage({ collections }: { collections: CollectionR
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
-        <PageIntro
-          eyebrow="Collection module"
-          title="Curate the places worth keeping."
-          description="Build food shortlists, private planning boards, and copied public finds in one calmer system that feels more intentional than one-off saves."
-        />
+        <ProfileTabsPanel />
 
         <section className={sectionCardClass}>
           <div className="flex flex-col gap-4 border-b border-brand-deep-green/10 px-6 py-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
@@ -788,11 +771,7 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
-        <PageIntro
-          eyebrow="Collection edit"
-          title={`Shape ${collection.title} without leaving the account flow.`}
-          description="This is where title, privacy, and the item order become deliberate instead of staying as a loose list."
-        />
+        <ProfileTabsPanel />
 
         <section className={sectionCardClass}>
           <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">

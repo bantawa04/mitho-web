@@ -2,8 +2,10 @@
 
 import * as React from "react"
 import { GoogleLogin } from "@react-oauth/google"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { BrandLogo } from "@/components/mitho/brand-logo"
 import { useGoogleLogin } from "@/hooks/use-auth-session"
+import { getAuthenticatedRedirect } from "@/lib/auth/redirects"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface GoogleSignInDialogProps {
@@ -18,8 +20,7 @@ interface GoogleSignInDialogProps {
 const defaultTitle = "Sign in once and keep the same Mitho account for everything."
 const defaultDescription =
   "Use Google to review places, save shortlists, submit listings, and later manage a business without a second account."
-const defaultHelperCopy =
-  "For now, Mitho uses Google sign-in only. Once the real auth hook is connected, this same modal will be the entry point for login and signup."
+
 
 export function GoogleSignInDialog({
   open,
@@ -27,8 +28,11 @@ export function GoogleSignInDialog({
   onContinue,
   title = defaultTitle,
   description = defaultDescription,
-  helperCopy = defaultHelperCopy,
+  helperCopy,
 }: GoogleSignInDialogProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const googleLogin = useGoogleLogin()
   const [error, setError] = React.useState<string | null>(null)
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim()
@@ -50,12 +54,9 @@ export function GoogleSignInDialog({
         </div>
 
         <div className="space-y-5 px-6 py-6 sm:px-7">
-          <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
-            <p className="text-sm leading-7 text-muted-foreground">{helperCopy}</p>
-          </div>
 
           {googleClientId ? (
-            <div className="flex justify-center rounded-[1.25rem] border border-brand-deep-green/12 bg-white px-4 py-4 shadow-[0_8px_22px_rgba(10,70,53,0.05)]">
+            <div className="flex justify-center">
               <GoogleLogin
                 theme="outline"
                 size="large"
@@ -71,9 +72,16 @@ export function GoogleSignInDialog({
 
                   try {
                     setError(null)
-                    await googleLogin.mutateAsync(credentialResponse.credential)
+                    const authUser = await googleLogin.mutateAsync(credentialResponse.credential)
                     onOpenChange(false)
-                    onContinue?.()
+                    const query = searchParams.toString()
+                    const redirect = query ? `${pathname}?${query}` : pathname
+                    const nextPath = getAuthenticatedRedirect(authUser, redirect)
+                    if (nextPath === redirect) {
+                      onContinue?.()
+                    } else {
+                      router.replace(nextPath)
+                    }
                   } catch (signInError) {
                     setError(signInError instanceof Error ? signInError.message : "Google sign-in failed.")
                   }
@@ -92,6 +100,7 @@ export function GoogleSignInDialog({
           )}
 
           {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
+          {helperCopy ? <p className="text-sm leading-7 text-muted-foreground">{helperCopy}</p> : null}
         </div>
       </DialogContent>
     </Dialog>
