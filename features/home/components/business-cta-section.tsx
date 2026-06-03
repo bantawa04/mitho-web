@@ -32,7 +32,7 @@ export function BusinessCtaSection() {
               <Link href="/business/claim">Claim your business</Link>
             </MithoButton>
             <MithoButton variant="outline-secondary" size="lg" asChild>
-              <Link href="/add-business">Talk to the team</Link>
+              <Link href="/add-business">Add your business</Link>
             </MithoButton>
           </div>
         </div>

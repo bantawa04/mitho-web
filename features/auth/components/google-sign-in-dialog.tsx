@@ -15,6 +15,7 @@ interface GoogleSignInDialogProps {
   title?: string
   description?: string
   helperCopy?: string
+  stayOnCurrentPageAfterSignIn?: boolean
 }
 
 const defaultTitle = "Sign in once and keep the same Mitho account for everything."
@@ -29,6 +30,7 @@ export function GoogleSignInDialog({
   title = defaultTitle,
   description = defaultDescription,
   helperCopy,
+  stayOnCurrentPageAfterSignIn = false,
 }: GoogleSignInDialogProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -74,6 +76,10 @@ export function GoogleSignInDialog({
                     setError(null)
                     const authUser = await googleLogin.mutateAsync(credentialResponse.credential)
                     onOpenChange(false)
+                    if (stayOnCurrentPageAfterSignIn) {
+                      onContinue?.()
+                      return
+                    }
                     const query = searchParams.toString()
                     const redirect = query ? `${pathname}?${query}` : pathname
                     const nextPath = getAuthenticatedRedirect(authUser, redirect)
