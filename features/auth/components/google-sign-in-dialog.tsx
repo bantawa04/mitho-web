@@ -12,14 +12,12 @@ interface GoogleSignInDialogProps {
   onContinue?: () => void
   title?: string
   description?: string
-  helperCopy?: string
 }
 
 const defaultTitle = "Sign in once and keep the same Mitho account for everything."
 const defaultDescription =
   "Use Google to review places, save shortlists, submit listings, and later manage a business without a second account."
-const defaultHelperCopy =
-  "For now, Mitho uses Google sign-in only. Once the real auth hook is connected, this same modal will be the entry point for login and signup."
+
 
 export function GoogleSignInDialog({
   open,
@@ -27,7 +25,6 @@ export function GoogleSignInDialog({
   onContinue,
   title = defaultTitle,
   description = defaultDescription,
-  helperCopy = defaultHelperCopy,
 }: GoogleSignInDialogProps) {
   const googleLogin = useGoogleLogin()
   const [error, setError] = React.useState<string | null>(null)
@@ -50,12 +47,9 @@ export function GoogleSignInDialog({
         </div>
 
         <div className="space-y-5 px-6 py-6 sm:px-7">
-          <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
-            <p className="text-sm leading-7 text-muted-foreground">{helperCopy}</p>
-          </div>
 
           {googleClientId ? (
-            <div className="flex justify-center rounded-[1.25rem] border border-brand-deep-green/12 bg-white px-4 py-4 shadow-[0_8px_22px_rgba(10,70,53,0.05)]">
+            <div className="flex justify-center">
               <GoogleLogin
                 theme="outline"
                 size="large"
