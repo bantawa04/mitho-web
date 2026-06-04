@@ -12,7 +12,7 @@ import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-di
 import { useCreateBusiness } from "@/hooks/use-businesses"
 import { useEstablishmentTypes } from "@/hooks/use-establishment-types"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
-import { useMunicipalities, useProvinces } from "@/hooks/use-nepal-admin"
+import { useDistricts, useMunicipalities, useProvinces } from "@/hooks/use-nepal-admin"
 import { addBusinessSchema, BUSINESS_ROLE_OPTIONS, type AddBusinessFormValues } from "@/lib/validators/business"
 import { cn } from "@/lib/utils"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
@@ -23,6 +23,34 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+
+const serviceAmenityFields = [
+  { name: "amenityDineIn", label: "Dine in" },
+  { name: "amenityTakeaway", label: "Takeaway" },
+  { name: "amenityDelivery", label: "Delivery" },
+] as const
+
+const paymentAmenityFields = [
+  { name: "amenityCash", label: "Cash" },
+  { name: "amenityCard", label: "Card" },
+  { name: "amenityEsewa", label: "eSewa" },
+  { name: "amenityKhalti", label: "Khalti" },
+  { name: "amenityQr", label: "QR" },
+] as const
+
+const facilityAmenityFields = [
+  { name: "amenityParking", label: "Parking" },
+  { name: "amenityWifi", label: "WiFi" },
+  { name: "amenityAirConditioning", label: "Air conditioning" },
+  { name: "amenityOutdoorSeating", label: "Outdoor seating" },
+  { name: "amenityServiceCharge", label: "Service charge" },
+] as const
+
+const dietaryAmenityFields = [
+  { name: "amenityVegetarian", label: "Vegetarian" },
+  { name: "amenityVegan", label: "Vegan" },
+  { name: "amenityHalal", label: "Halal" },
+] as const
 
 type AddBusinessShell = "public" | "dashboard"
 
@@ -53,13 +81,30 @@ function getApiErrorMessage(error: unknown) {
   return "Could not submit this business right now."
 }
 
+interface SuccessReviewField {
+  label: string
+  value: string
+}
+
+interface SuccessReviewSection {
+  title: string
+  fields: SuccessReviewField[]
+}
+
+function displayValue(value: string | undefined) {
+  const trimmed = value?.trim()
+  return trimmed && trimmed.length > 0 ? trimmed : "Not provided"
+}
+
 function AddBusinessSuccess({
   businessName,
   businessMunicipality,
+  reviewSections,
   shell,
 }: {
   businessName: string
   businessMunicipality: string
+  reviewSections: SuccessReviewSection[]
   shell: AddBusinessShell
 }) {
   return (
@@ -89,6 +134,34 @@ function AddBusinessSuccess({
             <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Municipality</p>
               <p className="mt-2 text-lg font-semibold text-brand-dark-green">{businessMunicipality}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <p className="type-eyebrow text-brand-deep-green/68">Submitted details</p>
+              <h2 className="mt-2 text-2xl font-semibold text-brand-dark-green">Review everything that was sent.</h2>
+            </div>
+
+            <div className="grid gap-4 xl:grid-cols-2">
+              {reviewSections.map((section) => (
+                <div key={section.title} className="rounded-[1.4rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">{section.title}</p>
+                  <dl className="mt-4 space-y-3">
+                    {section.fields.map((field) => (
+                      <div
+                        key={`${section.title}-${field.label}`}
+                        className="flex flex-col gap-1 border-b border-brand-deep-green/8 pb-3 last:border-b-0 last:pb-0"
+                      >
+                        <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
+                          {field.label}
+                        </dt>
+                        <dd className="text-sm font-medium leading-6 text-brand-dark-green">{field.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -169,6 +242,22 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       facebookUrl: "",
       instagramUrl: "",
       tiktokUrl: "",
+      amenityDineIn: false,
+      amenityTakeaway: false,
+      amenityDelivery: false,
+      amenityCash: false,
+      amenityCard: false,
+      amenityEsewa: false,
+      amenityKhalti: false,
+      amenityQr: false,
+      amenityParking: false,
+      amenityWifi: false,
+      amenityAirConditioning: false,
+      amenityOutdoorSeating: false,
+      amenityServiceCharge: false,
+      amenityVegetarian: false,
+      amenityVegan: false,
+      amenityHalal: false,
       relationshipRole: "owner",
       authorizationConfirmed: shell === "public",
     },
@@ -177,6 +266,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const [createdListing, setCreatedListing] = useState<{
     businessName: string
     municipality: string
+    reviewSections: SuccessReviewSection[]
   } | null>(null)
   const [isSignInOpen, setIsSignInOpen] = useState(false)
   const [pendingSubmission, setPendingSubmission] = useState<AddBusinessFormValues | null>(null)
@@ -195,11 +285,16 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const watchedLongitude = form.watch("longitude")
   const selectedEstablishmentType = establishmentTypesQuery.data?.find((type) => type.id === watchedCategory)
   const provincesQuery = useProvinces()
+  const districtsQuery = useDistricts(
+    watchedProvinceId && /^\d+$/.test(watchedProvinceId) ? Number(watchedProvinceId) : null,
+  )
   const municipalitiesQuery = useMunicipalities(
     watchedDistrictId && /^\d+$/.test(watchedDistrictId) ? Number(watchedDistrictId) : null,
   )
   const selectedProvince =
     provincesQuery.data?.find((province) => String(province.id) === watchedProvinceId) ?? null
+  const selectedDistrict =
+    districtsQuery.data?.find((district) => String(district.id) === watchedDistrictId) ?? null
   const selectedMunicipality =
     municipalitiesQuery.data?.find((municipality) => String(municipality.id) === watchedMunicipalityId) ?? null
   const markerPosition =
@@ -237,15 +332,132 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       longitude: values.longitude ?? undefined,
       establishmentTypeId: values.primaryCategory,
       links: hasLinks ? links : undefined,
+      amenities: {
+        services: {
+          dine_in: values.amenityDineIn ?? false,
+          takeaway: values.amenityTakeaway ?? false,
+          delivery: values.amenityDelivery ?? false,
+        },
+        payment: {
+          cash: values.amenityCash ?? false,
+          card: values.amenityCard ?? false,
+          esewa: values.amenityEsewa ?? false,
+          khalti: values.amenityKhalti ?? false,
+          qr: values.amenityQr ?? false,
+        },
+        facilities: {
+          parking: values.amenityParking ?? false,
+          wifi: values.amenityWifi ?? false,
+          air_conditioning: values.amenityAirConditioning ?? false,
+          outdoor_seating: values.amenityOutdoorSeating ?? false,
+          service_charge: values.amenityServiceCharge ?? false,
+        },
+        dietary: {
+          vegetarian: values.amenityVegetarian ?? false,
+          vegan: values.amenityVegan ?? false,
+          halal: values.amenityHalal ?? false,
+        },
+      },
     }
 
     await createBusiness.mutateAsync(payload)
 
+    const reviewSections: SuccessReviewSection[] = [
+      {
+        title: "Business basics",
+        fields: [
+          { label: "Business name", value: values.businessName.trim() },
+          { label: "Primary category", value: selectedEstablishmentType?.label ?? "Selected category" },
+          { label: "Short note", value: displayValue(values.shortNote) },
+        ],
+      },
+      {
+        title: "Location",
+        fields: [
+          { label: "Province / State", value: selectedProvince?.name ?? "Selected province" },
+          { label: "District", value: selectedDistrict?.name ?? "Selected district" },
+          { label: "City / Municipality", value: selectedMunicipality?.name ?? "Selected municipality" },
+          { label: "Ward No.", value: values.wardNo.trim() },
+          { label: "Area / Neighbourhood", value: displayValue(values.area) },
+          { label: "Landmark", value: displayValue(values.landmark) },
+          { label: "Address Line 1", value: values.addressLine1.trim() },
+          { label: "Address Line 2", value: displayValue(values.addressLine2) },
+        ],
+      },
+      {
+        title: "Contact",
+        fields: [
+          { label: "Primary phone", value: values.phone.trim() },
+          { label: "Public email", value: values.publicEmail.trim() },
+          { label: "Website", value: displayValue(links.website) },
+          { label: "Facebook URL", value: displayValue(links.facebook) },
+          { label: "Instagram URL", value: displayValue(links.instagram) },
+          { label: "TikTok URL", value: displayValue(links.tiktok) },
+        ],
+      },
+    ]
+
+    const selectedServices = serviceAmenityFields
+      .filter((field) => values[field.name as keyof AddBusinessFormValues] === true)
+      .map((field) => field.label)
+      .join(", ")
+
+    const selectedPayment = paymentAmenityFields
+      .filter((field) => values[field.name as keyof AddBusinessFormValues] === true)
+      .map((field) => field.label)
+      .join(", ")
+
+    const selectedFacilities = facilityAmenityFields
+      .filter((field) => values[field.name as keyof AddBusinessFormValues] === true)
+      .map((field) => field.label)
+      .join(", ")
+
+    const selectedDietary = dietaryAmenityFields
+      .filter((field) => values[field.name as keyof AddBusinessFormValues] === true)
+      .map((field) => field.label)
+      .join(", ")
+
+    if (selectedServices || selectedPayment || selectedFacilities || selectedDietary) {
+      reviewSections.push({
+        title: "Amenities",
+        fields: [
+          ...(selectedServices ? [{ label: "Services", value: selectedServices }] : []),
+          ...(selectedPayment ? [{ label: "Payment methods", value: selectedPayment }] : []),
+          ...(selectedFacilities ? [{ label: "Facilities", value: selectedFacilities }] : []),
+          ...(selectedDietary ? [{ label: "Dietary", value: selectedDietary }] : []),
+        ],
+      })
+    }
+
+    if (shell === "dashboard") {
+      reviewSections.push({
+        title: "Relationship",
+        fields: [
+          {
+            label: "Your role",
+            value: BUSINESS_ROLE_OPTIONS.find((role) => role.value === values.relationshipRole)?.label ?? values.relationshipRole,
+          },
+          {
+            label: "Authorization confirmed",
+            value: values.authorizationConfirmed ? "Yes" : "No",
+          },
+        ],
+      })
+    }
+
     setCreatedListing({
       businessName: values.businessName.trim(),
       municipality: selectedMunicipality?.name ?? "Selected municipality",
+      reviewSections,
     })
-  }, [createBusiness, selectedMunicipality?.name])
+  }, [
+    createBusiness,
+    selectedDistrict?.name,
+    selectedEstablishmentType?.label,
+    selectedMunicipality?.name,
+    selectedProvince?.name,
+    shell,
+  ])
 
   useEffect(() => {
     if (!isAuthenticated || !pendingSubmission) return
@@ -280,6 +492,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       <AddBusinessSuccess
         businessName={createdListing.businessName}
         businessMunicipality={createdListing.municipality}
+        reviewSections={createdListing.reviewSections}
         shell={shell}
       />
     )
@@ -398,13 +611,11 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                 <MithoCardTitle className="mt-2 text-2xl">Place the business where people expect to find it.</MithoCardTitle>
               </MithoCardHeader>
               <MithoCardContent className="grid gap-5">
-                <div className="grid gap-5 md:grid-cols-2">
-                  <BusinessLocationFields
-                    form={form}
-                    inputClassName={inputClassName}
-                    selectTriggerClassName={selectTriggerClassName}
-                  />
-                </div>
+                <BusinessLocationFields
+                  form={form}
+                  inputClassName={inputClassName}
+                  selectTriggerClassName={selectTriggerClassName}
+                />
 
                 <div className="space-y-3">
                   <div className="space-y-1">
@@ -523,6 +734,126 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     </FormItem>
                   )}
                 />
+              </MithoCardContent>
+            </MithoCard>
+
+            <MithoCard surface="customer" interactive="none" className={sectionCardClass}>
+              <MithoCardHeader>
+                <p className="type-eyebrow text-brand-deep-green/68">Amenities</p>
+                <MithoCardTitle className="mt-2 text-2xl">Select what services and facilities are available.</MithoCardTitle>
+              </MithoCardHeader>
+              <MithoCardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                {/* Services */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-brand-deep-green/55">Services</p>
+                  <div className="grid gap-3">
+                    {serviceAmenityFields.map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => field.onChange(checked === true)}
+                                className="border-brand-deep-green/20"
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                              {label}
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Payment Methods */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-brand-deep-green/55">Payment methods</p>
+                  <div className="grid gap-3">
+                    {paymentAmenityFields.map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => field.onChange(checked === true)}
+                                className="border-brand-deep-green/20"
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                              {label}
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Facilities */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-brand-deep-green/55">Facilities</p>
+                  <div className="grid gap-3">
+                    {facilityAmenityFields.map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => field.onChange(checked === true)}
+                                className="border-brand-deep-green/20"
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                              {label}
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dietary Restrictions */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-brand-deep-green/55">Dietary restrictions</p>
+                  <div className="grid gap-3">
+                    {dietaryAmenityFields.map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value === true}
+                                onCheckedChange={(checked) => field.onChange(checked === true)}
+                                className="border-brand-deep-green/20"
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                              {label}
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
               </MithoCardContent>
             </MithoCard>
 
