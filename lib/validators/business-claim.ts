@@ -39,3 +39,4 @@ export const businessClaimSchema = z.object({
 })
 
 export type BusinessClaimFormValues = z.infer<typeof businessClaimSchema>
+export type BusinessClaimFormInputValues = z.input<typeof businessClaimSchema>
