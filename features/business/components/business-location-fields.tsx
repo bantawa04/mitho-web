@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { useDistricts, useMunicipalities, useProvinces } from "@/hooks/use-nepal-admin"
 import type { Municipality } from "@/types/nepal-admin"
@@ -20,8 +20,8 @@ export function BusinessLocationFields({ form, inputClassName, selectTriggerClas
   const municipalityId = form.watch("municipalityId") as string
   const wardNo = form.watch("wardNo") as string
 
-  const provinceValue = provinceId ? Number(provinceId) : null
-  const districtValue = districtId ? Number(districtId) : null
+  const provinceValue = /^\d+$/.test(provinceId) ? Number(provinceId) : null
+  const districtValue = /^\d+$/.test(districtId) ? Number(districtId) : null
 
   const provincesQuery = useProvinces()
   const districtsQuery = useDistricts(provinceValue)
@@ -31,43 +31,6 @@ export function BusinessLocationFields({ form, inputClassName, selectTriggerClas
     () => municipalitiesQuery.data?.find((item) => String(item.id) === municipalityId) ?? null,
     [municipalitiesQuery.data, municipalityId],
   )
-
-  useEffect(() => {
-    const options = districtsQuery.data ?? []
-    if (!provinceId) {
-      if (districtId) form.setValue("districtId", "", { shouldValidate: true })
-      if (municipalityId) form.setValue("municipalityId", "", { shouldValidate: true })
-      if (wardNo) form.setValue("wardNo", "", { shouldValidate: true })
-      return
-    }
-
-    if (districtId && !options.some((item) => String(item.id) === districtId)) {
-      form.setValue("districtId", "", { shouldValidate: true })
-      form.setValue("municipalityId", "", { shouldValidate: true })
-      form.setValue("wardNo", "", { shouldValidate: true })
-    }
-  }, [districtId, districtsQuery.data, form, municipalityId, provinceId, wardNo])
-
-  useEffect(() => {
-    const options = municipalitiesQuery.data ?? []
-    if (!districtId) {
-      if (municipalityId) form.setValue("municipalityId", "", { shouldValidate: true })
-      if (wardNo) form.setValue("wardNo", "", { shouldValidate: true })
-      return
-    }
-
-    if (municipalityId && !options.some((item) => String(item.id) === municipalityId)) {
-      form.setValue("municipalityId", "", { shouldValidate: true })
-      form.setValue("wardNo", "", { shouldValidate: true })
-    }
-  }, [districtId, form, municipalitiesQuery.data, municipalityId, wardNo])
-
-  useEffect(() => {
-    if (!selectedMunicipality || !wardNo || !/^\d+$/.test(wardNo)) return
-    if (Number(wardNo) > selectedMunicipality.wards) {
-      form.setValue("wardNo", String(selectedMunicipality.wards), { shouldValidate: true })
-    }
-  }, [form, selectedMunicipality, wardNo])
 
   return (
     <div className="grid gap-4 md:grid-cols-2">

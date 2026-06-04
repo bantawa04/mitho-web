@@ -59,6 +59,11 @@ function readAmenityFlag(record: Record<string, unknown> | undefined, snakeKey: 
   return value === true
 }
 
+function readLocationId(primary: number | null | undefined, fallback: number | null | undefined) {
+  const value = primary ?? fallback
+  return typeof value === "number" && Number.isFinite(value) ? String(value) : ""
+}
+
 export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPageProps) {
   const router = useRouter()
 
@@ -146,10 +151,10 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         phone: existing.phone,
         phoneSecondary: existing.phoneSecondary ?? "",
         email: existing.email ?? "",
-        provinceId: String(existing.provinceId),
-        districtId: String(existing.districtId),
-        municipalityId: String(existing.municipalityId),
-        wardNo: String(existing.wardNo),
+        provinceId: readLocationId(existing.provinceId, existing.province?.id),
+        districtId: readLocationId(existing.districtId, existing.district?.id),
+        municipalityId: readLocationId(existing.municipalityId, existing.municipality?.id),
+        wardNo: typeof existing.wardNo === "number" && Number.isFinite(existing.wardNo) ? String(existing.wardNo) : "",
         area: existing.area ?? "",
         addressLine1: existing.addressLine1,
         addressLine2: existing.addressLine2 ?? "",
@@ -182,7 +187,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       if (existing.photos?.length) setPhotosMedia(existing.photos)
     }
   }, [existing, form])
-
   function handleLogoSelect(media: Media) {
     setLogoMedia(media)
     form.setValue("logoId", media.id)
@@ -339,238 +343,256 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       </section>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6 items-start">
+          {/* Left Column: Form Content */}
+          <div className="space-y-6">
+            {/* Core details */}
+            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-brand-dark-green">Core details</h2>
+                  <p className="text-sm text-muted-foreground">The public business identity and listing categorization.</p>
+                </div>
+              </div>
+              <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 grid-cols-1 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Business name</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="e.g. The Himalayan Kitchen" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <textarea
+                          {...field}
+                          rows={4}
+                          placeholder="A short description of the business for the public listing…"
+                          className="w-full rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-3 text-sm leading-6 text-brand-dark-green shadow-none outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="establishmentTypeId"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Establishment type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={isLoadingTypes}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                            <SelectValue placeholder={isLoadingTypes ? "Loading…" : "Choose a type"} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingTypes ? (
+                            <div className="px-2 py-3">
+                              <Skeleton className="h-5 w-full" />
+                            </div>
+                          ) : (
+                            establishmentTypes?.map((type) => (
+                              <SelectItem key={type.id} value={type.id}>
+                                {type.label}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </section>
 
-          {/* Core details */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                <Building2 className="h-5 w-5" />
+            {/* Location */}
+            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-brand-dark-green">Location</h2>
+                  <p className="text-sm text-muted-foreground">Where the business is physically located.</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-semibold text-brand-dark-green">Core details</h2>
-                <p className="text-sm text-muted-foreground">The public business identity and listing review status.</p>
+              <div className="mt-6 border-t border-brand-deep-green/10 pt-6">
+                <BusinessLocationFields
+                  form={form}
+                  inputClassName="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                  selectTriggerClassName="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none"
+                />
               </div>
-            </div>
-            <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Business name</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. The Himalayan Kitchen" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <textarea
-                        {...field}
-                        rows={4}
-                        placeholder="A short description of the business for the public listing…"
-                        className="w-full rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-3 text-sm leading-6 text-brand-dark-green shadow-none outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="listingStatus"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      key={`business-listing-status-${existing?.id ?? "create"}-${field.value ?? "empty"}`}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
-                          <SelectValue placeholder="Choose a listing status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="pending_review">Pending review</SelectItem>
-                        <SelectItem value="published">Published</SelectItem>
-                        <SelectItem value="suspended">Suspended</SelectItem>
-                        <SelectItem value="rejected">Rejected</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="establishmentTypeId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Establishment type</FormLabel>
-                    <Select
-                      key={`est-type-${existing?.id ?? "create"}-${isLoadingTypes ? "loading" : "ready"}-${field.value ?? "empty"}`}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={isLoadingTypes}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
-                          <SelectValue placeholder={isLoadingTypes ? "Loading…" : "Choose a type"} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {isLoadingTypes ? (
-                          <div className="px-2 py-3">
-                            <Skeleton className="h-5 w-full" />
-                          </div>
-                        ) : (
-                          establishmentTypes?.map((type) => (
-                            <SelectItem key={type.id} value={type.id}>
-                              {type.label}
-                            </SelectItem>
-                          ))
+            </section>
+
+            {/* Amenities */}
+            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                  <UtensilsCrossed className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-brand-dark-green">Amenities</h2>
+                  <p className="text-sm text-muted-foreground">Services, payment options, facilities, and dietary accommodations.</p>
+                </div>
+              </div>
+              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
+                {/* Services */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-brand-dark-green">Services</p>
+                  <div className="space-y-2">
+                    {serviceAmenityFields.map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-2 space-y-0">
+                            <FormControl>
+                              <Checkbox checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true)} />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                              {label}
+                            </FormLabel>
+                          </FormItem>
                         )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </section>
-
-          {/* Media */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                <Image className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-brand-dark-green">Media</h2>
-                <p className="text-sm text-muted-foreground">Logo, banner, and gallery photos for the listing.</p>
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-6 border-t border-brand-deep-green/10 pt-6">
-
-              {/* Logo */}
-              <div className="flex items-start gap-4">
-                <div className="flex-1 space-y-1.5">
-                  <p className="text-sm font-medium text-brand-dark-green">Logo</p>
-                  <p className="text-xs text-muted-foreground">Square image — shown as the business avatar in listings.</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  {logoMedia ? (
-                    <div className="relative">
-                      <img
-                        src={logoMedia.publicUrl}
-                        alt={logoMedia.altText ?? logoMedia.filename}
-                        className="h-16 w-16 rounded-xl border border-brand-deep-green/10 object-cover"
                       />
-                      <button
-                        type="button"
-                        onClick={() => { setLogoMedia(null); form.setValue("logoId", "") }}
-                        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ) : existingLogoId ? (
-                    <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30 text-xs text-muted-foreground">
-                      Set
-                    </div>
-                  ) : null}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"
-                    onClick={() => setLogoPickerOpen(true)}
-                  >
-                    {existingLogoId || logoMedia ? "Change" : "Choose logo"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Banner */}
-              <div className="flex items-start gap-4 border-t border-brand-deep-green/10 pt-6">
-                <div className="flex-1 space-y-1.5">
-                  <p className="text-sm font-medium text-brand-dark-green">Banner</p>
-                  <p className="text-xs text-muted-foreground">Wide cover image — shown at the top of the business detail page.</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  {bannerMedia ? (
-                    <div className="relative">
-                      <img
-                        src={bannerMedia.publicUrl}
-                        alt={bannerMedia.altText ?? bannerMedia.filename}
-                        className="h-16 w-28 rounded-xl border border-brand-deep-green/10 object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => { setBannerMedia(null); form.setValue("bannerId", "") }}
-                        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ) : existingBannerId ? (
-                    <div className="flex h-16 w-28 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30 text-xs text-muted-foreground">
-                      Set
-                    </div>
-                  ) : null}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"
-                    onClick={() => setBannerPickerOpen(true)}
-                  >
-                    {existingBannerId || bannerMedia ? "Change" : "Choose banner"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Photos */}
-              <div className="border-t border-brand-deep-green/10 pt-6 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-medium text-brand-dark-green">Photos</p>
-                    <p className="text-xs text-muted-foreground">Gallery images shown on the business page.</p>
+                    ))}
                   </div>
+                </div>
+
+                {/* Payment */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-brand-dark-green">Payment methods</p>
+                  <div className="space-y-2">
+                    {paymentAmenityFields.map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-2 space-y-0">
+                            <FormControl>
+                              <Checkbox checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true)} />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                              {label}
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Facilities */}
+                <div className="space-y-3 border-t border-brand-deep-green/10 pt-4 sm:border-t-0 sm:pt-0">
+                  <p className="text-sm font-semibold text-brand-dark-green">Facilities</p>
+                  <div className="space-y-2">
+                    {facilityAmenityFields.map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-2 space-y-0">
+                            <FormControl>
+                              <Checkbox checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true)} />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                              {label}
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dietary */}
+                <div className="space-y-3 border-t border-brand-deep-green/10 pt-4 sm:border-t-0 sm:pt-0">
+                  <p className="text-sm font-semibold text-brand-dark-green">Dietary restrictions</p>
+                  <div className="space-y-2">
+                    {dietaryAmenityFields.map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={name}
+                        render={({ field }) => (
+                          <FormItem className="flex items-center gap-2 space-y-0">
+                            <FormControl>
+                              <Checkbox checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true)} />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                              {label}
+                            </FormLabel>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Photos gallery */}
+            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                  <Image className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-brand-dark-green">Photos gallery</h2>
+                  <p className="text-sm text-muted-foreground">Gallery images shown on the business details page.</p>
+                </div>
+              </div>
+              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Images</p>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"
+                    className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 cursor-pointer"
                     onClick={() => setPhotosPickerOpen(true)}
                   >
                     Add photo
                   </Button>
                 </div>
                 {photosMedia.length > 0 ? (
-                  <div className="grid grid-cols-4 gap-3 sm:grid-cols-6">
+                  <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
                     {photosMedia.map((photo) => (
-                      <div key={photo.id} className="relative">
+                      <div key={photo.id} className="relative aspect-square">
                         <img
                           src={photo.publicUrl}
                           alt={photo.altText ?? photo.filename}
-                          className="aspect-square w-full rounded-xl border border-brand-deep-green/10 object-cover"
+                          className="h-full w-full rounded-xl border border-brand-deep-green/10 object-cover"
                         />
                         <button
                           type="button"
                           onClick={() => removePhoto(photo.id)}
-                          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green"
+                          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green cursor-pointer"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -585,298 +607,275 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   </div>
                 )}
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
 
-          {/* Contact */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                <Phone className="h-5 w-5" />
+          {/* Right Column: Sticky Sidebar Controls */}
+          <div className="space-y-6 xl:sticky xl:top-6">
+            {/* Publishing widget */}
+            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
+              <h3 className="text-lg font-semibold text-brand-dark-green">Publishing</h3>
+              <FormField
+                control={form.control}
+                name="listingStatus"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                          <SelectValue placeholder="Choose a status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="pending_review">Pending review</SelectItem>
+                        <SelectItem value="published">Published</SelectItem>
+                        <SelectItem value="suspended">Suspended</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex flex-col gap-2 pt-2 border-t border-brand-deep-green/10">
+                <Button
+                  type="submit"
+                  className="w-full h-11 rounded-xl bg-brand-dark-green text-white hover:bg-brand-dark-green/92 font-medium cursor-pointer"
+                  disabled={isPending}
+                >
+                  {isPending ? "Saving changes…" : mode === "create" ? "Create business" : "Save changes"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-11 rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 font-medium cursor-pointer"
+                  onClick={() => router.push(mode === "edit" ? `/admin/businesses/${businessId}` : "/admin/businesses")}
+                  disabled={isPending}
+                >
+                  Cancel
+                </Button>
               </div>
-              <div>
-                <h2 className="text-xl font-semibold text-brand-dark-green">Contact</h2>
-                <p className="text-sm text-muted-foreground">Phone, email, and web presence for the listing.</p>
-              </div>
-            </div>
-            <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="+977 9800000000" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phoneSecondary"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Secondary phone</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="+977 9800000001" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <span className="flex items-center gap-1.5">
-                        <Mail className="h-3.5 w-3.5" /> Email
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} type="email" placeholder="hello@business.com" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="websiteUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      <span className="flex items-center gap-1.5">
-                        <Globe className="h-3.5 w-3.5" /> Website
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} type="url" placeholder="https://example.com" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="facebookUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Facebook</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="url" placeholder="https://facebook.com/..." className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="instagramUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Instagram</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="url" placeholder="https://instagram.com/..." className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="twitterUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Twitter / X</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="url" placeholder="https://twitter.com/..." className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="youtubeUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>YouTube</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="url" placeholder="https://youtube.com/..." className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="tiktokUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>TikTok</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="url" placeholder="https://tiktok.com/..." className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </section>
+            </section>
 
-          {/* Location */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-brand-dark-green">Location</h2>
-                <p className="text-sm text-muted-foreground">Where the business is physically located.</p>
-              </div>
-            </div>
-            <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 md:grid-cols-2">
-              <BusinessLocationFields
-                form={form}
-                inputClassName="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
-                selectTriggerClassName="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none"
-              />
-            </div>
-          </section>
+            {/* Media uploads */}
+            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
+              <h3 className="text-lg font-semibold text-brand-dark-green">Primary media</h3>
 
-          {/* Amenities */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                <UtensilsCrossed className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-brand-dark-green">Amenities</h2>
-                <p className="text-sm text-muted-foreground">Services, payment options, facilities, and dietary accommodations.</p>
-              </div>
-            </div>
-            <div className="mt-6 space-y-6 border-t border-brand-deep-green/10 pt-6">
-
-              {/* Services */}
-              <div>
-                <p className="mb-3 text-sm font-medium text-brand-dark-green">Services</p>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {serviceAmenityFields.map(({ name, label }) => (
-                    <FormField
-                      key={name}
-                      control={form.control}
-                      name={name}
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true)} />
-                          </FormControl>
-                          <FormLabel className="font-normal cursor-pointer">
-                            {label}
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
+              {/* Logo */}
+              <div className="space-y-2">
+                <FormLabel>Logo (Avatar)</FormLabel>
+                <div className="flex items-center flex-col gap-3">
+                  {logoMedia ? (
+                    <div className="relative shrink-0">
+                      <img
+                        src={logoMedia.publicUrl}
+                        alt="Logo"
+                        className="h-14 w-14 rounded-xl border border-brand-deep-green/10 object-cover bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => { setLogoMedia(null); form.setValue("logoId", "") }}
+                        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green cursor-pointer"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : existingLogoId ? (
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30 text-xs text-muted-foreground shrink-0">
+                      Set
+                    </div>
+                  ) : (
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/10 text-brand-deep-green/40 shrink-0">
+                      <Building2 className="h-5 w-5" />
+                    </div>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 text-xs h-9 cursor-pointer"
+                    onClick={() => setLogoPickerOpen(true)}
+                  >
+                    {existingLogoId || logoMedia ? "Change logo" : "Choose logo"}
+                  </Button>
                 </div>
               </div>
 
-              {/* Payment */}
-              <div className="border-t border-brand-deep-green/10 pt-5">
-                <p className="mb-3 text-sm font-medium text-brand-dark-green">Payment</p>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {paymentAmenityFields.map(({ name, label }) => (
-                    <FormField
-                      key={name}
-                      control={form.control}
-                      name={name}
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true)} />
-                          </FormControl>
-                          <FormLabel className="font-normal cursor-pointer">
-                            {label}
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
+              {/* Banner */}
+              <div className="space-y-2 border-t border-brand-deep-green/10 pt-4">
+                <FormLabel>Cover Banner</FormLabel>
+                <div className="space-y-3">
+                  {bannerMedia ? (
+                    <div className="relative w-full h-24 overflow-hidden rounded-xl border border-brand-deep-green/10">
+                      <img
+                        src={bannerMedia.publicUrl}
+                        alt="Banner"
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => { setBannerMedia(null); form.setValue("bannerId", "") }}
+                        className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green cursor-pointer"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : existingBannerId ? (
+                    <div className="flex w-full h-20 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30 text-xs text-muted-foreground">
+                      Cover configured
+                    </div>
+                  ) : (
+                    <div className="flex w-full h-20 items-center justify-center rounded-xl border border-dashed border-brand-deep-green/15 bg-brand-soft-beige/5 text-xs text-muted-foreground">
+                      No cover photo chosen
+                    </div>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 text-xs h-9 cursor-pointer"
+                    onClick={() => setBannerPickerOpen(true)}
+                  >
+                    {existingBannerId || bannerMedia ? "Change banner" : "Choose banner"}
+                  </Button>
                 </div>
               </div>
+            </section>
 
-              {/* Facilities */}
-              <div className="border-t border-brand-deep-green/10 pt-5">
-                <p className="mb-3 text-sm font-medium text-brand-dark-green">Facilities</p>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {facilityAmenityFields.map(({ name, label }) => (
-                    <FormField
-                      key={name}
-                      control={form.control}
-                      name={name}
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true)} />
-                          </FormControl>
-                          <FormLabel className="font-normal cursor-pointer">
-                            {label}
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                </div>
+            {/* Contacts & Links */}
+            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
+              <h3 className="text-lg font-semibold text-brand-dark-green">Contact & Links</h3>
+
+              {/* Basic Contacts */}
+              <div className="space-y-3">
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="+977 9800000000" className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phoneSecondary"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Secondary phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="+977 9800000001" className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email address</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="email" placeholder="hello@business.com" className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              {/* Dietary */}
-              <div className="border-t border-brand-deep-green/10 pt-5">
-                <p className="mb-3 text-sm font-medium text-brand-dark-green">Dietary</p>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {dietaryAmenityFields.map(({ name, label }) => (
-                    <FormField
-                      key={name}
-                      control={form.control}
-                      name={name}
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true)} />
-                          </FormControl>
-                          <FormLabel className="font-normal cursor-pointer">
-                            {label}
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                </div>
+              {/* Web presence */}
+              <div className="space-y-3 border-t border-brand-deep-green/10 pt-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-deep-green/55">Web presence</p>
+                <FormField
+                  control={form.control}
+                  name="websiteUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Website URL</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="url" placeholder="https://example.com" className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="facebookUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Facebook URL</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="url" placeholder="https://facebook.com/..." className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="instagramUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Instagram URL</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="url" placeholder="https://instagram.com/..." className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="twitterUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Twitter URL</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="url" placeholder="https://twitter.com/..." className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="youtubeUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">YouTube URL</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="url" placeholder="https://youtube.com/..." className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="tiktokUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">TikTok URL</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="url" placeholder="https://tiktok.com/@..." className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            </div>
-          </section>
-
-          {/* Footer actions */}
-          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"
-              onClick={() => router.push("/admin/businesses")}
-              disabled={isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="rounded-xl bg-brand-dark-green text-white hover:bg-brand-dark-green/92"
-              disabled={isPending}
-            >
-              {isPending ? "Saving…" : mode === "create" ? "Create business" : "Save changes"}
-            </Button>
+            </section>
           </div>
         </form>
       </Form>

@@ -12,7 +12,7 @@ import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-di
 import { useCreateBusiness } from "@/hooks/use-businesses"
 import { useEstablishmentTypes } from "@/hooks/use-establishment-types"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
-import { useMunicipalities, useProvinces } from "@/hooks/use-nepal-admin"
+import { useDistricts, useMunicipalities, useProvinces } from "@/hooks/use-nepal-admin"
 import { addBusinessSchema, BUSINESS_ROLE_OPTIONS, type AddBusinessFormValues } from "@/lib/validators/business"
 import { cn } from "@/lib/utils"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
@@ -53,13 +53,30 @@ function getApiErrorMessage(error: unknown) {
   return "Could not submit this business right now."
 }
 
+interface SuccessReviewField {
+  label: string
+  value: string
+}
+
+interface SuccessReviewSection {
+  title: string
+  fields: SuccessReviewField[]
+}
+
+function displayValue(value: string | undefined) {
+  const trimmed = value?.trim()
+  return trimmed && trimmed.length > 0 ? trimmed : "Not provided"
+}
+
 function AddBusinessSuccess({
   businessName,
   businessMunicipality,
+  reviewSections,
   shell,
 }: {
   businessName: string
   businessMunicipality: string
+  reviewSections: SuccessReviewSection[]
   shell: AddBusinessShell
 }) {
   return (
@@ -89,6 +106,34 @@ function AddBusinessSuccess({
             <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Municipality</p>
               <p className="mt-2 text-lg font-semibold text-brand-dark-green">{businessMunicipality}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <p className="type-eyebrow text-brand-deep-green/68">Submitted details</p>
+              <h2 className="mt-2 text-2xl font-semibold text-brand-dark-green">Review everything that was sent.</h2>
+            </div>
+
+            <div className="grid gap-4 xl:grid-cols-2">
+              {reviewSections.map((section) => (
+                <div key={section.title} className="rounded-[1.4rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">{section.title}</p>
+                  <dl className="mt-4 space-y-3">
+                    {section.fields.map((field) => (
+                      <div
+                        key={`${section.title}-${field.label}`}
+                        className="flex flex-col gap-1 border-b border-brand-deep-green/8 pb-3 last:border-b-0 last:pb-0"
+                      >
+                        <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
+                          {field.label}
+                        </dt>
+                        <dd className="text-sm font-medium leading-6 text-brand-dark-green">{field.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -177,6 +222,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const [createdListing, setCreatedListing] = useState<{
     businessName: string
     municipality: string
+    reviewSections: SuccessReviewSection[]
   } | null>(null)
   const [isSignInOpen, setIsSignInOpen] = useState(false)
   const [pendingSubmission, setPendingSubmission] = useState<AddBusinessFormValues | null>(null)
@@ -195,11 +241,16 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const watchedLongitude = form.watch("longitude")
   const selectedEstablishmentType = establishmentTypesQuery.data?.find((type) => type.id === watchedCategory)
   const provincesQuery = useProvinces()
+  const districtsQuery = useDistricts(
+    watchedProvinceId && /^\d+$/.test(watchedProvinceId) ? Number(watchedProvinceId) : null,
+  )
   const municipalitiesQuery = useMunicipalities(
     watchedDistrictId && /^\d+$/.test(watchedDistrictId) ? Number(watchedDistrictId) : null,
   )
   const selectedProvince =
     provincesQuery.data?.find((province) => String(province.id) === watchedProvinceId) ?? null
+  const selectedDistrict =
+    districtsQuery.data?.find((district) => String(district.id) === watchedDistrictId) ?? null
   const selectedMunicipality =
     municipalitiesQuery.data?.find((municipality) => String(municipality.id) === watchedMunicipalityId) ?? null
   const markerPosition =
@@ -241,11 +292,70 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
 
     await createBusiness.mutateAsync(payload)
 
+    const reviewSections: SuccessReviewSection[] = [
+      {
+        title: "Business basics",
+        fields: [
+          { label: "Business name", value: values.businessName.trim() },
+          { label: "Primary category", value: selectedEstablishmentType?.label ?? "Selected category" },
+          { label: "Short note", value: displayValue(values.shortNote) },
+        ],
+      },
+      {
+        title: "Location",
+        fields: [
+          { label: "Province / State", value: selectedProvince?.name ?? "Selected province" },
+          { label: "District", value: selectedDistrict?.name ?? "Selected district" },
+          { label: "City / Municipality", value: selectedMunicipality?.name ?? "Selected municipality" },
+          { label: "Ward No.", value: values.wardNo.trim() },
+          { label: "Area / Neighbourhood", value: displayValue(values.area) },
+          { label: "Landmark", value: displayValue(values.landmark) },
+          { label: "Address Line 1", value: values.addressLine1.trim() },
+          { label: "Address Line 2", value: displayValue(values.addressLine2) },
+        ],
+      },
+      {
+        title: "Contact",
+        fields: [
+          { label: "Primary phone", value: values.phone.trim() },
+          { label: "Public email", value: values.publicEmail.trim() },
+          { label: "Website", value: displayValue(links.website) },
+          { label: "Facebook URL", value: displayValue(links.facebook) },
+          { label: "Instagram URL", value: displayValue(links.instagram) },
+          { label: "TikTok URL", value: displayValue(links.tiktok) },
+        ],
+      },
+    ]
+
+    if (shell === "dashboard") {
+      reviewSections.push({
+        title: "Relationship",
+        fields: [
+          {
+            label: "Your role",
+            value: BUSINESS_ROLE_OPTIONS.find((role) => role.value === values.relationshipRole)?.label ?? values.relationshipRole,
+          },
+          {
+            label: "Authorization confirmed",
+            value: values.authorizationConfirmed ? "Yes" : "No",
+          },
+        ],
+      })
+    }
+
     setCreatedListing({
       businessName: values.businessName.trim(),
       municipality: selectedMunicipality?.name ?? "Selected municipality",
+      reviewSections,
     })
-  }, [createBusiness, selectedMunicipality?.name])
+  }, [
+    createBusiness,
+    selectedDistrict?.name,
+    selectedEstablishmentType?.label,
+    selectedMunicipality?.name,
+    selectedProvince?.name,
+    shell,
+  ])
 
   useEffect(() => {
     if (!isAuthenticated || !pendingSubmission) return
@@ -280,6 +390,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       <AddBusinessSuccess
         businessName={createdListing.businessName}
         businessMunicipality={createdListing.municipality}
+        reviewSections={createdListing.reviewSections}
         shell={shell}
       />
     )
