@@ -10,6 +10,7 @@ import { Building2, ChevronRight, Globe, Image, Mail, MapPin, Phone, UtensilsCro
 import { useBusiness, useCreateBusiness, useUpdateBusiness } from "@/hooks/use-businesses"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
 import { useMunicipalities } from "@/hooks/use-nepal-admin"
+import { BusinessCuisineField } from "@/features/business/components/business-cuisine-field"
 import { BusinessLocationFields } from "@/features/business/components/business-location-fields"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
 import { businessSchema, type BusinessFormValues } from "@/lib/validators/admin"
@@ -51,6 +52,7 @@ const dietaryAmenityFields = [
   { name: "amenityVegetarian", label: "Vegetarian" },
   { name: "amenityVegan", label: "Vegan" },
   { name: "amenityHalal", label: "Halal" },
+  { name: "amenityNonVeg", label: "Non Veg" },
 ] as const
 
 function readAmenityFlag(record: Record<string, unknown> | undefined, snakeKey: string, camelKey: string) {
@@ -103,6 +105,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       description: "",
       listingStatus: "published",
       establishmentTypeId: "",
+      cuisineIds: [],
       logoId: "",
       bannerId: "",
       photos: [],
@@ -138,6 +141,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       amenityVegetarian: false,
       amenityVegan: false,
       amenityHalal: false,
+      amenityNonVeg: false,
     },
   })
 
@@ -154,6 +158,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         description: existing.description ?? "",
         listingStatus: existing.listingStatus,
         establishmentTypeId: existing.establishmentTypeId,
+        cuisineIds: existing.cuisines?.map((cuisine) => cuisine.id) ?? [],
         logoId: existing.logo?.id ?? "",
         bannerId: existing.banner?.id ?? "",
         photos: existing.photos?.map((p) => p.id) ?? [],
@@ -189,6 +194,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         amenityVegetarian: readAmenityFlag(dietary, "vegetarian", "vegetarian"),
         amenityVegan: readAmenityFlag(dietary, "vegan", "vegan"),
         amenityHalal: readAmenityFlag(dietary, "halal", "halal"),
+        amenityNonVeg: readAmenityFlag(dietary, "non_veg", "nonVeg"),
       }
       form.reset(resetValues)
       setFormRenderKey((current) => current + 1)
@@ -258,6 +264,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         vegetarian: values.amenityVegetarian ?? false,
         vegan: values.amenityVegan ?? false,
         halal: values.amenityHalal ?? false,
+        non_veg: values.amenityNonVeg ?? false,
       },
     }
 
@@ -266,6 +273,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       description: values.description || undefined,
       listingStatus: values.listingStatus,
       establishmentTypeId: values.establishmentTypeId || undefined,
+      cuisineIds: values.cuisineIds,
       logoId: values.logoId,
       bannerId: values.bannerId,
       photos: values.photos ?? [],
@@ -420,7 +428,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   control={form.control}
                   name="establishmentTypeId"
                   render={({ field }) => (
-                    <FormItem className="md:col-span-2">
+                    <FormItem>
                       <FormLabel>Establishment type</FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -449,6 +457,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                       <FormMessage />
                     </FormItem>
                   )}
+                />
+                <BusinessCuisineField
+                  control={form.control}
+                  name="cuisineIds"
+                  chipsClassName="min-h-[44px] rounded-xl border-brand-deep-green/10 bg-white shadow-none"
                 />
               </div>
             </section>

@@ -1,4 +1,6 @@
 import type { Media } from "@/types/media"
+import type { Cuisine } from "@/types/cuisine"
+import type { EstablishmentType } from "@/types/establishment-types"
 import type { District, Municipality, Province } from "@/types/nepal-admin"
 
 export interface AmenityServices {
@@ -27,6 +29,7 @@ export interface AmenityDietary {
   vegetarian?: boolean
   vegan?: boolean
   halal?: boolean
+  non_veg?: boolean
 }
 
 export interface BusinessAmenities {
@@ -43,6 +46,13 @@ export interface BusinessLinks {
   twitter?: string
   youtube?: string
   tiktok?: string
+}
+
+export interface BusinessHour {
+  dayOfWeek: number
+  openTime?: string
+  closeTime?: string
+  isClosed: boolean
 }
 
 export type BusinessStatus = "pending" | "active" | "suspended" | "rejected"
@@ -64,9 +74,9 @@ export interface Business {
   districtId: number
   municipalityId: number
   wardNo: number
-  province: Pick<Province, "id" | "name">
-  district: Pick<District, "id" | "name">
-  municipality: Pick<Municipality, "id" | "name" | "wards"> & {
+  province: Pick<Province, "id" | "name" | "slug">
+  district: Pick<District, "id" | "name" | "slug">
+  municipality: Pick<Municipality, "id" | "name" | "slug" | "wards"> & {
     category: Municipality["category"]
   }
   area?: string
@@ -77,6 +87,8 @@ export interface Business {
   longitude?: number
   googleMapsUrl?: string
   establishmentTypeId?: string
+  establishmentType?: EstablishmentType
+  cuisines?: Cuisine[]
   signatureItems?: string[]
   mealTypes?: string[]
   menuUrl?: string
@@ -90,11 +102,16 @@ export interface Business {
   ownershipStatus: BusinessOwnershipStatus
   addedByType: string
   addedByUserId?: string
+  addedByUserName?: string
   ratingAvg?: number
   ratingCount: number
   isFeatured: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface PublicBusiness extends Business {
+  hours: BusinessHour[]
 }
 
 export interface CreateBusinessPayload {
@@ -118,6 +135,7 @@ export interface CreateBusinessPayload {
   longitude?: number
   googleMapsUrl?: string
   establishmentTypeId?: string
+  cuisineIds?: string[]
   signatureItems?: string[]
   mealTypes?: string[]
   menuUrl?: string

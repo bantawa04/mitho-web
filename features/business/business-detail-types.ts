@@ -55,7 +55,7 @@ export interface BusinessVisitInfo {
   phone?: string
   website?: string
   email?: string
-  coordinates: {
+  coordinates?: {
     lat: number
     lng: number
   }
@@ -65,10 +65,10 @@ export interface BusinessVisitInfo {
     time: string
   }>
   cuisines: string[]
-  amenities: Array<"wifi" | "parking" | "takeaway" | "cards" | "accessible" | "dineIn" | "alcohol" | "liveMusic" | "petFriendly" | "vegan">
-  mapDescription: string
+  amenities: Array<"wifi" | "parking" | "takeaway" | "cards" | "accessible" | "dineIn" | "alcohol" | "liveMusic" | "petFriendly" | "vegan" | "nonVeg">
+  mapDescription?: string
   mapLinkText?: string
-  goodToKnow: string
+  goodToKnow?: string
 }
 
 export interface BusinessPageData {

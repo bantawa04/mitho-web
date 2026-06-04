@@ -24,6 +24,7 @@ const amenityIcons: Record<string, React.ElementType> = {
   liveMusic: Music,
   petFriendly: Dog,
   vegan: Leaf,
+  nonVeg: UtensilsCrossed,
 }
 
 const amenityLabels: Record<string, string> = {
@@ -37,6 +38,7 @@ const amenityLabels: Record<string, string> = {
   liveMusic: "Live Music",
   petFriendly: "Pet Friendly",
   vegan: "Vegan Options",
+  nonVeg: "Non Veg",
 }
 
 interface AmenityBadgeProps {

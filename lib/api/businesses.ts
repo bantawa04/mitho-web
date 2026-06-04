@@ -4,6 +4,7 @@ import type {
   Business,
   CreateBusinessPayload,
   ListBusinessesParams,
+  PublicBusiness,
   UpdateBusinessPayload,
 } from "@/types/business"
 
@@ -29,6 +30,7 @@ function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
   if (p.longitude !== undefined) out.longitude = p.longitude
   if (p.googleMapsUrl !== undefined) out.google_maps_url = p.googleMapsUrl
   if (p.establishmentTypeId !== undefined) out.establishment_type_id = p.establishmentTypeId
+  if (p.cuisineIds !== undefined) out.cuisine_ids = p.cuisineIds
   if (p.logoId !== undefined) out.logo_id = p.logoId
   if (p.bannerId !== undefined) out.banner_id = p.bannerId
   if (p.photos !== undefined) out.photos = p.photos
@@ -51,6 +53,19 @@ export async function listBusinesses(params?: ListBusinessesParams): Promise<Bus
 
 export async function getBusiness(id: string): Promise<Business> {
   const { data } = await API.get<ISuccessResponse<Business>>(`/businesses/${id}`)
+  return data.data
+}
+
+export async function getPublicBusinessByPath(params: {
+  province: string
+  district: string
+  city: string
+  business: string
+}): Promise<PublicBusiness> {
+  const { province, district, city, business } = params
+  const { data } = await API.get<ISuccessResponse<PublicBusiness>>(
+    `/businesses/public/${province}/${district}/${city}/${business}`,
+  )
   return data.data
 }
 

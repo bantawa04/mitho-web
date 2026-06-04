@@ -207,6 +207,19 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
   )
 }
 
+function getPublicBusinessHref(business: {
+  slug: string
+  province?: { slug?: string }
+  district?: { slug?: string }
+  municipality?: { slug?: string }
+}) {
+  if (business.province?.slug && business.district?.slug && business.municipality?.slug) {
+    return `/${business.province.slug}/${business.district.slug}/${business.municipality.slug}/${business.slug}`
+  }
+
+  return `/business/${business.slug}`
+}
+
 export function AdminBusinessDetailPage({ id }: { id: string }) {
   const { data: business, isLoading, isError, error, refetch } = useBusiness(id)
   const { data: establishmentTypes } = useAdminEstablishmentTypes()
@@ -228,6 +241,12 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
   const establishmentTypeLabel = business.establishmentTypeId
     ? (establishmentTypeMap.get(business.establishmentTypeId) ?? "Restaurant")
     : "Restaurant"
+  const municipalityCategoryName = business.municipality.category?.name ?? ""
+  const cityLabel = municipalityCategoryName
+    ? `${business.municipality.name} (${municipalityCategoryName})`
+    : business.municipality.name
+  const addedByLabel = business.addedByUserName || business.addedByType
+  const publicBusinessHref = getPublicBusinessHref(business)
 
   const fullAddress = `${business.addressLine1}${business.addressLine2 ? `, ${business.addressLine2}` : ""}${
     business.landmark ? ` (Near ${business.landmark})` : ""
@@ -355,7 +374,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               </Link>
             </Button>
             <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 dark:text-brand-soft-beige dark:border-brand-deep-green/20">
-              <Link href={`/business/${business.slug}`} target="_blank">
+              <Link href={publicBusinessHref} target="_blank">
                 <Eye className="h-4 w-4" />
                 Open public page
               </Link>
@@ -391,24 +410,15 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 items={[
                   { label: "Establishment type", value: establishmentTypeLabel },
                   { label: "Neighborhood", value: business.area || "N/A" },
-                  { label: "City", value: `${business.municipality.name} (${business.municipality.category})` },
+                  { label: "City", value: cityLabel },
                   { label: "District", value: business.district.name },
                   { label: "Province", value: business.province.name },
                   { label: "Ward Number", value: `Ward ${business.wardNo}` },
                   { label: "Full address", value: fullAddress },
                   {
-                    label: "Google Maps",
-                    value: business.googleMapsUrl ? (
-                      <a
-                        href={business.googleMapsUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-brand-deep-green hover:text-brand-orange underline text-sm dark:text-brand-light-green"
-                      >
-                        Open in Google Maps <ExternalLink className="h-3 w-3" />
-                      </a>
-                    ) : (
-                      "Not provided"
+                    label: "Map Coordinates",
+                    value: (business.longitude && business.latitude) ?? (
+                      <span>Latitude: {business.latitude ?? "Not provided"}, Longitude: {business.longitude ?? "Not provided"}</span>
                     ),
                   },
                 ]}
@@ -527,6 +537,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                     { label: "Vegetarian Options", checked: !!business.amenities?.dietary?.vegetarian },
                     { label: "Vegan Friendly", checked: !!business.amenities?.dietary?.vegan },
                     { label: "Halal Food", checked: !!business.amenities?.dietary?.halal },
+                    { label: "Non Veg", checked: !!business.amenities?.dietary?.non_veg },
                   ]}
                 />
               </div>
@@ -559,9 +570,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               <DetailList
                 items={[
                   { label: "Business ID", value: <span className="font-mono text-xs select-all">{business.id}</span> },
-                  { label: "Slug handle", value: <span className="font-mono text-xs">{business.slug}</span> },
-                  { label: "Added by", value: business.addedByType },
-                  { label: "Creator user ID", value: business.addedByUserId ? <span className="font-mono text-xs select-all">{business.addedByUserId}</span> : "N/A" },
+                  { label: "Added by", value: addedByLabel },
                   { label: "Created at", value: <span className="inline-flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> {createdDate}</span> },
                   { label: "Last modified", value: <span className="inline-flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> {updatedDate}</span> },
                 ]}

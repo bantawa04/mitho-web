@@ -49,7 +49,7 @@ export function LoginPage() {
               </div>
 
               {googleClientId ? (
-                <div className="flex justify-center rounded-[1.25rem] border border-brand-deep-green/12 bg-white px-4 py-4 shadow-[0_8px_22px_rgba(10,70,53,0.05)]">
+                <div className="flex justify-center" >
                   <GoogleLogin
                     theme="outline"
                     size="large"
