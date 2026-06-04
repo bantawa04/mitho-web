@@ -9,7 +9,12 @@ import { useForm } from "react-hook-form"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { CLAIMABLE_BUSINESSES, getClaimableBusinessById, type ClaimableBusiness } from "@/features/business/data/business-claim-data"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
-import { claimRoleOptions, businessClaimSchema, type BusinessClaimFormValues } from "@/lib/validators/business-claim"
+import {
+  claimRoleOptions,
+  businessClaimSchema,
+  type BusinessClaimFormInputValues,
+  type BusinessClaimFormValues,
+} from "@/lib/validators/business-claim"
 import { Footer } from "@/features/home/components/footer"
 import { Header } from "@/features/home/components/header"
 import { cn } from "@/lib/utils"
@@ -170,7 +175,7 @@ export function BusinessClaimPage() {
   const [pendingSubmission, setPendingSubmission] = React.useState<BusinessClaimFormValues | null>(null)
   const [submittedBusiness, setSubmittedBusiness] = React.useState<ClaimableBusiness | null>(null)
 
-  const form = useForm<BusinessClaimFormValues>({
+  const form = useForm<BusinessClaimFormInputValues, unknown, BusinessClaimFormValues>({
     resolver: zodResolver(businessClaimSchema),
     defaultValues: {
       claimantName: "",
@@ -178,7 +183,7 @@ export function BusinessClaimPage() {
       businessPhone: "",
       businessEmail: "",
       panVatNumber: "",
-      verificationDocument: undefined,
+      verificationDocument: null,
       authorizationConfirmed: false,
     },
   })

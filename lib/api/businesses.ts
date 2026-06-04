@@ -4,6 +4,7 @@ import type {
   Business,
   CreateBusinessPayload,
   ListBusinessesParams,
+  PublicBusiness,
   UpdateBusinessPayload,
 } from "@/types/business"
 
@@ -52,6 +53,19 @@ export async function listBusinesses(params?: ListBusinessesParams): Promise<Bus
 
 export async function getBusiness(id: string): Promise<Business> {
   const { data } = await API.get<ISuccessResponse<Business>>(`/businesses/${id}`)
+  return data.data
+}
+
+export async function getPublicBusinessByPath(params: {
+  province: string
+  district: string
+  city: string
+  business: string
+}): Promise<PublicBusiness> {
+  const { province, district, city, business } = params
+  const { data } = await API.get<ISuccessResponse<PublicBusiness>>(
+    `/businesses/public/${province}/${district}/${city}/${business}`,
+  )
   return data.data
 }
 
