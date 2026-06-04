@@ -18,6 +18,7 @@ export const addBusinessSchema = z.object({
   primaryCategory: z
     .string()
     .min(1, "Choose a valid business category."),
+  cuisineIds: z.array(z.string().trim().min(1)).min(1, "Choose at least 1 cuisine.").max(3, "Choose up to 3 cuisines."),
   shortNote: z
     .string()
     .trim()
@@ -100,16 +101,20 @@ export const addBusinessSchema = z.object({
   // Amenities — payment
   amenityCash: z.boolean().optional(),
   amenityCard: z.boolean().optional(),
+  amenityEsewa: z.boolean().optional(),
+  amenityKhalti: z.boolean().optional(),
   amenityQr: z.boolean().optional(),
   // Amenities — facilities
   amenityParking: z.boolean().optional(),
   amenityWifi: z.boolean().optional(),
   amenityAirConditioning: z.boolean().optional(),
   amenityOutdoorSeating: z.boolean().optional(),
+  amenityServiceCharge: z.boolean().optional(),
   // Amenities — dietary
   amenityVegetarian: z.boolean().optional(),
   amenityVegan: z.boolean().optional(),
   amenityHalal: z.boolean().optional(),
+  amenityNonVeg: z.boolean().optional(),
   relationshipRole: z.enum(["owner", "manager", "authorized-team-member"], {
     message: "Choose your relationship to the business.",
   }),

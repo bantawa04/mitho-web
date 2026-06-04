@@ -7,6 +7,7 @@ export const businessSchema = z.object({
   description: z.string().trim().max(2000, "Description must be 2000 characters or fewer").optional(),
   listingStatus: z.enum(["pending_review", "published", "suspended", "rejected"]),
   establishmentTypeId: z.string().trim().optional(),
+  cuisineIds: z.array(z.string().trim().min(1)).max(3, "Choose up to 3 cuisines").default([]),
   logoId: z.string().optional(),
   bannerId: z.string().optional(),
   photos: z.array(z.string()).optional(),
@@ -47,6 +48,7 @@ export const businessSchema = z.object({
   amenityVegetarian: z.boolean().optional(),
   amenityVegan: z.boolean().optional(),
   amenityHalal: z.boolean().optional(),
+  amenityNonVeg: z.boolean().optional(),
 })
 
 export type BusinessFormValues = z.infer<typeof businessSchema>

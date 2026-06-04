@@ -1,4 +1,5 @@
 import type { Media } from "@/types/media"
+import type { Cuisine } from "@/types/cuisine"
 import type { District, Municipality, Province } from "@/types/nepal-admin"
 
 export interface AmenityServices {
@@ -27,6 +28,7 @@ export interface AmenityDietary {
   vegetarian?: boolean
   vegan?: boolean
   halal?: boolean
+  non_veg?: boolean
 }
 
 export interface BusinessAmenities {
@@ -77,6 +79,7 @@ export interface Business {
   longitude?: number
   googleMapsUrl?: string
   establishmentTypeId?: string
+  cuisines?: Cuisine[]
   signatureItems?: string[]
   mealTypes?: string[]
   menuUrl?: string
@@ -90,6 +93,7 @@ export interface Business {
   ownershipStatus: BusinessOwnershipStatus
   addedByType: string
   addedByUserId?: string
+  addedByUserName?: string
   ratingAvg?: number
   ratingCount: number
   isFeatured: boolean
@@ -118,6 +122,7 @@ export interface CreateBusinessPayload {
   longitude?: number
   googleMapsUrl?: string
   establishmentTypeId?: string
+  cuisineIds?: string[]
   signatureItems?: string[]
   mealTypes?: string[]
   menuUrl?: string

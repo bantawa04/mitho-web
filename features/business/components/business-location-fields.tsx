@@ -31,6 +31,14 @@ function isSelectedLocation<T extends { id: number }>(item: T | null | undefined
   return item ? String(item.id) === value : false
 }
 
+function SelectDisplay({ label, placeholder }: { label?: string; placeholder: string }) {
+  if (label) {
+    return <span data-slot="select-value">{label}</span>
+  }
+
+  return <SelectValue placeholder={placeholder} />
+}
+
 export function BusinessLocationFields({
   form,
   inputClassName,
@@ -100,9 +108,10 @@ export function BusinessLocationFields({
             >
               <FormControl>
                 <SelectTrigger className={selectTriggerClassName}>
-                  <SelectValue placeholder={provincesQuery.isLoading ? "Loading..." : "Choose a province"}>
-                    {selectedProvince?.name}
-                  </SelectValue>
+                  <SelectDisplay
+                    label={selectedProvince?.name}
+                    placeholder={provincesQuery.isLoading ? "Loading..." : "Choose a province"}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -135,9 +144,10 @@ export function BusinessLocationFields({
             >
               <FormControl>
                 <SelectTrigger className={selectTriggerClassName}>
-                  <SelectValue placeholder={!provinceId ? "Choose a province first" : districtsQuery.isLoading ? "Loading..." : "Choose a district"}>
-                    {selectedDistrict?.name}
-                  </SelectValue>
+                  <SelectDisplay
+                    label={selectedDistrict?.name}
+                    placeholder={!provinceId ? "Choose a province first" : districtsQuery.isLoading ? "Loading..." : "Choose a district"}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -169,9 +179,10 @@ export function BusinessLocationFields({
             >
               <FormControl>
                 <SelectTrigger className={selectTriggerClassName}>
-                  <SelectValue placeholder={!districtId ? "Choose a district first" : municipalitiesQuery.isLoading ? "Loading..." : "Choose a municipality"}>
-                    {selectedMunicipality?.name}
-                  </SelectValue>
+                  <SelectDisplay
+                    label={selectedMunicipality?.name}
+                    placeholder={!districtId ? "Choose a district first" : municipalitiesQuery.isLoading ? "Loading..." : "Choose a municipality"}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -196,9 +207,10 @@ export function BusinessLocationFields({
             <Select onValueChange={field.onChange} value={field.value} disabled={!selectedMunicipality}>
               <FormControl>
                 <SelectTrigger className={selectTriggerClassName}>
-                  <SelectValue placeholder={selectedMunicipality ? "Choose a ward" : "Choose a municipality first"}>
-                    {wardNo ? `Ward ${wardNo}` : undefined}
-                  </SelectValue>
+                  <SelectDisplay
+                    label={wardNo ? `Ward ${wardNo}` : undefined}
+                    placeholder={selectedMunicipality ? "Choose a ward" : "Choose a municipality first"}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>

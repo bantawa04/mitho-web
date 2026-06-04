@@ -6,9 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { ArrowRight, Building2, CheckCircle2, ClipboardList, ImagePlus, Mail, MapPin, Phone, Store } from "lucide-react"
 import { useForm } from "react-hook-form"
+import { BusinessCuisineField } from "@/features/business/components/business-cuisine-field"
 import { BusinessLocationFields } from "@/features/business/components/business-location-fields"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
+import { useCuisines } from "@/hooks/use-cuisines"
 import { useCreateBusiness } from "@/hooks/use-businesses"
 import { useEstablishmentTypes } from "@/hooks/use-establishment-types"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
@@ -50,6 +52,7 @@ const dietaryAmenityFields = [
   { name: "amenityVegetarian", label: "Vegetarian" },
   { name: "amenityVegan", label: "Vegan" },
   { name: "amenityHalal", label: "Halal" },
+  { name: "amenityNonVeg", label: "Non Veg" },
 ] as const
 
 type AddBusinessShell = "public" | "dashboard"
@@ -220,11 +223,13 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const { isAuthenticated } = useAuthSnapshot()
   const createBusiness = useCreateBusiness()
   const establishmentTypesQuery = useEstablishmentTypes()
+  const cuisinesQuery = useCuisines()
   const form = useForm<AddBusinessFormValues>({
     resolver: zodResolver(addBusinessSchema),
     defaultValues: {
       businessName: "",
       primaryCategory: "",
+      cuisineIds: [],
       shortNote: "",
       provinceId: "",
       districtId: "",
@@ -258,6 +263,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       amenityVegetarian: false,
       amenityVegan: false,
       amenityHalal: false,
+      amenityNonVeg: false,
       relationshipRole: "owner",
       authorizationConfirmed: shell === "public",
     },
@@ -284,6 +290,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const watchedLatitude = form.watch("latitude")
   const watchedLongitude = form.watch("longitude")
   const selectedEstablishmentType = establishmentTypesQuery.data?.find((type) => type.id === watchedCategory)
+  const cuisinesById = Object.fromEntries((cuisinesQuery.data ?? []).map((cuisine) => [cuisine.id, cuisine.name]))
   const provincesQuery = useProvinces()
   const districtsQuery = useDistricts(
     watchedProvinceId && /^\d+$/.test(watchedProvinceId) ? Number(watchedProvinceId) : null,
@@ -331,6 +338,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       latitude: values.latitude ?? undefined,
       longitude: values.longitude ?? undefined,
       establishmentTypeId: values.primaryCategory,
+      cuisineIds: values.cuisineIds,
       links: hasLinks ? links : undefined,
       amenities: {
         services: {
@@ -356,6 +364,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
           vegetarian: values.amenityVegetarian ?? false,
           vegan: values.amenityVegan ?? false,
           halal: values.amenityHalal ?? false,
+          non_veg: values.amenityNonVeg ?? false,
         },
       },
     }
@@ -368,6 +377,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
         fields: [
           { label: "Business name", value: values.businessName.trim() },
           { label: "Primary category", value: selectedEstablishmentType?.label ?? "Selected category" },
+          { label: "Cuisines served", value: values.cuisineIds.map((id) => cuisinesById[id] ?? id).join(", ") },
           { label: "Short note", value: displayValue(values.shortNote) },
         ],
       },
@@ -546,7 +556,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     name="primaryCategory"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Primary category</FormLabel>
+                        <FormLabel>Establishment type</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -576,11 +586,17 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                         <FormDescription>
                           {establishmentTypesQuery.isError
                             ? "Refresh the page and try again before submitting the listing."
-                            : "Choose the category that best fits the listing today."}
+                            : "Choose the establishment type that best fits the listing today."}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
+                  />
+
+                  <BusinessCuisineField
+                    control={form.control}
+                    name="cuisineIds"
+                    chipsClassName="min-h-[48px] rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] shadow-none focus-within:border-brand-orange focus-within:ring-brand-orange/15"
                   />
 
                   <FormField
@@ -588,12 +604,12 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     name="shortNote"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Short note</FormLabel>
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
                             className={cn(textareaClassName, "min-h-[96px]")}
-                            placeholder="Optional: a short internal/public note like “Dependable thakali meals near Thamel.”"
+                            placeholder="Optional: a helpful description like “Dependable thakali meals near Thamel.”"
                           />
                         </FormControl>
                         <FormDescription>Optional for now. Keep it brief and specific.</FormDescription>

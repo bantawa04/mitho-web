@@ -26,6 +26,10 @@ export const queryKeys = {
     all: ["establishment-types"] as const,
     list: () => ["establishment-types", "list"] as const,
   },
+  cuisines: {
+    all: ["cuisines"] as const,
+    list: () => ["cuisines", "list"] as const,
+  },
   media: {
     all: ["media"] as const,
     list: (params?: ListMediaParams) => ["media", "list", params] as const,

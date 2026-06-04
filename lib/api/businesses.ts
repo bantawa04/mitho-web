@@ -29,6 +29,7 @@ function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
   if (p.longitude !== undefined) out.longitude = p.longitude
   if (p.googleMapsUrl !== undefined) out.google_maps_url = p.googleMapsUrl
   if (p.establishmentTypeId !== undefined) out.establishment_type_id = p.establishmentTypeId
+  if (p.cuisineIds !== undefined) out.cuisine_ids = p.cuisineIds
   if (p.logoId !== undefined) out.logo_id = p.logoId
   if (p.bannerId !== undefined) out.banner_id = p.bannerId
   if (p.photos !== undefined) out.photos = p.photos
