@@ -59,9 +59,19 @@ function readAmenityFlag(record: Record<string, unknown> | undefined, snakeKey: 
   return value === true
 }
 
-function readLocationId(primary: number | null | undefined, fallback: number | null | undefined) {
-  const value = primary ?? fallback
-  return typeof value === "number" && Number.isFinite(value) ? String(value) : ""
+function readLocationId(...values: Array<number | string | null | undefined>) {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) return String(value)
+    if (typeof value === "string" && /^\d+$/.test(value)) return value
+  }
+
+  return ""
+}
+
+function readWardNo(value: number | string | null | undefined) {
+  if (typeof value === "number" && Number.isFinite(value)) return String(value)
+  if (typeof value === "string" && /^\d+$/.test(value)) return value
+  return ""
 }
 
 export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPageProps) {
@@ -80,6 +90,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
   const [logoMedia, setLogoMedia] = useState<Media | null>(null)
   const [bannerMedia, setBannerMedia] = useState<Media | null>(null)
   const [photosMedia, setPhotosMedia] = useState<Media[]>([])
+  const [formRenderKey, setFormRenderKey] = useState(0)
 
   // Dialog open state for each picker
   const [logoPickerOpen, setLogoPickerOpen] = useState(false)
@@ -140,7 +151,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       const facilities = a?.facilities as Record<string, unknown> | undefined
       const dietary = a?.dietary as Record<string, unknown> | undefined
 
-      form.reset({
+      const resetValues = {
         name: existing.name,
         description: existing.description ?? "",
         listingStatus: existing.listingStatus,
@@ -154,7 +165,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         provinceId: readLocationId(existing.provinceId, existing.province?.id),
         districtId: readLocationId(existing.districtId, existing.district?.id),
         municipalityId: readLocationId(existing.municipalityId, existing.municipality?.id),
-        wardNo: typeof existing.wardNo === "number" && Number.isFinite(existing.wardNo) ? String(existing.wardNo) : "",
+        wardNo: readWardNo(existing.wardNo),
         area: existing.area ?? "",
         addressLine1: existing.addressLine1,
         addressLine2: existing.addressLine2 ?? "",
@@ -181,7 +192,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         amenityVegetarian: readAmenityFlag(dietary, "vegetarian", "vegetarian"),
         amenityVegan: readAmenityFlag(dietary, "vegan", "vegan"),
         amenityHalal: readAmenityFlag(dietary, "halal", "halal"),
-      })
+      }
+      form.reset(resetValues)
+      setFormRenderKey((current) => current + 1)
       if (existing.logo) setLogoMedia(existing.logo)
       if (existing.banner) setBannerMedia(existing.banner)
       if (existing.photos?.length) setPhotosMedia(existing.photos)
@@ -343,7 +356,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       </section>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6 items-start">
+        <form key={formRenderKey} onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6 items-start">
           {/* Left Column: Form Content */}
           <div className="space-y-6">
             {/* Core details */}
@@ -442,6 +455,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   form={form}
                   inputClassName="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
                   selectTriggerClassName="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none"
+                  selectedLocation={{
+                    province: existing?.province,
+                    district: existing?.district,
+                    municipality: existing?.municipality,
+                  }}
                 />
               </div>
             </section>

@@ -509,13 +509,11 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                 <MithoCardTitle className="mt-2 text-2xl">Place the business where people expect to find it.</MithoCardTitle>
               </MithoCardHeader>
               <MithoCardContent className="grid gap-5">
-                <div className="grid gap-5 md:grid-cols-2">
-                  <BusinessLocationFields
-                    form={form}
-                    inputClassName={inputClassName}
-                    selectTriggerClassName={selectTriggerClassName}
-                  />
-                </div>
+                <BusinessLocationFields
+                  form={form}
+                  inputClassName={inputClassName}
+                  selectTriggerClassName={selectTriggerClassName}
+                />
 
                 <div className="space-y-3">
                   <div className="space-y-1">
