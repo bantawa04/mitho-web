@@ -207,6 +207,19 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
   )
 }
 
+function getPublicBusinessHref(business: {
+  slug: string
+  province?: { slug?: string }
+  district?: { slug?: string }
+  municipality?: { slug?: string }
+}) {
+  if (business.province?.slug && business.district?.slug && business.municipality?.slug) {
+    return `/${business.province.slug}/${business.district.slug}/${business.municipality.slug}/${business.slug}`
+  }
+
+  return `/business/${business.slug}`
+}
+
 export function AdminBusinessDetailPage({ id }: { id: string }) {
   const { data: business, isLoading, isError, error, refetch } = useBusiness(id)
   const { data: establishmentTypes } = useAdminEstablishmentTypes()
@@ -233,6 +246,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
     ? `${business.municipality.name} (${municipalityCategoryName})`
     : business.municipality.name
   const addedByLabel = business.addedByUserName || business.addedByType
+  const publicBusinessHref = getPublicBusinessHref(business)
 
   const fullAddress = `${business.addressLine1}${business.addressLine2 ? `, ${business.addressLine2}` : ""}${
     business.landmark ? ` (Near ${business.landmark})` : ""
@@ -360,7 +374,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               </Link>
             </Button>
             <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 dark:text-brand-soft-beige dark:border-brand-deep-green/20">
-              <Link href={`/business/${business.slug}`} target="_blank">
+              <Link href={publicBusinessHref} target="_blank">
                 <Eye className="h-4 w-4" />
                 Open public page
               </Link>
