@@ -93,6 +93,23 @@ export const addBusinessSchema = z.object({
     .refine((value) => value.length === 0 || websitePattern.test(value), "Enter a valid TikTok URL.")
     .optional()
     .or(z.literal("")),
+  // Amenities — services
+  amenityDineIn: z.boolean().optional(),
+  amenityTakeaway: z.boolean().optional(),
+  amenityDelivery: z.boolean().optional(),
+  // Amenities — payment
+  amenityCash: z.boolean().optional(),
+  amenityCard: z.boolean().optional(),
+  amenityQr: z.boolean().optional(),
+  // Amenities — facilities
+  amenityParking: z.boolean().optional(),
+  amenityWifi: z.boolean().optional(),
+  amenityAirConditioning: z.boolean().optional(),
+  amenityOutdoorSeating: z.boolean().optional(),
+  // Amenities — dietary
+  amenityVegetarian: z.boolean().optional(),
+  amenityVegan: z.boolean().optional(),
+  amenityHalal: z.boolean().optional(),
   relationshipRole: z.enum(["owner", "manager", "authorized-team-member"], {
     message: "Choose your relationship to the business.",
   }),
