@@ -28,11 +28,14 @@ export function InfoPanel({
       ? visitInfo.hours.map((schedule) => `${schedule.day}: ${schedule.time}`).join(" • ")
       : "Hours not listed yet"
   const cuisineLine = visitInfo.cuisines.length > 0 ? visitInfo.cuisines.join(", ") : "Cuisine details coming soon"
-  const staticMapUrl = createBusinessStaticMapUrl({
-    coordinates: visitInfo.coordinates,
-    zoom: visitInfo.mapZoom ?? 15,
-  })
-  const directionsUrl = createGoogleDirectionsUrl(visitInfo.coordinates)
+  const staticMapUrl = visitInfo.coordinates
+    ? createBusinessStaticMapUrl({
+        coordinates: visitInfo.coordinates,
+        zoom: visitInfo.mapZoom ?? 15,
+      })
+    : null
+  const directionsUrl = visitInfo.coordinates ? createGoogleDirectionsUrl(visitInfo.coordinates) : null
+  const websiteUrl = visitInfo.website ? normalizeExternalUrl(visitInfo.website) : null
 
   const visitFacts = [
     {
@@ -123,7 +126,9 @@ export function InfoPanel({
             <MithoCard surface="customer" interactive="none" className="overflow-hidden">
               <MithoCardHeader className="pb-4">
                 <MithoCardTitle>Find it easily</MithoCardTitle>
-                <MithoCardDescription className="mt-2">{visitInfo.mapDescription}</MithoCardDescription>
+                {visitInfo.mapDescription ? (
+                  <MithoCardDescription className="mt-2">{visitInfo.mapDescription}</MithoCardDescription>
+                ) : null}
               </MithoCardHeader>
               <MithoCardContent>
                 <div className="overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10">
@@ -132,25 +137,31 @@ export function InfoPanel({
                   ) : (
                     <div className="flex aspect-[4/3] items-center justify-center bg-[#fffdf8] px-6 text-center">
                       <div>
-                        <p className="text-sm font-semibold text-brand-dark-green">Map preview unavailable</p>
+                        <p className="text-sm font-semibold text-brand-dark-green">
+                          {visitInfo.coordinates ? "Map preview unavailable" : "Location coordinates not provided"}
+                        </p>
                         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                          Add the Google Maps API key to render the static location preview here.
+                          {visitInfo.coordinates
+                            ? "Add the Google Maps API key to render the static location preview here."
+                            : "Map preview and directions will appear once latitude and longitude are added."}
                         </p>
                       </div>
                     </div>
                   )}
                 </div>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <MithoButton variant="outline-secondary" size="default" asChild>
-                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer">
-                      <Navigation className="h-4 w-4" />
-                      {visitInfo.mapLinkText ?? "Get directions"}
-                    </a>
-                  </MithoButton>
+                  {directionsUrl ? (
+                    <MithoButton variant="outline-secondary" size="default" asChild>
+                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer">
+                        <Navigation className="h-4 w-4" />
+                        {visitInfo.mapLinkText ?? "Get directions"}
+                      </a>
+                    </MithoButton>
+                  ) : null}
 
-                  {visitInfo.website ? (
+                  {websiteUrl ? (
                     <MithoButton variant="ghost" size="default" asChild>
-                      <a href={`https://${visitInfo.website}`} target="_blank" rel="noopener noreferrer">
+                      <a href={websiteUrl} target="_blank" rel="noopener noreferrer">
                         <Globe className="h-4 w-4" />
                         Visit website
                       </a>
@@ -160,15 +171,22 @@ export function InfoPanel({
               </MithoCardContent>
             </MithoCard>
 
-            <MithoCard surface="customer" interactive="none" className="bg-[#fffdf8]">
-              <MithoCardContent className="p-5">
-                <p className="type-eyebrow text-brand-deep-green/70">Good to know</p>
-                <p className="mt-3 text-lg font-semibold text-brand-dark-green">{visitInfo.goodToKnow}</p>
-              </MithoCardContent>
-            </MithoCard>
+            {visitInfo.goodToKnow ? (
+              <MithoCard surface="customer" interactive="none" className="bg-[#fffdf8]">
+                <MithoCardContent className="p-5">
+                  <p className="type-eyebrow text-brand-deep-green/70">Good to know</p>
+                  <p className="mt-3 text-lg font-semibold text-brand-dark-green">{visitInfo.goodToKnow}</p>
+                </MithoCardContent>
+              </MithoCard>
+            ) : null}
           </div>
         </div>
       </div>
     </section>
   )
+}
+
+function normalizeExternalUrl(url: string) {
+  if (/^https?:\/\//i.test(url)) return url
+  return `https://${url}`
 }

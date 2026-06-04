@@ -1,5 +1,6 @@
 import type { Media } from "@/types/media"
 import type { Cuisine } from "@/types/cuisine"
+import type { EstablishmentType } from "@/types/establishment-types"
 import type { District, Municipality, Province } from "@/types/nepal-admin"
 
 export interface AmenityServices {
@@ -47,6 +48,13 @@ export interface BusinessLinks {
   tiktok?: string
 }
 
+export interface BusinessHour {
+  dayOfWeek: number
+  openTime?: string
+  closeTime?: string
+  isClosed: boolean
+}
+
 export type BusinessStatus = "pending" | "active" | "suspended" | "rejected"
 export type BusinessListingStatus = "pending_review" | "published" | "suspended" | "rejected"
 export type BusinessOwnershipStatus = "unclaimed" | "claim_under_review" | "claimed"
@@ -66,9 +74,9 @@ export interface Business {
   districtId: number
   municipalityId: number
   wardNo: number
-  province: Pick<Province, "id" | "name">
-  district: Pick<District, "id" | "name">
-  municipality: Pick<Municipality, "id" | "name" | "wards"> & {
+  province: Pick<Province, "id" | "name" | "slug">
+  district: Pick<District, "id" | "name" | "slug">
+  municipality: Pick<Municipality, "id" | "name" | "slug" | "wards"> & {
     category: Municipality["category"]
   }
   area?: string
@@ -79,6 +87,7 @@ export interface Business {
   longitude?: number
   googleMapsUrl?: string
   establishmentTypeId?: string
+  establishmentType?: EstablishmentType
   cuisines?: Cuisine[]
   signatureItems?: string[]
   mealTypes?: string[]
@@ -99,6 +108,10 @@ export interface Business {
   isFeatured: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface PublicBusiness extends Business {
+  hours: BusinessHour[]
 }
 
 export interface CreateBusinessPayload {

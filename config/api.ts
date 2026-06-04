@@ -2,7 +2,12 @@ import axios, { AxiosError } from "axios"
 
 function buildApiBaseUrl() {
   const rawBaseUrl = process.env.NEXT_PUBLIC_API_URL?.trim()
-  if (!rawBaseUrl) return "/api"
+  if (!rawBaseUrl) {
+    if (typeof window === "undefined") {
+      return "http://localhost:8000/api"
+    }
+    return "/api"
+  }
 
   const normalizedBaseUrl = rawBaseUrl.replace(/\/+$/, "")
   return normalizedBaseUrl.endsWith("/api") ? normalizedBaseUrl : `${normalizedBaseUrl}/api`

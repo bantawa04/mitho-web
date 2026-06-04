@@ -1,0 +1,81 @@
+import type { Metadata } from "next"
+import { notFound } from "next/navigation"
+import axios from "axios"
+import { BusinessDetailPage } from "@/features/business/screens/business-detail-page"
+import {
+  buildPublicBusinessHref,
+  mapPublicBusinessToPageData,
+} from "@/features/business/mappers/public-business-page-data"
+import { getPublicBusinessByPath } from "@/lib/api/businesses"
+
+interface PublicBusinessRouteProps {
+  params: Promise<{
+    province: string
+    district: string
+    city: string
+    business: string
+  }>
+}
+
+export const dynamic = "force-dynamic"
+
+export async function generateMetadata({ params }: PublicBusinessRouteProps): Promise<Metadata> {
+  const routeParams = await params
+  const business = await fetchPublicBusiness(routeParams)
+  if (!business) {
+    return {
+      title: "Business not found | Mitho Cha",
+    }
+  }
+
+  const location = [business.municipality?.name, business.district?.name, business.province?.name]
+    .filter(Boolean)
+    .join(", ")
+  const description =
+    business.description ??
+    business.specialityNote ??
+    `Discover ${business.name}${location ? ` in ${location}` : ""} on Mitho Cha.`
+  const canonicalPath = buildPublicBusinessHref(business)
+
+  return {
+    title: `${business.name}${location ? ` in ${location}` : ""} | Mitho Cha`,
+    description,
+    alternates: {
+      canonical: canonicalPath,
+    },
+    openGraph: {
+      title: business.name,
+      description,
+      url: canonicalPath,
+      images: business.banner?.publicUrl ? [{ url: business.banner.publicUrl, alt: business.name }] : undefined,
+    },
+  }
+}
+
+export default async function PublicBusinessDetailRoute({ params }: PublicBusinessRouteProps) {
+  const routeParams = await params
+  const business = await fetchPublicBusiness(routeParams)
+  if (!business) notFound()
+
+  const pageData = mapPublicBusinessToPageData(business)
+  const publicHref = buildPublicBusinessHref(business)
+
+  return (
+    <BusinessDetailPage
+      pageData={pageData}
+      claimHref={`/business/claim?listing=${business.slug}`}
+      publicHref={publicHref}
+    />
+  )
+}
+
+async function fetchPublicBusiness(params: Awaited<PublicBusinessRouteProps["params"]>) {
+  try {
+    return await getPublicBusinessByPath(params)
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null
+    }
+    throw error
+  }
+}
