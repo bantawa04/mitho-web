@@ -52,22 +52,22 @@ export function AdminModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          "max-w-[calc(100%-2rem)] rounded-[1.75rem] border-brand-deep-green/10 bg-white p-0 shadow-[0_24px_60px_rgba(10,70,53,0.16)]",
+          "max-h-[calc(100vh-2rem)] max-w-[calc(100%-2rem)] overflow-hidden rounded-[1.75rem] border-brand-deep-green/10 bg-white p-0 shadow-[0_24px_60px_rgba(10,70,53,0.16)]",
           sizeClassMap[size],
         )}
       >
-        <div className="space-y-6 p-6 sm:p-7">
-          <DialogHeader className="text-left">
+        <div className="flex max-h-[calc(100vh-2rem)] flex-col">
+          <DialogHeader className="shrink-0 space-y-0 px-6 pt-6 text-left sm:px-7 sm:pt-7">
             <DialogTitle className="text-2xl font-semibold text-brand-dark-green">{title}</DialogTitle>
             {description ? (
               <DialogDescription className="mt-2 text-sm leading-7 text-muted-foreground">{description}</DialogDescription>
             ) : null}
           </DialogHeader>
 
-          {children ? <div className={cn("space-y-5", bodyClassName)}>{children}</div> : null}
+          {children ? <div className={cn("min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6 sm:px-7", bodyClassName)}>{children}</div> : null}
 
           {showFooter ? (
-            <DialogFooter className="flex-col-reverse gap-3 border-t border-brand-deep-green/10 pt-5 sm:flex-row sm:justify-end">
+            <DialogFooter className="shrink-0 flex-col-reverse gap-3 border-t border-brand-deep-green/10 px-6 py-5 sm:flex-row sm:justify-end sm:px-7">
               <Button
                 variant="outline"
                 className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"

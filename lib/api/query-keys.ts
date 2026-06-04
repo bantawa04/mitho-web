@@ -51,5 +51,9 @@ export const queryKeys = {
       all: ["admin", "establishment-types"] as const,
       list: () => ["admin", "establishment-types", "list"] as const,
     },
+    cuisines: {
+      all: ["admin", "cuisines"] as const,
+      list: () => ["admin", "cuisines", "list"] as const,
+    },
   },
 }

@@ -18,6 +18,7 @@ export const PERMISSION_MATRIX_MAP: Partial<Record<AdminPermissionResource, Part
   Customer: { Read: "customers.read" },
   Users: { Create: "users.create", Read: "users.read", Update: "users.update", Delete: "users.delete" },
   Roles: { Create: "roles.create", Read: "roles.read", Update: "roles.update", Delete: "roles.delete" },
+  Cuisines: { Create: "cuisines.create", Read: "cuisines.read", Update: "cuisines.update", Delete: "cuisines.delete" },
   "Establishment Types": {
     Create: "establishment_types.create",
     Read: "establishment_types.read",

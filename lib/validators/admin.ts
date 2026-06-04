@@ -60,6 +60,13 @@ export const establishmentTypeSchema = z.object({
 
 export type EstablishmentTypeFormValues = z.infer<typeof establishmentTypeSchema>
 
+export const cuisineSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be 100 characters or fewer"),
+  status: z.enum(["active", "disabled"]),
+})
+
+export type CuisineFormValues = z.infer<typeof cuisineSchema>
+
 export const inviteAdminUserSchema = z.object({
   firstName: z.string().trim().max(100, "First name must be 100 characters or fewer").optional(),
   lastName: z.string().trim().max(100, "Last name must be 100 characters or fewer").optional(),
