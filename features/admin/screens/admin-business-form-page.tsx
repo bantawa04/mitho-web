@@ -9,12 +9,14 @@ import { useRouter } from "next/navigation"
 import { Building2, ChevronRight, Globe, Image, Mail, MapPin, Phone, UtensilsCrossed, X } from "lucide-react"
 import { useBusiness, useCreateBusiness, useUpdateBusiness } from "@/hooks/use-businesses"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
+import { useMunicipalities } from "@/hooks/use-nepal-admin"
 import { BusinessLocationFields } from "@/features/business/components/business-location-fields"
+import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
 import { businessSchema, type BusinessFormValues } from "@/lib/validators/admin"
 import type { Media } from "@/types/media"
 import { MediaPickerDialog } from "@/features/admin/components/media-picker-dialog"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -35,8 +37,6 @@ const serviceAmenityFields = [
 const paymentAmenityFields = [
   { name: "amenityCash", label: "Cash" },
   { name: "amenityCard", label: "Card" },
-  { name: "amenityEsewa", label: "eSewa" },
-  { name: "amenityKhalti", label: "Khalti" },
   { name: "amenityQr", label: "QR" },
 ] as const
 
@@ -45,7 +45,6 @@ const facilityAmenityFields = [
   { name: "amenityWifi", label: "WiFi" },
   { name: "amenityAirConditioning", label: "Air conditioning" },
   { name: "amenityOutdoorSeating", label: "Outdoor seating" },
-  { name: "amenityServiceCharge", label: "Service charge" },
 ] as const
 
 const dietaryAmenityFields = [
@@ -118,6 +117,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       addressLine1: "",
       addressLine2: "",
       landmark: "",
+      latitude: null,
+      longitude: null,
       websiteUrl: "",
       facebookUrl: "",
       instagramUrl: "",
@@ -129,14 +130,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       amenityDelivery: false,
       amenityCash: false,
       amenityCard: false,
-      amenityEsewa: false,
-      amenityKhalti: false,
       amenityQr: false,
       amenityParking: false,
       amenityWifi: false,
       amenityAirConditioning: false,
       amenityOutdoorSeating: false,
-      amenityServiceCharge: false,
       amenityVegetarian: false,
       amenityVegan: false,
       amenityHalal: false,
@@ -170,6 +168,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         addressLine1: existing.addressLine1,
         addressLine2: existing.addressLine2 ?? "",
         landmark: existing.landmark ?? "",
+        latitude: existing.latitude ?? null,
+        longitude: existing.longitude ?? null,
         websiteUrl: existing.links?.website ?? "",
         facebookUrl: existing.links?.facebook ?? "",
         instagramUrl: existing.links?.instagram ?? "",
@@ -181,14 +181,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         amenityDelivery: readAmenityFlag(services, "delivery", "delivery"),
         amenityCash: readAmenityFlag(payment, "cash", "cash"),
         amenityCard: readAmenityFlag(payment, "card", "card"),
-        amenityEsewa: readAmenityFlag(payment, "esewa", "eSewa"),
-        amenityKhalti: readAmenityFlag(payment, "khalti", "khalti"),
         amenityQr: readAmenityFlag(payment, "qr", "qr"),
         amenityParking: readAmenityFlag(facilities, "parking", "parking"),
         amenityWifi: readAmenityFlag(facilities, "wifi", "wifi"),
         amenityAirConditioning: readAmenityFlag(facilities, "air_conditioning", "airConditioning"),
         amenityOutdoorSeating: readAmenityFlag(facilities, "outdoor_seating", "outdoorSeating"),
-        amenityServiceCharge: readAmenityFlag(facilities, "service_charge", "serviceCharge"),
         amenityVegetarian: readAmenityFlag(dietary, "vegetarian", "vegetarian"),
         amenityVegan: readAmenityFlag(dietary, "vegan", "vegan"),
         amenityHalal: readAmenityFlag(dietary, "halal", "halal"),
@@ -249,8 +246,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       payment: {
         cash: values.amenityCash ?? false,
         card: values.amenityCard ?? false,
-        esewa: values.amenityEsewa ?? false,
-        khalti: values.amenityKhalti ?? false,
         qr: values.amenityQr ?? false,
       },
       facilities: {
@@ -258,7 +253,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         wifi: values.amenityWifi ?? false,
         air_conditioning: values.amenityAirConditioning ?? false,
         outdoor_seating: values.amenityOutdoorSeating ?? false,
-        service_charge: values.amenityServiceCharge ?? false,
       },
       dietary: {
         vegetarian: values.amenityVegetarian ?? false,
@@ -287,6 +281,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       addressLine1: values.addressLine1,
       addressLine2: values.addressLine2 || undefined,
       landmark: values.landmark || undefined,
+      latitude: values.latitude ?? undefined,
+      longitude: values.longitude ?? undefined,
       amenities,
     }
 
@@ -315,6 +311,24 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       )
     }
   }
+
+  const watchedLatitude = form.watch("latitude")
+  const watchedLongitude = form.watch("longitude")
+  const watchedDistrictId = form.watch("districtId")
+  const watchedMunicipalityId = form.watch("municipalityId")
+
+  const { data: municipalities } = useMunicipalities(
+    watchedDistrictId && /^\d+$/.test(watchedDistrictId) ? Number(watchedDistrictId) : null
+  )
+  const selectedMunicipality = municipalities?.find((m) => String(m.id) === watchedMunicipalityId)
+  const cityLabel = selectedMunicipality?.name ?? existing?.municipality?.name ?? "Nepal"
+
+  const markerPosition =
+    typeof watchedLatitude === "number" && typeof watchedLongitude === "number"
+      ? { lat: watchedLatitude, lng: watchedLongitude }
+      : null
+
+  const defaultCenter = markerPosition ?? { lat: 27.7172, lng: 85.324 }
 
   if (mode === "edit" && isLoadingBusiness) {
     return (
@@ -450,7 +464,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   <p className="text-sm text-muted-foreground">Where the business is physically located.</p>
                 </div>
               </div>
-              <div className="mt-6 border-t border-brand-deep-green/10 pt-6">
+              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 space-y-4">
                 <BusinessLocationFields
                   form={form}
                   inputClassName="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
@@ -461,6 +475,25 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                     municipality: existing?.municipality,
                   }}
                 />
+
+                {/* Google Map Picker */}
+                <div className="space-y-3 pt-4 border-t border-brand-deep-green/5">
+                  <div className="space-y-1">
+                    <FormLabel>Map marker</FormLabel>
+                    <FormDescription className="text-xs text-muted-foreground">
+                      Drop the pin where the business is located. Drag the pin to adjust coordinates.
+                    </FormDescription>
+                  </div>
+                  <GoogleMapPicker
+                    cityLabel={cityLabel}
+                    defaultCenter={defaultCenter}
+                    markerPosition={markerPosition}
+                    onSelect={(coordinates) => {
+                      form.setValue("latitude", coordinates.lat, { shouldDirty: true, shouldValidate: true })
+                      form.setValue("longitude", coordinates.lng, { shouldDirty: true, shouldValidate: true })
+                    }}
+                  />
+                </div>
               </div>
             </section>
 
@@ -848,32 +881,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                       <FormLabel className="text-xs">Instagram URL</FormLabel>
                       <FormControl>
                         <Input {...field} type="url" placeholder="https://instagram.com/..." className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="twitterUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">Twitter URL</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="url" placeholder="https://twitter.com/..." className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="youtubeUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">YouTube URL</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="url" placeholder="https://youtube.com/..." className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

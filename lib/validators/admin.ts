@@ -21,6 +21,8 @@ export const businessSchema = z.object({
   addressLine1: z.string().trim().min(1, "Address line 1 is required").max(200, "Address must be 200 characters or fewer"),
   addressLine2: z.string().trim().max(200, "Address must be 200 characters or fewer").optional(),
   landmark: z.string().trim().max(200, "Landmark must be 200 characters or fewer").optional(),
+  latitude: z.number().nullable().optional(),
+  longitude: z.number().nullable().optional(),
   // Links
   websiteUrl: optionalUrl,
   facebookUrl: optionalUrl,
@@ -35,15 +37,12 @@ export const businessSchema = z.object({
   // Amenities — payment
   amenityCash: z.boolean().optional(),
   amenityCard: z.boolean().optional(),
-  amenityEsewa: z.boolean().optional(),
-  amenityKhalti: z.boolean().optional(),
   amenityQr: z.boolean().optional(),
   // Amenities — facilities
   amenityParking: z.boolean().optional(),
   amenityWifi: z.boolean().optional(),
   amenityAirConditioning: z.boolean().optional(),
   amenityOutdoorSeating: z.boolean().optional(),
-  amenityServiceCharge: z.boolean().optional(),
   // Amenities — dietary
   amenityVegetarian: z.boolean().optional(),
   amenityVegan: z.boolean().optional(),
