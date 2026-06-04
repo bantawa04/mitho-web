@@ -139,7 +139,7 @@ export interface AdminEstablishmentTypeItem {
 export type AdminInternalUserStatus = "Invited" | "Active" | "Disabled"
 export type AdminRoleType = "System" | "Custom"
 
-export type AdminPermissionResource = "Business" | "Reviews" | "Customer" | "Users" | "Roles" | "Establishment Types"
+export type AdminPermissionResource = "Business" | "Reviews" | "Customer" | "Users" | "Roles" | "Cuisines" | "Establishment Types"
 export type AdminPermissionAction = "Create" | "Read" | "Update" | "Delete"
 
 export interface AdminRolePermissions {
@@ -286,6 +286,11 @@ export const adminPermissionMatrix: Array<{
   {
     resource: "Roles",
     label: "Roles",
+    actions: ["Create", "Read", "Update", "Delete"],
+  },
+  {
+    resource: "Cuisines",
+    label: "Cuisines",
     actions: ["Create", "Read", "Update", "Delete"],
   },
   {
@@ -484,6 +489,7 @@ export const mockAdminRoles: AdminRoleItem[] = [
         Customer: { Read: true },
         Users: { Create: true, Read: true, Update: true, Delete: true },
         Roles: { Create: true, Read: true, Update: true, Delete: true },
+        Cuisines: { Create: true, Read: true, Update: true, Delete: true },
         "Establishment Types": { Create: true, Read: true, Update: true, Delete: true },
       },
       notifications: true,
@@ -500,6 +506,7 @@ export const mockAdminRoles: AdminRoleItem[] = [
         Customer: { Read: true },
         Users: { Read: true },
         Roles: { Read: true },
+        Cuisines: { Read: true, Update: true },
         "Establishment Types": { Read: true, Update: true },
       },
       notifications: true,
@@ -516,6 +523,7 @@ export const mockAdminRoles: AdminRoleItem[] = [
         Customer: { Read: true },
         Users: { Read: true },
         Roles: { Read: true },
+        Cuisines: { Create: true, Read: true, Update: true },
         "Establishment Types": { Create: true, Read: true, Update: true },
       },
       notifications: true,
@@ -532,6 +540,7 @@ export const mockAdminRoles: AdminRoleItem[] = [
         Customer: { Read: true },
         Users: { Read: true },
         Roles: {},
+        Cuisines: { Read: true },
         "Establishment Types": { Read: true },
       },
       notifications: true,
