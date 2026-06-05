@@ -6,8 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight, CheckCircle2, FileBadge2, Search, ShieldCheck } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
-import { CLAIMABLE_BUSINESSES, getClaimableBusinessById, type ClaimableBusiness } from "@/features/business/data/business-claim-data"
+import { useClaimableBusiness, useClaimableBusinesses, useCreateBusinessClaim } from "@/hooks/use-business-claims"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import {
   claimRoleOptions,
@@ -24,6 +25,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { confirmClaimDocumentUpload, requestClaimDocumentUpload } from "@/lib/api/business-claims"
+import { uploadFileToR2 } from "@/lib/api/media"
+import type { ClaimableBusiness } from "@/types/business-claims"
 
 const sectionCardClass =
   "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
@@ -31,6 +35,29 @@ const inputClassName =
   "h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 const selectTriggerClassName =
   "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+
+function claimableLocation(business: ClaimableBusiness) {
+  return [business.area, business.municipality, business.district, business.province].filter(Boolean).join(", ")
+}
+
+function claimableCue(business: ClaimableBusiness) {
+  const cuisines = business.cuisines?.length ? business.cuisines.join(", ") : null
+  if (cuisines && business.establishmentType) {
+    return `${business.establishmentType} serving ${cuisines}.`
+  }
+  if (business.establishmentType) {
+    return `${business.establishmentType} listing available to claim.`
+  }
+  return "This published listing is available to claim after ownership verification."
+}
+
+function publicBusinessHref(business: ClaimableBusiness) {
+  return business.publicPath || `/business/${business.slug}`
+}
+
+function hasPublicBusinessPage(business: ClaimableBusiness) {
+  return Boolean(business.publicPath)
+}
 
 function StepPill({
   number,
@@ -94,15 +121,15 @@ function SearchResultCard({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <MithoBadge variant="neutral">{business.category}</MithoBadge>
+            <MithoBadge variant="neutral">{business.establishmentType || "Business"}</MithoBadge>
             <MithoBadge variant="muted">Listing exists on Mitho</MithoBadge>
           </div>
           <h3 className="mt-3 text-xl font-semibold text-brand-dark-green">{business.name}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{business.location}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{claimableLocation(business)}</p>
         </div>
         <span className="text-sm font-semibold text-brand-deep-green">{selected ? "Selected" : "Choose listing"}</span>
       </div>
-      <p className="mt-4 text-sm leading-6 text-muted-foreground">{business.cue}</p>
+      <p className="mt-4 text-sm leading-6 text-muted-foreground">{claimableCue(business)}</p>
     </button>
   )
 }
@@ -134,14 +161,16 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
 
           <div className="flex flex-wrap gap-3">
             <MithoButton asChild>
-              <Link href="/dashboard/businesses">
-                Manage businesses
+              <Link href="/">
+                Back to home
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </MithoButton>
-            <MithoButton variant="outline-secondary" asChild>
-              <Link href={business.publicHref}>View public listing</Link>
-            </MithoButton>
+            {hasPublicBusinessPage(business) ? (
+              <MithoButton variant="outline-secondary" asChild>
+                <Link href={publicBusinessHref(business)}>View public listing</Link>
+              </MithoButton>
+            ) : null}
           </div>
         </div>
       </section>
@@ -166,14 +195,18 @@ export function BusinessClaimPage() {
   const searchParams = useSearchParams()
   const { isAuthenticated } = useAuthSnapshot()
   const prefilledListingId = searchParams.get("listing")
-  const prefilledBusiness = getClaimableBusinessById(prefilledListingId)
 
   const [query, setQuery] = React.useState("")
-  const [selectedBusiness, setSelectedBusiness] = React.useState<ClaimableBusiness | null>(prefilledBusiness)
-  const [step, setStep] = React.useState<1 | 2>(prefilledBusiness ? 2 : 1)
+  const debouncedQuery = useDebouncedValue(query, 300)
+  const [selectedBusiness, setSelectedBusiness] = React.useState<ClaimableBusiness | null>(null)
+  const [step, setStep] = React.useState<1 | 2>(prefilledListingId ? 2 : 1)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingSubmission, setPendingSubmission] = React.useState<BusinessClaimFormValues | null>(null)
   const [submittedBusiness, setSubmittedBusiness] = React.useState<ClaimableBusiness | null>(null)
+  const [submissionError, setSubmissionError] = React.useState<string | null>(null)
+  const claimableBusinesses = useClaimableBusinesses(debouncedQuery)
+  const selectedBusinessQuery = useClaimableBusiness(prefilledListingId)
+  const createClaim = useCreateBusinessClaim()
 
   const form = useForm<BusinessClaimFormInputValues, unknown, BusinessClaimFormValues>({
     resolver: zodResolver(businessClaimSchema),
@@ -189,9 +222,8 @@ export function BusinessClaimPage() {
   })
 
   React.useEffect(() => {
-    const nextBusiness = getClaimableBusinessById(prefilledListingId)
-    if (nextBusiness) {
-      setSelectedBusiness(nextBusiness)
+    if (selectedBusinessQuery.data) {
+      setSelectedBusiness(selectedBusinessQuery.data)
       setStep(2)
       return
     }
@@ -199,23 +231,18 @@ export function BusinessClaimPage() {
     if (prefilledListingId === null && submittedBusiness === null) {
       setStep(1)
     }
-  }, [prefilledListingId, submittedBusiness])
+  }, [prefilledListingId, selectedBusinessQuery.data, submittedBusiness])
 
   React.useEffect(() => {
     if (!isAuthenticated || !pendingSubmission || !selectedBusiness) return
-    setSubmittedBusiness(selectedBusiness)
+    const values = pendingSubmission
     setPendingSubmission(null)
     setIsSignInOpen(false)
+    void submitClaim(values)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, pendingSubmission, selectedBusiness])
 
-  const results = React.useMemo(() => {
-    const normalized = query.trim().toLowerCase()
-    if (!normalized) return CLAIMABLE_BUSINESSES
-
-    return CLAIMABLE_BUSINESSES.filter((business) =>
-      [business.name, business.location, business.category].some((value) => value.toLowerCase().includes(normalized)),
-    )
-  }, [query])
+  const results = claimableBusinesses.data ?? []
 
   const updateListingParam = (listingId?: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -238,7 +265,37 @@ export function BusinessClaimPage() {
     setStep(1)
   }
 
-  const onSubmit = (values: BusinessClaimFormValues) => {
+  async function submitClaim(values: BusinessClaimFormValues) {
+    if (!selectedBusiness) return
+    setSubmissionError(null)
+
+    try {
+      const file = values.verificationDocument
+      const ticket = await requestClaimDocumentUpload({
+        filename: file.name,
+        mimeType: file.type,
+        sizeBytes: file.size,
+      })
+      await uploadFileToR2(ticket.uploadUrl, file)
+      const document = await confirmClaimDocumentUpload(ticket.media.id)
+      await createClaim.mutateAsync({
+        businessId: selectedBusiness.id,
+        payload: {
+          claimantName: values.claimantName,
+          role: values.role,
+          businessPhone: values.businessPhone,
+          businessEmail: values.businessEmail,
+          panVatNumber: values.panVatNumber,
+          documentMediaIds: [document.id],
+        },
+      })
+      setSubmittedBusiness(selectedBusiness)
+    } catch {
+      setSubmissionError("We could not submit this claim. Please check the document and try again.")
+    }
+  }
+
+  const onSubmit = async (values: BusinessClaimFormValues) => {
     if (!selectedBusiness) return
 
     if (!isAuthenticated) {
@@ -247,7 +304,7 @@ export function BusinessClaimPage() {
       return
     }
 
-    setSubmittedBusiness(selectedBusiness)
+    await submitClaim(values)
   }
 
   if (submittedBusiness) {
@@ -296,7 +353,7 @@ export function BusinessClaimPage() {
                     <p className="type-eyebrow text-brand-deep-green/68">Step 1</p>
                     <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Find the business listing you want to claim.</h2>
                     <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                      Search by business name, area, or category. You can browse available listings before signing in.
+                      Search by business name. You can browse available listings before signing in.
                     </p>
 
                     <div className="relative mt-5">
@@ -305,12 +362,22 @@ export function BusinessClaimPage() {
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         className={cn(inputClassName, "pl-11")}
-                        placeholder="Search existing listings"
+                        placeholder="Search business by name"
                       />
                     </div>
 
                     <div className="mt-6 grid gap-4">
-                      {results.length > 0 ? (
+                      {query.trim().length >= 2 && (claimableBusinesses.isLoading || debouncedQuery !== query) ? (
+                        <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                          <p className="text-base font-semibold text-brand-dark-green">Searching listings...</p>
+                          <p className="mt-2 text-sm leading-6 text-muted-foreground">Checking claimable businesses by name.</p>
+                        </div>
+                      ) : query.trim().length >= 2 && claimableBusinesses.isError ? (
+                        <div className="rounded-[1.35rem] border border-destructive/20 bg-destructive/5 p-5">
+                          <p className="text-base font-semibold text-destructive">Could not search listings.</p>
+                          <p className="mt-2 text-sm leading-6 text-muted-foreground">Please try again in a moment.</p>
+                        </div>
+                      ) : query.trim().length >= 2 && results.length > 0 ? (
                         results.map((business) => (
                           <SearchResultCard
                             key={business.id}
@@ -319,7 +386,7 @@ export function BusinessClaimPage() {
                             onSelect={() => handleSelectBusiness(business)}
                           />
                         ))
-                      ) : (
+                      ) : query.trim().length >= 2 ? (
                         <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
                           <p className="text-base font-semibold text-brand-dark-green">No matching listings yet.</p>
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -329,7 +396,7 @@ export function BusinessClaimPage() {
                             <Link href="/add-business">Add a new listing instead</Link>
                           </MithoButton>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </section>
@@ -349,7 +416,7 @@ export function BusinessClaimPage() {
                         <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-4">
                           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Selected listing</p>
                           <p className="mt-2 text-base font-semibold text-brand-dark-green">{selectedBusiness.name}</p>
-                          <p className="mt-1 text-sm text-muted-foreground">{selectedBusiness.location}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">{claimableLocation(selectedBusiness)}</p>
                           <button
                             type="button"
                             onClick={handleChangeBusiness}
@@ -363,6 +430,19 @@ export function BusinessClaimPage() {
                   </div>
 
                   <div className="px-6 py-6 sm:px-8">
+                    {!selectedBusiness ? (
+                      <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                        <p className="text-base font-semibold text-brand-dark-green">
+                          {selectedBusinessQuery.isLoading ? "Loading selected listing..." : "This listing is not available to claim."}
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          It may already be claimed, under review, or unpublished. Search again to choose another listing.
+                        </p>
+                        <MithoButton className="mt-4" type="button" variant="outline-secondary" onClick={handleChangeBusiness}>
+                          Back to listing search
+                        </MithoButton>
+                      </div>
+                    ) : (
                     <Form {...form}>
                       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="grid gap-5 md:grid-cols-2">
@@ -530,8 +610,14 @@ export function BusinessClaimPage() {
                             <ArrowRight className="h-4 w-4" />
                           </MithoButton>
                         </div>
+                        {submissionError ? (
+                          <p className="rounded-[1rem] border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm font-medium text-destructive">
+                            {submissionError}
+                          </p>
+                        ) : null}
                       </form>
                     </Form>
+                    )}
                   </div>
                 </section>
               )}
@@ -572,10 +658,10 @@ export function BusinessClaimPage() {
                   <div className="px-6 py-6">
                     <p className="type-eyebrow text-brand-deep-green/68">Current selection</p>
                     <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">{selectedBusiness.name}</h2>
-                    <p className="mt-2 text-sm text-muted-foreground">{selectedBusiness.location}</p>
-                    <p className="mt-4 text-sm leading-7 text-muted-foreground">{selectedBusiness.cue}</p>
+                    <p className="mt-2 text-sm text-muted-foreground">{claimableLocation(selectedBusiness)}</p>
+                    <p className="mt-4 text-sm leading-7 text-muted-foreground">{claimableCue(selectedBusiness)}</p>
                     <MithoButton variant="ghost" className="mt-4" asChild>
-                      <Link href={selectedBusiness.publicHref}>View public listing</Link>
+                      <Link href={publicBusinessHref(selectedBusiness)}>View public listing</Link>
                     </MithoButton>
                   </div>
                 </section>

@@ -220,6 +220,12 @@ function getPublicBusinessHref(business: {
   return `/business/${business.slug}`
 }
 
+function getClaimReviewHref(businessId: string, claimId?: string) {
+  const params = new URLSearchParams({ status: "pending", businessId })
+  if (claimId) params.set("claimId", claimId)
+  return `/admin/business-claims?${params.toString()}`
+}
+
 export function AdminBusinessDetailPage({ id }: { id: string }) {
   const { data: business, isLoading, isError, error, refetch } = useBusiness(id)
   const { data: establishmentTypes } = useAdminEstablishmentTypes()
@@ -247,6 +253,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
     : business.municipality.name
   const addedByLabel = business.addedByUserName || business.addedByType
   const publicBusinessHref = getPublicBusinessHref(business)
+  const claimReviewHref = getClaimReviewHref(business.id, business.pendingClaim?.id)
 
   const fullAddress = `${business.addressLine1}${business.addressLine2 ? `, ${business.addressLine2}` : ""}${
     business.landmark ? ` (Near ${business.landmark})` : ""
@@ -325,10 +332,10 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
               <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getStatusTone(business.listingStatus)}`}>
-                {statusLabels[business.listingStatus]}
+                Listing: {statusLabels[business.listingStatus]}
               </span>
               <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getOwnershipTone(business.ownershipStatus)}`}>
-                {ownershipLabels[business.ownershipStatus]}
+                Ownership: {ownershipLabels[business.ownershipStatus]}
               </span>
               <span className="inline-flex rounded-full border border-brand-deep-green/10 bg-white px-3 py-1 text-xs font-semibold text-brand-dark-green dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15">
                 {establishmentTypeLabel}
@@ -368,6 +375,14 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 Edit business
               </Link>
             </Button>
+            {business.ownershipStatus === "claim_under_review" && business.pendingClaim ? (
+              <Button asChild variant="outline" className="rounded-xl border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100">
+                <Link href={claimReviewHref}>
+                  <ShieldCheck className="h-4 w-4" />
+                  Review claim request
+                </Link>
+              </Button>
+            ) : null}
             <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 dark:text-brand-soft-beige dark:border-brand-deep-green/20">
               <Link href={publicBusinessHref} target="_blank">
                 <Eye className="h-4 w-4" />
@@ -389,6 +404,30 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         {/* Left Column */}
         <div className="space-y-6">
+          {business.ownershipStatus === "claim_under_review" && business.pendingClaim ? (
+            <section className="rounded-[1.8rem] border border-amber-100 bg-amber-50/70 p-6 shadow-[0_10px_24px_rgba(120,53,15,0.05)]">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700/75">Ownership review</p>
+                  <h2 className="mt-2 text-xl font-semibold text-amber-900">Claim request waiting for review</h2>
+                  <p className="mt-2 text-sm leading-6 text-amber-800/80">
+                    {business.pendingClaim.claimantName || "Claimant"} submitted this request on {new Date(business.pendingClaim.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}. Claim approval is handled from Business Claims, not from business publishing.
+                  </p>
+                </div>
+                <Button asChild className="shrink-0 rounded-xl bg-amber-700 text-white hover:bg-amber-800">
+                  <Link href={claimReviewHref}>
+                    <ShieldCheck className="h-4 w-4" />
+                    Review claim request
+                  </Link>
+                </Button>
+              </div>
+            </section>
+          ) : null}
+
           {/* Listing Details */}
           <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)] dark:bg-surface-admin dark:border-brand-deep-green/15">
             <div className="flex items-center gap-3">

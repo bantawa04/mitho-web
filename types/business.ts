@@ -59,6 +59,13 @@ export type BusinessStatus = "pending" | "active" | "suspended" | "rejected"
 export type BusinessListingStatus = "pending_review" | "published" | "suspended" | "rejected"
 export type BusinessOwnershipStatus = "unclaimed" | "claim_under_review" | "claimed"
 
+export interface BusinessPendingClaim {
+  id: string
+  status: "pending"
+  claimantName: string
+  createdAt: string
+}
+
 export interface Business {
   id: string
   name: string
@@ -100,6 +107,7 @@ export interface Business {
   status: BusinessStatus
   listingStatus: BusinessListingStatus
   ownershipStatus: BusinessOwnershipStatus
+  pendingClaim?: BusinessPendingClaim
   addedByType: string
   addedByUserId?: string
   addedByUserName?: string

@@ -14,6 +14,7 @@ import {
   useDeleteAdminCuisine,
   useUpdateAdminCuisine,
 } from "@/hooks/use-admin-cuisines"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   AdminCuisineItem,
   AdminCuisineStatusFilter,
@@ -63,6 +64,7 @@ function formatAdminTimestamp(dateValue: string) {
 
 export function AdminCuisinesPage() {
   const [query, setQuery] = useState("")
+  const debouncedQuery = useDebouncedValue(query, 300)
   const [statusFilter, setStatusFilter] = useState<AdminCuisineStatusFilter>("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCuisineId, setSelectedCuisineId] = useState<string | null>(null)
@@ -83,7 +85,7 @@ export function AdminCuisinesPage() {
   const cuisines = cuisinesResult.data ?? []
 
   const filteredCuisines = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
+    const normalizedQuery = debouncedQuery.trim().toLowerCase()
 
     return cuisines.filter((item) => {
       const matchesStatus = statusFilter === "all" ? true : item.status === statusFilter
@@ -94,13 +96,13 @@ export function AdminCuisinesPage() {
 
       return matchesStatus && matchesQuery
     })
-  }, [cuisines, query, statusFilter])
+  }, [cuisines, debouncedQuery, statusFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredCuisines.length / pageSize))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [query, statusFilter])
+  }, [debouncedQuery, statusFilter])
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages)

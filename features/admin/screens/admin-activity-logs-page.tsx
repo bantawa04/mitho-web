@@ -10,6 +10,7 @@ import {
   type AdminActivityLogItem,
   type AdminActivityLogScope,
 } from "@/features/admin/data/admin-data"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const pageSize = 8
@@ -32,11 +33,12 @@ function getScopeTone(scope: AdminActivityLogScope) {
 
 export function AdminActivityLogsPage() {
   const [query, setQuery] = useState("")
+  const debouncedQuery = useDebouncedValue(query, 300)
   const [scopeFilter, setScopeFilter] = useState<"All" | AdminActivityLogScope>("All")
   const [currentPage, setCurrentPage] = useState(1)
 
   const filteredLogs = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
+    const normalizedQuery = debouncedQuery.trim().toLowerCase()
 
     return mockAdminActivityLogs.filter((log) => {
       const matchesScope = scopeFilter === "All" ? true : log.scope === scopeFilter
@@ -50,13 +52,13 @@ export function AdminActivityLogsPage() {
 
       return matchesScope && matchesQuery
     })
-  }, [query, scopeFilter])
+  }, [debouncedQuery, scopeFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredLogs.length / pageSize))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [query, scopeFilter])
+  }, [debouncedQuery, scopeFilter])
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages)

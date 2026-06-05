@@ -1,5 +1,6 @@
 import type { ListAdminUsersParams } from "@/types/admin-users"
 import type { ListBusinessesParams } from "@/types/business"
+import type { ListBusinessClaimsParams } from "@/types/business-claims"
 import type { ListMediaParams } from "@/types/media"
 
 export const queryKeys = {
@@ -30,6 +31,11 @@ export const queryKeys = {
     all: ["cuisines"] as const,
     list: () => ["cuisines", "list"] as const,
   },
+  businessClaims: {
+    all: ["business-claims"] as const,
+    claimable: (search: string) => ["business-claims", "claimable", search] as const,
+    claimableDetail: (id: string | null) => ["business-claims", "claimable", "detail", id] as const,
+  },
   media: {
     all: ["media"] as const,
     list: (params?: ListMediaParams) => ["media", "list", params] as const,
@@ -54,6 +60,11 @@ export const queryKeys = {
     cuisines: {
       all: ["admin", "cuisines"] as const,
       list: () => ["admin", "cuisines", "list"] as const,
+    },
+    businessClaims: {
+      all: ["admin", "business-claims"] as const,
+      list: (params: ListBusinessClaimsParams) => ["admin", "business-claims", "list", params] as const,
+      detail: (id: string | null) => ["admin", "business-claims", "detail", id] as const,
     },
   },
 }
