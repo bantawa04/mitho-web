@@ -40,8 +40,15 @@ export async function createBusinessClaim(businessId: string, payload: CreateBus
 }
 
 export async function listAdminBusinessClaims(params: ListBusinessClaimsParams): Promise<BusinessClaimsListResponse> {
+  const requestParams = {
+    status: params.status,
+    search: params.search,
+    business_id: params.businessId,
+    page: params.page,
+    per_page: params.perPage,
+  }
   const { data } = await API.get<ISuccessResponse<BusinessClaimsListResponse>>("/admin/business-claims", {
-    params,
+    params: requestParams,
   })
   return data.data
 }

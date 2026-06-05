@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ComponentProps } from "react"
 import Link from "next/link"
 import { CheckCircle2, ChevronRight, Download, Eye, XCircle } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
@@ -28,6 +29,11 @@ const statusOptions: Array<{ label: string; value: BusinessClaimStatusFilter }> 
   { label: "Approved", value: "approved" },
   { label: "Rejected", value: "rejected" },
 ]
+
+function parseStatusFilter(value: string | null): BusinessClaimStatusFilter {
+  if (value === "all" || value === "pending" || value === "approved" || value === "rejected") return value
+  return "pending"
+}
 
 function statusLabel(status: BusinessClaimStatus) {
   switch (status) {
@@ -78,8 +84,11 @@ function publicBusinessHref(claim: BusinessClaim) {
 
 export function AdminBusinessClaimsPage() {
   const { toast } = useToast()
+  const searchParams = useSearchParams()
+  const queryBusinessId = searchParams.get("businessId") ?? undefined
+  const queryClaimId = searchParams.get("claimId")
   const [query, setQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState<BusinessClaimStatusFilter>("pending")
+  const [statusFilter, setStatusFilter] = useState<BusinessClaimStatusFilter>(() => parseStatusFilter(searchParams.get("status")))
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null)
   const [approveClaimId, setApproveClaimId] = useState<string | null>(null)
@@ -91,10 +100,11 @@ export function AdminBusinessClaimsPage() {
     () => ({
       status: statusFilter,
       search: debouncedQuery.trim() || undefined,
+      businessId: queryBusinessId,
       page: currentPage,
       perPage: pageSize,
     }),
-    [currentPage, debouncedQuery, statusFilter],
+    [currentPage, debouncedQuery, queryBusinessId, statusFilter],
   )
 
   const claimsResult = useAdminBusinessClaims(params)
@@ -110,7 +120,11 @@ export function AdminBusinessClaimsPage() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [query, statusFilter])
+  }, [query, queryBusinessId, statusFilter])
+
+  useEffect(() => {
+    if (queryClaimId) setSelectedClaimId(queryClaimId)
+  }, [queryClaimId])
 
   async function openDocument(claimId: string, mediaId: string) {
     try {
@@ -140,6 +154,10 @@ export function AdminBusinessClaimsPage() {
 
   async function handleReject() {
     if (!rejectClaimId) return
+    if (!reviewNote.trim()) {
+      toast({ title: "Rejection reason required", description: "Add a short reason before rejecting this claim.", variant: "destructive" })
+      return
+    }
     await rejectClaim.mutateAsync(
       { id: rejectClaimId, payload: { reviewNote: reviewNote.trim() || undefined } },
       {
@@ -420,6 +438,7 @@ export function AdminBusinessClaimsPage() {
         onConfirm={handleReject}
         isLoading={rejectClaim.isPending}
         destructive
+        requiresNote
       />
     </>
   )
@@ -446,6 +465,7 @@ function DecisionModal({
   onConfirm,
   isLoading,
   destructive = false,
+  requiresNote = false,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -457,7 +477,10 @@ function DecisionModal({
   onConfirm: () => void
   isLoading: boolean
   destructive?: boolean
+  requiresNote?: boolean
 }) {
+  const noteIsMissing = requiresNote && reviewNote.trim().length === 0
+
   return (
     <AdminModal
       open={open}
@@ -467,20 +490,24 @@ function DecisionModal({
       confirmLabel={confirmLabel}
       confirmVariant={destructive ? "destructive" : "default"}
       onConfirm={onConfirm}
+      isConfirmDisabled={noteIsMissing}
       isLoading={isLoading}
       size="md"
     >
       <div className="space-y-2">
         <label className="text-sm font-semibold text-brand-dark-green" htmlFor="claim-review-note">
-          Review note
+          {requiresNote ? "Rejection reason" : "Review note"}
         </label>
         <Textarea
           id="claim-review-note"
           value={reviewNote}
           onChange={(event) => setReviewNote(event.target.value)}
-          placeholder="Optional note for internal review history"
+          placeholder={requiresNote ? "Explain why this claim is being rejected" : "Optional note for internal review history"}
           className="min-h-28 rounded-xl border-brand-deep-green/10 bg-white shadow-none"
         />
+        {requiresNote ? (
+          <p className="text-xs text-muted-foreground">Required for claimant communication and internal history.</p>
+        ) : null}
       </div>
     </AdminModal>
   )

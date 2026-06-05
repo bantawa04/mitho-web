@@ -160,10 +160,10 @@ export function AdminBusinessesPage() {
         cell: (business) => (
           <div className="flex flex-col items-start gap-2">
             <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(business.listingStatus)}`}>
-              {statusLabels[business.listingStatus]}
+              Listing: {statusLabels[business.listingStatus]}
             </span>
             <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOwnershipTone(business.ownershipStatus)}`}>
-              {ownershipLabels[business.ownershipStatus]}
+              Ownership: {ownershipLabels[business.ownershipStatus]}
             </span>
           </div>
         ),

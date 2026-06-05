@@ -55,6 +55,10 @@ function publicBusinessHref(business: ClaimableBusiness) {
   return business.publicPath || `/business/${business.slug}`
 }
 
+function hasPublicBusinessPage(business: ClaimableBusiness) {
+  return Boolean(business.publicPath)
+}
+
 function StepPill({
   number,
   title,
@@ -157,14 +161,16 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
 
           <div className="flex flex-wrap gap-3">
             <MithoButton asChild>
-              <Link href="/dashboard/businesses">
-                Manage businesses
+              <Link href="/">
+                Back to home
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </MithoButton>
-            <MithoButton variant="outline-secondary" asChild>
-              <Link href={publicBusinessHref(business)}>View public listing</Link>
-            </MithoButton>
+            {hasPublicBusinessPage(business) ? (
+              <MithoButton variant="outline-secondary" asChild>
+                <Link href={publicBusinessHref(business)}>View public listing</Link>
+              </MithoButton>
+            ) : null}
           </div>
         </div>
       </section>

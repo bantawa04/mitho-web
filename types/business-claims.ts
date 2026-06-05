@@ -71,6 +71,7 @@ export interface BusinessClaim {
 export interface ListBusinessClaimsParams {
   status?: BusinessClaimStatusFilter
   search?: string
+  businessId?: string
   page?: number
   perPage?: number
 }
