@@ -314,16 +314,11 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
 
         {/* Premium Banner image header */}
         <div className="relative overflow-hidden rounded-[2rem] border border-brand-deep-green/10 bg-brand-dark-green h-48 sm:h-64 shadow-[0_12px_36px_rgba(10,70,53,0.08)]">
-          {business.banner?.publicUrl ? (
-            <img
-              src={business.banner.publicUrl}
-              alt={`${business.name} Banner`}
-              className="h-full w-full object-cover opacity-90 transition duration-500 hover:scale-102"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-r from-brand-dark-green to-brand-deep-green opacity-90" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-dark-green/90 via-brand-dark-green/20 to-transparent" />
+          <img
+            src={business.banner?.publicUrl || "/placeholder.svg?height=600&width=1200"}
+            alt={`${business.name} Banner`}
+            className="h-full w-full object-cover transition duration-500 hover:scale-102"
+          />
         </div>
 
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between mt-4">
