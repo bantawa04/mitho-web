@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
-import { Building2, ChevronRight, Eye, Pencil, Plus } from "lucide-react"
+import { Building2, ChevronRight, Eye, Pencil, Plus, ShieldCheck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
+import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -17,8 +18,10 @@ import type { Business, BusinessListingStatus, BusinessOwnershipStatus } from "@
 const pageSize = 6
 
 type StatusFilterValue = "All" | BusinessListingStatus
+type OwnershipFilterValue = "All" | BusinessOwnershipStatus
 
 const statusOptions: StatusFilterValue[] = ["All", "published", "pending_review", "suspended", "rejected"]
+const ownershipOptions: OwnershipFilterValue[] = ["All", "unclaimed", "claim_under_review", "claimed"]
 
 const statusLabels: Record<BusinessListingStatus, string> = {
   published: "Published",
@@ -66,6 +69,8 @@ export function AdminBusinessesPage() {
   const [query, setQuery] = useState("")
   const debouncedQuery = useDebouncedValue(query, 300)
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("All")
+  const [ownershipFilter, setOwnershipFilter] = useState<OwnershipFilterValue>("All")
+  const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
 
   const { data: businesses, isLoading, isError } = useBusinesses()
@@ -82,21 +87,22 @@ export function AdminBusinessesPage() {
 
     return businesses.filter((business) => {
       const matchesStatus = statusFilter === "All" ? true : business.listingStatus === statusFilter
+      const matchesOwnership = ownershipFilter === "All" ? true : business.ownershipStatus === ownershipFilter
       const location = `${business.municipality.name} ${business.district.name} ${business.province.name}`
       const matchesQuery =
         normalizedQuery.length === 0
           ? true
           : `${business.name} ${location}`.toLowerCase().includes(normalizedQuery)
 
-      return matchesStatus && matchesQuery
+      return matchesStatus && matchesOwnership && matchesQuery
     })
-  }, [businesses, debouncedQuery, statusFilter])
+  }, [businesses, debouncedQuery, statusFilter, ownershipFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredBusinesses.length / pageSize))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [debouncedQuery, statusFilter])
+  }, [debouncedQuery, statusFilter, ownershipFilter])
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -185,24 +191,34 @@ export function AdminBusinessesPage() {
         label: "Action",
         className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 pr-6 align-top text-right",
-        cell: (business) => (
-          <div className="flex justify-end">
-            <AdminRowActions
-              items={[
-                {
-                  label: "View",
-                  icon: <Eye className="h-4 w-4" />,
-                  onSelect: () => router.push(`/admin/businesses/${business.id}`),
-                },
-                {
-                  label: "Edit",
-                  icon: <Pencil className="h-4 w-4" />,
-                  onSelect: () => router.push(`/admin/businesses/${business.id}/edit`),
-                },
-              ]}
-            />
-          </div>
-        ),
+        cell: (business) => {
+          const actions = [
+            {
+              label: "View",
+              icon: <Eye className="h-4 w-4" />,
+              onSelect: () => router.push(`/admin/businesses/${business.id}`),
+            },
+            {
+              label: "Edit",
+              icon: <Pencil className="h-4 w-4" />,
+              onSelect: () => router.push(`/admin/businesses/${business.id}/edit`),
+            },
+          ]
+          
+          if (business.ownershipStatus === "claim_under_review" && business.pendingClaim) {
+            actions.unshift({
+              label: "Review Request",
+              icon: <ShieldCheck className="h-4 w-4" />,
+              onSelect: () => setSelectedClaimId(business.pendingClaim!.id),
+            })
+          }
+
+          return (
+            <div className="flex justify-end">
+              <AdminRowActions items={actions} />
+            </div>
+          )
+        },
       },
     ],
     [router, establishmentTypeMap],
@@ -259,13 +275,27 @@ export function AdminBusinessesPage() {
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-muted-foreground">Status</span>
               <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StatusFilterValue)}>
-                <SelectTrigger className="h-11 w-[190px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
-                  <SelectValue placeholder="Filter by status" />
+                <SelectTrigger className="h-11 w-[160px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                  <SelectValue placeholder="Listing status" />
                 </SelectTrigger>
                 <SelectContent>
                   {statusOptions.map((status) => (
                     <SelectItem key={status} value={status}>
                       {status === "All" ? "All" : statusLabels[status]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <span className="text-sm font-medium text-muted-foreground ml-2">Ownership</span>
+              <Select value={ownershipFilter} onValueChange={(value) => setOwnershipFilter(value as OwnershipFilterValue)}>
+                <SelectTrigger className="h-11 w-[180px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                  <SelectValue placeholder="Ownership status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ownershipOptions.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {opt === "All" ? "All" : ownershipLabels[opt]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -288,6 +318,13 @@ export function AdminBusinessesPage() {
           emptyDescription="Try clearing the search or choosing a broader status filter."
         />
       )}
+
+      <ClaimReviewModal 
+        claimId={selectedClaimId} 
+        onOpenChange={(open) => {
+          if (!open) setSelectedClaimId(null)
+        }} 
+      />
     </div>
   )
 }

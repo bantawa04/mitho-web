@@ -405,27 +405,20 @@ export function BusinessClaimPage() {
                   <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div>
+                        <button
+                          type="button"
+                          onClick={handleChangeBusiness}
+                          className="mb-6 inline-flex items-center text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+                        >
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Back to search
+                        </button>
                         <p className="type-eyebrow text-brand-deep-green/68">Step 2</p>
                         <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Verify that you are allowed to claim this listing.</h2>
                         <p className="mt-3 text-sm leading-7 text-muted-foreground">
                           PAN/VAT is used only for verification. It is reviewed by admin and does not become public listing media.
                         </p>
                       </div>
-
-                      {selectedBusiness ? (
-                        <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-4">
-                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Selected listing</p>
-                          <p className="mt-2 text-base font-semibold text-brand-dark-green">{selectedBusiness.name}</p>
-                          <p className="mt-1 text-sm text-muted-foreground">{claimableLocation(selectedBusiness)}</p>
-                          <button
-                            type="button"
-                            onClick={handleChangeBusiness}
-                            className="mt-3 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
-                          >
-                            Change business
-                          </button>
-                        </div>
-                      ) : null}
                     </div>
                   </div>
 
@@ -561,25 +554,11 @@ export function BusinessClaimPage() {
                           />
                         </div>
 
-                        <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
-                          <div className="flex items-start gap-3">
-                            <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange">
-                              <FileBadge2 className="h-5 w-5" />
-                            </div>
-                            <div>
-                              <p className="text-base font-semibold text-brand-dark-green">Verification-only document handling</p>
-                              <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                                This file is used only to confirm ownership. It is reviewed separately from listing approval and is not displayed on the public business page.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
                         <FormField
                           control={form.control}
                           name="authorizationConfirmed"
                           render={({ field }) => (
-                            <FormItem className="rounded-[1.25rem] border border-brand-deep-green/10 bg-white px-4 py-4">
+                            <FormItem className="pt-2">
                               <div className="flex items-start gap-3">
                                 <FormControl>
                                   <Checkbox
@@ -600,11 +579,7 @@ export function BusinessClaimPage() {
                           )}
                         />
 
-                        <div className="flex flex-wrap gap-3">
-                          <MithoButton type="button" variant="outline-secondary" onClick={handleChangeBusiness}>
-                            <ArrowLeft className="h-4 w-4" />
-                            Back to listing search
-                          </MithoButton>
+                        <div className="pt-4">
                           <MithoButton type="submit" loading={form.formState.isSubmitting}>
                             {isAuthenticated ? "Submit claim for review" : "Sign in to submit claim"}
                             <ArrowRight className="h-4 w-4" />
