@@ -6,6 +6,7 @@ import { CheckCircle2, ChevronRight, Download, Eye, XCircle } from "lucide-react
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import {
   useAdminBusinessClaim,
   useAdminBusinessClaims,
@@ -84,15 +85,16 @@ export function AdminBusinessClaimsPage() {
   const [approveClaimId, setApproveClaimId] = useState<string | null>(null)
   const [rejectClaimId, setRejectClaimId] = useState<string | null>(null)
   const [reviewNote, setReviewNote] = useState("")
+  const debouncedQuery = useDebouncedValue(query, 300)
 
   const params = useMemo(
     () => ({
       status: statusFilter,
-      search: query.trim() || undefined,
+      search: debouncedQuery.trim() || undefined,
       page: currentPage,
       perPage: pageSize,
     }),
-    [currentPage, query, statusFilter],
+    [currentPage, debouncedQuery, statusFilter],
   )
 
   const claimsResult = useAdminBusinessClaims(params)

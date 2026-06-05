@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useBusinesses } from "@/hooks/use-businesses"
 import type { Business, BusinessListingStatus, BusinessOwnershipStatus } from "@/types/business"
 
@@ -63,6 +64,7 @@ function formatBusinessLocation(business: Business) {
 export function AdminBusinessesPage() {
   const router = useRouter()
   const [query, setQuery] = useState("")
+  const debouncedQuery = useDebouncedValue(query, 300)
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("All")
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -76,7 +78,7 @@ export function AdminBusinessesPage() {
 
   const filteredBusinesses = useMemo(() => {
     if (!businesses) return []
-    const normalizedQuery = query.trim().toLowerCase()
+    const normalizedQuery = debouncedQuery.trim().toLowerCase()
 
     return businesses.filter((business) => {
       const matchesStatus = statusFilter === "All" ? true : business.listingStatus === statusFilter
@@ -88,13 +90,13 @@ export function AdminBusinessesPage() {
 
       return matchesStatus && matchesQuery
     })
-  }, [businesses, query, statusFilter])
+  }, [businesses, debouncedQuery, statusFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredBusinesses.length / pageSize))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [query, statusFilter])
+  }, [debouncedQuery, statusFilter])
 
   useEffect(() => {
     if (currentPage > totalPages) {

@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, ArrowRight, CheckCircle2, FileBadge2, Search, ShieldCheck } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { useClaimableBusiness, useClaimableBusinesses, useCreateBusinessClaim } from "@/hooks/use-business-claims"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
@@ -190,14 +191,14 @@ export function BusinessClaimPage() {
   const prefilledListingId = searchParams.get("listing")
 
   const [query, setQuery] = React.useState("")
-  const deferredQuery = React.useDeferredValue(query)
+  const debouncedQuery = useDebouncedValue(query, 300)
   const [selectedBusiness, setSelectedBusiness] = React.useState<ClaimableBusiness | null>(null)
   const [step, setStep] = React.useState<1 | 2>(prefilledListingId ? 2 : 1)
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingSubmission, setPendingSubmission] = React.useState<BusinessClaimFormValues | null>(null)
   const [submittedBusiness, setSubmittedBusiness] = React.useState<ClaimableBusiness | null>(null)
   const [submissionError, setSubmissionError] = React.useState<string | null>(null)
-  const claimableBusinesses = useClaimableBusinesses(deferredQuery)
+  const claimableBusinesses = useClaimableBusinesses(debouncedQuery)
   const selectedBusinessQuery = useClaimableBusiness(prefilledListingId)
   const createClaim = useCreateBusinessClaim()
 
@@ -367,7 +368,7 @@ export function BusinessClaimPage() {
                             We only show published, unclaimed listings that are available for ownership review.
                           </p>
                         </div>
-                      ) : claimableBusinesses.isLoading || deferredQuery !== query ? (
+                      ) : claimableBusinesses.isLoading || debouncedQuery !== query ? (
                         <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
                           <p className="text-base font-semibold text-brand-dark-green">Searching listings...</p>
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">Checking claimable businesses by name.</p>

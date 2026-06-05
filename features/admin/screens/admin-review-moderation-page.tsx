@@ -7,6 +7,7 @@ import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminConfirmModal, AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { mockAdminReviewModeration, type AdminReviewModerationFlag, type AdminReviewModerationItem, type AdminReviewModerationStatus } from "@/features/admin/data/admin-data"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -40,6 +41,7 @@ function getModerationStatusTone(status: AdminReviewModerationStatus) {
 
 export function AdminReviewModerationPage() {
   const [query, setQuery] = useState("")
+  const debouncedQuery = useDebouncedValue(query, 300)
   const [reviews, setReviews] = useState(mockAdminReviewModeration)
   const [statusFilter, setStatusFilter] = useState<"All" | AdminReviewModerationStatus>("All")
   const [currentPage, setCurrentPage] = useState(1)
@@ -49,7 +51,7 @@ export function AdminReviewModerationPage() {
   const [selectedRejectReason, setSelectedRejectReason] = useState<AdminReviewModerationFlag>("Abusive wording")
 
   const filteredReviews = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
+    const normalizedQuery = debouncedQuery.trim().toLowerCase()
 
     return reviews.filter((review) => {
       const matchesStatus = statusFilter === "All" ? true : review.moderationStatus === statusFilter
@@ -70,13 +72,13 @@ export function AdminReviewModerationPage() {
 
       return matchesStatus && matchesQuery
     })
-  }, [query, reviews, statusFilter])
+  }, [debouncedQuery, reviews, statusFilter])
 
   const totalPages = Math.max(1, Math.ceil(filteredReviews.length / pageSize))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [query, statusFilter])
+  }, [debouncedQuery, statusFilter])
 
   useEffect(() => {
     if (currentPage > totalPages) {

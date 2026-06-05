@@ -199,6 +199,7 @@ export async function fetchBusinessReviews(businessId: string): Promise<Review[]
 - Query keys must be centralized in `lib/api/query-keys.ts` as a typed constant object.
 - Custom hooks wrapping `useQuery` / `useMutation` live in `hooks/` (e.g., `hooks/useBusinessReviews.ts`).
 - Page and component files call hooks only — never `useQuery` or `useMutation` directly.
+- Search inputs that drive filtering or backend queries should use a reusable debounce hook such as `hooks/use-debounced-value.ts`. Keep raw input state for field rendering, use debounced value for filtering/query params, and default to `300ms` unless product behavior clearly needs something else.
 
 ```ts
 // hooks/useBusinessReviews.ts

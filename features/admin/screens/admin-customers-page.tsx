@@ -7,6 +7,7 @@ import { AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { mockAdminCustomers, type AdminCustomerItem, type AdminCustomerOauthType } from "@/features/admin/data/admin-data"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 
 const pageSize = 6
 
@@ -21,12 +22,13 @@ function getOauthTone(oauthType: AdminCustomerOauthType) {
 
 export function AdminCustomersPage() {
   const [query, setQuery] = useState("")
+  const debouncedQuery = useDebouncedValue(query, 300)
   const [customers] = useState(mockAdminCustomers)
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null)
 
   const filteredCustomers = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
+    const normalizedQuery = debouncedQuery.trim().toLowerCase()
 
     return customers.filter((customer) =>
       normalizedQuery.length === 0
@@ -36,13 +38,13 @@ export function AdminCustomersPage() {
             .toLowerCase()
             .includes(normalizedQuery),
     )
-  }, [customers, query])
+  }, [customers, debouncedQuery])
 
   const totalPages = Math.max(1, Math.ceil(filteredCustomers.length / pageSize))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [query])
+  }, [debouncedQuery])
 
   useEffect(() => {
     if (currentPage > totalPages) {
