@@ -67,9 +67,10 @@ export function PopularNearYouSection() {
     >
       <MithoCarousel className="px-1 sm:px-3">
         {nearbyPlaces.map((place) => (
-          <article
+          <Link
+            href={place.href}
             key={place.name}
-            className="w-[276px] flex-shrink-0 overflow-hidden rounded-[1.6rem] border border-brand-deep-green/10 bg-white shadow-[0_8px_24px_rgba(10,70,53,0.05)]"
+            className="group block w-[276px] flex-shrink-0 overflow-hidden rounded-[1.6rem] border border-brand-deep-green/10 bg-white shadow-[0_8px_24px_rgba(10,70,53,0.05)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(10,70,53,0.08)]"
           >
             <div className="relative aspect-[4/3]">
               <Image
@@ -98,15 +99,8 @@ export function PopularNearYouSection() {
 
               <p className="text-sm leading-6 text-foreground">{place.note}</p>
 
-              <Link
-                href={place.href}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
-              >
-                View place
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
             </div>
-          </article>
+          </Link>
         ))}
       </MithoCarousel>
     </MithoSection>

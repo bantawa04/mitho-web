@@ -5,6 +5,7 @@ import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { Header } from "@/features/home/components/header"
 import { Footer } from "@/features/home/components/footer"
+import { MithoButton } from "@/components/mitho/mitho-button"
 import { AddToCollectionDialog } from "@/features/collections/components/add-to-collection-dialog"
 import {
   buildCollectionItemFromCandidate,
@@ -165,7 +166,18 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
           onShare={handleShare}
         />
 
-        <div className="mt-10">
+        {/* Sticky Tab Navigation */}
+        <div className="sticky top-0 z-30 border-b border-brand-deep-green/10 bg-[#fffdf8]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fffdf8]/80">
+          <div className="container mx-auto px-4">
+            <nav className="flex gap-6 overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <a href="#overview" className="border-b-2 border-brand-orange py-4 text-sm font-semibold text-brand-dark-green transition-colors">Overview</a>
+              <a href="#menu" className="border-b-2 border-transparent py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-dark-green">Menu</a>
+              <a href="#reviews" className="border-b-2 border-transparent py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-dark-green">Reviews</a>
+            </nav>
+          </div>
+        </div>
+
+        <div className="mt-8" id="overview">
           <InfoPanel
             isEarlyListing={isEarlyListing}
             galleryItems={pageData.galleryItems}
@@ -173,15 +185,17 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
             galleryEmptyMessage={pageData.galleryEmptyMessage}
             visitInfo={pageData.visitInfo}
           />
-          <MenuHighlights
-            isEarlyListing={isEarlyListing}
-            items={pageData.menuItems}
-            emptyMessage={pageData.menuEmptyMessage}
-            menuLink={pageData.menuLink}
-          />
+          <div id="menu">
+            <MenuHighlights
+              isEarlyListing={isEarlyListing}
+              items={pageData.menuItems}
+              emptyMessage={pageData.menuEmptyMessage}
+              menuLink={pageData.menuLink}
+            />
+          </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4" id="reviews">
           <RatingsSection isEarlyListing={isEarlyListing} ratingsData={pageData.ratingsData ?? null} />
           <ReviewsSection
             isEarlyListing={isEarlyListing}
@@ -202,6 +216,18 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
           <ClaimReport subdued={isEarlyListing} claimHref={claimHref} />
         </div>
       </main>
+
+      {/* Mobile Floating Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-brand-deep-green/10 bg-white p-4 pb-safe shadow-[0_-8px_24px_rgba(10,70,53,0.05)] md:hidden">
+        <div className="flex gap-3 max-w-md mx-auto">
+          <MithoButton size="lg" className="flex-1 justify-center shadow-sm" onClick={scrollToReview}>
+            Write Review
+          </MithoButton>
+          <MithoButton size="lg" variant="outline-secondary" className="flex-1 justify-center bg-white shadow-sm" onClick={handleAddToCollectionPress}>
+            Add to collection
+          </MithoButton>
+        </div>
+      </div>
 
       <Footer />
 

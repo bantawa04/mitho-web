@@ -57,9 +57,10 @@ export function SponsoredListingsSection() {
     >
       <MithoCarousel className="px-1 sm:px-3">
         {sponsoredListings.map((listing) => (
-          <article
+          <Link
+            href={listing.href}
             key={listing.name}
-            className="w-[292px] flex-shrink-0 overflow-hidden rounded-[1.6rem] border border-brand-deep-green/10 bg-white shadow-[0_8px_22px_rgba(10,70,53,0.05)]"
+            className="group block w-[292px] flex-shrink-0 overflow-hidden rounded-[1.6rem] border border-brand-deep-green/10 bg-white shadow-[0_8px_22px_rgba(10,70,53,0.05)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(10,70,53,0.08)]"
           >
             <div className="relative aspect-[4/3]">
               <Image
@@ -95,15 +96,8 @@ export function SponsoredListingsSection() {
 
               <p className="text-sm leading-6 text-foreground">{listing.offer}</p>
 
-              <Link
-                href={listing.href}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
-              >
-                See this listing
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
             </div>
-          </article>
+          </Link>
         ))}
       </MithoCarousel>
     </MithoSection>
