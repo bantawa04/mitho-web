@@ -356,29 +356,22 @@ export function BusinessClaimPage() {
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         className={cn(inputClassName, "pl-11")}
-                        placeholder="Search existing listings"
+                        placeholder="Search business by name"
                       />
                     </div>
 
                     <div className="mt-6 grid gap-4">
-                      {query.trim().length < 2 ? (
-                        <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
-                          <p className="text-base font-semibold text-brand-dark-green">Start with at least 2 characters.</p>
-                          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                            We only show published, unclaimed listings that are available for ownership review.
-                          </p>
-                        </div>
-                      ) : claimableBusinesses.isLoading || debouncedQuery !== query ? (
+                      {query.trim().length >= 2 && (claimableBusinesses.isLoading || debouncedQuery !== query) ? (
                         <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
                           <p className="text-base font-semibold text-brand-dark-green">Searching listings...</p>
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">Checking claimable businesses by name.</p>
                         </div>
-                      ) : claimableBusinesses.isError ? (
+                      ) : query.trim().length >= 2 && claimableBusinesses.isError ? (
                         <div className="rounded-[1.35rem] border border-destructive/20 bg-destructive/5 p-5">
                           <p className="text-base font-semibold text-destructive">Could not search listings.</p>
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">Please try again in a moment.</p>
                         </div>
-                      ) : results.length > 0 ? (
+                      ) : query.trim().length >= 2 && results.length > 0 ? (
                         results.map((business) => (
                           <SearchResultCard
                             key={business.id}
@@ -387,7 +380,7 @@ export function BusinessClaimPage() {
                             onSelect={() => handleSelectBusiness(business)}
                           />
                         ))
-                      ) : (
+                      ) : query.trim().length >= 2 ? (
                         <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
                           <p className="text-base font-semibold text-brand-dark-green">No matching listings yet.</p>
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -397,7 +390,7 @@ export function BusinessClaimPage() {
                             <Link href="/add-business">Add a new listing instead</Link>
                           </MithoButton>
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </section>

@@ -217,7 +217,14 @@ The backend wraps all responses consistently. Define a shared `ApiResponse<T>` t
 
 ### Backend Casing
 
-The backend performs automatic camelCase conversion on responses. Expect camelCase field names in all API responses. Define TypeScript types accordingly — do not use snake_case field names in frontend types.
+The backend uses automatic case conversion in API middleware.
+
+- Frontend should **send camelCase** request payloads from forms, hooks, and API service functions.
+- Backend request DTOs are authored in snake_case, but middleware converts incoming camelCase JSON to snake_case before binding.
+- Frontend should **expect camelCase** in all API responses.
+- Define frontend TypeScript types in camelCase.
+- Do not build frontend request payloads in snake_case unless a specific endpoint explicitly bypasses normal API middleware.
+- If a backend request suddenly reports required fields as missing even though frontend payload looks correct, first check whether backend request struct tags were written in camelCase instead of snake_case.
 
 ---
 
