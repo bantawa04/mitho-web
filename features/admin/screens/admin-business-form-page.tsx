@@ -718,35 +718,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   </FormItem>
                 )}
               />
-              {mode === "edit" && existing ? (
-                <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/14 px-4 py-4">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-brand-deep-green/10 text-brand-deep-green">
-                      <ShieldCheck className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Ownership status</p>
-                      <p className="mt-1 text-sm font-semibold text-brand-dark-green">{ownershipLabels[existing.ownershipStatus]}</p>
-                      <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                        Claim approval is handled from Business Claims, not from this form.
-                      </p>
-                    </div>
-                  </div>
-                  {existing.ownershipStatus === "claim_under_review" && existing.pendingClaim ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="mt-4 w-full rounded-xl border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
-                      asChild
-                    >
-                      <Link href={claimReviewHref}>
-                        <ShieldCheck className="h-4 w-4" />
-                        Open claim review
-                      </Link>
-                    </Button>
-                  ) : null}
-                </div>
-              ) : null}
+
               <div className="flex flex-col gap-2 pt-2 border-t border-brand-deep-green/10">
                 <Button
                   type="submit"

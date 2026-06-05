@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import {
   Building2,
   ChevronRight,
@@ -27,6 +27,7 @@ import {
   ExternalLink,
 } from "lucide-react"
 import { useBusiness } from "@/hooks/use-businesses"
+import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -220,13 +221,8 @@ function getPublicBusinessHref(business: {
   return `/business/${business.slug}`
 }
 
-function getClaimReviewHref(businessId: string, claimId?: string) {
-  const params = new URLSearchParams({ status: "pending", businessId })
-  if (claimId) params.set("claimId", claimId)
-  return `/admin/business-claims?${params.toString()}`
-}
-
 export function AdminBusinessDetailPage({ id }: { id: string }) {
+  const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null)
   const { data: business, isLoading, isError, error, refetch } = useBusiness(id)
   const { data: establishmentTypes } = useAdminEstablishmentTypes()
 
@@ -253,7 +249,6 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
     : business.municipality.name
   const addedByLabel = business.addedByUserName || business.addedByType
   const publicBusinessHref = getPublicBusinessHref(business)
-  const claimReviewHref = getClaimReviewHref(business.id, business.pendingClaim?.id)
 
   const fullAddress = `${business.addressLine1}${business.addressLine2 ? `, ${business.addressLine2}` : ""}${
     business.landmark ? ` (Near ${business.landmark})` : ""
@@ -376,11 +371,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               </Link>
             </Button>
             {business.ownershipStatus === "claim_under_review" && business.pendingClaim ? (
-              <Button asChild variant="outline" className="rounded-xl border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100">
-                <Link href={claimReviewHref}>
-                  <ShieldCheck className="h-4 w-4" />
-                  Review claim request
-                </Link>
+              <Button onClick={() => setSelectedClaimId(business.pendingClaim!.id)} variant="outline" className="rounded-xl border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100">
+                <ShieldCheck className="h-4 w-4" />
+                Review Request
               </Button>
             ) : null}
             <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 dark:text-brand-soft-beige dark:border-brand-deep-green/20">
@@ -418,11 +411,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                     })}. Claim approval is handled from Business Claims, not from business publishing.
                   </p>
                 </div>
-                <Button asChild className="shrink-0 rounded-xl bg-amber-700 text-white hover:bg-amber-800">
-                  <Link href={claimReviewHref}>
-                    <ShieldCheck className="h-4 w-4" />
-                    Review claim request
-                  </Link>
+                <Button onClick={() => setSelectedClaimId(business.pendingClaim!.id)} className="shrink-0 rounded-xl bg-amber-700 text-white hover:bg-amber-800">
+                  <ShieldCheck className="h-4 w-4" />
+                  Review Request
                 </Button>
               </div>
             </section>
@@ -645,6 +636,13 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
           </div>
         </section>
       )}
+
+      <ClaimReviewModal 
+        claimId={selectedClaimId} 
+        onOpenChange={(open) => {
+          if (!open) setSelectedClaimId(null)
+        }} 
+      />
     </div>
   )
 }
