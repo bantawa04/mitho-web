@@ -52,7 +52,6 @@ export function BusinessHero({
     <section className="relative">
       <div className="relative h-64 overflow-hidden sm:h-80 lg:h-[26rem]">
         <img src={heroImage} alt={name} className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
       </div>
 
       <div className="container mx-auto px-4">

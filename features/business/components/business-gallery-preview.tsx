@@ -71,7 +71,7 @@ export function BusinessGalleryPreview({
 
   return (
     <>
-      <div className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5", className)}>
+      <div className={cn("flex w-full snap-x snap-mandatory overflow-x-auto gap-3 px-4 sm:px-0 pb-4 -mb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]", className)}>
         {visibleItems.map((item, index) => {
           const isOverlayTile = index === visibleItems.length - 1 && moreCount > 0
           return (
@@ -80,7 +80,7 @@ export function BusinessGalleryPreview({
               type="button"
               onClick={() => setSelectedIndex(index)}
               className={cn(
-                "group relative aspect-[4/3] overflow-hidden rounded-[1.5rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",
+                "group relative aspect-[4/3] w-[75vw] sm:w-[280px] shrink-0 snap-start overflow-hidden rounded-[1.5rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",
               )}
             >
               <img

@@ -12,7 +12,6 @@ const reviews = [
     rating: 5,
     text: "Go for the buff jhol momo while it is still coming out fast. The achar is spicy, the soup has depth, and the plate is generous enough to split if you are ordering sides too.",
     place: "Momo Central",
-    dish: "Buff jhol momo",
     when: "2 days ago",
     city: "New Road, Kathmandu",
     mediaUrl: "/nepali-momos-dumplings-plate.jpg",
@@ -24,7 +23,6 @@ const reviews = [
     rating: 4,
     text: "The choila has real smoke and heat, not just oil and chili. It gets busy after dark, so it works better for an early dinner than a late weekend stop.",
     place: "Newari Bhoj",
-    dish: "Choila platter",
     when: "5 days ago",
     city: "Bhaktapur",
     mediaUrl: "/newari-food-choila-plate.jpg",
@@ -36,7 +34,6 @@ const reviews = [
     rating: 5,
     text: "Order the sel roti with aalu tama if you want comfort food instead of just another snack stop. It feels local, filling, and better value than the busier places nearby.",
     place: "Sel Roti House",
-    dish: "Sel roti with aalu tama",
     when: "1 week ago",
     city: "Patan, Lalitpur",
     mediaUrl: "",
@@ -121,9 +118,6 @@ export function FeaturedReviewsSection() {
                 </div>
 
                 <div className="mt-4 flex flex-wrap items-center gap-3">
-                  <div className="rounded-full border border-brand-deep-green/10 bg-white px-3 py-1 text-xs font-semibold text-brand-dark-green">
-                    {review.dish}
-                  </div>
                   <div className="flex items-center gap-2">
                     <StarRating rating={review.rating} size="sm" />
                     <span className="text-sm font-medium text-brand-dark-green">{review.rating.toFixed(1)} / 5</span>

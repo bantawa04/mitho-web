@@ -68,9 +68,10 @@ export function TrendingSection() {
     >
       <MithoCarousel className="px-1 sm:px-3">
         {trendingPlaces.map((place) => (
-          <article
+          <Link
+            href={place.href}
             key={place.name}
-            className="w-[316px] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_30px_rgba(10,70,53,0.06)]"
+            className="group block w-[316px] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_30px_rgba(10,70,53,0.06)] transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(10,70,53,0.1)]"
           >
             <div className="relative aspect-[4/3]">
               <Image
@@ -108,15 +109,8 @@ export function TrendingSection() {
 
               <p className="text-sm leading-6 text-foreground">{place.note}</p>
 
-              <Link
-                href={place.href}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
-              >
-                Open this pick
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
             </div>
-          </article>
+          </Link>
         ))}
       </MithoCarousel>
     </MithoSection>
