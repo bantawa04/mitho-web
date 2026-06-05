@@ -47,12 +47,12 @@ function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
 }
 
 export async function listBusinesses(params?: ListBusinessesParams): Promise<Business[]> {
-  const { data } = await API.get<ISuccessResponse<Business[]>>("/businesses", { params })
+  const { data } = await API.get<ISuccessResponse<Business[]>>("/admin/businesses", { params })
   return data.data
 }
 
 export async function getBusiness(id: string): Promise<Business> {
-  const { data } = await API.get<ISuccessResponse<Business>>(`/businesses/${id}`)
+  const { data } = await API.get<ISuccessResponse<Business>>(`/admin/businesses/${id}`)
   return data.data
 }
 

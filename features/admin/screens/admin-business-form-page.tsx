@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import type { Resolver } from "react-hook-form"
 import { useRouter } from "next/navigation"
-import { Building2, ChevronRight, Globe, Image, Mail, MapPin, Phone, UtensilsCrossed, X } from "lucide-react"
+import { Building2, ChevronRight, Globe, Image, Mail, MapPin, Phone, ShieldCheck, UtensilsCrossed, X } from "lucide-react"
 import { useBusiness, useCreateBusiness, useUpdateBusiness } from "@/hooks/use-businesses"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
 import { useMunicipalities } from "@/hooks/use-nepal-admin"
@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/hooks/use-toast"
+import type { BusinessOwnershipStatus } from "@/types/business"
 
 interface AdminBusinessFormPageProps {
   mode: "create" | "edit"
@@ -52,6 +53,18 @@ const dietaryAmenityFields = [
   { name: "amenityHalal", label: "Halal" },
   { name: "amenityNonVeg", label: "Non Veg" },
 ] as const
+
+const ownershipLabels: Record<BusinessOwnershipStatus, string> = {
+  unclaimed: "Unclaimed",
+  claim_under_review: "Claim under review",
+  claimed: "Claimed",
+}
+
+function getClaimReviewHref(businessId: string, claimId?: string) {
+  const params = new URLSearchParams({ status: "pending", businessId })
+  if (claimId) params.set("claimId", claimId)
+  return `/admin/business-claims?${params.toString()}`
+}
 
 function readAmenityFlag(record: Record<string, unknown> | undefined, snakeKey: string, camelKey: string) {
   const value = record?.[snakeKey] ?? record?.[camelKey]
@@ -349,6 +362,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
   const existingLogoId = form.watch("logoId")
   const existingBannerId = form.watch("bannerId")
   const existingPhotos = form.watch("photos") ?? []
+  const claimReviewHref = existing ? getClaimReviewHref(existing.id, existing.pendingClaim?.id) : "/admin/business-claims"
   return (
     <div className="space-y-6 pb-12">
       <section className="space-y-3">
@@ -682,7 +696,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 name="listingStatus"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>Listing status</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
@@ -699,10 +713,40 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                         <SelectItem value="rejected">Rejected</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormDescription>Controls whether this listing is publicly published. Ownership claims are reviewed separately.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              {mode === "edit" && existing ? (
+                <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/14 px-4 py-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-brand-deep-green/10 text-brand-deep-green">
+                      <ShieldCheck className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Ownership status</p>
+                      <p className="mt-1 text-sm font-semibold text-brand-dark-green">{ownershipLabels[existing.ownershipStatus]}</p>
+                      <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                        Claim approval is handled from Business Claims, not from this form.
+                      </p>
+                    </div>
+                  </div>
+                  {existing.ownershipStatus === "claim_under_review" && existing.pendingClaim ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="mt-4 w-full rounded-xl border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                      asChild
+                    >
+                      <Link href={claimReviewHref}>
+                        <ShieldCheck className="h-4 w-4" />
+                        Open claim review
+                      </Link>
+                    </Button>
+                  ) : null}
+                </div>
+              ) : null}
               <div className="flex flex-col gap-2 pt-2 border-t border-brand-deep-green/10">
                 <Button
                   type="submit"

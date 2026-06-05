@@ -14,6 +14,7 @@ import { adminRoleTypeOptions, type AdminRoleType } from "@/features/admin/data/
 import { formatDate, getRoleTypeTone, getUserStatusLabel, getUserStatusTone, userStatusOptions, type UserStatusFilter } from "@/features/admin/utils/admin-users-utils"
 import { useAdminUsers, useDeleteAdminUser, useInviteAdminUser, useReplaceAdminUserRoles, useUpdateAdminUser } from "@/hooks/use-admin-users"
 import { useAdminPermissions, useAdminRoles, useCreateAdminRole, useDeleteAdminRole, useUpdateAdminRole } from "@/hooks/use-admin-roles"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type { AdminRole } from "@/types/admin-roles"
 import type { AdminUserItem, InviteAdminUserPayload } from "@/types/admin-users"
 import type { EditAdminUserFormValues } from "@/lib/validators/admin"
@@ -34,8 +35,10 @@ export function AdminUsersPage() {
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
+  const debouncedUsersQuery = useDebouncedValue(usersQuery, 300)
 
   const [rolesQuery, setRolesQuery] = useState("")
+  const debouncedRolesQuery = useDebouncedValue(rolesQuery, 300)
   const [rolesTypeFilter, setRolesTypeFilter] = useState<"All" | AdminRoleType>("All")
   const [rolesPage, setRolesPage] = useState(1)
   const [deleteRoleId, setDeleteRoleId] = useState<string | null>(null)
@@ -45,7 +48,7 @@ export function AdminUsersPage() {
   const usersResult = useAdminUsers({
     page: usersPage,
     per_page: pageSize,
-    query: usersQuery || undefined,
+    query: debouncedUsersQuery || undefined,
     status: usersStatusFilter !== "All" ? usersStatusFilter : undefined,
   })
   const rolesResult = useAdminRoles()
@@ -71,17 +74,17 @@ export function AdminUsersPage() {
   const userPendingDelete = useMemo(() => users.find((u) => u.id === deleteUserId) ?? null, [users, deleteUserId])
 
   const filteredRoles = useMemo(() => {
-    const q = rolesQuery.trim().toLowerCase()
+    const q = debouncedRolesQuery.trim().toLowerCase()
     return roles.filter((role) => {
       const matchesType = rolesTypeFilter === "All" || (role.isSystem ? "System" : "Custom") === rolesTypeFilter
       const matchesQuery = q.length === 0 || [role.name, ...role.permissions.map((p) => p.name)].join(" ").toLowerCase().includes(q)
       return matchesType && matchesQuery
     })
-  }, [roles, rolesQuery, rolesTypeFilter])
+  }, [roles, debouncedRolesQuery, rolesTypeFilter])
 
   const rolesTotalPages = Math.max(1, Math.ceil(filteredRoles.length / pageSize))
 
-  useEffect(() => { setRolesPage(1) }, [rolesQuery, rolesTypeFilter])
+  useEffect(() => { setRolesPage(1) }, [debouncedRolesQuery, rolesTypeFilter])
   useEffect(() => { if (rolesPage > rolesTotalPages) setRolesPage(rolesTotalPages) }, [rolesPage, rolesTotalPages])
 
   const paginatedRoles = useMemo(() => {

@@ -14,6 +14,7 @@ import {
   useDeleteAdminEstablishmentType,
   useUpdateAdminEstablishmentType,
 } from "@/hooks/use-admin-establishment-types"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type {
   AdminEstablishmentTypeItem,
   AdminEstablishmentTypeStatusFilter,
@@ -63,6 +64,7 @@ function formatAdminTimestamp(dateValue: string) {
 
 export function AdminEstablishmentTypesPage() {
   const [query, setQuery] = useState("")
+  const debouncedQuery = useDebouncedValue(query, 300)
   const [statusFilter, setStatusFilter] = useState<AdminEstablishmentTypeStatusFilter>("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null)
@@ -83,7 +85,7 @@ export function AdminEstablishmentTypesPage() {
   const types = establishmentTypesResult.data ?? []
 
   const filteredTypes = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
+    const normalizedQuery = debouncedQuery.trim().toLowerCase()
 
     return types.filter((item) => {
       const matchesStatus = statusFilter === "all" ? true : item.status === statusFilter
@@ -94,13 +96,13 @@ export function AdminEstablishmentTypesPage() {
 
       return matchesStatus && matchesQuery
     })
-  }, [query, statusFilter, types])
+  }, [debouncedQuery, statusFilter, types])
 
   const totalPages = Math.max(1, Math.ceil(filteredTypes.length / pageSize))
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [query, statusFilter])
+  }, [debouncedQuery, statusFilter])
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages)
