@@ -35,8 +35,6 @@ const serviceAmenityFields = [
 const paymentAmenityFields = [
   { name: "amenityCash", label: "Cash" },
   { name: "amenityCard", label: "Card" },
-  { name: "amenityEsewa", label: "eSewa" },
-  { name: "amenityKhalti", label: "Khalti" },
   { name: "amenityQr", label: "QR" },
 ] as const
 
@@ -45,7 +43,6 @@ const facilityAmenityFields = [
   { name: "amenityWifi", label: "WiFi" },
   { name: "amenityAirConditioning", label: "Air conditioning" },
   { name: "amenityOutdoorSeating", label: "Outdoor seating" },
-  { name: "amenityServiceCharge", label: "Service charge" },
 ] as const
 
 const dietaryAmenityFields = [

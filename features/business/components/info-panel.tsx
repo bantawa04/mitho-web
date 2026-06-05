@@ -71,25 +71,23 @@ export function InfoPanel({
         </p>
       </div>
 
-      <div className="space-y-6">
-        <MithoCard surface="customer" interactive="none" className="overflow-hidden">
-          <MithoCardContent className="p-4 md:p-5">
-            <BusinessGalleryPreview
-              items={galleryItems}
-              totalCount={galleryTotalCount}
-              emptyTitle={isEarlyListing ? "No photos yet" : undefined}
-              emptyMessage={
-                galleryEmptyMessage ??
-                (isEarlyListing
-                  ? "Mitho has listed this place, but no one has added photos yet. The first visit photos will make this page much more useful."
-                  : undefined)
-              }
-              compactEmpty={isEarlyListing}
-            />
-          </MithoCardContent>
-        </MithoCard>
+      <div className="space-y-8">
+        <div className="-mx-4 sm:mx-0">
+          <BusinessGalleryPreview
+            items={galleryItems}
+            totalCount={galleryTotalCount}
+            emptyTitle={isEarlyListing ? "No photos yet" : undefined}
+            emptyMessage={
+              galleryEmptyMessage ??
+              (isEarlyListing
+                ? "Mitho has listed this place, but no one has added photos yet. The first visit photos will make this page much more useful."
+                : undefined)
+            }
+            compactEmpty={isEarlyListing}
+          />
+        </div>
 
-        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] items-start">
           <MithoCard surface="customer" interactive="none">
             <MithoCardHeader className="pb-4">
               <MithoCardTitle>Visit essentials</MithoCardTitle>
@@ -97,32 +95,34 @@ export function InfoPanel({
                 The practical details most people want before heading out.
               </MithoCardDescription>
             </MithoCardHeader>
-            <MithoCardContent className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
+            <MithoCardContent className="space-y-8">
+              <div className="grid gap-6 sm:grid-cols-2">
                 {visitFacts.map((fact) => (
                   <div
                     key={fact.label}
-                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-4 shadow-[0_10px_24px_rgba(10,70,53,0.04)]"
+                    className="flex gap-4"
                   >
-                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-brand-orange/10">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-orange/10">
                       {fact.icon}
                     </div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-deep-green/72">
-                      {fact.label}
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{fact.content}</p>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-deep-green/72">
+                        {fact.label}
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{fact.content}</p>
+                    </div>
                   </div>
                 ))}
               </div>
 
-              <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+              <div className="pt-6 border-t border-brand-deep-green/10">
                 <p className="text-sm font-semibold text-brand-dark-green">Amenities people often look for</p>
                 <AmenityList amenities={[...visitInfo.amenities]} className="mt-3" />
               </div>
             </MithoCardContent>
           </MithoCard>
 
-          <div className="space-y-6">
+          <div className="sticky top-24 space-y-6">
             <MithoCard surface="customer" interactive="none" className="overflow-hidden">
               <MithoCardHeader className="pb-4">
                 <MithoCardTitle>Find it easily</MithoCardTitle>
