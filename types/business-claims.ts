@@ -62,6 +62,8 @@ export interface BusinessClaim {
   reviewedBy?: string
   reviewer?: BusinessClaimUserSummary
   reviewedAt?: string
+  documentsDeletedAt?: string
+  documentsDeletedBy?: string
   createdAt: string
   updatedAt: string
 }

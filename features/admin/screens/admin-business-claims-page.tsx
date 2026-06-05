@@ -332,7 +332,11 @@ export function AdminBusinessClaimsPage() {
             <div className="rounded-2xl border border-brand-deep-green/10 bg-white px-4 py-4">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Documents</p>
               <div className="mt-3 flex flex-wrap gap-3">
-                {(selectedClaim.documents ?? []).length > 0 ? (
+                {selectedClaim.status !== "pending" && selectedClaim.documentsDeletedAt ? (
+                  <p className="text-sm text-muted-foreground">
+                    Documents deleted after review on {formatDate(selectedClaim.documentsDeletedAt)}.
+                  </p>
+                ) : selectedClaim.status === "pending" && (selectedClaim.documents ?? []).length > 0 ? (
                   selectedClaim.documents?.map((document) => (
                     <Button
                       key={document.id}
