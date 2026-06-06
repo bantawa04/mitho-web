@@ -36,6 +36,7 @@ interface AdminTableProps<TData> {
   resultSummary: string
   emptyTitle: string
   emptyDescription: string
+  isLoading?: boolean
 }
 
 export function AdminTable<TData>({
@@ -53,6 +54,7 @@ export function AdminTable<TData>({
   resultSummary,
   emptyTitle,
   emptyDescription,
+  isLoading = false,
 }: AdminTableProps<TData>) {
   const paginationPages = Array.from({ length: totalPages }, (_, index) => index + 1)
 
@@ -89,7 +91,13 @@ export function AdminTable<TData>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length > 0 ? (
+            {isLoading ? (
+              <TableRow className="border-brand-deep-green/10 hover:bg-transparent">
+                <TableCell colSpan={columns.length} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : data.length > 0 ? (
               data.map((item) => (
                 <TableRow key={rowKey(item)} className="border-brand-deep-green/10 hover:bg-brand-soft-beige/14">
                   {columns.map((column) => (

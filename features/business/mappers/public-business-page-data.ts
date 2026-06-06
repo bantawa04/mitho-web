@@ -1,12 +1,15 @@
 import { richBusinessPageData } from "@/features/business/data/business-detail-data"
 import type {
   BusinessGalleryItem,
+  BusinessRatingsData,
+  BusinessReview,
   BusinessPageData,
   BusinessHeroTag,
   BusinessVisitInfo,
 } from "@/features/business/business-detail-types"
 import type { BusinessAmenities, BusinessHour, PublicBusiness } from "@/types/business"
 import type { Media } from "@/types/media"
+import type { ReviewItem, ReviewRatingsSummary } from "@/types/reviews"
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -23,6 +26,7 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
   ].filter((category, index, all) => all.findIndex((item) => item.label === category.label) === index)
 
   return {
+    id: business.id,
     name: business.name,
     sourceBadge: business.ownershipStatus === "claimed" ? "verifiedOwner" : "mitho",
     coverImage: business.banner?.publicUrl ?? galleryItems[0]?.src ?? null,
@@ -60,6 +64,39 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
     ratingsData: null,
     reviews: [],
     addReviewPrompt: "Share the details that actually help the next person decide.",
+  }
+}
+
+export function mapReviewSummaryToRatingsData(summary: ReviewRatingsSummary | null | undefined): BusinessRatingsData | null {
+  if (!summary || summary.totalReviews <= 0) return null
+  return {
+    ratings: {
+      5: summary.ratings[5],
+      4: summary.ratings[4],
+      3: summary.ratings[3],
+      2: summary.ratings[2],
+      1: summary.ratings[1],
+    },
+    averageRating: summary.averageRating,
+    totalReviews: summary.totalReviews,
+  }
+}
+
+export function mapReviewItemToBusinessReview(item: ReviewItem): BusinessReview {
+  return {
+    id: item.id,
+    author: item.author.name,
+    authorImage: item.author.avatarUrl || "/placeholder.svg",
+    rating: item.rating,
+    date: formatReviewDate(item.createdAt),
+    content: item.body,
+    media: item.media
+      .filter((mediaItem) => mediaItem.mediaType === "image" || mediaItem.mediaType === "video")
+      .map((mediaItem) => ({
+        type: mediaItem.mediaType === "video" ? ("video" as const) : ("image" as const),
+        src: mediaItem.publicUrl,
+        thumbnail: mediaItem.mediaType === "video" ? mediaItem.publicUrl : undefined,
+      })),
   }
 }
 
@@ -171,4 +208,14 @@ function mapAmenities(amenities?: BusinessAmenities): BusinessVisitInfo["ameniti
     amenities.dietary?.vegan ? "vegan" : null,
     amenities.dietary?.non_veg ? "nonVeg" : null,
   ].filter(Boolean) as BusinessVisitInfo["amenities"]
+}
+
+function formatReviewDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date)
 }

@@ -1,119 +1,155 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import axios from "axios"
 import Link from "next/link"
 import { ChevronRight, Eye, Trash2 } from "lucide-react"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminConfirmModal, AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
-import { mockAdminReviewModeration, type AdminReviewModerationFlag, type AdminReviewModerationItem, type AdminReviewModerationStatus } from "@/features/admin/data/admin-data"
+import { useApproveAdminReview, useAdminReview, useAdminReviews, useDeleteAdminReview, useRejectAdminReview } from "@/hooks/use-reviews"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { useToast } from "@/hooks/use-toast"
+import type { ReviewItem, ReviewRejectionFlag, ReviewStatus } from "@/types/reviews"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const pageSize = 6
+const reviewStatuses: Array<"all" | ReviewStatus> = ["all", "pending", "approved", "rejected"]
+const rejectionFlags: ReviewRejectionFlag[] = [
+  "spam_or_fake",
+  "abusive_or_harassing",
+  "off_topic",
+  "duplicate",
+  "conflict_of_interest",
+  "inappropriate_media",
+  "other",
+]
 
-function getFlagTone(flag: AdminReviewModerationFlag) {
+function getErrorMessage(error: unknown) {
+  if (axios.isAxiosError(error)) {
+    const payload = error.response?.data as { message?: string; errors?: Record<string, string[] | string> } | undefined
+    if (payload?.errors) {
+      const firstField = Object.values(payload.errors)[0]
+      if (Array.isArray(firstField) && firstField[0]) return firstField[0]
+      if (typeof firstField === "string") return firstField
+    }
+    if (payload?.message) return payload.message
+  }
+
+  return error instanceof Error ? error.message : "Something went wrong. Please try again."
+}
+
+function formatFlag(flag?: ReviewRejectionFlag | null) {
+  if (!flag) return "None"
+  return flag.replaceAll("_", " ").replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
+function getFlagTone(flag?: ReviewRejectionFlag | null) {
   switch (flag) {
-    case "Abusive wording":
+    case "abusive_or_harassing":
       return "bg-red-50 text-red-700 border-red-100"
-    case "Potential duplicate":
+    case "duplicate":
       return "bg-amber-50 text-amber-700 border-amber-100"
-    case "Owner dispute":
+    case "conflict_of_interest":
       return "bg-sky-50 text-sky-700 border-sky-100"
-    case "Off-topic content":
+    case "off_topic":
       return "bg-stone-100 text-stone-700 border-stone-200"
-    case "Harassment":
+    case "inappropriate_media":
       return "bg-rose-50 text-rose-700 border-rose-100"
+    case "spam_or_fake":
+      return "bg-orange-50 text-orange-700 border-orange-100"
+    case "other":
+      return "bg-violet-50 text-violet-700 border-violet-100"
+    default:
+      return "bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
   }
 }
 
-function getModerationStatusTone(status: AdminReviewModerationStatus) {
+function getModerationStatusTone(status: ReviewStatus) {
   switch (status) {
-    case "Pending":
+    case "pending":
       return "bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
-    case "Accepted":
+    case "approved":
       return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    case "Rejected":
+    case "rejected":
       return "bg-red-50 text-red-700 border-red-100"
   }
+}
+
+function formatStatus(status: ReviewStatus) {
+  switch (status) {
+    case "pending":
+      return "Pending"
+    case "approved":
+      return "Approved"
+    case "rejected":
+      return "Rejected"
+  }
+}
+
+function formatDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date)
 }
 
 export function AdminReviewModerationPage() {
+  const { toast } = useToast()
   const [query, setQuery] = useState("")
   const debouncedQuery = useDebouncedValue(query, 300)
-  const [reviews, setReviews] = useState(mockAdminReviewModeration)
-  const [statusFilter, setStatusFilter] = useState<"All" | AdminReviewModerationStatus>("All")
+  const [statusFilter, setStatusFilter] = useState<"all" | ReviewStatus>("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null)
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null)
-  const [selectedDecision, setSelectedDecision] = useState<"Accepted" | "Rejected">("Accepted")
-  const [selectedRejectReason, setSelectedRejectReason] = useState<AdminReviewModerationFlag>("Abusive wording")
+  const [selectedDecision, setSelectedDecision] = useState<"approved" | "rejected">("approved")
+  const [selectedRejectReason, setSelectedRejectReason] = useState<ReviewRejectionFlag>("spam_or_fake")
+  const [moderationNote, setModerationNote] = useState("")
 
-  const filteredReviews = useMemo(() => {
-    const normalizedQuery = debouncedQuery.trim().toLowerCase()
+  const reviewsQuery = useAdminReviews({
+    page: currentPage,
+    perPage: pageSize,
+    status: statusFilter === "all" ? "" : statusFilter,
+    search: debouncedQuery,
+  })
+  const selectedReviewQuery = useAdminReview(selectedReviewId)
+  const approveReview = useApproveAdminReview()
+  const rejectReview = useRejectAdminReview()
+  const deleteReview = useDeleteAdminReview()
 
-    return reviews.filter((review) => {
-      const matchesStatus = statusFilter === "All" ? true : review.moderationStatus === statusFilter
-      const matchesQuery =
-        normalizedQuery.length === 0
-          ? true
-          : [
-        review.businessName,
-        review.reviewerName,
-        review.reviewTitle,
-        review.reviewSnippet,
-        review.reviewBody,
-        review.flagLabel,
-      ]
-              .join(" ")
-              .toLowerCase()
-              .includes(normalizedQuery)
-
-      return matchesStatus && matchesQuery
-    })
-  }, [debouncedQuery, reviews, statusFilter])
-
-  const totalPages = Math.max(1, Math.ceil(filteredReviews.length / pageSize))
+  const selectedReview = selectedReviewQuery.data ?? null
+  const reviewPendingDelete = useMemo(
+    () => reviewsQuery.data?.items.find((review) => review.id === deleteReviewId) ?? (selectedReview?.id === deleteReviewId ? selectedReview : null),
+    [deleteReviewId, reviewsQuery.data?.items, selectedReview],
+  )
 
   useEffect(() => {
     setCurrentPage(1)
   }, [debouncedQuery, statusFilter])
 
   useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages)
-    }
-  }, [currentPage, totalPages])
-
-  const paginatedReviews = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize
-    return filteredReviews.slice(startIndex, startIndex + pageSize)
-  }, [currentPage, filteredReviews])
-
-  const selectedReview = useMemo(
-    () => reviews.find((review) => review.id === selectedReviewId) ?? null,
-    [reviews, selectedReviewId],
-  )
-
-  const reviewPendingDelete = useMemo(
-    () => reviews.find((review) => review.id === deleteReviewId) ?? null,
-    [reviews, deleteReviewId],
-  )
-
-  useEffect(() => {
     if (!selectedReview) return
-
-    setSelectedDecision(selectedReview.moderationStatus === "Rejected" ? "Rejected" : "Accepted")
-    setSelectedRejectReason(selectedReview.flagLabel)
+    if (selectedReview.status === "rejected") {
+      setSelectedDecision("rejected")
+      setSelectedRejectReason(selectedReview.rejectionFlag ?? "spam_or_fake")
+      setModerationNote(selectedReview.moderationNote ?? "")
+      return
+    }
+    setSelectedDecision("approved")
+    setSelectedRejectReason("spam_or_fake")
+    setModerationNote("")
   }, [selectedReview])
 
   const resultSummary =
-    filteredReviews.length === 0
-      ? "No flagged reviews match this search."
-      : `Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, filteredReviews.length)} of ${filteredReviews.length}`
+    !reviewsQuery.data || reviewsQuery.data.meta.total === 0
+      ? "No reviews match this view."
+      : `Showing ${(reviewsQuery.data.meta.page - 1) * reviewsQuery.data.meta.perPage + 1}-${Math.min(reviewsQuery.data.meta.page * reviewsQuery.data.meta.perPage, reviewsQuery.data.meta.total)} of ${reviewsQuery.data.meta.total}`
 
-  const columns = useMemo<AdminTableColumn<AdminReviewModerationItem>[]>(
+  const columns = useMemo<AdminTableColumn<ReviewItem>[]>(
     () => [
       {
         id: "review",
@@ -122,7 +158,7 @@ export function AdminReviewModerationPage() {
         cellClassName: "px-6 py-5 align-top",
         cell: (review) => (
           <div className="space-y-1">
-            <p className="max-w-[24rem] text-sm font-semibold leading-6 text-brand-dark-green">{review.reviewTitle}</p>
+            <p className="max-w-[24rem] text-sm font-semibold leading-6 text-brand-dark-green">{review.body.slice(0, 90)}{review.body.length > 90 ? "..." : ""}</p>
             <p className="text-sm text-muted-foreground">{review.rating}/5</p>
           </div>
         ),
@@ -133,8 +169,8 @@ export function AdminReviewModerationPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (review) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getModerationStatusTone(review.moderationStatus)}`}>
-            {review.moderationStatus}
+          <span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getModerationStatusTone(review.status)}`}>
+            {formatStatus(review.status)}
           </span>
         ),
       },
@@ -143,14 +179,14 @@ export function AdminReviewModerationPage() {
         label: "Business",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm font-medium text-brand-dark-green",
-        cell: (review) => review.businessName,
+        cell: (review) => review.businessName || "Unknown business",
       },
       {
         id: "reviewer",
         label: "Reviewer",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (review) => review.reviewerName,
+        cell: (review) => review.author.name,
       },
       {
         id: "flag",
@@ -158,8 +194,8 @@ export function AdminReviewModerationPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (review) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getFlagTone(review.flagLabel)}`}>
-            {review.flagLabel}
+          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getFlagTone(review.rejectionFlag)}`}>
+            {formatFlag(review.rejectionFlag)}
           </span>
         ),
       },
@@ -168,7 +204,7 @@ export function AdminReviewModerationPage() {
         label: "Submitted",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (review) => review.submittedAt,
+        cell: (review) => formatDate(review.createdAt),
       },
       {
         id: "action",
@@ -199,30 +235,49 @@ export function AdminReviewModerationPage() {
     [],
   )
 
-  function applyModerationDecision() {
+  async function applyModerationDecision() {
     if (!selectedReview) return
 
-    setReviews((current) =>
-      current.map((review) =>
-        review.id === selectedReview.id
-          ? {
-              ...review,
-              moderationStatus: selectedDecision,
-              flagLabel: selectedDecision === "Rejected" ? selectedRejectReason : review.flagLabel,
-            }
-          : review,
-      ),
-    )
-    setSelectedReviewId(null)
+    try {
+      if (selectedDecision === "approved") {
+        await approveReview.mutateAsync(selectedReview.id)
+        toast({ title: "Review approved" })
+      } else {
+        await rejectReview.mutateAsync({
+          id: selectedReview.id,
+          payload: {
+            rejectionFlag: selectedRejectReason,
+            moderationNote: moderationNote.trim() || undefined,
+          },
+        })
+        toast({ title: "Review rejected" })
+      }
+      setSelectedReviewId(null)
+    } catch (error) {
+      toast({
+        title: "Could not update review",
+        description: getErrorMessage(error),
+        variant: "destructive",
+      })
+    }
   }
 
-  function confirmDeleteReview() {
+  async function confirmDeleteReview() {
     if (!reviewPendingDelete) return
 
-    setReviews((current) => current.filter((review) => review.id !== reviewPendingDelete.id))
-    setDeleteReviewId(null)
-    if (selectedReviewId === reviewPendingDelete.id) {
-      setSelectedReviewId(null)
+    try {
+      await deleteReview.mutateAsync(reviewPendingDelete.id)
+      toast({ title: "Review deleted" })
+      setDeleteReviewId(null)
+      if (selectedReviewId === reviewPendingDelete.id) {
+        setSelectedReviewId(null)
+      }
+    } catch (error) {
+      toast({
+        title: "Could not delete review",
+        description: getErrorMessage(error),
+        variant: "destructive",
+      })
     }
   }
 
@@ -240,134 +295,167 @@ export function AdminReviewModerationPage() {
           <div className="space-y-1">
             <h1 className="text-3xl font-semibold tracking-tight text-brand-dark-green">Review Moderation</h1>
             <p className="max-w-3xl text-sm text-muted-foreground">
-              Triage flagged reviews quickly, check the full context, and apply moderation decisions without leaving the queue.
+              Review customer submissions, check media, and decide what becomes visible on the public business pages.
             </p>
           </div>
         </section>
 
         <AdminTable
           columns={columns}
-          data={paginatedReviews}
+          data={reviewsQuery.data?.items ?? []}
           rowKey={(review) => review.id}
           searchValue={query}
           onSearchChange={setQuery}
-          searchPlaceholder="Search flagged reviews, businesses, or reviewers"
+          searchPlaceholder="Search reviews, businesses, or reviewers"
           leftToolbarContent={
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-muted-foreground">Status</span>
-              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as "All" | AdminReviewModerationStatus)}>
+              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as "all" | ReviewStatus)}>
                 <SelectTrigger className="h-11 w-[190px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(["All", "Pending", "Accepted", "Rejected"] as Array<"All" | AdminReviewModerationStatus>).map((status) => (
+                  {reviewStatuses.map((status) => (
                     <SelectItem key={status} value={status}>
-                      {status}
+                      {status === "all" ? "All" : formatStatus(status)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
           }
-          currentPage={currentPage}
-          totalPages={totalPages}
+          currentPage={reviewsQuery.data?.meta.page ?? currentPage}
+          totalPages={reviewsQuery.data?.meta.totalPages ?? 1}
           onPageChange={setCurrentPage}
           resultSummary={resultSummary}
-          emptyTitle="No flagged reviews match this view."
-          emptyDescription="Try clearing the search to bring flagged items back into the queue."
+          emptyTitle="No reviews match this view."
+          emptyDescription="Try clearing the search or switching the status filter."
+          isLoading={reviewsQuery.isLoading}
         />
       </div>
 
       <AdminModal
-        open={selectedReview !== null}
+        open={selectedReviewId !== null}
         onOpenChange={(open) => {
           if (!open) setSelectedReviewId(null)
         }}
         title="Review moderation"
-        description="Inspect the full review, then accept or reject it from the queue."
-        confirmLabel="Save"
+        description="Inspect the full review, then approve or reject it."
+        confirmLabel={selectedDecision === "approved" ? "Approve review" : "Reject review"}
         cancelLabel="Close"
-        onConfirm={applyModerationDecision}
+        onConfirm={selectedReview?.status === "pending" ? applyModerationDecision : undefined}
         size="lg"
         bodyClassName="space-y-6"
+        isConfirmDisabled={selectedDecision === "rejected" && selectedRejectReason === "other" && !moderationNote.trim()}
+        isLoading={approveReview.isPending || rejectReview.isPending}
+        showFooter={Boolean(selectedReview)}
       >
         {selectedReview ? (
           <>
             <section className="space-y-4 border-b border-brand-deep-green/10 pb-5">
               <div className="flex flex-wrap items-center gap-2">
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getFlagTone(selectedReview.flagLabel)}`}>
-                  {selectedReview.flagLabel}
+                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getFlagTone(selectedReview.rejectionFlag)}`}>
+                  {formatFlag(selectedReview.rejectionFlag)}
                 </span>
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getModerationStatusTone(selectedReview.moderationStatus)}`}>
-                  {selectedReview.moderationStatus}
+                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getModerationStatusTone(selectedReview.status)}`}>
+                  {formatStatus(selectedReview.status)}
                 </span>
               </div>
 
               <div className="grid gap-5 sm:grid-cols-3">
                 <div className="space-y-1">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Business</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{selectedReview.businessName}</p>
+                  <p className="text-base font-semibold text-brand-dark-green">{selectedReview.businessName || "Unknown business"}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Reviewer</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{selectedReview.reviewerName}</p>
+                  <p className="text-base font-semibold text-brand-dark-green">{selectedReview.author.name}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Submitted</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{selectedReview.submittedAt}</p>
+                  <p className="text-base font-semibold text-brand-dark-green">{formatDate(selectedReview.createdAt)}</p>
                 </div>
               </div>
             </section>
 
             <section className="space-y-3 border-b border-brand-deep-green/10 pb-5">
               <p className="text-sm font-medium text-muted-foreground">{selectedReview.rating}/5 rating</p>
-              <div className="space-y-3">
-                <h3 className="text-base font-semibold text-brand-dark-green">{selectedReview.reviewTitle}</h3>
-                <p className="text-sm leading-7 text-brand-dark-green">{selectedReview.reviewBody}</p>
-              </div>
+              <p className="text-sm leading-7 text-brand-dark-green">{selectedReview.body}</p>
             </section>
 
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm font-semibold text-brand-dark-green">Moderation decision</p>
-                <p className="mt-1 text-sm text-muted-foreground">Choose how this review should move forward in the queue.</p>
-              </div>
-              <RadioGroup value={selectedDecision} onValueChange={(value) => setSelectedDecision(value as "Accepted" | "Rejected")} className="gap-3">
-                {[
-                  { value: "Accepted", title: "Accept review", description: "Keep the review live and clear it from moderation." },
-                  { value: "Rejected", title: "Reject review", description: "Remove the review from the public experience after moderation." },
-                ].map((option) => (
-                  <label
-                    key={option.value}
-                    className="flex cursor-pointer items-start gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-4 transition-colors hover:bg-brand-soft-beige/18"
-                  >
-                    <RadioGroupItem value={option.value} className="mt-1" />
-                    <span className="space-y-1">
-                      <span className="block text-sm font-semibold text-brand-dark-green">{option.title}</span>
-                      <span className="block text-sm leading-6 text-muted-foreground">{option.description}</span>
-                    </span>
-                  </label>
-                ))}
-              </RadioGroup>
-
-              {selectedDecision === "Rejected" ? (
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-brand-dark-green">Rejection reason</p>
-                  <Select value={selectedRejectReason} onValueChange={(value) => setSelectedRejectReason(value as AdminReviewModerationFlag)}>
-                    <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
-                      <SelectValue placeholder="Choose a rejection reason" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(["Abusive wording", "Potential duplicate", "Owner dispute", "Off-topic content", "Harassment"] as AdminReviewModerationFlag[]).map((reason) => (
-                        <SelectItem key={reason} value={reason}>
-                          {reason}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+            {selectedReview.media.length > 0 ? (
+              <section className="space-y-3 border-b border-brand-deep-green/10 pb-5">
+                <p className="text-sm font-semibold text-brand-dark-green">Attached images</p>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {selectedReview.media.map((media) => (
+                    <a key={media.id} href={media.publicUrl} target="_blank" rel="noreferrer" className="overflow-hidden rounded-[1rem] border border-brand-deep-green/10 bg-white">
+                      <img src={media.publicUrl} alt={media.altText || media.filename} className="h-32 w-full object-cover" />
+                    </a>
+                  ))}
                 </div>
-              ) : null}
-            </div>
+              </section>
+            ) : null}
+
+            {selectedReview.status === "pending" ? (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-semibold text-brand-dark-green">Moderation decision</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Choose how this review should move forward.</p>
+                </div>
+                <RadioGroup value={selectedDecision} onValueChange={(value) => setSelectedDecision(value as "approved" | "rejected")} className="gap-3">
+                  {[
+                    { value: "approved", title: "Approve review", description: "Make the review visible on the public business page." },
+                    { value: "rejected", title: "Reject review", description: "Keep the review off the public page and ask the reviewer to fix it." },
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex cursor-pointer items-start gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-4 transition-colors hover:bg-brand-soft-beige/18"
+                    >
+                      <RadioGroupItem value={option.value} className="mt-1" />
+                      <span className="space-y-1">
+                        <span className="block text-sm font-semibold text-brand-dark-green">{option.title}</span>
+                        <span className="block text-sm leading-6 text-muted-foreground">{option.description}</span>
+                      </span>
+                    </label>
+                  ))}
+                </RadioGroup>
+
+                {selectedDecision === "rejected" ? (
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-brand-dark-green">Rejection reason</p>
+                      <Select value={selectedRejectReason} onValueChange={(value) => setSelectedRejectReason(value as ReviewRejectionFlag)}>
+                        <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                          <SelectValue placeholder="Choose a rejection reason" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {rejectionFlags.map((flag) => (
+                            <SelectItem key={flag} value={flag}>
+                              {formatFlag(flag)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-brand-dark-green">Moderation note {selectedRejectReason === "other" ? "*" : ""}</p>
+                      <textarea
+                        value={moderationNote}
+                        onChange={(event) => setModerationNote(event.target.value)}
+                        rows={4}
+                        className="w-full resize-none rounded-[1rem] border border-brand-deep-green/10 px-4 py-3 text-sm focus:border-brand-orange focus:outline-none focus:ring-4 focus:ring-brand-orange/12"
+                        placeholder="Add a note for the reviewer."
+                      />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="rounded-[1rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4 text-sm text-muted-foreground">
+                This review has already been moderated. You can still delete it from the queue.
+              </div>
+            )}
           </>
         ) : null}
       </AdminModal>
@@ -377,14 +465,15 @@ export function AdminReviewModerationPage() {
         onOpenChange={(open) => {
           if (!open) setDeleteReviewId(null)
         }}
-        title="Delete this flagged review?"
+        title="Delete this review?"
         description={
           reviewPendingDelete
-            ? `This will remove the review from the moderation queue for ${reviewPendingDelete.businessName}.`
-            : "This will remove the selected review from the moderation queue."
+            ? `This will remove the review from ${reviewPendingDelete.businessName || "the business"} and detach its media attachments.`
+            : "This will remove the selected review."
         }
         confirmLabel="Delete review"
         onConfirm={confirmDeleteReview}
+        isLoading={deleteReview.isPending}
       />
     </>
   )

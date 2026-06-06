@@ -25,7 +25,7 @@ function computeProfileCompleteness(entry: MyBusinessEntry): number {
     Boolean(b.photos && b.photos.length > 0),
     Boolean(b.establishmentType),
     Boolean(b.cuisines && b.cuisines.length > 0),
-    Boolean(b.addressLine1),
+    Boolean(b.area || b.nearestLandmark || b.addressNote),
   ]
   return Math.round((checks.filter(Boolean).length / checks.length) * 100)
 }

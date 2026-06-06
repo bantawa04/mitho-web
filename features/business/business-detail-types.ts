@@ -19,6 +19,7 @@ export interface BusinessMenuItem {
 }
 
 export interface BusinessReview {
+  id: string
   author: string
   authorImage: string
   rating: number
@@ -78,6 +79,7 @@ export interface BusinessVisitInfo {
 }
 
 export interface BusinessPageData {
+  id: string
   name: string
   sourceBadge?: BusinessSourceBadge
   coverImage?: string | null

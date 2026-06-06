@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { MithoReviewCard } from "@/components/mitho/mitho-review-card"
 import { MithoPagination } from "@/components/mitho/mitho-pagination"
 import { MithoCard, MithoCardContent } from "@/components/mitho/mitho-card"
@@ -13,14 +12,16 @@ import {
 } from "@/components/mitho/mitho-select"
 import type { BusinessReview } from "@/features/business/business-detail-types"
 
-const REVIEWS_PER_PAGE = 3
-
 interface ReviewsSectionProps {
   isEarlyListing?: boolean
   sortOrder?: string
   onSortChange?: (value: string) => void
   reviews: BusinessReview[]
   emptyMessage?: string
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+  isLoading?: boolean
 }
 
 export function ReviewsSection({
@@ -29,34 +30,22 @@ export function ReviewsSection({
   onSortChange,
   reviews,
   emptyMessage,
+  currentPage,
+  totalPages,
+  onPageChange,
+  isLoading = false,
 }: ReviewsSectionProps) {
-  const [currentPage, setCurrentPage] = React.useState(1)
   const hasReviews = reviews.length > 0
-
-  const sortedReviews = React.useMemo(() => {
-    const nextReviews = [...reviews]
-    if (sortOrder === "latest") {
-      return nextReviews
-    } else if (sortOrder === "oldest") {
-      return nextReviews.reverse()
-    }
-    return nextReviews
-  }, [reviews, sortOrder])
-
-  const totalPages = Math.ceil(sortedReviews.length / REVIEWS_PER_PAGE)
-
-  const paginatedReviews = React.useMemo(() => {
-    const startIndex = (currentPage - 1) * REVIEWS_PER_PAGE
-    return sortedReviews.slice(startIndex, startIndex + REVIEWS_PER_PAGE)
-  }, [sortedReviews, currentPage])
-
-  React.useEffect(() => {
-    setCurrentPage(1)
-  }, [sortOrder])
 
   return (
     <section className="container mx-auto px-4 py-6">
-      {hasReviews ? (
+      {isLoading ? (
+        <div className="space-y-4">
+          {[0, 1].map((item) => (
+            <div key={item} className="h-40 animate-pulse rounded-[1.6rem] border border-brand-deep-green/10 bg-white/70" />
+          ))}
+        </div>
+      ) : hasReviews ? (
         <>
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl">
@@ -71,17 +60,18 @@ export function ReviewsSection({
                 <MithoSelectValue placeholder="Sort reviews" />
               </MithoSelectTrigger>
               <MithoSelectContent>
-                <MithoSelectItem value="all">All Reviews</MithoSelectItem>
                 <MithoSelectItem value="latest">Latest First</MithoSelectItem>
                 <MithoSelectItem value="oldest">Oldest First</MithoSelectItem>
+                <MithoSelectItem value="highest">Highest Rating</MithoSelectItem>
+                <MithoSelectItem value="lowest">Lowest Rating</MithoSelectItem>
               </MithoSelectContent>
             </MithoSelect>
           </div>
 
           <div className="space-y-5">
-            {paginatedReviews.map((review, index) => (
+            {reviews.map((review) => (
               <MithoReviewCard
-                key={`${review.author}-${index}`}
+                key={review.id}
                 {...review}
                 className="shadow-[0_12px_28px_rgba(10,70,53,0.06)]"
               />
@@ -90,7 +80,7 @@ export function ReviewsSection({
 
           {totalPages > 1 && (
             <div className="mt-8">
-              <MithoPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              <MithoPagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
             </div>
           )}
         </>
