@@ -39,6 +39,14 @@ function SelectDisplay({ label, placeholder }: { label?: string; placeholder: st
   return <SelectValue placeholder={placeholder} />
 }
 
+function RequiredLabel({ children }: { children: string }) {
+  return (
+    <FormLabel>
+      {children} <span className="text-danger">*</span>
+    </FormLabel>
+  )
+}
+
 export function BusinessLocationFields({
   form,
   inputClassName,
@@ -95,7 +103,7 @@ export function BusinessLocationFields({
         name="provinceId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Province / State</FormLabel>
+            <RequiredLabel>Province / State</RequiredLabel>
             <Select
               onValueChange={(value) => {
                 field.onChange(value)
@@ -132,7 +140,7 @@ export function BusinessLocationFields({
         name="districtId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>District</FormLabel>
+            <RequiredLabel>District</RequiredLabel>
             <Select
               onValueChange={(value) => {
                 field.onChange(value)
@@ -168,7 +176,7 @@ export function BusinessLocationFields({
         name="municipalityId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>City / Municipality</FormLabel>
+            <RequiredLabel>City / Municipality</RequiredLabel>
             <Select
               onValueChange={(value) => {
                 field.onChange(value)
@@ -203,7 +211,7 @@ export function BusinessLocationFields({
         name="wardNo"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Ward No.</FormLabel>
+            <RequiredLabel>Ward No.</RequiredLabel>
             <Select onValueChange={field.onChange} value={field.value} disabled={!selectedMunicipality}>
               <FormControl>
                 <SelectTrigger className={selectTriggerClassName}>
@@ -231,7 +239,7 @@ export function BusinessLocationFields({
         name="area"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Area / Neighbourhood</FormLabel>
+            <FormLabel>Area</FormLabel>
             <FormControl>
               <Input {...field} className={inputClassName} />
             </FormControl>
@@ -242,10 +250,10 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="landmark"
+        name="nearestLandmark"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Landmark</FormLabel>
+            <FormLabel>Nearest landmark</FormLabel>
             <FormControl>
               <Input {...field} className={inputClassName} />
             </FormControl>
@@ -256,24 +264,10 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="addressLine1"
+        name="addressNote"
         render={({ field }) => (
           <FormItem className="md:col-span-2">
-            <FormLabel>Address Line 1</FormLabel>
-            <FormControl>
-              <Input {...field} className={inputClassName} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="addressLine2"
-        render={({ field }) => (
-          <FormItem className="md:col-span-2">
-            <FormLabel>Address Line 2</FormLabel>
+            <FormLabel>Address note</FormLabel>
             <FormControl>
               <Input {...field} className={inputClassName} />
             </FormControl>

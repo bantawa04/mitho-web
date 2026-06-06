@@ -60,6 +60,14 @@ const ownershipLabels: Record<BusinessOwnershipStatus, string> = {
   claimed: "Claimed",
 }
 
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <FormLabel>
+      {children} <span className="text-danger">*</span>
+    </FormLabel>
+  )
+}
+
 function getClaimReviewHref(businessId: string, claimId?: string) {
   const params = new URLSearchParams({ status: "pending", businessId })
   if (claimId) params.set("claimId", claimId)
@@ -128,9 +136,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       municipalityId: "",
       wardNo: "",
       area: "",
-      addressLine1: "",
-      addressLine2: "",
-      landmark: "",
+      nearestLandmark: "",
+      addressNote: "",
       latitude: null,
       longitude: null,
       websiteUrl: "",
@@ -181,9 +188,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         municipalityId: readLocationId(existing.municipalityId, existing.municipality?.id),
         wardNo: readWardNo(existing.wardNo),
         area: existing.area ?? "",
-        addressLine1: existing.addressLine1,
-        addressLine2: existing.addressLine2 ?? "",
-        landmark: existing.landmark ?? "",
+        nearestLandmark: existing.nearestLandmark ?? "",
+        addressNote: existing.addressNote ?? "",
         latitude: existing.latitude ?? null,
         longitude: existing.longitude ?? null,
         websiteUrl: existing.links?.website ?? "",
@@ -233,6 +239,18 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
     if (!current.includes(media.id)) {
       form.setValue("photos", [...current, media.id])
     }
+  }
+
+  function handlePhotoSelectMany(mediaItems: Media[]) {
+    setPhotosMedia((prev) => {
+      const existingIds = new Set(prev.map((item) => item.id))
+      const additions = mediaItems.filter((item) => !existingIds.has(item.id))
+      return additions.length > 0 ? [...prev, ...additions] : prev
+    })
+
+    const current = form.getValues("photos") ?? []
+    const merged = Array.from(new Set([...current, ...mediaItems.map((item) => item.id)]))
+    form.setValue("photos", merged)
   }
 
   function removePhoto(id: string) {
@@ -297,9 +315,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       municipalityId: Number(values.municipalityId),
       wardNo: Number(values.wardNo),
       area: values.area || undefined,
-      addressLine1: values.addressLine1,
-      addressLine2: values.addressLine2 || undefined,
-      landmark: values.landmark || undefined,
+      nearestLandmark: values.nearestLandmark || undefined,
+      addressNote: values.addressNote || undefined,
       latitude: values.latitude ?? undefined,
       longitude: values.longitude ?? undefined,
       amenities,
@@ -410,7 +427,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   name="name"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Business name</FormLabel>
+                      <RequiredLabel>Business name</RequiredLabel>
                       <FormControl>
                         <Input {...field} placeholder="e.g. The Himalayan Kitchen" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
                       </FormControl>
@@ -692,11 +709,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
             <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
               <h3 className="text-lg font-semibold text-brand-dark-green">Publishing</h3>
               <FormField
-                control={form.control}
-                name="listingStatus"
-                render={({ field }) => (
+                  control={form.control}
+                  name="listingStatus"
+                  render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Listing status</FormLabel>
+                    <RequiredLabel>Listing status</RequiredLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
@@ -835,7 +852,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <RequiredLabel>Phone</RequiredLabel>
                       <FormControl>
                         <Input {...field} placeholder="+977 9800000000" className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
                       </FormControl>
@@ -949,7 +966,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         open={photosPickerOpen}
         onOpenChange={setPhotosPickerOpen}
         accept="image"
+        multiple
         onSelect={handlePhotoSelect}
+        onSelectMany={handlePhotoSelectMany}
       />
     </div>
   )

@@ -2,7 +2,6 @@ export interface Province {
   id: number
   name: string
   slug: string
-  headquarter: string
 }
 
 export interface District {

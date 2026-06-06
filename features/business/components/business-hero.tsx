@@ -3,7 +3,7 @@ import { BadgeCheck, Bookmark, MapPin, PenLine, Share2 } from "lucide-react"
 import { MithoBadge, OpenNowBadge, ClosedBadge } from "@/components/mitho/mitho-badge"
 import { StarRating } from "@/components/mitho/mitho-rating"
 import { MithoButton } from "@/components/mitho/mitho-button"
-import type { BusinessSourceBadge } from "@/features/business/business-detail-types"
+import type { BusinessHeroTag, BusinessSourceBadge } from "@/features/business/business-detail-types"
 
 interface BusinessHeroProps {
   name: string
@@ -12,9 +12,9 @@ interface BusinessHeroProps {
   coverImage?: string | null
   rating?: number | null
   reviewCount: number
-  categories: string[]
+  categories: BusinessHeroTag[]
   location: string
-  isOpen: boolean
+  isOpen: boolean | null
   heroNote: string
   onAddToCollection?: () => void
   onWriteReview?: () => void
@@ -47,6 +47,14 @@ export function BusinessHero({
     ) : (
       <MithoBadge variant="muted">Added by Mitho</MithoBadge>
     )
+  const statusBadge =
+    isOpen === null ? (
+      <MithoBadge variant="warning">Hours not listed</MithoBadge>
+    ) : isOpen ? (
+      <OpenNowBadge />
+    ) : (
+      <ClosedBadge />
+    )
 
   return (
     <section className="relative">
@@ -59,9 +67,8 @@ export function BusinessHero({
           <div className="flex flex-col gap-8 md:grid md:grid-cols-[minmax(0,1fr)_240px] md:items-start md:gap-6 lg:grid-cols-[minmax(0,1fr)_224px] lg:gap-8">
             <div className="max-w-3xl flex-1">
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                {isOpen ? <OpenNowBadge /> : <ClosedBadge />}
+                {statusBadge}
                 {sourceBadgeContent}
-                <MithoBadge variant="neutral">{hasReviews ? `${reviewCount} local reviews` : "No reviews yet"}</MithoBadge>
               </div>
 
               <h1 className="type-page-title text-foreground">{name}</h1>
@@ -89,12 +96,39 @@ export function BusinessHero({
                 </p>
               )}
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <MithoBadge key={category} variant="neutral">
-                    {category}
-                  </MithoBadge>
-                ))}
+              <div className="mt-5 space-y-2.5">
+                {(() => {
+                  const establishments = categories.filter((c) => c.kind === "establishment")
+                  const cuisines = categories.filter((c) => c.kind !== "establishment")
+                  return (
+                    <>
+                      {establishments.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-semibold uppercase tracking-widest text-brand-deep-green/65 shrink-0">
+                            Type
+                          </span>
+                          {establishments.map((category) => (
+                            <MithoBadge key={`${category.kind}-${category.label}`} variant="muted">
+                              {category.label}
+                            </MithoBadge>
+                          ))}
+                        </div>
+                      )}
+                      {cuisines.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-semibold uppercase tracking-widest text-brand-deep-green/65 shrink-0">
+                            Cuisines
+                          </span>
+                          {cuisines.map((category) => (
+                            <MithoBadge key={`${category.kind}-${category.label}`} variant="neutral">
+                              {category.label}
+                            </MithoBadge>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )
+                })()}
               </div>
 
               <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-white px-4 py-2 text-sm text-muted-foreground">

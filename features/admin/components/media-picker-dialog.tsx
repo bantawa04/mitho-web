@@ -19,7 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 interface MediaPickerDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSelect: (media: Media) => void
+  onSelect?: (media: Media) => void
+  onSelectMany?: (media: Media[]) => void
   multiple?: boolean
   accept?: "image" | "video" | "all"
 }
@@ -40,6 +41,7 @@ export function MediaPickerDialog({
   open,
   onOpenChange,
   onSelect,
+  onSelectMany,
   multiple = false,
   accept = "all",
 }: MediaPickerDialogProps) {
@@ -83,7 +85,11 @@ export function MediaPickerDialog({
     if (!mediaItems) return
     const selected = mediaItems.filter((item) => selectedIds.has(item.id))
     if (selected.length > 0) {
-      onSelect(selected[0])
+      if (multiple) {
+        onSelectMany?.(selected)
+      } else {
+        onSelect?.(selected[0])
+      }
       onOpenChange(false)
       setSelectedIds(new Set())
     }
@@ -91,9 +97,13 @@ export function MediaPickerDialog({
 
   async function handleFiles(files: File[]) {
     if (files.length === 0) return
-    const file = files[0]
-    const uploaded = await uploadMutation.mutateAsync({ file })
-    setSelectedIds(new Set([uploaded.id]))
+    const uploadedItems: Media[] = []
+    for (const file of files) {
+      const uploaded = await uploadMutation.mutateAsync({ file })
+      uploadedItems.push(uploaded)
+    }
+
+    setSelectedIds(new Set(uploadedItems.map((item) => item.id)))
     setActiveTab("library")
   }
 
@@ -237,6 +247,7 @@ export function MediaPickerDialog({
               ref={fileInputRef}
               type="file"
               accept={getAcceptAttribute(accept)}
+              multiple={multiple}
               className="sr-only"
               onChange={handleFileInputChange}
             />
@@ -262,13 +273,16 @@ export function MediaPickerDialog({
                     <Upload className="h-6 w-6 text-brand-dark-green" />
                   </div>
                   <div className="text-center">
-                    <p className="font-medium text-brand-dark-green">Drop a file here, or click to browse</p>
+                    <p className="font-medium text-brand-dark-green">
+                      {multiple ? "Drop files here, or click to browse" : "Drop a file here, or click to browse"}
+                    </p>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {accept === "image"
                         ? "JPEG, PNG, WebP, GIF"
                         : accept === "video"
                           ? "MP4, WebM"
                           : "JPEG, PNG, WebP, GIF, MP4, WebM"}
+                      {multiple ? " • multiple upload supported" : ""}
                     </p>
                   </div>
                 </>
@@ -290,7 +304,7 @@ export function MediaPickerDialog({
             type="button"
             className="rounded-xl bg-brand-dark-green text-white hover:bg-brand-dark-green/92"
             onClick={handleConfirm}
-            disabled={selectedIds.size === 0}
+            disabled={selectedIds.size === 0 || uploadMutation.isPending}
           >
             Use selected
             {selectedIds.size > 0 && ` (${selectedIds.size})`}

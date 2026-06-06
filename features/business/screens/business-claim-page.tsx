@@ -36,8 +36,25 @@ const inputClassName =
 const selectTriggerClassName =
   "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <FormLabel>
+      {children} <span className="text-danger">*</span>
+    </FormLabel>
+  )
+}
+
 function claimableLocation(business: ClaimableBusiness) {
-  return [business.area, business.municipality, business.district, business.province].filter(Boolean).join(", ")
+  return [
+    business.area,
+    business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
+    business.addressNote,
+    business.municipality,
+    business.district,
+    business.province,
+  ]
+    .filter(Boolean)
+    .join(", ")
 }
 
 function claimableCue(business: ClaimableBusiness) {
@@ -444,7 +461,7 @@ export function BusinessClaimPage() {
                             name="claimantName"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Claimant name</FormLabel>
+                                <RequiredLabel>Claimant name</RequiredLabel>
                                 <FormControl>
                                   <Input {...field} className={inputClassName} placeholder="Your full name" />
                                 </FormControl>
@@ -459,7 +476,7 @@ export function BusinessClaimPage() {
                             name="role"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Your role</FormLabel>
+                                <RequiredLabel>Your role</RequiredLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <FormControl>
                                     <SelectTrigger className={selectTriggerClassName}>
@@ -487,7 +504,7 @@ export function BusinessClaimPage() {
                             name="businessPhone"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Business phone</FormLabel>
+                                <RequiredLabel>Business phone</RequiredLabel>
                                 <FormControl>
                                   <Input {...field} className={inputClassName} placeholder="+977 1-4234567" />
                                 </FormControl>
@@ -502,7 +519,7 @@ export function BusinessClaimPage() {
                             name="businessEmail"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Business email</FormLabel>
+                                <RequiredLabel>Business email</RequiredLabel>
                                 <FormControl>
                                   <Input {...field} type="email" className={inputClassName} placeholder="hello@business.com" />
                                 </FormControl>
@@ -519,7 +536,7 @@ export function BusinessClaimPage() {
                             name="panVatNumber"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>PAN/VAT number</FormLabel>
+                                <RequiredLabel>PAN/VAT number</RequiredLabel>
                                 <FormControl>
                                   <Input {...field} className={inputClassName} placeholder="Enter the PAN/VAT number" />
                                 </FormControl>
@@ -534,7 +551,7 @@ export function BusinessClaimPage() {
                             name="verificationDocument"
                             render={({ field: { onChange, value, ...field } }) => (
                               <FormItem>
-                                <FormLabel>PAN/VAT document</FormLabel>
+                                <RequiredLabel>PAN/VAT document</RequiredLabel>
                                 <FormControl>
                                   <Input
                                     {...field}
@@ -568,7 +585,7 @@ export function BusinessClaimPage() {
                                   />
                                 </FormControl>
                                 <div className="space-y-1">
-                                  <FormLabel>I am allowed to claim and manage this business listing.</FormLabel>
+                                  <RequiredLabel>I am allowed to claim and manage this business listing.</RequiredLabel>
                                   <FormDescription>
                                     I understand Mitho will review this request before any business dashboard access is granted.
                                   </FormDescription>

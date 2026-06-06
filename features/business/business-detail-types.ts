@@ -49,6 +49,12 @@ export interface BusinessRatingsData {
 }
 
 export type BusinessSourceBadge = "mitho" | "verifiedOwner"
+export type BusinessHeroTagKind = "establishment" | "cuisine"
+
+export interface BusinessHeroTag {
+  label: string
+  kind: BusinessHeroTagKind
+}
 
 export interface BusinessVisitInfo {
   address: string
@@ -77,9 +83,9 @@ export interface BusinessPageData {
   coverImage?: string | null
   rating?: number | null
   reviewCount: number
-  categories: string[]
+  categories: BusinessHeroTag[]
   location: string
-  isOpen: boolean
+  isOpen: boolean | null
   heroNote: string
   breadcrumbItems: BusinessBreadcrumbItem[]
   visitInfo: BusinessVisitInfo
