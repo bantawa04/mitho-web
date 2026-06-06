@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
+import { useBusinessReviews } from "@/hooks/use-reviews"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { Header } from "@/features/home/components/header"
 import { Footer } from "@/features/home/components/footer"
@@ -26,6 +27,7 @@ import { SimilarPlaces } from "@/features/business/components/similar-places"
 import { ClaimReport } from "@/features/business/components/claim-report"
 import type { BusinessPageData } from "@/features/business/business-detail-types"
 import { isBusinessEarlyListing } from "@/features/business/business-detail-utils"
+import { mapReviewItemToBusinessReview, mapReviewSummaryToRatingsData } from "@/features/business/mappers/public-business-page-data"
 
 interface BusinessDetailPageProps {
   pageData: BusinessPageData
@@ -34,13 +36,31 @@ interface BusinessDetailPageProps {
 }
 
 export function BusinessDetailPage({ pageData, claimHref = "/business/claim", publicHref }: BusinessDetailPageProps) {
-  const [sortOrder, setSortOrder] = React.useState("all")
+  const [sortOrder, setSortOrder] = React.useState<"latest" | "oldest" | "highest" | "lowest">("latest")
+  const [reviewPage, setReviewPage] = React.useState(1)
   const { isAuthenticated } = useAuthSnapshot()
   const [collections, setCollections] = React.useState<CollectionRecord[]>(ownedCollections)
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = React.useState(false)
-  const [isSignInOpen, setIsSignInOpen] = React.useState(false)
+  const [signInIntent, setSignInIntent] = React.useState<"collection" | "review" | null>(null)
   const [reopenCollectionDialogAfterAuth, setReopenCollectionDialogAfterAuth] = React.useState(false)
   const isEarlyListing = isBusinessEarlyListing(pageData)
+  const reviewsQuery = useBusinessReviews(pageData.id, {
+    page: reviewPage,
+    perPage: 3,
+    sort: sortOrder,
+  })
+  const reviewCards = React.useMemo(
+    () => reviewsQuery.data?.items.map(mapReviewItemToBusinessReview) ?? pageData.reviews,
+    [pageData.reviews, reviewsQuery.data?.items],
+  )
+  const ratingsData = React.useMemo(
+    () => mapReviewSummaryToRatingsData(reviewsQuery.data?.summary) ?? pageData.ratingsData ?? null,
+    [pageData.ratingsData, reviewsQuery.data?.summary],
+  )
+
+  React.useEffect(() => {
+    setReviewPage(1)
+  }, [sortOrder])
 
   const scrollToReview = () => {
     document.getElementById("add-review")?.scrollIntoView({ behavior: "smooth" })
@@ -86,7 +106,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   const handleAddToCollectionPress = () => {
     if (!isAuthenticated) {
       setReopenCollectionDialogAfterAuth(true)
-      setIsSignInOpen(true)
+      setSignInIntent("collection")
       return
     }
 
@@ -158,8 +178,8 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
           sourceBadge={pageData.sourceBadge}
           isEarlyListing={isEarlyListing}
           coverImage={pageData.coverImage}
-          rating={pageData.rating}
-          reviewCount={pageData.reviewCount}
+          rating={ratingsData?.averageRating ?? pageData.rating}
+          reviewCount={reviewsQuery.data?.summary.totalReviews ?? pageData.reviewCount}
           categories={pageData.categories}
           location={pageData.location}
           isOpen={pageData.isOpen}
@@ -190,18 +210,25 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         </div>
 
         <div className="mt-4" id="reviews">
-          <RatingsSection isEarlyListing={isEarlyListing} ratingsData={pageData.ratingsData ?? null} />
+          <RatingsSection isEarlyListing={isEarlyListing} ratingsData={ratingsData} />
           <ReviewsSection
             isEarlyListing={isEarlyListing}
             sortOrder={sortOrder}
-            onSortChange={setSortOrder}
-            reviews={pageData.reviews}
+            onSortChange={(value) => setSortOrder(value as "latest" | "oldest" | "highest" | "lowest")}
+            reviews={reviewCards}
             emptyMessage={pageData.reviewsEmptyMessage}
+            currentPage={reviewsQuery.data?.meta.page ?? reviewPage}
+            totalPages={reviewsQuery.data?.meta.totalPages ?? 1}
+            onPageChange={setReviewPage}
+            isLoading={reviewsQuery.isLoading}
           />
           <AddReviewForm
+            businessId={pageData.id}
+            businessName={pageData.name}
             isEarlyListing={isEarlyListing}
-            isFirstReview={pageData.reviews.length === 0}
+            isFirstReview={(reviewsQuery.data?.summary.totalReviews ?? pageData.reviews.length) === 0}
             prompt={pageData.addReviewPrompt}
+            onRequireAuth={() => setSignInIntent("review")}
           />
         </div>
 
@@ -235,13 +262,28 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
       />
 
       <GoogleSignInDialog
-        open={isSignInOpen}
-        onOpenChange={setIsSignInOpen}
-        title="Sign in to add this place to your collections."
-        description="Use Google so Mitho can keep your collections, reviews, and future business actions under the same account."
-        helperCopy="Once sign-in is connected for real, this same flow will bring you back to the collection picker without losing the business you were trying to save."
+        open={signInIntent !== null}
+        onOpenChange={(open) => {
+          if (!open) setSignInIntent(null)
+        }}
+        title={
+          signInIntent === "review"
+            ? "Sign in to post your review."
+            : "Sign in to add this place to your collections."
+        }
+        description={
+          signInIntent === "review"
+            ? "Use Google so Mitho can connect your review, collections, and future business actions to the same account."
+            : "Use Google so Mitho can keep your collections, reviews, and future business actions under the same account."
+        }
+        helperCopy={
+          signInIntent === "review"
+            ? "Your rating and review draft will be restored when you come back. If the page reloads during sign-in, you may need to reselect any images."
+            : "Once sign-in is connected for real, this same flow will bring you back to the collection picker without losing the business you were trying to save."
+        }
+        stayOnCurrentPageAfterSignIn={signInIntent === "collection"}
         onContinue={() => {
-          setIsSignInOpen(false)
+          setSignInIntent(null)
         }}
       />
     </div>

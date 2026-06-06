@@ -2,6 +2,7 @@ import type { BusinessPageData } from "@/features/business/business-detail-types
 
 const richReviews = [
   {
+    id: "review-1",
     author: "Priya Sharma",
     authorImage: "/woman-portrait.png",
     rating: 5,
@@ -20,6 +21,7 @@ const richReviews = [
     },
   },
   {
+    id: "review-2",
     author: "Ramesh Thapa",
     authorImage: "/thoughtful-man-portrait.png",
     rating: 4,
@@ -29,6 +31,7 @@ const richReviews = [
     helpful: 12,
   },
   {
+    id: "review-3",
     author: "Sita Gurung",
     authorImage: "/diverse-woman-smiling.png",
     rating: 5,
@@ -39,6 +42,7 @@ const richReviews = [
     helpful: 8,
   },
   {
+    id: "review-4",
     author: "Bikash Rai",
     authorImage: "/young-man-contemplative.png",
     rating: 4,
@@ -48,6 +52,7 @@ const richReviews = [
     helpful: 6,
   },
   {
+    id: "review-5",
     author: "Maya Tamang",
     authorImage: "/middle-aged-woman.png",
     rating: 5,
@@ -58,6 +63,7 @@ const richReviews = [
     helpful: 15,
   },
   {
+    id: "review-6",
     author: "Sujan Shrestha",
     authorImage: "/man-glasses.png",
     rating: 3,
@@ -69,6 +75,7 @@ const richReviews = [
 ]
 
 export const richBusinessPageData: BusinessPageData = {
+  id: "business-rich-demo",
   name: "Himalayan Flavors",
   sourceBadge: "verifiedOwner",
   coverImage: "/placeholder.svg?height=600&width=1200",
@@ -158,6 +165,7 @@ export const richBusinessPageData: BusinessPageData = {
 }
 
 export const emptyBusinessPageData: BusinessPageData = {
+  id: "business-empty-demo",
   name: "Patan Courtyard Kitchen",
   sourceBadge: "mitho",
   coverImage: null,
