@@ -2,9 +2,12 @@ import API from "@/config/api"
 import type { ISuccessResponse } from "@/types/response"
 import type {
   Business,
+  BusinessHour,
   CreateBusinessPayload,
   ListBusinessesParams,
+  MyBusinessEntry,
   PublicBusiness,
+  ReplaceHoursPayload,
   UpdateBusinessPayload,
 } from "@/types/business"
 
@@ -46,13 +49,23 @@ function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
   return out
 }
 
+export async function listMyBusinesses(): Promise<MyBusinessEntry[]> {
+  const { data } = await API.get<ISuccessResponse<MyBusinessEntry[]>>("/businesses/mine")
+  return data.data
+}
+
 export async function listBusinesses(params?: ListBusinessesParams): Promise<Business[]> {
   const { data } = await API.get<ISuccessResponse<Business[]>>("/admin/businesses", { params })
   return data.data
 }
 
 export async function getBusiness(id: string): Promise<Business> {
-  const { data } = await API.get<ISuccessResponse<Business>>(`/admin/businesses/${id}`)
+  const { data } = await API.get<ISuccessResponse<Business>>(`/admin/businesses/${id.trim()}`)
+  return data.data
+}
+
+export async function getBusinessDetail(id: string): Promise<Business> {
+  const { data } = await API.get<ISuccessResponse<Business>>(`/businesses/${id.trim()}`)
   return data.data
 }
 
@@ -75,10 +88,19 @@ export async function createBusiness(payload: CreateBusinessPayload): Promise<Bu
 }
 
 export async function updateBusiness(id: string, payload: UpdateBusinessPayload): Promise<Business> {
-  const { data } = await API.put<ISuccessResponse<Business>>(`/businesses/${id}`, toSnakeCase(payload))
+  const { data } = await API.put<ISuccessResponse<Business>>(`/businesses/${id.trim()}`, toSnakeCase(payload))
   return data.data
 }
 
 export async function deleteBusiness(id: string): Promise<void> {
-  await API.delete(`/businesses/${id}`)
+  await API.delete(`/businesses/${id.trim()}`)
+}
+
+export async function getBusinessHours(businessId: string): Promise<BusinessHour[]> {
+  const { data } = await API.get<ISuccessResponse<BusinessHour[]>>(`/businesses/${businessId.trim()}/hours`)
+  return data.data
+}
+
+export async function replaceBusinessHours(businessId: string, payload: ReplaceHoursPayload): Promise<void> {
+  await API.put(`/businesses/${businessId.trim()}/hours`, payload)
 }

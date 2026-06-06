@@ -55,6 +55,10 @@ export interface BusinessHour {
   isClosed: boolean
 }
 
+export interface ReplaceHoursPayload {
+  hours: BusinessHour[]
+}
+
 export type BusinessStatus = "pending" | "active" | "suspended" | "rejected"
 export type BusinessListingStatus = "pending_review" | "published" | "suspended" | "rejected"
 export type BusinessOwnershipStatus = "unclaimed" | "claim_under_review" | "claimed"
@@ -120,6 +124,14 @@ export interface Business {
 
 export interface PublicBusiness extends Business {
   hours: BusinessHour[]
+}
+
+export interface MyBusinessEntry {
+  business: Business
+  membershipRole?: string
+  membershipStatus?: string
+  claimStatus?: string
+  claimId?: string
 }
 
 export interface CreateBusinessPayload {

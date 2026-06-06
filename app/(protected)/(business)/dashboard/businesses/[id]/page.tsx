@@ -6,5 +6,5 @@ interface DashboardBusinessIndexPageProps {
 
 export default async function DashboardBusinessIndexPage({ params }: DashboardBusinessIndexPageProps) {
   const { id } = await params
-  redirect(`/dashboard/businesses/${id}/overview`)
+  redirect(`/dashboard/businesses/${id.trim()}/overview`)
 }

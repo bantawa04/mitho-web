@@ -22,6 +22,8 @@ export const queryKeys = {
     all: ["businesses"] as const,
     list: (params?: ListBusinessesParams) => ["businesses", "list", params] as const,
     detail: (id: string) => ["businesses", "detail", id] as const,
+    mine: ["businesses", "mine"] as const,
+    hours: (id: string) => ["businesses", id, "hours"] as const,
   },
   establishmentTypes: {
     all: ["establishment-types"] as const,
