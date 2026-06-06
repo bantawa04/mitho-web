@@ -91,9 +91,8 @@ export interface Business {
     category: Municipality["category"]
   }
   area?: string
-  addressLine1: string
-  addressLine2?: string
-  landmark?: string
+  nearestLandmark?: string
+  addressNote?: string
   latitude?: number
   longitude?: number
   googleMapsUrl?: string
@@ -141,16 +140,15 @@ export interface CreateBusinessPayload {
   districtId: number
   municipalityId: number
   wardNo: number
-  addressLine1: string
+  area?: string
   description?: string
   logoId?: string
   bannerId?: string
   photos?: string[]
   email?: string
   phoneSecondary?: string
-  area?: string
-  addressLine2?: string
-  landmark?: string
+  nearestLandmark?: string
+  addressNote?: string
   latitude?: number
   longitude?: number
   googleMapsUrl?: string

@@ -33,6 +33,7 @@ interface BusinessCuisineFieldProps<TFieldValues extends FieldValues> {
   className?: string
   chipsClassName?: string
   disabled?: boolean
+  required?: boolean
 }
 
 export function BusinessCuisineField<TFieldValues extends FieldValues>({
@@ -43,6 +44,7 @@ export function BusinessCuisineField<TFieldValues extends FieldValues>({
   className,
   chipsClassName,
   disabled = false,
+  required = false,
 }: BusinessCuisineFieldProps<TFieldValues>) {
   const anchorRef = useComboboxAnchor()
   const cuisinesQuery = useCuisines()
@@ -56,7 +58,10 @@ export function BusinessCuisineField<TFieldValues extends FieldValues>({
 
         return (
           <FormItem className={className}>
-            <FormLabel>{label}</FormLabel>
+            <FormLabel>
+              {label}
+              {required ? <span className="ml-1 text-danger">*</span> : null}
+            </FormLabel>
             <FormControl>
               <Combobox<string, true>
                 multiple

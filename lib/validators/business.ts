@@ -32,24 +32,19 @@ export const addBusinessSchema = z.object({
   area: z
     .string()
     .trim()
-    .max(100, "Area / Neighbourhood should stay under 100 characters.")
+    .max(120, "Area should stay under 120 characters.")
     .optional()
     .or(z.literal("")),
-  addressLine1: z
+  nearestLandmark: z
     .string()
     .trim()
-    .min(4, "Address 1 is required.")
-    .max(120, "Address 1 should stay under 120 characters."),
-  addressLine2: z
-    .string()
-    .trim()
-    .max(120, "Address 2 should stay under 120 characters.")
+    .max(120, "Nearest landmark should stay under 120 characters.")
     .optional()
     .or(z.literal("")),
-  landmark: z
+  addressNote: z
     .string()
     .trim()
-    .max(120, "Landmark should stay under 120 characters.")
+    .max(120, "Address note should stay under 120 characters.")
     .optional()
     .or(z.literal("")),
   latitude: z

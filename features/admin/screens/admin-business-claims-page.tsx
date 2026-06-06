@@ -71,7 +71,16 @@ function formatDate(value?: string) {
 function businessLocation(claim: BusinessClaim) {
   const business = claim.business
   if (!business) return "Location not provided"
-  return [business.area, business.municipality?.name, business.district?.name, business.province?.name].filter(Boolean).join(", ")
+  return [
+    business.area,
+    business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
+    business.addressNote,
+    business.municipality?.name,
+    business.district?.name,
+    business.province?.name,
+  ]
+    .filter(Boolean)
+    .join(", ")
 }
 
 function publicBusinessHref(claim: BusinessClaim) {
