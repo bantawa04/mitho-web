@@ -53,6 +53,9 @@ export const businessSchema = z.object({
 
 export type BusinessFormValues = z.infer<typeof businessSchema>
 
+export const businessOwnerSchema = businessSchema.omit({ listingStatus: true })
+export type BusinessOwnerFormValues = z.infer<typeof businessOwnerSchema>
+
 export const establishmentTypeSchema = z.object({
   label: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be 100 characters or fewer"),
   status: z.enum(["active", "disabled"]),

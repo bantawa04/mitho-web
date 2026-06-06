@@ -1,13 +1,33 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowRight, MessageSquare, Sparkles } from "lucide-react"
 import { KeyMetrics } from "@/features/dashboard/components/key-metrics"
-import type { ManagedBusiness } from "@/features/dashboard/data/dashboard-business-data"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/mitho/mitho-card"
 import { StarRating } from "@/components/mitho/mitho-rating"
+import { useMyBusiness } from "@/hooks/use-businesses"
+import type { MyBusinessEntry } from "@/types/business"
 
 interface BusinessOverviewPageProps {
-  business: ManagedBusiness
+  businessId: string
+}
+
+function computeProfileCompleteness(entry: MyBusinessEntry): number {
+  const b = entry.business
+  const checks = [
+    Boolean(b.name),
+    Boolean(b.description),
+    Boolean(b.phone),
+    Boolean(b.email),
+    Boolean(b.logo),
+    Boolean(b.banner),
+    Boolean(b.photos && b.photos.length > 0),
+    Boolean(b.establishmentType),
+    Boolean(b.cuisines && b.cuisines.length > 0),
+    Boolean(b.addressLine1),
+  ]
+  return Math.round((checks.filter(Boolean).length / checks.length) * 100)
 }
 
 const recentReviews = [
@@ -25,7 +45,10 @@ const recentReviews = [
   },
 ]
 
-export function BusinessOverviewPage({ business }: BusinessOverviewPageProps) {
+export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) {
+  const { entry } = useMyBusiness(businessId)
+  const profileCompleteness = entry ? computeProfileCompleteness(entry) : 0
+
   return (
     <div className="space-y-8 pb-12">
       <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
@@ -38,7 +61,7 @@ export function BusinessOverviewPage({ business }: BusinessOverviewPageProps) {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="capsule-cluster">Profile score {business.profileCompleteness ?? 75}%</span>
+            <span className="capsule-cluster">Profile score {profileCompleteness}%</span>
           </div>
         </div>
       </section>
@@ -76,7 +99,7 @@ export function BusinessOverviewPage({ business }: BusinessOverviewPageProps) {
             </div>
 
             <MithoButton variant="ghost" className="mt-5" asChild>
-              <Link href={`/dashboard/businesses/${business.id}/reviews`}>
+              <Link href={`/dashboard/businesses/${businessId}/reviews`}>
                 Open reviews
                 <ArrowRight className="h-4 w-4" />
               </Link>

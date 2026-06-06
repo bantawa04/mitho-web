@@ -1,6 +1,4 @@
-import { notFound } from "next/navigation"
 import type { ReactNode } from "react"
-import { getManagedBusinessByIdAny } from "@/features/dashboard/data/dashboard-business-data"
 import { BusinessWorkspaceShell } from "@/features/dashboard/components/business-workspace-shell"
 
 interface DashboardBusinessLayoutProps {
@@ -10,11 +8,5 @@ interface DashboardBusinessLayoutProps {
 
 export default async function DashboardBusinessLayout({ children, params }: DashboardBusinessLayoutProps) {
   const { id } = await params
-  const business = getManagedBusinessByIdAny(id)
-
-  if (!business || business.status === "claim-pending") {
-    notFound()
-  }
-
-  return <BusinessWorkspaceShell business={business}>{children}</BusinessWorkspaceShell>
+  return <BusinessWorkspaceShell businessId={id.trim()}>{children}</BusinessWorkspaceShell>
 }
