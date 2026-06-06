@@ -18,8 +18,9 @@ export const businessSchema = z.object({
   districtId: z.string().trim().min(1, "District is required"),
   municipalityId: z.string().trim().min(1, "Municipality is required"),
   wardNo: z.string().trim().min(1, "Ward No. is required").regex(/^\d+$/, "Ward No. must be a whole number"),
-  addressLine1: z.string().trim().max(200, "Address must be 200 characters or fewer").optional(),
+  area: z.string().trim().max(100, "Area must be 100 characters or fewer").optional(),
   nearestLandmark: z.string().trim().max(200, "Nearest landmark must be 200 characters or fewer").optional(),
+  addressNote: z.string().trim().max(200, "Address note must be 200 characters or fewer").optional(),
   latitude: z.number().nullable().optional(),
   longitude: z.number().nullable().optional(),
   // Links

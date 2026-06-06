@@ -8,8 +8,9 @@ export interface ClaimableBusiness {
   name: string
   slug: string
   publicPath: string
-  addressLine1?: string
+  area?: string
   nearestLandmark?: string
+  addressNote?: string
   province: string
   provinceSlug: string
   district: string
@@ -36,8 +37,9 @@ export interface BusinessClaimBusinessSummary {
   province?: { name: string; slug: string }
   district?: { name: string; slug: string }
   municipality?: { name: string; slug: string }
-  addressLine1?: string
+  area?: string
   nearestLandmark?: string
+  addressNote?: string
   phone?: string
   email?: string
   ownershipStatus?: string

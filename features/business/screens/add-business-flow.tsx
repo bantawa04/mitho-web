@@ -66,6 +66,14 @@ const textareaClassName =
 const selectTriggerClassName =
   "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <FormLabel>
+      {children} <span className="text-danger">*</span>
+    </FormLabel>
+  )
+}
+
 function normalizeOptionalUrl(value: string | undefined) {
   const trimmed = value?.trim()
   if (!trimmed) return undefined
@@ -232,8 +240,9 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       districtId: "",
       municipalityId: "",
       wardNo: "",
-      addressLine1: "",
+      area: "",
       nearestLandmark: "",
+      addressNote: "",
       latitude: null,
       longitude: null,
       phone: "",
@@ -279,8 +288,9 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const watchedDistrictId = form.watch("districtId")
   const watchedMunicipalityId = form.watch("municipalityId")
   const watchedWardNo = form.watch("wardNo")
-  const watchedAddressLine1 = form.watch("addressLine1")
+  const watchedArea = form.watch("area")
   const watchedNearestLandmark = form.watch("nearestLandmark")
+  const watchedAddressNote = form.watch("addressNote")
   const watchedLatitude = form.watch("latitude")
   const watchedLongitude = form.watch("longitude")
   const selectedEstablishmentType = establishmentTypesQuery.data?.find((type) => type.id === watchedCategory)
@@ -325,8 +335,9 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       districtId: Number(values.districtId),
       municipalityId: Number(values.municipalityId),
       wardNo: Number(values.wardNo),
-      addressLine1: values.addressLine1.trim() || undefined,
+      area: values.area?.trim() || undefined,
       nearestLandmark: values.nearestLandmark?.trim() || undefined,
+      addressNote: values.addressNote?.trim() || undefined,
       latitude: values.latitude ?? undefined,
       longitude: values.longitude ?? undefined,
       establishmentTypeId: values.primaryCategory,
@@ -380,8 +391,9 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
           { label: "District", value: selectedDistrict?.name ?? "Selected district" },
           { label: "City / Municipality", value: selectedMunicipality?.name ?? "Selected municipality" },
           { label: "Ward No.", value: values.wardNo.trim() },
-          { label: "Address", value: displayValue(values.addressLine1) },
+          { label: "Area", value: displayValue(values.area) },
           { label: "Nearest landmark", value: displayValue(values.nearestLandmark) },
+          { label: "Address note", value: displayValue(values.addressNote) },
         ],
       },
       {
@@ -530,7 +542,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                   name="businessName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Business name</FormLabel>
+                      <RequiredLabel>Business name</RequiredLabel>
                       <FormControl>
                         <Input {...field} className={inputClassName} placeholder="The Himalayan Kitchen" />
                       </FormControl>
@@ -546,7 +558,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     name="primaryCategory"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Establishment type</FormLabel>
+                        <RequiredLabel>Establishment type</RequiredLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -586,6 +598,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                   <BusinessCuisineField
                     control={form.control}
                     name="cuisineIds"
+                    required
                     chipsClassName="min-h-[48px] rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] shadow-none focus-within:border-brand-orange focus-within:ring-brand-orange/15"
                   />
 
@@ -625,7 +638,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
 
                 <div className="space-y-3">
                   <div className="space-y-1">
-                    <FormLabel>Map marker</FormLabel>
+                    <RequiredLabel>Map marker</RequiredLabel>
                     <FormDescription>
                       Drop the pin where your business is located.
                     </FormDescription>
@@ -656,7 +669,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Primary phone</FormLabel>
+                      <RequiredLabel>Primary phone</RequiredLabel>
                       <FormControl>
                         <Input {...field} className={inputClassName} placeholder="+977 1-4234567" />
                       </FormControl>
@@ -671,7 +684,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                   name="publicEmail"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Public email</FormLabel>
+                      <RequiredLabel>Public email</RequiredLabel>
                       <FormControl>
                         <Input {...field} type="email" className={inputClassName} placeholder="hello@business.com" />
                       </FormControl>
@@ -875,7 +888,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     name="relationshipRole"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Your role</FormLabel>
+                        <RequiredLabel>Your role</RequiredLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className={selectTriggerClassName}>
@@ -910,7 +923,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                             />
                           </FormControl>
                           <div className="space-y-1">
-                            <FormLabel>I am allowed to create and manage this business listing.</FormLabel>
+                            <RequiredLabel>I am allowed to create and manage this business listing.</RequiredLabel>
                             <FormDescription>
                               This confirms that you own the business, manage it, or have permission to act on its behalf.
                             </FormDescription>
@@ -986,10 +999,11 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Location</p>
                   <p className="mt-1 text-sm font-semibold text-brand-dark-green">
-                    {watchedAddressLine1.trim()
+                    {watchedArea?.trim()
                       ? [
-                          watchedAddressLine1,
+                          watchedArea.trim(),
                           watchedNearestLandmark?.trim() ? `Near ${watchedNearestLandmark.trim()}` : null,
+                          watchedAddressNote?.trim() || null,
                           watchedWardNo ? `Ward ${watchedWardNo}` : null,
                           selectedMunicipality?.name ?? null,
                         ].filter(Boolean).join(", ")

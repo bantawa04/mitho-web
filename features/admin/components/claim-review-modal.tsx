@@ -19,8 +19,9 @@ function businessLocation(claim: BusinessClaim) {
   const business = claim.business
   if (!business) return "Location not provided"
   return [
-    business.addressLine1,
+    business.area,
     business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
+    business.addressNote,
     business.municipality?.name,
     business.district?.name,
     business.province?.name,

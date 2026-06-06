@@ -60,6 +60,14 @@ const ownershipLabels: Record<BusinessOwnershipStatus, string> = {
   claimed: "Claimed",
 }
 
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <FormLabel>
+      {children} <span className="text-danger">*</span>
+    </FormLabel>
+  )
+}
+
 function getClaimReviewHref(businessId: string, claimId?: string) {
   const params = new URLSearchParams({ status: "pending", businessId })
   if (claimId) params.set("claimId", claimId)
@@ -127,8 +135,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       districtId: "",
       municipalityId: "",
       wardNo: "",
-      addressLine1: "",
+      area: "",
       nearestLandmark: "",
+      addressNote: "",
       latitude: null,
       longitude: null,
       websiteUrl: "",
@@ -178,8 +187,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         districtId: readLocationId(existing.districtId, existing.district?.id),
         municipalityId: readLocationId(existing.municipalityId, existing.municipality?.id),
         wardNo: readWardNo(existing.wardNo),
-        addressLine1: existing.addressLine1 ?? "",
+        area: existing.area ?? "",
         nearestLandmark: existing.nearestLandmark ?? "",
+        addressNote: existing.addressNote ?? "",
         latitude: existing.latitude ?? null,
         longitude: existing.longitude ?? null,
         websiteUrl: existing.links?.website ?? "",
@@ -304,8 +314,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       districtId: Number(values.districtId),
       municipalityId: Number(values.municipalityId),
       wardNo: Number(values.wardNo),
-      addressLine1: values.addressLine1 || undefined,
+      area: values.area || undefined,
       nearestLandmark: values.nearestLandmark || undefined,
+      addressNote: values.addressNote || undefined,
       latitude: values.latitude ?? undefined,
       longitude: values.longitude ?? undefined,
       amenities,
@@ -416,7 +427,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   name="name"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel>Business name</FormLabel>
+                      <RequiredLabel>Business name</RequiredLabel>
                       <FormControl>
                         <Input {...field} placeholder="e.g. The Himalayan Kitchen" className="h-11 rounded-xl border-brand-deep-green/10 shadow-none" />
                       </FormControl>
@@ -698,11 +709,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
             <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
               <h3 className="text-lg font-semibold text-brand-dark-green">Publishing</h3>
               <FormField
-                control={form.control}
-                name="listingStatus"
-                render={({ field }) => (
+                  control={form.control}
+                  name="listingStatus"
+                  render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Listing status</FormLabel>
+                    <RequiredLabel>Listing status</RequiredLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
@@ -841,7 +852,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <RequiredLabel>Phone</RequiredLabel>
                       <FormControl>
                         <Input {...field} placeholder="+977 9800000000" className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
                       </FormControl>

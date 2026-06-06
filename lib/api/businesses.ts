@@ -22,8 +22,9 @@ function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
   if (p.districtId !== undefined) out.district_id = p.districtId
   if (p.municipalityId !== undefined) out.municipality_id = p.municipalityId
   if (p.wardNo !== undefined) out.ward_no = p.wardNo
-  if (p.addressLine1 !== undefined) out.address_line_1 = p.addressLine1
+  if (p.area !== undefined) out.area = p.area
   if (p.nearestLandmark !== undefined) out.nearest_landmark = p.nearestLandmark
+  if (p.addressNote !== undefined) out.address_note = p.addressNote
   if (p.latitude !== undefined) out.latitude = p.latitude
   if (p.longitude !== undefined) out.longitude = p.longitude
   if (p.googleMapsUrl !== undefined) out.google_maps_url = p.googleMapsUrl

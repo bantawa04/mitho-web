@@ -107,8 +107,9 @@ function buildGalleryItems(business: PublicBusiness): BusinessGalleryItem[] {
 
 function buildAddress(business: PublicBusiness) {
   return [
-    business.addressLine1,
+    business.area,
     business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
+    business.addressNote,
     business.municipality?.name,
     business.district?.name,
     business.province?.name,

@@ -251,8 +251,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
   const publicBusinessHref = getPublicBusinessHref(business)
 
   const fullAddress = [
-    business.addressLine1,
+    business.area,
     business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
+    business.addressNote,
     `Ward ${business.wardNo}`,
     business.municipality.name,
     business.district.name,
@@ -443,8 +444,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                   { label: "District", value: business.district.name },
                   { label: "Province", value: business.province.name },
                   { label: "Ward Number", value: `Ward ${business.wardNo}` },
-                  { label: "Address", value: business.addressLine1 || "N/A" },
+                  { label: "Area", value: business.area || "N/A" },
                   { label: "Nearest landmark", value: business.nearestLandmark || "N/A" },
+                  { label: "Address note", value: business.addressNote || "N/A" },
                   { label: "Full address", value: fullAddress },
                   {
                     label: "Map Coordinates",
