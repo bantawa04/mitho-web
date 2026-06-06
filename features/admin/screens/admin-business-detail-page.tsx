@@ -250,11 +250,16 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
   const addedByLabel = business.addedByUserName || business.addedByType
   const publicBusinessHref = getPublicBusinessHref(business)
 
-  const fullAddress = `${business.addressLine1}${business.addressLine2 ? `, ${business.addressLine2}` : ""}${
-    business.landmark ? ` (Near ${business.landmark})` : ""
-  }, Ward ${business.wardNo}, ${business.municipality.name}, ${business.district.name}, ${
-    business.province.name
-  }`
+  const fullAddress = [
+    business.addressLine1,
+    business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
+    `Ward ${business.wardNo}`,
+    business.municipality.name,
+    business.district.name,
+    business.province.name,
+  ]
+    .filter(Boolean)
+    .join(", ")
 
   const costText = business.avgCostPerPerson ? `Rs. ${business.avgCostPerPerson}` : "N/A"
   const costHelper = business.priceRange
@@ -355,7 +360,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               )}
               <div>
                 <h1 className="text-3xl font-semibold tracking-tight text-brand-dark-green dark:text-brand-soft-beige">{business.name}</h1>
-                <p className="mt-1 text-sm text-muted-foreground">{business.area || business.municipality.name}, {business.district.name}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{business.municipality.name}, {business.district.name}</p>
                 {business.description && (
                   <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{business.description}</p>
                 )}
@@ -434,11 +439,12 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               <DetailList
                 items={[
                   { label: "Establishment type", value: establishmentTypeLabel },
-                  { label: "Neighborhood", value: business.area || "N/A" },
                   { label: "City", value: cityLabel },
                   { label: "District", value: business.district.name },
                   { label: "Province", value: business.province.name },
                   { label: "Ward Number", value: `Ward ${business.wardNo}` },
+                  { label: "Address", value: business.addressLine1 || "N/A" },
+                  { label: "Nearest landmark", value: business.nearestLandmark || "N/A" },
                   { label: "Full address", value: fullAddress },
                   {
                     label: "Map Coordinates",

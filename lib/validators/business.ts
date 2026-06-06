@@ -29,27 +29,14 @@ export const addBusinessSchema = z.object({
   districtId: z.string().trim().min(1, "Choose a valid district."),
   municipalityId: z.string().trim().min(1, "Choose a valid municipality."),
   wardNo: z.string().trim().min(1, "Ward No. is required.").regex(/^\d+$/, "Ward No. must be a whole number."),
-  area: z
-    .string()
-    .trim()
-    .max(100, "Area / Neighbourhood should stay under 100 characters.")
-    .optional()
-    .or(z.literal("")),
   addressLine1: z
     .string()
     .trim()
-    .min(4, "Address 1 is required.")
     .max(120, "Address 1 should stay under 120 characters."),
-  addressLine2: z
+  nearestLandmark: z
     .string()
     .trim()
-    .max(120, "Address 2 should stay under 120 characters.")
-    .optional()
-    .or(z.literal("")),
-  landmark: z
-    .string()
-    .trim()
-    .max(120, "Landmark should stay under 120 characters.")
+    .max(120, "Nearest landmark should stay under 120 characters.")
     .optional()
     .or(z.literal("")),
   latitude: z

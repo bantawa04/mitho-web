@@ -18,7 +18,15 @@ import type { BusinessClaim } from "@/types/business-claims"
 function businessLocation(claim: BusinessClaim) {
   const business = claim.business
   if (!business) return "Location not provided"
-  return [business.area, business.municipality?.name, business.district?.name, business.province?.name].filter(Boolean).join(", ")
+  return [
+    business.addressLine1,
+    business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
+    business.municipality?.name,
+    business.district?.name,
+    business.province?.name,
+  ]
+    .filter(Boolean)
+    .join(", ")
 }
 
 function formatDate(value?: string) {

@@ -2,6 +2,7 @@ import { richBusinessPageData } from "@/features/business/data/business-detail-d
 import type {
   BusinessGalleryItem,
   BusinessPageData,
+  BusinessHeroTag,
   BusinessVisitInfo,
 } from "@/features/business/business-detail-types"
 import type { BusinessAmenities, BusinessHour, PublicBusiness } from "@/types/business"
@@ -13,9 +14,13 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
   const galleryItems = buildGalleryItems(business)
   const cuisineNames = business.cuisines?.map((cuisine) => cuisine.name).filter(Boolean) ?? []
   const establishmentLabel = business.establishmentType?.label ?? business.municipality?.category?.name ?? "Place"
-  const location = [business.area, business.municipality?.name, business.district?.name].filter(Boolean).join(", ")
-  const rating = business.ratingAvg ?? richBusinessPageData.rating
-  const reviewCount = business.ratingCount > 0 ? business.ratingCount : richBusinessPageData.reviewCount
+  const location = [business.municipality?.name, business.district?.name].filter(Boolean).join(", ")
+  const rating = business.ratingAvg ?? null
+  const reviewCount = business.ratingCount ?? 0
+  const categories: BusinessHeroTag[] = [
+    { label: establishmentLabel, kind: "establishment" as const },
+    ...cuisineNames.map((name) => ({ label: name, kind: "cuisine" as const })),
+  ].filter((category, index, all) => all.findIndex((item) => item.label === category.label) === index)
 
   return {
     name: business.name,
@@ -23,9 +28,9 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
     coverImage: business.banner?.publicUrl ?? galleryItems[0]?.src ?? null,
     rating,
     reviewCount,
-    categories: [establishmentLabel, ...cuisineNames].filter(Boolean),
+    categories,
     location: location || business.province?.name || "Location not provided",
-    isOpen: isBusinessOpenNow(business.hours),
+    isOpen: getBusinessOpenState(business.hours),
     heroNote:
       business.description ??
       business.specialityNote ??
@@ -50,15 +55,11 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
       galleryItems.length === 0
         ? "No one has added photos yet. The first visit photos can help people quickly understand what this place feels like."
         : undefined,
-    menuItems: richBusinessPageData.menuItems,
-    menuLink: richBusinessPageData.menuLink,
-    ratingsData: {
-      ...richBusinessPageData.ratingsData!,
-      averageRating: rating ?? richBusinessPageData.ratingsData!.averageRating,
-      totalReviews: reviewCount,
-    },
-    reviews: richBusinessPageData.reviews,
-    addReviewPrompt: richBusinessPageData.addReviewPrompt,
+    menuItems: [],
+    menuLink: undefined,
+    ratingsData: null,
+    reviews: [],
+    addReviewPrompt: "Share the details that actually help the next person decide.",
   }
 }
 
@@ -107,9 +108,7 @@ function buildGalleryItems(business: PublicBusiness): BusinessGalleryItem[] {
 function buildAddress(business: PublicBusiness) {
   return [
     business.addressLine1,
-    business.addressLine2,
-    business.area,
-    business.landmark ? `Near ${business.landmark}` : undefined,
+    business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
     business.municipality?.name,
     business.district?.name,
     business.province?.name,
@@ -141,7 +140,9 @@ function formatTime(value?: string) {
   return `${normalizedHour}:${minutePart.padStart(2, "0")} ${period}`
 }
 
-function isBusinessOpenNow(hours: BusinessHour[]) {
+function getBusinessOpenState(hours: BusinessHour[]) {
+  if (!hours?.length) return null
+
   const now = new Date()
   const today = hours.find((hour) => hour.dayOfWeek === now.getDay())
   if (!today || today.isClosed || !today.openTime || !today.closeTime) return false

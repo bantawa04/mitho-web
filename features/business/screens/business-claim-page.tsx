@@ -37,7 +37,9 @@ const selectTriggerClassName =
   "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
 function claimableLocation(business: ClaimableBusiness) {
-  return [business.area, business.municipality, business.district, business.province].filter(Boolean).join(", ")
+  return [business.addressLine1, business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined, business.municipality, business.district, business.province]
+    .filter(Boolean)
+    .join(", ")
 }
 
 function claimableCue(business: ClaimableBusiness) {

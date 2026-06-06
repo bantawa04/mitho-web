@@ -86,10 +86,8 @@ export interface Business {
   municipality: Pick<Municipality, "id" | "name" | "slug" | "wards"> & {
     category: Municipality["category"]
   }
-  area?: string
-  addressLine1: string
-  addressLine2?: string
-  landmark?: string
+  addressLine1?: string
+  nearestLandmark?: string
   latitude?: number
   longitude?: number
   googleMapsUrl?: string
@@ -129,16 +127,14 @@ export interface CreateBusinessPayload {
   districtId: number
   municipalityId: number
   wardNo: number
-  addressLine1: string
+  addressLine1?: string
   description?: string
   logoId?: string
   bannerId?: string
   photos?: string[]
   email?: string
   phoneSecondary?: string
-  area?: string
-  addressLine2?: string
-  landmark?: string
+  nearestLandmark?: string
   latitude?: number
   longitude?: number
   googleMapsUrl?: string

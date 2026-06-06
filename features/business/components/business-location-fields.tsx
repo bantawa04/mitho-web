@@ -228,24 +228,10 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="area"
+        name="nearestLandmark"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Area / Neighbourhood</FormLabel>
-            <FormControl>
-              <Input {...field} className={inputClassName} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="landmark"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Landmark</FormLabel>
+            <FormLabel>Nearest landmark</FormLabel>
             <FormControl>
               <Input {...field} className={inputClassName} />
             </FormControl>
@@ -259,21 +245,7 @@ export function BusinessLocationFields({
         name="addressLine1"
         render={({ field }) => (
           <FormItem className="md:col-span-2">
-            <FormLabel>Address Line 1</FormLabel>
-            <FormControl>
-              <Input {...field} className={inputClassName} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="addressLine2"
-        render={({ field }) => (
-          <FormItem className="md:col-span-2">
-            <FormLabel>Address Line 2</FormLabel>
+            <FormLabel>Address</FormLabel>
             <FormControl>
               <Input {...field} className={inputClassName} />
             </FormControl>

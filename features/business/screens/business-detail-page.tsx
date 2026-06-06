@@ -19,7 +19,6 @@ import { toast } from "@/hooks/use-toast"
 import { MithoBreadcrumb } from "@/components/mitho/mitho-breadcrumb"
 import { BusinessHero } from "@/features/business/components/business-hero"
 import { InfoPanel } from "@/features/business/components/info-panel"
-import { MenuHighlights } from "@/features/business/components/menu-highlights"
 import { RatingsSection } from "@/features/business/components/ratings-section"
 import { ReviewsSection } from "@/features/business/components/reviews-section"
 import { AddReviewForm } from "@/features/business/components/add-review-form"
@@ -73,7 +72,11 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
       id: createCollectionId(pageData.name),
       businessName: pageData.name,
       location: pageData.location,
-      category: pageData.categories.slice(0, 2).join(" · ") || "Place",
+      category:
+        pageData.categories
+          .slice(0, 2)
+          .map((category) => category.label)
+          .join(" · ") || "Place",
       note: pageData.heroNote,
       imageUrl: previewImage,
       publicHref,
@@ -171,7 +174,6 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
           <div className="container mx-auto px-4">
             <nav className="flex gap-6 overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               <a href="#overview" className="border-b-2 border-brand-orange py-4 text-sm font-semibold text-brand-dark-green transition-colors">Overview</a>
-              <a href="#menu" className="border-b-2 border-transparent py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-dark-green">Menu</a>
               <a href="#reviews" className="border-b-2 border-transparent py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-dark-green">Reviews</a>
             </nav>
           </div>
@@ -185,14 +187,6 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
             galleryEmptyMessage={pageData.galleryEmptyMessage}
             visitInfo={pageData.visitInfo}
           />
-          <div id="menu">
-            <MenuHighlights
-              isEarlyListing={isEarlyListing}
-              items={pageData.menuItems}
-              emptyMessage={pageData.menuEmptyMessage}
-              menuLink={pageData.menuLink}
-            />
-          </div>
         </div>
 
         <div className="mt-4" id="reviews">

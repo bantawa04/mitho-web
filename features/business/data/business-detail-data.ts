@@ -74,7 +74,11 @@ export const richBusinessPageData: BusinessPageData = {
   coverImage: "/placeholder.svg?height=600&width=1200",
   rating: 4.3,
   reviewCount: 294,
-  categories: ["Restaurant", "Nepali", "Tibetan"],
+  categories: [
+    { label: "Restaurant", kind: "establishment" },
+    { label: "Nepali", kind: "cuisine" },
+    { label: "Tibetan", kind: "cuisine" },
+  ],
   location: "Thamel, Kathmandu",
   isOpen: true,
   heroNote:
@@ -159,9 +163,12 @@ export const emptyBusinessPageData: BusinessPageData = {
   coverImage: null,
   rating: null,
   reviewCount: 0,
-  categories: ["Restaurant", "Nepali"],
+  categories: [
+    { label: "Restaurant", kind: "establishment" },
+    { label: "Nepali", kind: "cuisine" },
+  ],
   location: "Patan, Lalitpur",
-  isOpen: true,
+  isOpen: null,
   heroNote:
     "A newly listed neighborhood spot on Mitho with the basics in place, but still waiting for the first local experiences to shape the page.",
   breadcrumbItems: [

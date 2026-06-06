@@ -232,10 +232,8 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       districtId: "",
       municipalityId: "",
       wardNo: "",
-      area: "",
       addressLine1: "",
-      addressLine2: "",
-      landmark: "",
+      nearestLandmark: "",
       latitude: null,
       longitude: null,
       phone: "",
@@ -281,9 +279,8 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
   const watchedDistrictId = form.watch("districtId")
   const watchedMunicipalityId = form.watch("municipalityId")
   const watchedWardNo = form.watch("wardNo")
-  const watchedArea = form.watch("area")
   const watchedAddressLine1 = form.watch("addressLine1")
-  const watchedAddressLine2 = form.watch("addressLine2")
+  const watchedNearestLandmark = form.watch("nearestLandmark")
   const watchedLatitude = form.watch("latitude")
   const watchedLongitude = form.watch("longitude")
   const selectedEstablishmentType = establishmentTypesQuery.data?.find((type) => type.id === watchedCategory)
@@ -328,10 +325,8 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       districtId: Number(values.districtId),
       municipalityId: Number(values.municipalityId),
       wardNo: Number(values.wardNo),
-      area: values.area?.trim() || undefined,
-      addressLine1: values.addressLine1.trim(),
-      addressLine2: values.addressLine2?.trim() || undefined,
-      landmark: values.landmark?.trim() || undefined,
+      addressLine1: values.addressLine1.trim() || undefined,
+      nearestLandmark: values.nearestLandmark?.trim() || undefined,
       latitude: values.latitude ?? undefined,
       longitude: values.longitude ?? undefined,
       establishmentTypeId: values.primaryCategory,
@@ -385,10 +380,8 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
           { label: "District", value: selectedDistrict?.name ?? "Selected district" },
           { label: "City / Municipality", value: selectedMunicipality?.name ?? "Selected municipality" },
           { label: "Ward No.", value: values.wardNo.trim() },
-          { label: "Area / Neighbourhood", value: displayValue(values.area) },
-          { label: "Landmark", value: displayValue(values.landmark) },
-          { label: "Address Line 1", value: values.addressLine1.trim() },
-          { label: "Address Line 2", value: displayValue(values.addressLine2) },
+          { label: "Address", value: displayValue(values.addressLine1) },
+          { label: "Nearest landmark", value: displayValue(values.nearestLandmark) },
         ],
       },
       {
@@ -996,8 +989,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     {watchedAddressLine1.trim()
                       ? [
                           watchedAddressLine1,
-                          watchedAddressLine2?.trim() || null,
-                          watchedArea?.trim() || null,
+                          watchedNearestLandmark?.trim() ? `Near ${watchedNearestLandmark.trim()}` : null,
                           watchedWardNo ? `Ward ${watchedWardNo}` : null,
                           selectedMunicipality?.name ?? null,
                         ].filter(Boolean).join(", ")
