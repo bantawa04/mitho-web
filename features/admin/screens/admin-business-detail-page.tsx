@@ -315,7 +315,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
         </div>
 
         {/* Premium Banner image header */}
-        <div className="relative overflow-hidden rounded-[2rem] border border-brand-deep-green/10 bg-brand-dark-green h-48 sm:h-64 shadow-[0_12px_36px_rgba(10,70,53,0.08)]">
+        <div className="relative overflow-hidden rounded-[2rem] border-slate-500/20 bg-brand-dark-green h-48 sm:h-64 shadow-[0_12px_36px_rgba(10,70,53,0.08)]">
           <img
             src={business.banner?.publicUrl || "/placeholder.svg?height=600&width=1200"}
             alt={`${business.name} Banner`}

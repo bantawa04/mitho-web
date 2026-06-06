@@ -235,6 +235,18 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
     }
   }
 
+  function handlePhotoSelectMany(mediaItems: Media[]) {
+    setPhotosMedia((prev) => {
+      const existingIds = new Set(prev.map((item) => item.id))
+      const additions = mediaItems.filter((item) => !existingIds.has(item.id))
+      return additions.length > 0 ? [...prev, ...additions] : prev
+    })
+
+    const current = form.getValues("photos") ?? []
+    const merged = Array.from(new Set([...current, ...mediaItems.map((item) => item.id)]))
+    form.setValue("photos", merged)
+  }
+
   function removePhoto(id: string) {
     setPhotosMedia((prev) => prev.filter((m) => m.id !== id))
     form.setValue(
@@ -949,7 +961,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
         open={photosPickerOpen}
         onOpenChange={setPhotosPickerOpen}
         accept="image"
+        multiple
         onSelect={handlePhotoSelect}
+        onSelectMany={handlePhotoSelectMany}
       />
     </div>
   )
