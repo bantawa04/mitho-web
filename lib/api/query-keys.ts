@@ -2,6 +2,7 @@ import type { ListAdminUsersParams } from "@/types/admin-users"
 import type { ListBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
 import type { ListMediaParams } from "@/types/media"
+import type { ListAdminReviewsParams, ListBusinessReviewsParams } from "@/types/reviews"
 
 export const queryKeys = {
   nepalAdmin: {
@@ -42,6 +43,11 @@ export const queryKeys = {
     all: ["media"] as const,
     list: (params?: ListMediaParams) => ["media", "list", params] as const,
   },
+  reviews: {
+    all: ["reviews"] as const,
+    list: (businessId: string, params?: ListBusinessReviewsParams) => ["reviews", "business", businessId, params] as const,
+    mine: (businessId: string) => ["reviews", "business", businessId, "mine"] as const,
+  },
   admin: {
     users: {
       all: ["admin", "users"] as const,
@@ -67,6 +73,11 @@ export const queryKeys = {
       all: ["admin", "business-claims"] as const,
       list: (params: ListBusinessClaimsParams) => ["admin", "business-claims", "list", params] as const,
       detail: (id: string | null) => ["admin", "business-claims", "detail", id] as const,
+    },
+    reviews: {
+      all: ["admin", "reviews"] as const,
+      list: (params: ListAdminReviewsParams) => ["admin", "reviews", "list", params] as const,
+      detail: (id: string | null) => ["admin", "reviews", "detail", id] as const,
     },
   },
 }

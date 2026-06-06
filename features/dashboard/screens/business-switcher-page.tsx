@@ -35,9 +35,11 @@ function deriveLocation(entry: MyBusinessEntry): string {
   const b = entry.business
   const parts: string[] = []
   if (b.area) parts.push(b.area)
+  if (b.nearestLandmark) parts.push(`Near ${b.nearestLandmark}`)
+  if (b.addressNote) parts.push(b.addressNote)
   if (b.municipality?.name) parts.push(b.municipality.name)
   if (b.district?.name) parts.push(b.district.name)
-  return parts.join(", ") || b.addressLine1
+  return parts.join(", ") || b.province?.name || "Nepal"
 }
 
 function entryToManagedBusiness(entry: MyBusinessEntry): ManagedBusiness {
@@ -67,7 +69,7 @@ function computeProfileCompleteness(entry: MyBusinessEntry): number {
     Boolean(b.photos && b.photos.length > 0),
     Boolean(b.establishmentType),
     Boolean(b.cuisines && b.cuisines.length > 0),
-    Boolean(b.addressLine1),
+    Boolean(b.area || b.nearestLandmark || b.addressNote),
   ]
   const filled = checks.filter(Boolean).length
   return Math.round((filled / checks.length) * 100)

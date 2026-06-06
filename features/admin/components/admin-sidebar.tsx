@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { cn } from "@/lib/utils"
 
 export const adminNavSections = [
@@ -19,7 +20,7 @@ export const adminNavSections = [
   { href: "/admin/businesses", label: "Businesses", icon: Building2 },
   { href: "/admin/cuisines", label: "Cuisines", icon: Soup },
   { href: "/admin/establishment-types", label: "Establishment Types", icon: Shapes },
-  { href: "/admin/reviews/moderation", label: "Review Moderation", icon: MessageSquareWarning },
+  { href: "/admin/reviews/moderation", label: "Review Moderation", icon: MessageSquareWarning, permissions: ["reviews.read", "reviews.update", "reviews.delete"] },
   { href: "/admin/customers", label: "Customers", icon: UserRound },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/activity-logs", label: "Activity Logs", icon: History },
@@ -70,12 +71,24 @@ export function AdminSidebarBrand({ compact = false }: { compact?: boolean }) {
 }
 
 export function AdminSidebarNav({ pathname }: { pathname: string }) {
-  const activeItem = getActiveAdminItem(pathname)
+  const { authUser } = useAuthSnapshot()
+  const visibleItems = adminNavSections.filter((item) => {
+    if (!("permissions" in item) || !item.permissions) return true
+    if (!authUser) return false
+    return item.permissions.some((permission) => authUser.staffPermissions.includes(permission))
+  })
+  const activeItem = (
+    adminRouteItems
+      .filter((item) => visibleItems.some((visibleItem) => visibleItem.href === item.href))
+      .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+      .sort((left, right) => right.href.length - left.href.length)[0]
+    ?? visibleItems[0]
+  )
   return (
     <SidebarMenu className="gap-2">
-      {adminNavSections.map((item) => {
+      {visibleItems.map((item) => {
         const Icon = item.icon
-        const isActive = item.href === activeItem.href
+        const isActive = item.href === activeItem?.href
 
         return (
           <SidebarMenuItem key={item.href}>
