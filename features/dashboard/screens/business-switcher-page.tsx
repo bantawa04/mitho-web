@@ -1,18 +1,76 @@
+"use client"
+
 import Link from "next/link"
-import { Building2, CirclePlus, FileCheck2, LayoutDashboard, MoveRight, ShieldCheck } from "lucide-react"
-import {
-  type DashboardScenario,
-  type ManagedBusiness,
-  getManagedBusinesses,
-} from "@/features/dashboard/data/dashboard-business-data"
+import { Building2, CirclePlus, FileCheck2, LayoutDashboard, Loader2, MoveRight, ShieldCheck } from "lucide-react"
+import type { MyBusinessEntry } from "@/types/business"
 import { DashboardFooter } from "@/features/dashboard/components/dashboard-footer"
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header"
-import { mockCustomerProfile } from "@/features/profile/data/profile-data"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { MithoButton } from "@/components/mitho/mitho-button"
+import { useMyBusinesses } from "@/hooks/use-businesses"
+import { useAuthSnapshot } from "@/hooks/use-auth-session"
+import type { ManagedBusiness } from "@/features/dashboard/data/dashboard-business-data"
 
-interface BusinessSwitcherPageProps {
-  scenario: DashboardScenario
+function deriveManagedStatus(entry: MyBusinessEntry): ManagedBusiness["status"] {
+  if (entry.claimStatus === "pending") return "claim-pending"
+  if (entry.membershipRole) {
+    const listingStatus = entry.business.listingStatus
+    if (listingStatus === "published") return "active"
+    return "setup-needed"
+  }
+  return "setup-needed"
+}
+
+function deriveLifecycleStatus(entry: MyBusinessEntry): ManagedBusiness["lifecycleStatus"] {
+  const ownershipStatus = entry.business.ownershipStatus
+  const listingStatus = entry.business.listingStatus
+  if (ownershipStatus === "unclaimed") return "unclaimed"
+  if (listingStatus === "suspended") return "temporarily_closed"
+  if (listingStatus === "rejected") return "permanently_closed"
+  if (listingStatus === "pending_review") return "draft"
+  return "active"
+}
+
+function deriveLocation(entry: MyBusinessEntry): string {
+  const b = entry.business
+  const parts: string[] = []
+  if (b.area) parts.push(b.area)
+  if (b.municipality?.name) parts.push(b.municipality.name)
+  if (b.district?.name) parts.push(b.district.name)
+  return parts.join(", ") || b.addressLine1
+}
+
+function entryToManagedBusiness(entry: MyBusinessEntry): ManagedBusiness {
+  const role = entry.membershipRole as ManagedBusiness["role"] | undefined
+  return {
+    id: entry.business.id,
+    name: entry.business.name,
+    location: deriveLocation(entry),
+    status: deriveManagedStatus(entry),
+    lifecycleStatus: deriveLifecycleStatus(entry),
+    role: role === "owner" || role === "manager" ? role : undefined,
+    claimStatus: entry.claimStatus === "pending" ? "pending-review" : undefined,
+    profileCompleteness: computeProfileCompleteness(entry),
+    reviewCount: entry.business.ratingCount,
+  }
+}
+
+function computeProfileCompleteness(entry: MyBusinessEntry): number {
+  const b = entry.business
+  const checks = [
+    Boolean(b.name),
+    Boolean(b.description),
+    Boolean(b.phone),
+    Boolean(b.email),
+    Boolean(b.logo),
+    Boolean(b.banner),
+    Boolean(b.photos && b.photos.length > 0),
+    Boolean(b.establishmentType),
+    Boolean(b.cuisines && b.cuisines.length > 0),
+    Boolean(b.addressLine1),
+  ]
+  const filled = checks.filter(Boolean).length
+  return Math.round((filled / checks.length) * 100)
 }
 
 function statusBadge(status: ManagedBusiness["status"]) {
@@ -39,13 +97,7 @@ function lifecycleBadge(status: ManagedBusiness["lifecycleStatus"]) {
   }
 }
 
-function BusinessCard({
-  business,
-  scenario,
-}: {
-  business: ManagedBusiness
-  scenario: DashboardScenario
-}) {
+function BusinessCard({ business }: { business: ManagedBusiness }) {
   const manageHref = `/dashboard/businesses/${business.id}/overview`
 
   return (
@@ -73,10 +125,10 @@ function BusinessCard({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Current status</p>
           <p className="mt-2 text-sm leading-6 text-foreground">
             {business.status === "active"
-              ? business.lastActivity ?? "This business is ready for day-to-day management."
+              ? "This business is ready for day-to-day management."
               : business.status === "setup-needed"
-                ? business.lastActivity ?? "A few profile basics still need attention before this listing feels complete."
-                : business.lastActivity ?? "Your claim is still under review, so management access is limited for now."}
+                ? "A few profile basics still need attention before this listing feels complete."
+                : "Your claim is still under review, so management access is limited for now."}
           </p>
         </div>
 
@@ -114,17 +166,19 @@ function BusinessCard({
   )
 }
 
-export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
-  const managedBusinesses = getManagedBusinesses(scenario)
+export function BusinessSwitcherPage() {
+  const { data: entries, isLoading, isError } = useMyBusinesses()
+  const { currentUser } = useAuthSnapshot()
+
+  const managedBusinesses = (entries ?? []).map(entryToManagedBusiness)
   const hasBusinesses = managedBusinesses.length > 0
-  const showStateHint = scenario !== "multi"
 
   return (
     <>
       <DashboardHeader
         businessName="Manage businesses"
         location="Choose a workspace or start a new listing"
-        signedInUser={{ name: mockCustomerProfile.name, avatarUrl: mockCustomerProfile.avatarUrl, href: "/profile" }}
+        signedInUser={currentUser ?? undefined}
       />
 
       <main className="container mx-auto px-4 pb-12 pt-8">
@@ -136,11 +190,6 @@ export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
               <p className="type-body mt-3 text-muted-foreground">
                 The same Mitho account can review places and manage one or more businesses. Business access happens through the listing you select here, not through a second login.
               </p>
-              {showStateHint ? (
-                <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/55">
-                  Preview state: {scenario}
-                </p>
-              ) : null}
             </div>
 
             <div className="flex flex-wrap gap-3">
@@ -160,7 +209,15 @@ export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
           </div>
         </section>
 
-        {hasBusinesses ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="h-6 w-6 animate-spin text-brand-deep-green/40" />
+          </div>
+        ) : isError ? (
+          <div className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-8 text-center shadow-[0_10px_24px_rgba(10,70,53,0.04)]">
+            <p className="text-sm text-muted-foreground">Could not load your businesses. Please refresh to try again.</p>
+          </div>
+        ) : hasBusinesses ? (
           <>
             <section>
               <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -176,7 +233,7 @@ export function BusinessSwitcherPage({ scenario }: BusinessSwitcherPageProps) {
 
               <div className="grid gap-5">
                 {managedBusinesses.map((business) => (
-                  <BusinessCard key={business.id} business={business} scenario={scenario} />
+                  <BusinessCard key={business.id} business={business} />
                 ))}
               </div>
             </section>

@@ -1,7 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Bell, Building2, CircleAlert, Clock3, Globe, Mail, MapPin, Phone, Settings, ShieldAlert, Sparkles, Trash2 } from "lucide-react"
+import { Bell, CircleAlert, Clock3, Mail, Settings, ShieldAlert, Trash2 } from "lucide-react"
+import { useBusinessHours, useReplaceBusinessHours } from "@/hooks/use-businesses"
+import type { BusinessHour, ReplaceHoursPayload } from "@/types/business"
+import { BusinessEditForm } from "@/features/dashboard/screens/business-edit-form"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,7 +21,9 @@ import { KeyMetrics } from "@/features/dashboard/components/key-metrics"
 import { MediaPerformance } from "@/features/dashboard/components/media-performance"
 import { ReviewsOverview } from "@/features/dashboard/components/reviews-overview"
 import { TrafficAnalytics } from "@/features/dashboard/components/traffic-analytics"
-import type { BusinessLifecycleStatus, ManagedBusiness } from "@/features/dashboard/data/dashboard-business-data"
+import type { BusinessLifecycleStatus } from "@/features/dashboard/data/dashboard-business-data"
+import { useBusinessDetail, useMyBusiness } from "@/hooks/use-businesses"
+import type { MyBusinessEntry } from "@/types/business"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/mitho/mitho-card"
 import { ToggleSwitch } from "@/components/mitho/mitho-toggle-switch"
@@ -136,275 +141,161 @@ export function AnalyticsRoutePage() {
   )
 }
 
-export function BusinessInfoRoutePage({ business }: { business: ManagedBusiness }) {
-  const initialForm = (() => {
-    const [neighborhood = business.location, city = "Kathmandu"] = business.location.split(",").map((part) => part.trim())
+function deriveEntryLocation(entry: MyBusinessEntry): string {
+  const b = entry.business
+  const parts: string[] = []
+  if (b.area) parts.push(b.area)
+  if (b.municipality?.name) parts.push(b.municipality.name)
+  if (b.district?.name) parts.push(b.district.name)
+  return parts.join(", ") || b.addressLine1
+}
 
-    return {
-      name: business.name,
-      description:
-        business.id === "the-himalayan-kitchen"
-          ? "A warm neighborhood kitchen for Himalayan comfort dishes, familiar momo plates, and group-friendly dinners."
-          : "Update the short description so guests understand the business quickly before they visit.",
-      primaryCategory: business.id.includes("momo") ? "Momo spot" : "Restaurant",
-      neighborhood,
-      city,
-      fullAddress: `${business.location}, Nepal`,
-      phone: "+977 9800000000",
-      website: "https://mithocha.example/business",
-      tags: business.id.includes("himalayan") ? "Momo, Tibetan, Family dinner" : "Local favorites, Casual dining",
+function deriveEntryLifecycleStatus(entry: MyBusinessEntry): BusinessLifecycleStatus {
+  const { ownershipStatus, listingStatus } = entry.business
+  if (ownershipStatus === "unclaimed") return "unclaimed"
+  if (listingStatus === "suspended") return "temporarily_closed"
+  if (listingStatus === "rejected") return "permanently_closed"
+  if (listingStatus === "pending_review") return "draft"
+  return "active"
+}
+
+export function BusinessInfoRoutePage({ businessId }: { businessId: string }) {
+  const { data: business, isLoading } = useBusinessDetail(businessId)
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-deep-green/20 border-t-brand-deep-green/60" />
+      </div>
+    )
+  }
+
+  if (!business) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <p className="text-sm text-muted-foreground">Unable to load business details.</p>
+      </div>
+    )
+  }
+
+  return <BusinessEditForm businessId={business.id} business={business} />
+}
+
+type HoursFormRow = {
+  dayOfWeek: number
+  dayName: string
+  opensAt: string
+  closesAt: string
+  isClosed: boolean
+}
+
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+function buildFormRows(apiData: BusinessHour[]): HoursFormRow[] {
+  const byDay = new Map(apiData.map((h) => [h.dayOfWeek, h]))
+  return DAY_NAMES.map((dayName, dayOfWeek) => {
+    const existing = byDay.get(dayOfWeek)
+    if (existing) {
+      return {
+        dayOfWeek,
+        dayName,
+        opensAt: existing.openTime ?? "10:00",
+        closesAt: existing.closeTime ?? "21:00",
+        isClosed: existing.isClosed,
+      }
     }
-  })()
-  const [form, setForm] = useState(initialForm)
-  const [saved, setSaved] = useState(false)
+    return { dayOfWeek, dayName, opensAt: "10:00", closesAt: "21:00", isClosed: false }
+  })
+}
 
-  function updateForm<K extends keyof typeof form>(field: K, value: (typeof form)[K]) {
-    setSaved(false)
-    setForm((current) => ({ ...current, [field]: value }))
+function HoursForm({ businessId, initialHours }: { businessId: string; initialHours: BusinessHour[] }) {
+  const [rows, setRows] = useState<HoursFormRow[]>(() => buildFormRows(initialHours))
+  const { mutate: replaceHours, isPending, isError, isSuccess, reset } = useReplaceBusinessHours(businessId)
+
+  function updateRow(index: number, update: Partial<HoursFormRow>) {
+    if (isSuccess || isError) reset()
+    setRows((current) => current.map((item, i) => (i === index ? { ...item, ...update } : item)))
+  }
+
+  function handleSave() {
+    const payload: ReplaceHoursPayload = {
+      hours: rows.map((row) => ({
+        dayOfWeek: row.dayOfWeek,
+        isClosed: row.isClosed,
+        openTime: row.isClosed ? undefined : row.opensAt,
+        closeTime: row.isClosed ? undefined : row.closesAt,
+      })),
+    }
+    replaceHours(payload)
   }
 
   return (
-    <div className="space-y-8 pb-12">
-      <DashboardSectionIntro
-        eyebrow="Business info"
-        title="Edit the details customers use to trust the listing."
-        description="Keep the business identity, contact details, and public-facing copy accurate here so the listing stays reliable without touching reviews, photos, or analytics."
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
-        <MithoCard surface="business" interactive="subtle" className="bg-white">
-          <MithoCardHeader>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                <Building2 className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="type-card-title text-foreground">Business profile form</h2>
-                <p className="type-meta">Update what guests see first when they open the listing.</p>
-              </div>
-            </div>
-          </MithoCardHeader>
-          <MithoCardContent>
-            <div className="space-y-8">
-              <section className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Listing basics</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">These details shape the first impression in search, collection previews, and the business page.</p>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2 md:col-span-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Business name</span>
-                    <input
-                      value={form.name}
-                      onChange={(event) => updateForm("name", event.target.value)}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    />
-                  </label>
-
-                  <label className="space-y-2 md:col-span-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Short description</span>
-                    <textarea
-                      value={form.description}
-                      onChange={(event) => updateForm("description", event.target.value)}
-                      rows={4}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm leading-6 text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    />
-                  </label>
-
-                  <label className="space-y-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Primary category</span>
-                    <select
-                      value={form.primaryCategory}
-                      onChange={(event) => updateForm("primaryCategory", event.target.value)}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    >
-                      {["Restaurant", "Cafe", "Bakery", "Momo spot", "Street food", "Bar"].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className="space-y-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Taste tags</span>
-                    <input
-                      value={form.tags}
-                      onChange={(event) => updateForm("tags", event.target.value)}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    />
-                  </label>
-                </div>
-              </section>
-
-              <section className="space-y-4 border-t border-brand-deep-green/10 pt-6">
-                <div>
-                  <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Contact & location</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Keep visit details accurate so the listing stays easy to trust and act on.</p>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="space-y-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Neighborhood</span>
-                    <input
-                      value={form.neighborhood}
-                      onChange={(event) => updateForm("neighborhood", event.target.value)}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    />
-                  </label>
-
-                  <label className="space-y-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">City</span>
-                    <input
-                      value={form.city}
-                      onChange={(event) => updateForm("city", event.target.value)}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    />
-                  </label>
-
-                  <label className="space-y-2 md:col-span-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Full address</span>
-                    <input
-                      value={form.fullAddress}
-                      onChange={(event) => updateForm("fullAddress", event.target.value)}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    />
-                  </label>
-
-                  <label className="space-y-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Phone</span>
-                    <input
-                      value={form.phone}
-                      onChange={(event) => updateForm("phone", event.target.value)}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    />
-                  </label>
-
-                  <label className="space-y-2">
-                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Website</span>
-                    <input
-                      value={form.website}
-                      onChange={(event) => updateForm("website", event.target.value)}
-                      className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                    />
-                  </label>
-                </div>
-              </section>
-
-              <div className="flex flex-col gap-3 border-t border-brand-deep-green/10 pt-6 sm:flex-row sm:items-center sm:justify-end">
-                {saved ? <span className="text-sm font-medium text-success">Business info updated in this mock flow.</span> : null}
-                <MithoButton
-                  variant="outline-secondary"
-                  onClick={() => {
-                    setForm(initialForm)
-                    setSaved(false)
-                  }}
-                >
-                  Discard draft
-                </MithoButton>
-                <MithoButton onClick={() => setSaved(true)}>Save changes</MithoButton>
-              </div>
-            </div>
-          </MithoCardContent>
-        </MithoCard>
-
-        <div className="space-y-6">
-          <MithoCard surface="business" interactive="subtle" className="bg-white">
-            <MithoCardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                  <Sparkles className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="type-card-title text-foreground">Live preview</h2>
-                  <p className="type-meta">The public-facing essentials update here as you edit the form.</p>
-                </div>
-              </div>
-            </MithoCardHeader>
-            <MithoCardContent>
-              <div className="space-y-5 border-t border-brand-deep-green/10 pt-5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-brand-deep-green/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green">
-                    {form.primaryCategory}
-                  </span>
-                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${lifecycleStatusTone(business.lifecycleStatus ?? "active")}`}>
-                    {lifecycleStatusLabel(business.lifecycleStatus ?? "active")}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-2xl font-semibold leading-tight text-brand-dark-green">{form.name}</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">{form.description}</p>
-                </div>
-                <div className="space-y-3 border-t border-brand-deep-green/10 pt-4 text-sm text-foreground">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="mt-0.5 h-4 w-4 text-brand-orange" />
-                    <span>{form.fullAddress}</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Phone className="mt-0.5 h-4 w-4 text-brand-orange" />
-                    <span>{form.phone}</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Globe className="mt-0.5 h-4 w-4 text-brand-orange" />
-                    <span className="break-all">{form.website}</span>
-                  </div>
-                </div>
-              </div>
-            </MithoCardContent>
-          </MithoCard>
-
-          <MithoCard surface="business" interactive="subtle" className="bg-white">
-            <MithoCardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                  <Settings className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="type-card-title text-foreground">Editing guidance</h2>
-                  <p className="type-meta">Keep the listing crisp and trustworthy before you publish changes.</p>
-                </div>
-              </div>
-            </MithoCardHeader>
-            <MithoCardContent>
-              <ul className="space-y-3 text-sm leading-6 text-muted-foreground">
-                <li>Use one clear sentence that explains why someone should trust this place.</li>
-                <li>Keep the primary category broad enough for search and the tags specific enough for local flavor.</li>
-                <li>Only use the settings, photos, and hours routes for their own tasks so this form stays focused.</li>
-              </ul>
-            </MithoCardContent>
-          </MithoCard>
+    <MithoCard surface="business" interactive="subtle" className="bg-white">
+      <MithoCardHeader>
+        <div>
+          <h2 className="type-card-title text-foreground">Weekly schedule</h2>
+          <p className="type-meta">Update open and close times here, then save the full schedule in one pass.</p>
         </div>
-      </div>
-    </div>
+      </MithoCardHeader>
+      <MithoCardContent>
+        <div className="divide-y divide-brand-deep-green/10">
+          {rows.map((item, index) => (
+            <div
+              key={item.dayOfWeek}
+              className="grid gap-4 px-2 py-5 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_120px] md:px-4"
+            >
+              <div className="flex items-center">
+                <p className="text-sm font-semibold text-foreground">{item.dayName}</p>
+              </div>
+
+              <label className="space-y-2">
+                <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Opens</span>
+                <input
+                  type="time"
+                  value={item.opensAt}
+                  onChange={(e) => updateRow(index, { opensAt: e.target.value })}
+                  disabled={item.isClosed || isPending}
+                  className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </label>
+
+              <label className="space-y-2">
+                <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Closes</span>
+                <input
+                  type="time"
+                  value={item.closesAt}
+                  onChange={(e) => updateRow(index, { closesAt: e.target.value })}
+                  disabled={item.isClosed || isPending}
+                  className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </label>
+
+              <div className="flex items-end md:justify-end">
+                <ToggleSwitch
+                  checked={item.isClosed}
+                  onCheckedChange={(checked) => updateRow(index, { isClosed: checked })}
+                  label="Closed"
+                  disabled={isPending}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 flex flex-col gap-3 border-t border-brand-deep-green/10 pt-6 sm:flex-row sm:items-center sm:justify-end">
+          {isSuccess ? <span className="text-sm font-medium text-success">Hours saved.</span> : null}
+          {isError ? <span className="text-sm font-medium text-danger">Something went wrong. Please try again.</span> : null}
+          <MithoButton size="sm" onClick={handleSave} disabled={isPending}>
+            {isPending ? "Saving…" : "Save hours"}
+          </MithoButton>
+        </div>
+      </MithoCardContent>
+    </MithoCard>
   )
 }
 
-type HoursRow = {
-  day: string
-  opensAt: string
-  closesAt: string
-  closed: boolean
-}
-
-const INITIAL_HOURS: HoursRow[] = [
-  { day: "Sunday", opensAt: "10:00", closesAt: "21:00", closed: false },
-  { day: "Monday", opensAt: "10:00", closesAt: "21:00", closed: false },
-  { day: "Tuesday", opensAt: "10:00", closesAt: "21:00", closed: false },
-  { day: "Wednesday", opensAt: "10:00", closesAt: "21:00", closed: false },
-  { day: "Thursday", opensAt: "10:00", closesAt: "21:00", closed: false },
-  { day: "Friday", opensAt: "11:00", closesAt: "22:00", closed: false },
-  { day: "Saturday", opensAt: "11:00", closesAt: "22:00", closed: false },
-]
-
-export function HoursRoutePage() {
-  const [hours, setHours] = useState(INITIAL_HOURS)
-  const [saved, setSaved] = useState(false)
-
-  function updateHours(index: number, field: keyof HoursRow, value: string | boolean) {
-    setSaved(false)
-    setHours((current) =>
-      current.map((item, itemIndex) => (itemIndex === index ? { ...item, [field]: value } : item)),
-    )
-  }
+export function HoursRoutePage({ businessId }: { businessId: string }) {
+  const { data, isLoading, dataUpdatedAt } = useBusinessHours(businessId)
 
   return (
     <div className="space-y-8 pb-12">
@@ -414,72 +305,18 @@ export function HoursRoutePage() {
         description="Hours belong on their own route so they can be updated quickly without digging through broader business settings."
       />
 
-      <MithoCard surface="business" interactive="subtle" className="bg-white">
-        <MithoCardHeader>
-          <div>
-            <h2 className="type-card-title text-foreground">Weekly schedule</h2>
-            <p className="type-meta">Update open and close times here, then save the full schedule in one pass.</p>
-          </div>
-        </MithoCardHeader>
-        <MithoCardContent>
-          <div className="divide-y divide-brand-deep-green/10">
-            {hours.map((item, index) => (
-              <div
-                key={item.day}
-                className="grid gap-4 px-2 py-5 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_120px] md:px-4"
-              >
-                <div className="flex items-center">
-                  <p className="text-sm font-semibold text-foreground">{item.day}</p>
-                </div>
-
-                <label className="space-y-2">
-                  <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Opens</span>
-                  <input
-                    type="time"
-                    value={item.opensAt}
-                    onChange={(event) => updateHours(index, "opensAt", event.target.value)}
-                    disabled={item.closed}
-                    className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Closes</span>
-                  <input
-                    type="time"
-                    value={item.closesAt}
-                    onChange={(event) => updateHours(index, "closesAt", event.target.value)}
-                    disabled={item.closed}
-                    className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
-                </label>
-
-                <div className="flex items-end md:justify-end">
-                  <ToggleSwitch
-                    checked={item.closed}
-                    onCheckedChange={(checked) => updateHours(index, "closed", checked)}
-                    label="Closed"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex justify-end">
-            <div className="flex items-center gap-3">
-              {saved ? <span className="text-sm font-medium text-success">Hours updated in this mock flow.</span> : null}
-              <MithoButton size="sm" onClick={() => setSaved(true)}>
-                Save
-              </MithoButton>
-            </div>
-          </div>
-        </MithoCardContent>
-      </MithoCard>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-deep-green/20 border-t-brand-deep-green/60" />
+        </div>
+      ) : (
+        <HoursForm businessId={businessId} initialHours={data ?? []} key={`${businessId}-${dataUpdatedAt}`} />
+      )}
     </div>
   )
 }
 
-export function SettingsRoutePage({ business }: { business: ManagedBusiness }) {
+function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: BusinessLifecycleStatus }) {
   const [notificationPreferences, setNotificationPreferences] = useState([
     {
       id: "new-reviews",
@@ -495,7 +332,7 @@ export function SettingsRoutePage({ business }: { business: ManagedBusiness }) {
     },
   ])
   const [settingsSaved, setSettingsSaved] = useState(false)
-  const [lifecycleStatus, setLifecycleStatus] = useState<BusinessLifecycleStatus>(business.lifecycleStatus ?? "active")
+  const [lifecycleStatus, setLifecycleStatus] = useState<BusinessLifecycleStatus>(initialLifecycleStatus)
   const [isRemovalDialogOpen, setIsRemovalDialogOpen] = useState(false)
   const [removalReason, setRemovalReason] = useState("duplicate")
   const [removalNote, setRemovalNote] = useState("")
@@ -845,4 +682,18 @@ export function SettingsRoutePage({ business }: { business: ManagedBusiness }) {
       </div>
     </div>
   )
+}
+
+export function SettingsRoutePage({ businessId }: { businessId: string }) {
+  const { entry, isLoading } = useMyBusiness(businessId)
+
+  if (isLoading || !entry) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-deep-green/20 border-t-brand-deep-green/60" />
+      </div>
+    )
+  }
+
+  return <SettingsContent initialLifecycleStatus={deriveEntryLifecycleStatus(entry)} />
 }
