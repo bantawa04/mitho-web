@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react"
 import { ChevronLeft, ChevronRight, MessageSquare, Send } from "lucide-react"
-import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/mitho/mitho-card"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { StarRating, ReviewProgress } from "@/components/mitho/mitho-rating"
 
@@ -96,21 +95,15 @@ export function ReviewsOverview() {
 
   return (
     <section className="py-8">
-      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Feedback</p>
-      <h2 className="type-section-title mb-6 text-foreground">Reviews overview</h2>
-      <MithoCard surface="business" interactive="subtle" className="bg-white">
-        <MithoCardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-              <MessageSquare className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="type-card-title text-foreground">Customer reviews</h3>
-              <p className="type-meta">Manage and respond to customer feedback</p>
-            </div>
-          </div>
-        </MithoCardHeader>
-        <MithoCardContent>
+      <div className="mb-6 flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+          <MessageSquare className="h-5 w-5" />
+        </div>
+        <div>
+          <h2 className="type-section-title text-foreground">Customer reviews</h2>
+          <p className="type-meta mt-1">Manage and respond to customer feedback</p>
+        </div>
+      </div>
           <div className="flex flex-col gap-8 lg:flex-row">
             <div className="flex flex-col items-center justify-center gap-2 lg:min-w-[200px]">
               <span className="text-5xl font-bold text-brand-orange">{averageRating.toFixed(1)}</span>
@@ -244,8 +237,6 @@ export function ReviewsOverview() {
               </MithoButton>
             </div>
           </div>
-        </MithoCardContent>
-      </MithoCard>
     </section>
   )
 }

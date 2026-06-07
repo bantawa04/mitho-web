@@ -10,6 +10,9 @@ import { MithoButton } from "@/components/mitho/mitho-button"
 import { useMyBusinesses } from "@/hooks/use-businesses"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import type { ManagedBusiness } from "@/features/dashboard/data/dashboard-business-data"
+import { getPublicBusinessHref } from "@/lib/business-public-href"
+
+
 
 function deriveManagedStatus(entry: MyBusinessEntry): ManagedBusiness["status"] {
   if (entry.claimStatus === "pending") return "claim-pending"
@@ -99,7 +102,7 @@ function lifecycleBadge(status: ManagedBusiness["lifecycleStatus"]) {
   }
 }
 
-function BusinessCard({ business }: { business: ManagedBusiness }) {
+function BusinessCard({ business, publicHref }: { business: ManagedBusiness; publicHref: string }) {
   const manageHref = `/dashboard/businesses/${business.id}/overview`
 
   return (
@@ -161,7 +164,7 @@ function BusinessCard({ business }: { business: ManagedBusiness }) {
         )}
 
         <MithoButton variant="ghost" asChild>
-          <Link href={`/business/${business.id}`}>View public listing</Link>
+          <Link href={publicHref}>View public listing</Link>
         </MithoButton>
       </div>
     </article>
@@ -234,8 +237,8 @@ export function BusinessSwitcherPage() {
               </div>
 
               <div className="grid gap-5">
-                {managedBusinesses.map((business) => (
-                  <BusinessCard key={business.id} business={business} />
+                {(entries ?? []).map((entry) => (
+                  <BusinessCard key={entry.business.id} business={entryToManagedBusiness(entry)} publicHref={getPublicBusinessHref(entry.business)} />
                 ))}
               </div>
             </section>

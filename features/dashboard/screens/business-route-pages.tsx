@@ -28,23 +28,7 @@ import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/mitho/mitho-card"
 import { ToggleSwitch } from "@/components/mitho/mitho-toggle-switch"
 
-function DashboardSectionIntro({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string
-  title: string
-  description: string
-}) {
-  return (
-    <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-      <p className="type-eyebrow mb-3 text-brand-deep-green/70">{eyebrow}</p>
-      <h1 className="text-4xl font-semibold leading-tight text-brand-dark-green">{title}</h1>
-      <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">{description}</p>
-    </section>
-  )
-}
+
 
 function lifecycleStatusLabel(status: BusinessLifecycleStatus) {
   switch (status) {
@@ -104,11 +88,7 @@ function lifecycleStatusDescription(status: BusinessLifecycleStatus) {
 export function ReviewsRoutePage() {
   return (
     <div className="space-y-8 pb-12">
-      <DashboardSectionIntro
-        eyebrow="Reviews"
-        title="See what customers are actually saying."
-        description="This page is for reading the latest review mix, spotting recurring signals, and preparing replies without scanning the whole dashboard."
-      />
+
       <ReviewsOverview />
     </div>
   )
@@ -117,11 +97,7 @@ export function ReviewsRoutePage() {
 export function PhotosRoutePage() {
   return (
     <div className="space-y-8 pb-12">
-      <DashboardSectionIntro
-        eyebrow="Photos"
-        title="Keep your listing visually trustworthy."
-        description="Use this section to understand which photos are doing the heavy lifting and what still needs to be uploaded next."
-      />
+
       <MediaPerformance />
     </div>
   )
@@ -130,11 +106,7 @@ export function PhotosRoutePage() {
 export function AnalyticsRoutePage() {
   return (
     <div className="space-y-8 pb-12">
-      <DashboardSectionIntro
-        eyebrow="Analytics"
-        title="Track the signals that tell you if the listing is moving."
-        description="Keep this page focused on views, visits, and engagement trends instead of mixing those signals into every other operational screen."
-      />
+
       <KeyMetrics />
       <TrafficAnalytics />
     </div>
@@ -232,67 +204,64 @@ function HoursForm({ businessId, initialHours }: { businessId: string; initialHo
   }
 
   return (
-    <MithoCard surface="business" interactive="subtle" className="bg-white">
-      <MithoCardHeader>
-        <div>
-          <h2 className="type-card-title text-foreground">Weekly schedule</h2>
-          <p className="type-meta">Update open and close times here, then save the full schedule in one pass.</p>
-        </div>
-      </MithoCardHeader>
-      <MithoCardContent>
-        <div className="divide-y divide-brand-deep-green/10">
-          {rows.map((item, index) => (
-            <div
-              key={item.dayOfWeek}
-              className="grid gap-4 px-2 py-5 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_120px] md:px-4"
-            >
-              <div className="flex items-center">
-                <p className="text-sm font-semibold text-foreground">{item.dayName}</p>
-              </div>
-
-              <label className="space-y-2">
-                <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Opens</span>
-                <input
-                  type="time"
-                  value={item.opensAt}
-                  onChange={(e) => updateRow(index, { opensAt: e.target.value })}
-                  disabled={item.isClosed || isPending}
-                  className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              </label>
-
-              <label className="space-y-2">
-                <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Closes</span>
-                <input
-                  type="time"
-                  value={item.closesAt}
-                  onChange={(e) => updateRow(index, { closesAt: e.target.value })}
-                  disabled={item.isClosed || isPending}
-                  className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              </label>
-
-              <div className="flex items-end md:justify-end">
-                <ToggleSwitch
-                  checked={item.isClosed}
-                  onCheckedChange={(checked) => updateRow(index, { isClosed: checked })}
-                  label="Closed"
-                  disabled={isPending}
-                />
-              </div>
+    <section>
+      <div className="mb-6">
+        <h2 className="type-section-title text-foreground">Weekly schedule</h2>
+        <p className="type-meta mt-1">Update open and close times here, then save the full schedule in one pass.</p>
+      </div>
+      
+      <div className="divide-y divide-brand-deep-green/10 rounded-[1.2rem] border border-brand-deep-green/10 bg-white">
+        {rows.map((item, index) => (
+          <div
+            key={item.dayOfWeek}
+            className="grid gap-4 px-4 py-5 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_120px] md:px-6"
+          >
+            <div className="flex items-center">
+              <p className="text-sm font-semibold text-foreground">{item.dayName}</p>
             </div>
-          ))}
-        </div>
 
-        <div className="mt-6 flex flex-col gap-3 border-t border-brand-deep-green/10 pt-6 sm:flex-row sm:items-center sm:justify-end">
-          {isSuccess ? <span className="text-sm font-medium text-success">Hours saved.</span> : null}
-          {isError ? <span className="text-sm font-medium text-danger">Something went wrong. Please try again.</span> : null}
-          <MithoButton size="sm" onClick={handleSave} disabled={isPending}>
-            {isPending ? "Saving…" : "Save hours"}
-          </MithoButton>
-        </div>
-      </MithoCardContent>
-    </MithoCard>
+            <label className="space-y-2">
+              <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Opens</span>
+              <input
+                type="time"
+                value={item.opensAt}
+                onChange={(e) => updateRow(index, { opensAt: e.target.value })}
+                disabled={item.isClosed || isPending}
+                className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </label>
+
+            <label className="space-y-2">
+              <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Closes</span>
+              <input
+                type="time"
+                value={item.closesAt}
+                onChange={(e) => updateRow(index, { closesAt: e.target.value })}
+                disabled={item.isClosed || isPending}
+                className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </label>
+
+            <div className="flex items-end md:justify-end">
+              <ToggleSwitch
+                checked={item.isClosed}
+                onCheckedChange={(checked) => updateRow(index, { isClosed: checked })}
+                label="Closed"
+                disabled={isPending}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+        {isSuccess ? <span className="text-sm font-medium text-success">Hours saved.</span> : null}
+        {isError ? <span className="text-sm font-medium text-danger">Something went wrong. Please try again.</span> : null}
+        <MithoButton size="sm" onClick={handleSave} disabled={isPending}>
+          {isPending ? "Saving…" : "Save hours"}
+        </MithoButton>
+      </div>
+    </section>
   )
 }
 
@@ -301,11 +270,7 @@ export function HoursRoutePage({ businessId }: { businessId: string }) {
 
   return (
     <div className="space-y-8 pb-12">
-      <DashboardSectionIntro
-        eyebrow="Hours"
-        title="Keep opening hours clear before people make the trip."
-        description="Hours belong on their own route so they can be updated quickly without digging through broader business settings."
-      />
+
 
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
@@ -349,337 +314,319 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
 
   return (
     <div className="space-y-8 pb-12">
-      <DashboardSectionIntro
-        eyebrow="Settings"
-        title="Keep operational preferences in one place."
-        description="Use this page for business-account controls and notification choices without cluttering the main workspace."
-      />
+
 
       <div className="space-y-8">
         <section id="notification-preferences" className="py-8">
-          <p className="type-eyebrow mb-3 text-brand-deep-green/70">Notifications</p>
-          <h2 className="type-section-title mb-6 text-foreground">Notification preferences</h2>
-          <MithoCard surface="business" interactive="subtle" className="bg-white">
-            <MithoCardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="type-card-title text-foreground">Alerts that matter</h3>
-                  <p className="type-meta">Choose which updates should reach the owner or manager.</p>
-                </div>
-              </div>
-            </MithoCardHeader>
-            <MithoCardContent>
-              <div className="space-y-3">
-                {notificationPreferences.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex flex-col gap-4 rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-deep-green/8 text-brand-deep-green">
-                        <Bell className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{item.title}</p>
-                        <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{item.description}</p>
-                      </div>
-                    </div>
-                    <ToggleSwitch
-                      checked={item.enabled}
-                      onCheckedChange={(checked) => updateNotificationPreference(item.id, checked)}
-                      aria-label={item.title}
-                    />
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+              <Mail className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="type-section-title text-foreground">Notification preferences</h2>
+              <p className="type-meta mt-1">Choose which updates should reach the owner or manager.</p>
+            </div>
+          </div>
+          
+          <div className="space-y-3">
+            {notificationPreferences.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col gap-4 rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-deep-green/8 text-brand-deep-green">
+                    <Bell className="h-4 w-4" />
                   </div>
-                ))}
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{item.title}</p>
+                    <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{item.description}</p>
+                  </div>
+                </div>
+                <ToggleSwitch
+                  checked={item.enabled}
+                  onCheckedChange={(checked) => updateNotificationPreference(item.id, checked)}
+                  aria-label={item.title}
+                />
               </div>
+            ))}
+          </div>
 
-              <div className="mt-6 flex flex-col gap-3 border-t border-brand-deep-green/10 pt-6 sm:flex-row sm:items-center sm:justify-end">
-                {settingsSaved ? <span className="text-sm font-medium text-success">Settings updated in this mock flow.</span> : null}
-                <MithoButton onClick={() => setSettingsSaved(true)}>Save settings</MithoButton>
-              </div>
-            </MithoCardContent>
-          </MithoCard>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            {settingsSaved ? <span className="text-sm font-medium text-success">Settings updated in this mock flow.</span> : null}
+            <MithoButton onClick={() => setSettingsSaved(true)}>Save settings</MithoButton>
+          </div>
         </section>
 
         <section className="py-8">
-          <p className="type-eyebrow mb-3 text-brand-deep-green/70">Lifecycle</p>
-          <h2 className="type-section-title mb-6 text-foreground">Business status & removal</h2>
-          <MithoCard surface="business" interactive="subtle" className="bg-white">
-            <MithoCardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                  <Clock3 className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="type-card-title text-foreground">Current business status</h3>
-                  <p className="type-meta">Use lifecycle controls here instead of deleting or hiding a published listing directly.</p>
-                </div>
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+              <Clock3 className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="type-section-title text-foreground">Business status & removal</h2>
+              <p className="type-meta mt-1">Use lifecycle controls here instead of deleting or hiding a published listing directly.</p>
+            </div>
+          </div>
+          
+          <div className="rounded-[1.2rem] border border-brand-deep-green/10 bg-surface-business-inset px-5 py-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${lifecycleStatusTone(lifecycleStatus)}`}>
+                  {lifecycleStatusLabel(lifecycleStatus)}
+                </span>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{lifecycleStatusDescription(lifecycleStatus)}</p>
               </div>
-            </MithoCardHeader>
-            <MithoCardContent>
-              <div className="rounded-[1.2rem] border border-brand-deep-green/10 bg-surface-business-inset px-5 py-5">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${lifecycleStatusTone(lifecycleStatus)}`}>
-                      {lifecycleStatusLabel(lifecycleStatus)}
-                    </span>
-                    <p className="mt-3 text-sm leading-6 text-muted-foreground">{lifecycleStatusDescription(lifecycleStatus)}</p>
-                  </div>
-                  {removalRequested ? (
-                    <span className="rounded-full bg-brand-soft-beige px-3 py-1 text-xs font-semibold text-brand-orange">
-                      Removal requested
-                    </span>
-                  ) : null}
-                </div>
-              </div>
+              {removalRequested ? (
+                <span className="rounded-full bg-brand-soft-beige px-3 py-1 text-xs font-semibold text-brand-orange">
+                  Removal requested
+                </span>
+              ) : null}
+            </div>
+          </div>
 
-              <div className="mt-6 space-y-4">
-                {lifecycleStatus === "active" ? (
-                  <>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button
-                          type="button"
-                          className="w-full rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 text-left transition-colors hover:border-brand-deep-green/18"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
-                              <Clock3 className="h-4 w-4" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-foreground">Temporarily close business</p>
-                              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                Keep the listing public, but clearly show customers that the business is temporarily closed until you reopen it.
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Temporarily close this business?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            The listing will stay visible on Mitho and customers will see that the business is temporarily closed. You can reopen it later from this same settings page.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => {
-                              setLifecycleStatus("temporarily_closed")
-                              setSettingsSaved(true)
-                            }}
-                          >
-                            Close temporarily
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button
-                          type="button"
-                          className="w-full rounded-[1rem] border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
-                              <ShieldAlert className="h-4 w-4" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-foreground">Mark permanently closed</p>
-                              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                Use this when the business is no longer operating. The public listing remains visible as historical place data.
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Mark this business permanently closed?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Customers will continue to see the listing, but it will be labeled permanently closed. This is more serious than a temporary closure and should only be used when the business is no longer operating.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Keep active</AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-danger text-danger-foreground hover:bg-danger/90"
-                            onClick={() => {
-                              setLifecycleStatus("permanently_closed")
-                              setSettingsSaved(true)
-                            }}
-                          >
-                            Mark permanently closed
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </>
-                ) : null}
-
-                {lifecycleStatus === "temporarily_closed" ? (
-                  <>
+          <div className="mt-6 space-y-4">
+            {lifecycleStatus === "active" ? (
+              <>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
                     <button
                       type="button"
-                      onClick={() => {
-                        setLifecycleStatus("active")
-                        setSettingsSaved(true)
-                      }}
-                      className="w-full rounded-[1rem] border border-success/20 bg-success/5 px-4 py-4 text-left transition-colors hover:border-success/30 hover:bg-success/8"
+                      className="w-full rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 text-left transition-colors hover:border-brand-deep-green/18"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
                           <Clock3 className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-foreground">Reopen business</p>
+                          <p className="text-sm font-semibold text-foreground">Temporarily close business</p>
                           <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            Remove the temporary closure label and return the listing to its normal active state.
+                            Keep the listing public, but clearly show customers that the business is temporarily closed until you reopen it.
                           </p>
                         </div>
                       </div>
                     </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Temporarily close this business?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        The listing will stay visible on Mitho and customers will see that the business is temporarily closed. You can reopen it later from this same settings page.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          setLifecycleStatus("temporarily_closed")
+                          setSettingsSaved(true)
+                        }}
+                      >
+                        Close temporarily
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
 
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button
-                          type="button"
-                          className="w-full rounded-[1rem] border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
-                              <ShieldAlert className="h-4 w-4" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-foreground">Mark permanently closed</p>
-                              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                Escalate from temporary closure when the business will not reopen.
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Convert this to permanently closed?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will keep the listing public as a permanently closed business record instead of a reversible temporary closure.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Keep temporarily closed</AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-danger text-danger-foreground hover:bg-danger/90"
-                            onClick={() => {
-                              setLifecycleStatus("permanently_closed")
-                              setSettingsSaved(true)
-                            }}
-                          >
-                            Mark permanently closed
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </>
-                ) : null}
-
-                {lifecycleStatus === "permanently_closed" ? (
-                  <div className="rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-                        <CircleAlert className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">Permanent closure is now the public-facing status.</p>
-                        <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                          If this was set by mistake, handle the correction through support or a future admin workflow rather than ordinary day-to-day settings.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-
-                <div className="border-t border-brand-deep-green/10 pt-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-danger/75">Removal request</p>
-                  <Dialog open={isRemovalDialogOpen} onOpenChange={setIsRemovalDialogOpen}>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
                     <button
                       type="button"
-                      onClick={() => setIsRemovalDialogOpen(true)}
-                      className="mt-3 w-full rounded-[1rem] border border-danger/20 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/30 hover:bg-danger/8"
+                      className="w-full rounded-[1rem] border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
-                          <Trash2 className="h-4 w-4" />
+                          <ShieldAlert className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-foreground">Request listing removal</p>
+                          <p className="text-sm font-semibold text-foreground">Mark permanently closed</p>
                           <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            Use this for duplicates, incorrect listings, or other cases that should be reviewed instead of deleted immediately.
+                            Use this when the business is no longer operating. The public listing remains visible as historical place data.
                           </p>
                         </div>
                       </div>
                     </button>
-                    <DialogContent className="sm:max-w-xl">
-                      <DialogHeader>
-                        <DialogTitle>Request listing removal</DialogTitle>
-                        <DialogDescription>
-                          Published businesses are not hard-deleted directly from the dashboard. Submit the reason here so the removal can be reviewed safely.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <label className="space-y-2">
-                          <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Reason</span>
-                          <select
-                            value={removalReason}
-                            onChange={(event) => setRemovalReason(event.target.value)}
-                            className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                          >
-                            <option value="duplicate">Duplicate listing</option>
-                            <option value="incorrect">Incorrect or mistaken listing</option>
-                            <option value="draft-mistake">Created by mistake before proper setup</option>
-                            <option value="other">Other review-needed reason</option>
-                          </select>
-                        </label>
-                        <label className="space-y-2">
-                          <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Optional note</span>
-                          <textarea
-                            rows={4}
-                            value={removalNote}
-                            onChange={(event) => setRemovalNote(event.target.value)}
-                            placeholder="Share any context that will help support or admin review the request."
-                            className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm leading-6 text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
-                          />
-                        </label>
-                        <div className="rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4 text-sm leading-6 text-muted-foreground">
-                          Removal requests are meant for safe review workflows. The public listing may stay visible until the request is reviewed and approved.
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Mark this business permanently closed?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Customers will continue to see the listing, but it will be labeled permanently closed. This is more serious than a temporary closure and should only be used when the business is no longer operating.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Keep active</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-danger text-danger-foreground hover:bg-danger/90"
+                        onClick={() => {
+                          setLifecycleStatus("permanently_closed")
+                          setSettingsSaved(true)
+                        }}
+                      >
+                        Mark permanently closed
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            ) : null}
+
+            {lifecycleStatus === "temporarily_closed" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLifecycleStatus("active")
+                    setSettingsSaved(true)
+                  }}
+                  className="w-full rounded-[1rem] border border-success/20 bg-success/5 px-4 py-4 text-left transition-colors hover:border-success/30 hover:bg-success/8"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success">
+                      <Clock3 className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground">Reopen business</p>
+                      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                        Remove the temporary closure label and return the listing to its normal active state.
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="w-full rounded-[1rem] border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
+                          <ShieldAlert className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-foreground">Mark permanently closed</p>
+                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                            Escalate from temporary closure when the business will not reopen.
+                          </p>
                         </div>
                       </div>
-                      <DialogFooter>
-                        <MithoButton variant="outline-secondary" onClick={() => setIsRemovalDialogOpen(false)}>
-                          Cancel
-                        </MithoButton>
-                        <MithoButton
-                          variant="danger"
-                          onClick={() => {
-                            setRemovalRequested(true)
-                            setSettingsSaved(true)
-                            setIsRemovalDialogOpen(false)
-                          }}
-                        >
-                          Submit removal request
-                        </MithoButton>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Convert this to permanently closed?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will keep the listing public as a permanently closed business record instead of a reversible temporary closure.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Keep temporarily closed</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-danger text-danger-foreground hover:bg-danger/90"
+                        onClick={() => {
+                          setLifecycleStatus("permanently_closed")
+                          setSettingsSaved(true)
+                        }}
+                      >
+                        Mark permanently closed
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            ) : null}
+
+            {lifecycleStatus === "permanently_closed" ? (
+              <div className="rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                    <CircleAlert className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Permanent closure is now the public-facing status.</p>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      If this was set by mistake, handle the correction through support or a future admin workflow rather than ordinary day-to-day settings.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </MithoCardContent>
-          </MithoCard>
+            ) : null}
+
+            <div className="border-t border-brand-deep-green/10 pt-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-danger/75">Removal request</p>
+              <Dialog open={isRemovalDialogOpen} onOpenChange={setIsRemovalDialogOpen}>
+                <button
+                  type="button"
+                  onClick={() => setIsRemovalDialogOpen(true)}
+                  className="mt-3 w-full rounded-[1rem] border border-danger/20 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/30 hover:bg-danger/8"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
+                      <Trash2 className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground">Request listing removal</p>
+                      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                        Use this for duplicates, incorrect listings, or other cases that should be reviewed instead of deleted immediately.
+                      </p>
+                    </div>
+                  </div>
+                </button>
+                <DialogContent className="sm:max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle>Request listing removal</DialogTitle>
+                    <DialogDescription>
+                      Published businesses are not hard-deleted directly from the dashboard. Submit the reason here so the removal can be reviewed safely.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <label className="space-y-2">
+                      <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Reason</span>
+                      <select
+                        value={removalReason}
+                        onChange={(event) => setRemovalReason(event.target.value)}
+                        className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
+                      >
+                        <option value="duplicate">Duplicate listing</option>
+                        <option value="incorrect">Incorrect or mistaken listing</option>
+                        <option value="draft-mistake">Created by mistake before proper setup</option>
+                        <option value="other">Other review-needed reason</option>
+                      </select>
+                    </label>
+                    <label className="space-y-2">
+                      <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Optional note</span>
+                      <textarea
+                        rows={4}
+                        value={removalNote}
+                        onChange={(event) => setRemovalNote(event.target.value)}
+                        placeholder="Share any context that will help support or admin review the request."
+                        className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm leading-6 text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
+                      />
+                    </label>
+                    <div className="rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4 text-sm leading-6 text-muted-foreground">
+                      Removal requests are meant for safe review workflows. The public listing may stay visible until the request is reviewed and approved.
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <MithoButton variant="outline-secondary" onClick={() => setIsRemovalDialogOpen(false)}>
+                      Cancel
+                    </MithoButton>
+                    <MithoButton
+                      variant="danger"
+                      onClick={() => {
+                        setRemovalRequested(true)
+                        setSettingsSaved(true)
+                        setIsRemovalDialogOpen(false)
+                      }}
+                    >
+                      Submit removal request
+                    </MithoButton>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
         </section>
       </div>
     </div>
