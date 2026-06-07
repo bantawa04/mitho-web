@@ -6,7 +6,10 @@ import { CheckCircle2, ChevronRight, Download, Eye, XCircle } from "lucide-react
 import { useSearchParams } from "next/navigation"
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { formatAdminBusinessLocation, getAdminBusinessPublicHref } from "@/features/admin/utils/admin-business-utils"
+import { formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import {
   useAdminBusinessClaim,
@@ -55,40 +58,6 @@ function statusTone(status: BusinessClaimStatus) {
     case "rejected":
       return "border-red-100 bg-red-50 text-red-700"
   }
-}
-
-function formatDate(value?: string) {
-  if (!value) return "Not reviewed"
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value))
-}
-
-function businessLocation(claim: BusinessClaim) {
-  const business = claim.business
-  if (!business) return "Location not provided"
-  return [
-    business.area,
-    business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
-    business.addressNote,
-    business.municipality?.name,
-    business.district?.name,
-    business.province?.name,
-  ]
-    .filter(Boolean)
-    .join(", ")
-}
-
-function publicBusinessHref(claim: BusinessClaim) {
-  const business = claim.business
-  if (!business?.province?.slug || !business.district?.slug || !business.municipality?.slug || !business.slug) {
-    return "#"
-  }
-  return `/${business.province.slug}/${business.district.slug}/${business.municipality.slug}/${business.slug}`
 }
 
 export function AdminBusinessClaimsPage() {
@@ -192,7 +161,7 @@ export function AdminBusinessClaimsPage() {
         cell: (claim) => (
           <div className="space-y-1">
             <p className="text-sm font-semibold text-brand-dark-green">{claim.business?.name ?? claim.businessId}</p>
-            <p className="text-xs text-muted-foreground">{businessLocation(claim)}</p>
+            <p className="text-xs text-muted-foreground">{formatAdminBusinessLocation(claim.business)}</p>
           </div>
         ),
       },
@@ -214,9 +183,7 @@ export function AdminBusinessClaimsPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (claim) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${statusTone(claim.status)}`}>
-            {statusLabel(claim.status)}
-          </span>
+          <AdminStatusBadge label={statusLabel(claim.status)} tone={statusTone(claim.status)} />
         ),
       },
       {
@@ -224,7 +191,7 @@ export function AdminBusinessClaimsPage() {
         label: "Submitted",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (claim) => formatDate(claim.createdAt),
+        cell: (claim) => formatAdminDateTime(claim.createdAt),
       },
       {
         id: "actions",
@@ -343,7 +310,7 @@ export function AdminBusinessClaimsPage() {
         {selectedClaim ? (
           <div className="space-y-5">
             <div className="grid gap-4 md:grid-cols-2">
-              <ReviewBlock label="Business" value={selectedClaim.business?.name ?? selectedClaim.businessId} helper={businessLocation(selectedClaim)} />
+              <ReviewBlock label="Business" value={selectedClaim.business?.name ?? selectedClaim.businessId} helper={formatAdminBusinessLocation(selectedClaim.business)} />
               <ReviewBlock label="Submitted by" value={selectedClaim.claimantName || selectedClaim.user?.name || "Unknown"} helper={selectedClaim.user?.email} />
               <ReviewBlock label="Role" value={selectedClaim.role.replaceAll("-", " ")} />
               <ReviewBlock label="PAN/VAT" value={selectedClaim.panVatNumber} />
@@ -363,7 +330,7 @@ export function AdminBusinessClaimsPage() {
               <div className="mt-3 flex flex-wrap gap-3">
                 {selectedClaim.status !== "pending" && selectedClaim.documentsDeletedAt ? (
                   <p className="text-sm text-muted-foreground">
-                    Documents deleted after review on {formatDate(selectedClaim.documentsDeletedAt)}.
+                    Documents deleted after review on {formatAdminDateTime(selectedClaim.documentsDeletedAt)}.
                   </p>
                 ) : selectedClaim.status === "pending" && (selectedClaim.documents ?? []).length > 0 ? (
                   selectedClaim.documents?.map((document) => (
@@ -386,7 +353,7 @@ export function AdminBusinessClaimsPage() {
 
             <div className="flex flex-wrap gap-3">
               <Button variant="outline" className="rounded-xl border-brand-deep-green/14" asChild>
-                <Link href={publicBusinessHref(selectedClaim)} target="_blank">
+                <Link href={getAdminBusinessPublicHref(selectedClaim.business ?? { slug: selectedClaim.businessId })} target="_blank">
                   Open public page
                 </Link>
               </Button>

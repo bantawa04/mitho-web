@@ -13,12 +13,14 @@ import { useMunicipalities } from "@/hooks/use-nepal-admin"
 import { BusinessCuisineField } from "@/features/business/components/business-cuisine-field"
 import { BusinessLocationFields } from "@/features/business/components/business-location-fields"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
+import { buildAdminBusinessFormValues } from "@/features/business/utils/business-form-utils"
 import { businessSchema, type BusinessFormValues } from "@/lib/validators/admin"
 import type { Media } from "@/types/media"
 import { MediaPickerDialog } from "@/features/admin/components/media-picker-dialog"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { RequiredLabel } from "@/components/ui/required-label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -60,38 +62,10 @@ const ownershipLabels: Record<BusinessOwnershipStatus, string> = {
   claimed: "Claimed",
 }
 
-function RequiredLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <FormLabel>
-      {children} <span className="text-danger">*</span>
-    </FormLabel>
-  )
-}
-
 function getClaimReviewHref(businessId: string, claimId?: string) {
   const params = new URLSearchParams({ status: "pending", businessId })
   if (claimId) params.set("claimId", claimId)
   return `/admin/business-claims?${params.toString()}`
-}
-
-function readAmenityFlag(record: Record<string, unknown> | undefined, snakeKey: string, camelKey: string) {
-  const value = record?.[snakeKey] ?? record?.[camelKey]
-  return value === true
-}
-
-function readLocationId(...values: Array<number | string | null | undefined>) {
-  for (const value of values) {
-    if (typeof value === "number" && Number.isFinite(value)) return String(value)
-    if (typeof value === "string" && /^\d+$/.test(value)) return value
-  }
-
-  return ""
-}
-
-function readWardNo(value: number | string | null | undefined) {
-  if (typeof value === "number" && Number.isFinite(value)) return String(value)
-  if (typeof value === "string" && /^\d+$/.test(value)) return value
-  return ""
 }
 
 export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPageProps) {
@@ -165,55 +139,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
 
   useEffect(() => {
     if (existing) {
-      const a = existing.amenities
-      const services = a?.services as Record<string, unknown> | undefined
-      const payment = a?.payment as Record<string, unknown> | undefined
-      const facilities = a?.facilities as Record<string, unknown> | undefined
-      const dietary = a?.dietary as Record<string, unknown> | undefined
-
-      const resetValues = {
-        name: existing.name,
-        description: existing.description ?? "",
-        listingStatus: existing.listingStatus,
-        establishmentTypeId: existing.establishmentTypeId,
-        cuisineIds: existing.cuisines?.map((cuisine) => cuisine.id) ?? [],
-        logoId: existing.logo?.id ?? "",
-        bannerId: existing.banner?.id ?? "",
-        photos: existing.photos?.map((p) => p.id) ?? [],
-        phone: existing.phone,
-        phoneSecondary: existing.phoneSecondary ?? "",
-        email: existing.email ?? "",
-        provinceId: readLocationId(existing.provinceId, existing.province?.id),
-        districtId: readLocationId(existing.districtId, existing.district?.id),
-        municipalityId: readLocationId(existing.municipalityId, existing.municipality?.id),
-        wardNo: readWardNo(existing.wardNo),
-        area: existing.area ?? "",
-        nearestLandmark: existing.nearestLandmark ?? "",
-        addressNote: existing.addressNote ?? "",
-        latitude: existing.latitude ?? null,
-        longitude: existing.longitude ?? null,
-        websiteUrl: existing.links?.website ?? "",
-        facebookUrl: existing.links?.facebook ?? "",
-        instagramUrl: existing.links?.instagram ?? "",
-        twitterUrl: existing.links?.twitter ?? "",
-        youtubeUrl: existing.links?.youtube ?? "",
-        tiktokUrl: existing.links?.tiktok ?? "",
-        amenityDineIn: readAmenityFlag(services, "dine_in", "dineIn"),
-        amenityTakeaway: readAmenityFlag(services, "takeaway", "takeaway"),
-        amenityDelivery: readAmenityFlag(services, "delivery", "delivery"),
-        amenityCash: readAmenityFlag(payment, "cash", "cash"),
-        amenityCard: readAmenityFlag(payment, "card", "card"),
-        amenityQr: readAmenityFlag(payment, "qr", "qr"),
-        amenityParking: readAmenityFlag(facilities, "parking", "parking"),
-        amenityWifi: readAmenityFlag(facilities, "wifi", "wifi"),
-        amenityAirConditioning: readAmenityFlag(facilities, "air_conditioning", "airConditioning"),
-        amenityOutdoorSeating: readAmenityFlag(facilities, "outdoor_seating", "outdoorSeating"),
-        amenityVegetarian: readAmenityFlag(dietary, "vegetarian", "vegetarian"),
-        amenityVegan: readAmenityFlag(dietary, "vegan", "vegan"),
-        amenityHalal: readAmenityFlag(dietary, "halal", "halal"),
-        amenityNonVeg: readAmenityFlag(dietary, "non_veg", "nonVeg"),
-      }
-      form.reset(resetValues)
+      form.reset(buildAdminBusinessFormValues(existing))
       setFormRenderKey((current) => current + 1)
       if (existing.logo) setLogoMedia(existing.logo)
       if (existing.banner) setBannerMedia(existing.banner)

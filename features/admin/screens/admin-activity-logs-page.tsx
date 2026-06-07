@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import {
   adminActivityLogScopeOptions,
@@ -108,9 +109,7 @@ export function AdminActivityLogsPage() {
         cell: (log) => (
           <div className="space-y-2">
             <p className="text-sm font-medium text-brand-dark-green">{log.targetLabel}</p>
-            <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getScopeTone(log.scope)}`}>
-              {log.scope}
-            </span>
+            <AdminStatusBadge label={log.scope} tone={getScopeTone(log.scope)} />
           </div>
         ),
       },

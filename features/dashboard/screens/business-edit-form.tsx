@@ -11,6 +11,7 @@ import { useMunicipalities } from "@/hooks/use-nepal-admin"
 import { BusinessCuisineField } from "@/features/business/components/business-cuisine-field"
 import { BusinessLocationFields } from "@/features/business/components/business-location-fields"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
+import { buildBusinessOwnerFormValues } from "@/features/business/utils/business-form-utils"
 import { MediaPickerDialog } from "@/features/admin/components/media-picker-dialog"
 import { businessOwnerSchema, type BusinessOwnerFormValues } from "@/lib/validators/admin"
 import type { Business } from "@/types/business"
@@ -63,74 +64,6 @@ const dietaryAmenityFields = [
   { name: "amenityNonVeg", label: "Non veg" },
 ] as const
 
-function readAmenityFlag(record: Record<string, unknown> | undefined, snakeKey: string, camelKey: string) {
-  const value = record?.[snakeKey] ?? record?.[camelKey]
-  return value === true
-}
-
-function readLocationId(...values: Array<number | string | null | undefined>) {
-  for (const value of values) {
-    if (typeof value === "number" && Number.isFinite(value)) return String(value)
-    if (typeof value === "string" && /^\d+$/.test(value)) return value
-  }
-  return ""
-}
-
-function readWardNo(value: number | string | null | undefined) {
-  if (typeof value === "number" && Number.isFinite(value)) return String(value)
-  if (typeof value === "string" && /^\d+$/.test(value)) return value
-  return ""
-}
-
-function buildFormValues(b: Business): BusinessOwnerFormValues {
-  const a = b.amenities
-  const services = a?.services as Record<string, unknown> | undefined
-  const payment = a?.payment as Record<string, unknown> | undefined
-  const facilities = a?.facilities as Record<string, unknown> | undefined
-  const dietary = a?.dietary as Record<string, unknown> | undefined
-  return {
-    name: b.name,
-    description: b.description ?? "",
-    establishmentTypeId: b.establishmentTypeId ?? "",
-    cuisineIds: b.cuisines?.map((c) => c.id) ?? [],
-    logoId: b.logo?.id ?? "",
-    bannerId: b.banner?.id ?? "",
-    photos: b.photos?.map((p) => p.id) ?? [],
-    phone: b.phone,
-    phoneSecondary: b.phoneSecondary ?? "",
-    email: b.email ?? "",
-    provinceId: readLocationId(b.provinceId, b.province?.id),
-    districtId: readLocationId(b.districtId, b.district?.id),
-    municipalityId: readLocationId(b.municipalityId, b.municipality?.id),
-    wardNo: readWardNo(b.wardNo),
-    area: b.area ?? "",
-    nearestLandmark: b.nearestLandmark ?? "",
-    addressNote: b.addressNote ?? "",
-    latitude: b.latitude ?? null,
-    longitude: b.longitude ?? null,
-    websiteUrl: b.links?.website ?? "",
-    facebookUrl: b.links?.facebook ?? "",
-    instagramUrl: b.links?.instagram ?? "",
-    twitterUrl: b.links?.twitter ?? "",
-    youtubeUrl: b.links?.youtube ?? "",
-    tiktokUrl: b.links?.tiktok ?? "",
-    amenityDineIn: readAmenityFlag(services, "dine_in", "dineIn"),
-    amenityTakeaway: readAmenityFlag(services, "takeaway", "takeaway"),
-    amenityDelivery: readAmenityFlag(services, "delivery", "delivery"),
-    amenityCash: readAmenityFlag(payment, "cash", "cash"),
-    amenityCard: readAmenityFlag(payment, "card", "card"),
-    amenityQr: readAmenityFlag(payment, "qr", "qr"),
-    amenityParking: readAmenityFlag(facilities, "parking", "parking"),
-    amenityWifi: readAmenityFlag(facilities, "wifi", "wifi"),
-    amenityAirConditioning: readAmenityFlag(facilities, "air_conditioning", "airConditioning"),
-    amenityOutdoorSeating: readAmenityFlag(facilities, "outdoor_seating", "outdoorSeating"),
-    amenityVegetarian: readAmenityFlag(dietary, "vegetarian", "vegetarian"),
-    amenityVegan: readAmenityFlag(dietary, "vegan", "vegan"),
-    amenityHalal: readAmenityFlag(dietary, "halal", "halal"),
-    amenityNonVeg: readAmenityFlag(dietary, "non_veg", "nonVeg"),
-  }
-}
-
 interface BusinessEditFormProps {
   businessId: string
   business: Business
@@ -155,11 +88,11 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
 
   const form = useForm<BusinessOwnerFormValues>({
     resolver: zodResolver(businessOwnerSchema) as Resolver<BusinessOwnerFormValues>,
-    defaultValues: buildFormValues(b),
+    defaultValues: buildBusinessOwnerFormValues(b),
   })
 
   useEffect(() => {
-    form.reset(buildFormValues(b))
+    form.reset(buildBusinessOwnerFormValues(b))
     setFormRenderKey((k) => k + 1)
     setLogoMedia(b.logo ?? null)
     setBannerMedia(b.banner ?? null)
@@ -193,7 +126,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
   }
 
   function handleDiscard() {
-    form.reset(buildFormValues(b))
+    form.reset(buildBusinessOwnerFormValues(b))
     setLogoMedia(b.logo ?? null)
     setBannerMedia(b.banner ?? null)
     setPhotosMedia(b.photos ?? [])

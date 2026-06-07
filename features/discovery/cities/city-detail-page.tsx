@@ -11,6 +11,12 @@ import { CITY_METADATA, getCityBySlug } from "@/content/taxonomy/city-taxonomy"
 import { EXPLORE_PRICE_OPTIONS, EXPLORE_RESULTS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
 import { ExploreResultCard } from "@/features/discovery/explore/explore-result-card"
 import type { ExploreResult } from "@/features/discovery/explore/explore-types"
+import {
+  buildCitySearchString,
+  type CityPageFilters,
+  normalizeCityPageFilters,
+  rankExploreResults,
+} from "@/features/discovery/utils/discovery-search-utils"
 import { Footer } from "@/features/home/components/footer"
 import { Header } from "@/features/home/components/header"
 import { ClosedBadge, MithoBadge, OpenNowBadge } from "@/components/mitho/mitho-badge"
@@ -40,64 +46,12 @@ interface CityDetailPageProps {
   slug: CitySlug
 }
 
-interface CityPageFilters {
-  q: string
-  category: string
-  sort: string
-  price: string
-}
-
 const RESULTS_PER_PAGE = 6
 
-function normalizeFilters(params: ReadonlyURLSearchParams): CityPageFilters {
-  const category = params.get("category")
-  const sort = params.get("sort")
-  const price = params.get("price")
-
-  return {
-    q: params.get("q")?.trim() ?? "",
-    category: category && CATEGORY_OPTIONS.some((option) => option.value === category) ? category : "all",
-    sort: sort && EXPLORE_SORT_OPTIONS.some((option) => option.value === sort) ? sort : "recommended",
-    price: price && EXPLORE_PRICE_OPTIONS.some((option) => option.value === price) ? price : "any",
-  }
-}
-
-function buildSearchString(filters: CityPageFilters) {
-  const params = new URLSearchParams()
-
-  if (filters.q) params.set("q", filters.q)
-  if (filters.category !== "all") params.set("category", filters.category)
-  if (filters.sort !== "recommended") params.set("sort", filters.sort)
-  if (filters.price !== "any") params.set("price", filters.price)
-
-  return params.toString()
-}
-
-function rankResults(results: ExploreResult[], sort: string) {
-  if (sort === "top-rated") {
-    return [...results].sort((a, b) => b.rating - a.rating)
-  }
-
-  if (sort === "most-reviewed") {
-    return [...results].sort((a, b) => b.reviewCount - a.reviewCount)
-  }
-
-  if (sort === "nearest") {
-    return [...results].sort((a, b) => (a.distanceKm ?? Number.MAX_SAFE_INTEGER) - (b.distanceKm ?? Number.MAX_SAFE_INTEGER))
-  }
-
-  return [...results].sort((a, b) => {
-    const featuredBoost = Number(b.featured) - Number(a.featured)
-    if (featuredBoost !== 0) return featuredBoost
-
-    const scoreA = a.rating * 10 + Math.min(a.reviewCount / 25, 10)
-    const scoreB = b.rating * 10 + Math.min(b.reviewCount / 25, 10)
-    return scoreB - scoreA
-  })
-}
-
 function selectFeaturedCityPicks(results: ExploreResult[]) {
-  const ranked = rankResults(results.filter((result) => result.featured), "recommended")
+  const ranked = rankExploreResults(results.filter((result) => result.featured), "recommended", {
+    preferFeatured: true,
+  })
   const picks: ExploreResult[] = []
   const usedCategories = new Set<string>()
 
@@ -110,7 +64,7 @@ function selectFeaturedCityPicks(results: ExploreResult[]) {
   }
 
   if (picks.length < 3) {
-    for (const result of rankResults(results, "recommended")) {
+    for (const result of rankExploreResults(results, "recommended", { preferFeatured: true })) {
       if (picks.some((item) => item.id === result.id)) continue
       picks.push(result)
       if (picks.length === 4) break
@@ -165,7 +119,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const filters = React.useMemo(() => normalizeFilters(searchParams), [searchParams])
+  const filters = React.useMemo(() => normalizeCityPageFilters(searchParams), [searchParams])
   const [queryDraft, setQueryDraft] = React.useState(filters.q)
   const [currentPage, setCurrentPage] = React.useState(1)
 
@@ -182,7 +136,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
   const applyFilters = React.useCallback(
     (patch: Partial<CityPageFilters>) => {
       const nextFilters = { ...filters, ...patch }
-      const search = buildSearchString(nextFilters)
+      const search = buildCitySearchString(nextFilters)
       router.replace(search ? `${pathname}?${search}` : pathname, { scroll: false })
     },
     [filters, pathname, router],
@@ -218,7 +172,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
       return haystacks.some((value) => value.toLowerCase().includes(query))
     })
 
-    return rankResults(nextResults, filters.sort)
+    return rankExploreResults(nextResults, filters.sort, { preferFeatured: true })
   }, [cityResults, filters.category, filters.price, filters.q, filters.sort])
 
   const paginatedResults = React.useMemo(() => {

@@ -1,4 +1,6 @@
 import { adminPermissionMatrix, type AdminPermissionAction, type AdminPermissionResource } from "@/features/admin/data/admin-data"
+import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
+import { getRoleTypePresentation, getUserStatusPresentation } from "@/features/admin/utils/admin-status-utils"
 import type { AdminPermission } from "@/types/admin-roles"
 
 export type UserStatusFilter = "All" | "active" | "invited" | "inactive"
@@ -67,29 +69,17 @@ export function matrixToPermissionIds(matrix: PermissionMatrix, allPermissions: 
 }
 
 export function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+  return formatAdminDate(iso)
 }
 
 export function getUserStatusTone(status: string) {
-  switch (status) {
-    case "invited": return "bg-amber-50 text-amber-700 border-amber-100"
-    case "active": return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    default: return "bg-stone-100 text-stone-700 border-stone-200"
-  }
+  return getUserStatusPresentation(status).tone
 }
 
 export function getUserStatusLabel(status: string) {
-  switch (status) {
-    case "invited": return "Invited"
-    case "active": return "Active"
-    case "inactive": return "Disabled"
-    case "banned": return "Banned"
-    default: return status
-  }
+  return getUserStatusPresentation(status).label
 }
 
 export function getRoleTypeTone(isSystem: boolean) {
-  return isSystem
-    ? "bg-sky-50 text-sky-700 border-sky-100"
-    : "bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
+  return getRoleTypePresentation(isSystem).tone
 }

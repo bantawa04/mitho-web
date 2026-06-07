@@ -8,10 +8,12 @@ import { AdminEditUserModal } from "@/features/admin/components/admin-edit-user-
 import { AdminInviteUserModal } from "@/features/admin/components/admin-invite-user-modal"
 import { AdminRoleEditorModal } from "@/features/admin/components/admin-role-editor-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { AdminUserDetailModal } from "@/features/admin/components/admin-user-detail-modal"
 import { adminRoleTypeOptions, type AdminRoleType } from "@/features/admin/data/admin-data"
-import { formatDate, getRoleTypeTone, getUserStatusLabel, getUserStatusTone, userStatusOptions, type UserStatusFilter } from "@/features/admin/utils/admin-users-utils"
+import { formatDate, userStatusOptions, type UserStatusFilter } from "@/features/admin/utils/admin-users-utils"
+import { getRoleTypePresentation, getUserStatusPresentation } from "@/features/admin/utils/admin-status-utils"
 import { useAdminUsers, useDeleteAdminUser, useInviteAdminUser, useReplaceAdminUserRoles, useUpdateAdminUser } from "@/hooks/use-admin-users"
 import { useAdminPermissions, useAdminRoles, useCreateAdminRole, useDeleteAdminRole, useUpdateAdminRole } from "@/hooks/use-admin-roles"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
@@ -137,9 +139,7 @@ export function AdminUsersPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (user) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getUserStatusTone(user.status)}`}>
-            {getUserStatusLabel(user.status)}
-          </span>
+          <AdminStatusBadge {...getUserStatusPresentation(user.status)} />
         ),
       },
       {
@@ -180,9 +180,7 @@ export function AdminUsersPage() {
         cell: (role) => (
           <div className="space-y-2">
             <p className="text-sm font-semibold text-brand-dark-green">{role.name}</p>
-            <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getRoleTypeTone(role.isSystem)}`}>
-              {role.isSystem ? "System" : "Custom"}
-            </span>
+            <AdminStatusBadge {...getRoleTypePresentation(role.isSystem)} />
           </div>
         ),
       },

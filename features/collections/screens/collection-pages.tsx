@@ -33,6 +33,7 @@ import {
   type CollectionVisibility,
 } from "@/features/collections/data/collection-data"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
+import { CollectionVisibilityBadge } from "@/features/collections/components/collection-visibility-badge"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -60,20 +61,6 @@ function ProfileTabsPanel() {
         <ProfileNavigation />
       </div>
     </section>
-  )
-}
-
-function VisibilityBadge({ visibility }: { visibility: CollectionVisibility }) {
-  return visibility === "public" ? (
-    <MithoBadge variant="neutral" className="gap-1">
-      <Globe className="h-3.5 w-3.5" />
-      Public
-    </MithoBadge>
-  ) : (
-    <MithoBadge variant="muted" className="gap-1">
-      <Lock className="h-3.5 w-3.5" />
-      Private
-    </MithoBadge>
   )
 }
 
@@ -463,7 +450,7 @@ export function CollectionDetailPage({
             </Link>
 
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <VisibilityBadge visibility={visibility} />
+              <CollectionVisibilityBadge visibility={visibility} />
             </div>
             <h1 className="type-page-title mt-4 text-brand-dark-green">{collection.title}</h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
@@ -595,7 +582,7 @@ export function PublicCollectionDetailPage({ collection }: { collection: Collect
               </Link>
 
               <div className="flex flex-wrap items-center gap-3">
-                <VisibilityBadge visibility={collection.visibility} />
+                <CollectionVisibilityBadge visibility={collection.visibility} />
                 <MithoBadge variant="muted">{getCollectionPlaceCount(collection)} places</MithoBadge>
                 <span className="text-sm text-muted-foreground">{collection.updatedLabel}</span>
               </div>

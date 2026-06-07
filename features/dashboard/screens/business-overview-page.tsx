@@ -7,28 +7,10 @@ import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/mitho/mitho-card"
 import { StarRating } from "@/components/mitho/mitho-rating"
 import { useMyBusiness } from "@/hooks/use-businesses"
-import type { MyBusinessEntry } from "@/types/business"
-
+import { computeBusinessProfileCompleteness } from "@/features/dashboard/utils/dashboard-business-utils"
 
 interface BusinessOverviewPageProps {
   businessId: string
-}
-
-function computeProfileCompleteness(entry: MyBusinessEntry): number {
-  const b = entry.business
-  const checks = [
-    Boolean(b.name),
-    Boolean(b.description),
-    Boolean(b.phone),
-    Boolean(b.email),
-    Boolean(b.logo),
-    Boolean(b.banner),
-    Boolean(b.photos && b.photos.length > 0),
-    Boolean(b.establishmentType),
-    Boolean(b.cuisines && b.cuisines.length > 0),
-    Boolean(b.area || b.nearestLandmark || b.addressNote),
-  ]
-  return Math.round((checks.filter(Boolean).length / checks.length) * 100)
 }
 
 const recentReviews = [
@@ -48,7 +30,7 @@ const recentReviews = [
 
 export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) {
   const { entry } = useMyBusiness(businessId)
-  const profileCompleteness = entry ? computeProfileCompleteness(entry) : 0
+  const profileCompleteness = entry ? computeBusinessProfileCompleteness(entry) : 0
 
   return (
     <div className="space-y-8 pb-12">

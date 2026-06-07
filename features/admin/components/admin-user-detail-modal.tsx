@@ -1,7 +1,9 @@
 "use client"
 
 import { AdminModal } from "@/features/admin/components/admin-modal"
-import { formatDate, getUserStatusLabel, getUserStatusTone } from "@/features/admin/utils/admin-users-utils"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
+import { formatDate } from "@/features/admin/utils/admin-users-utils"
+import { getUserStatusPresentation } from "@/features/admin/utils/admin-status-utils"
 import type { AdminRole } from "@/types/admin-roles"
 import type { AdminUserItem } from "@/types/admin-users"
 
@@ -45,9 +47,7 @@ export function AdminUserDetailModal({ user, onClose }: AdminUserDetailModalProp
 
           <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Status</p>
-            <span className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getUserStatusTone(user.status)}`}>
-              {getUserStatusLabel(user.status)}
-            </span>
+            <AdminStatusBadge {...getUserStatusPresentation(user.status)} className="mt-2" />
           </div>
 
           {user.roles.length > 0 && (
