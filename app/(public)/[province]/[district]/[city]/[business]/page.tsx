@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import axios from "axios"
 import { BusinessDetailPage } from "@/features/business/screens/business-detail-page"
 import {
@@ -57,8 +57,17 @@ export default async function PublicBusinessDetailRoute({ params }: PublicBusine
   const business = await fetchPublicBusiness(routeParams)
   if (!business) notFound()
 
-  const pageData = mapPublicBusinessToPageData(business)
   const publicHref = buildPublicBusinessHref(business)
+  if (
+    routeParams.province !== business.province.slug ||
+    routeParams.district !== business.district.slug ||
+    routeParams.city !== business.municipality.slug ||
+    routeParams.business !== business.slug
+  ) {
+    redirect(publicHref)
+  }
+
+  const pageData = mapPublicBusinessToPageData(business)
 
   return (
     <BusinessDetailPage
