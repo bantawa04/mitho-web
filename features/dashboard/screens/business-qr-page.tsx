@@ -47,8 +47,9 @@ function useQrCanvas(url: string | null) {
   return { canvasRef, ready }
 }
 
-const MITHO_LOGO_PATH = "/brand/logo-icon-green.svg"
-const LOGO_SIZE = 64
+const MITHO_LOGO_PATH = "/brand/logo-primary-green.svg"
+const LOGO_WIDTH = 158
+const LOGO_HEIGHT = 64
 
 function downloadQr(url: string, businessName: string) {
   QRCode.toDataURL(url, {
@@ -58,7 +59,7 @@ function downloadQr(url: string, businessName: string) {
     errorCorrectionLevel: "H",
   }).then((qrDataUrl) => {
     const padding = 48
-    const topSection = LOGO_SIZE + 32 // logo + gap
+    const topSection = LOGO_HEIGHT + 32 // logo + gap
     const bottomSection = 100 // business name + tagline
     const size = QR_DOWNLOAD_SIZE
 
@@ -81,9 +82,9 @@ function downloadQr(url: string, businessName: string) {
     logoImg.crossOrigin = "anonymous"
     logoImg.onload = () => {
       // Draw logo centered at top
-      const logoX = (canvas.width - LOGO_SIZE) / 2
+      const logoX = (canvas.width - LOGO_WIDTH) / 2
       const logoY = padding
-      ctx.drawImage(logoImg, logoX, logoY, LOGO_SIZE, LOGO_SIZE)
+      ctx.drawImage(logoImg, logoX, logoY, LOGO_WIDTH, LOGO_HEIGHT)
 
       // Draw QR image below logo
       const qrImg = new Image()
@@ -268,15 +269,12 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
             className="w-full max-w-[360px] rounded-[2rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_28px_rgba(10,70,53,0.07)] print:shadow-none"
           >
             {/* Mitho logo */}
-            <div className="mb-4 flex flex-col items-center gap-3">
+            <div className="mb-4 flex flex-col items-center justify-center">
               <img
                 src={MITHO_LOGO_PATH}
                 alt="Mitho Cha"
-                className="h-10 w-10"
+                className="h-8 w-auto"
               />
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/50">
-                Mitho Cha
-              </p>
             </div>
 
             <div className="relative overflow-hidden rounded-[1.25rem] bg-white">
