@@ -49,7 +49,7 @@ export async function listBusinessReviews(businessId: string, params?: ListBusin
 
 export async function getMyBusinessReview(businessId: string): Promise<ReviewItem | null> {
   const { data } = await API.get<ISuccessResponse<ReviewItem | null>>(`/businesses/${businessId.trim()}/reviews/me`)
-  return data.data
+  return data.data ?? null
 }
 
 export async function createBusinessReview(businessId: string, payload: CreateReviewPayload): Promise<ReviewItem> {
