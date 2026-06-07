@@ -23,7 +23,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { cn } from "@/lib/utils"
 import { useMyBusiness } from "@/hooks/use-businesses"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
-import type { MyBusinessEntry } from "@/types/business"
+import { formatBusinessEntryLocation } from "@/features/dashboard/utils/dashboard-business-utils"
 
 interface BusinessWorkspaceShellProps {
   businessId: string
@@ -40,17 +40,6 @@ const navItems = [
   { key: "analytics", label: "Analytics", icon: BarChart3, segment: "analytics" },
   { key: "settings", label: "Settings", icon: Settings, segment: "settings" },
 ]
-
-function deriveDisplayLocation(entry: MyBusinessEntry): string {
-  const b = entry.business
-  const parts: string[] = []
-  if (b.area) parts.push(b.area)
-  if (b.nearestLandmark) parts.push(`Near ${b.nearestLandmark}`)
-  if (b.addressNote) parts.push(b.addressNote)
-  if (b.municipality?.name) parts.push(b.municipality.name)
-  if (b.district?.name) parts.push(b.district.name)
-  return parts.join(", ") || b.province?.name || "Business management"
-}
 
 function BusinessWorkspaceNav({
   businessId,
@@ -105,7 +94,7 @@ export function BusinessWorkspaceShell({ businessId, children }: BusinessWorkspa
   const { currentUser } = useAuthSnapshot()
 
   const name = entry?.business.name ?? (isLoading ? "Loading…" : "Business workspace")
-  const location = entry ? deriveDisplayLocation(entry) : (isLoading ? "" : "Business management")
+  const location = entry ? formatBusinessEntryLocation(entry, "Business management") : (isLoading ? "" : "Business management")
 
   return (
     <>

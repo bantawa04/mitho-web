@@ -6,6 +6,7 @@ import { useDistricts, useMunicipalities, useProvinces } from "@/hooks/use-nepal
 import type { District, Municipality, Province } from "@/types/nepal-admin"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { RequiredLabel } from "@/components/ui/required-label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type LocationSelection = {
@@ -37,14 +38,6 @@ function SelectDisplay({ label, placeholder }: { label?: string; placeholder: st
   }
 
   return <SelectValue placeholder={placeholder} />
-}
-
-function RequiredLabel({ children }: { children: string }) {
-  return (
-    <FormLabel>
-      {children} <span className="text-danger">*</span>
-    </FormLabel>
-  )
 }
 
 export function BusinessLocationFields({

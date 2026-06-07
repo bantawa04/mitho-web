@@ -10,72 +10,27 @@ import { MithoButton } from "@/components/mitho/mitho-button"
 import { useMyBusinesses } from "@/hooks/use-businesses"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import type { ManagedBusiness } from "@/features/dashboard/data/dashboard-business-data"
+import {
+  computeBusinessProfileCompleteness,
+  deriveBusinessLifecycleStatus,
+  deriveManagedBusinessStatus,
+  formatBusinessEntryLocation,
+} from "@/features/dashboard/utils/dashboard-business-utils"
 import { getPublicBusinessHref } from "@/lib/business-public-href"
-
-
-
-function deriveManagedStatus(entry: MyBusinessEntry): ManagedBusiness["status"] {
-  if (entry.claimStatus === "pending") return "claim-pending"
-  if (entry.membershipRole) {
-    const listingStatus = entry.business.listingStatus
-    if (listingStatus === "published") return "active"
-    return "setup-needed"
-  }
-  return "setup-needed"
-}
-
-function deriveLifecycleStatus(entry: MyBusinessEntry): ManagedBusiness["lifecycleStatus"] {
-  const ownershipStatus = entry.business.ownershipStatus
-  const listingStatus = entry.business.listingStatus
-  if (ownershipStatus === "unclaimed") return "unclaimed"
-  if (listingStatus === "suspended") return "temporarily_closed"
-  if (listingStatus === "rejected") return "permanently_closed"
-  if (listingStatus === "pending_review") return "draft"
-  return "active"
-}
-
-function deriveLocation(entry: MyBusinessEntry): string {
-  const b = entry.business
-  const parts: string[] = []
-  if (b.area) parts.push(b.area)
-  if (b.nearestLandmark) parts.push(`Near ${b.nearestLandmark}`)
-  if (b.addressNote) parts.push(b.addressNote)
-  if (b.municipality?.name) parts.push(b.municipality.name)
-  if (b.district?.name) parts.push(b.district.name)
-  return parts.join(", ") || b.province?.name || "Nepal"
-}
 
 function entryToManagedBusiness(entry: MyBusinessEntry): ManagedBusiness {
   const role = entry.membershipRole as ManagedBusiness["role"] | undefined
   return {
     id: entry.business.id,
     name: entry.business.name,
-    location: deriveLocation(entry),
-    status: deriveManagedStatus(entry),
-    lifecycleStatus: deriveLifecycleStatus(entry),
+    location: formatBusinessEntryLocation(entry),
+    status: deriveManagedBusinessStatus(entry),
+    lifecycleStatus: deriveBusinessLifecycleStatus(entry),
     role: role === "owner" || role === "manager" ? role : undefined,
     claimStatus: entry.claimStatus === "pending" ? "pending-review" : undefined,
-    profileCompleteness: computeProfileCompleteness(entry),
+    profileCompleteness: computeBusinessProfileCompleteness(entry),
     reviewCount: entry.business.ratingCount,
   }
-}
-
-function computeProfileCompleteness(entry: MyBusinessEntry): number {
-  const b = entry.business
-  const checks = [
-    Boolean(b.name),
-    Boolean(b.description),
-    Boolean(b.phone),
-    Boolean(b.email),
-    Boolean(b.logo),
-    Boolean(b.banner),
-    Boolean(b.photos && b.photos.length > 0),
-    Boolean(b.establishmentType),
-    Boolean(b.cuisines && b.cuisines.length > 0),
-    Boolean(b.area || b.nearestLandmark || b.addressNote),
-  ]
-  const filled = checks.filter(Boolean).length
-  return Math.round((filled / checks.length) * 100)
 }
 
 function statusBadge(status: ManagedBusiness["status"]) {

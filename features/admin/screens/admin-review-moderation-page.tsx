@@ -12,6 +12,7 @@ import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { useApproveAdminReview, useAdminReview, useAdminReviews, useDeleteAdminReview, useRejectAdminReview } from "@/hooks/use-reviews"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useToast } from "@/hooks/use-toast"
+import { extractApiErrorMessage } from "@/lib/api-error-utils"
 import type { ReviewItem, ReviewRejectionFlag, ReviewStatus } from "@/types/reviews"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -27,20 +28,6 @@ const rejectionFlags: ReviewRejectionFlag[] = [
   "inappropriate_media",
   "other",
 ]
-
-function getErrorMessage(error: unknown) {
-  if (axios.isAxiosError(error)) {
-    const payload = error.response?.data as { message?: string; errors?: Record<string, string[] | string> } | undefined
-    if (payload?.errors) {
-      const firstField = Object.values(payload.errors)[0]
-      if (Array.isArray(firstField) && firstField[0]) return firstField[0]
-      if (typeof firstField === "string") return firstField
-    }
-    if (payload?.message) return payload.message
-  }
-
-  return error instanceof Error ? error.message : "Something went wrong. Please try again."
-}
 
 function formatFlag(flag?: ReviewRejectionFlag | null) {
   if (!flag) return "None"
@@ -244,7 +231,7 @@ export function AdminReviewModerationPage() {
     } catch (error) {
       toast({
         title: "Could not update review",
-        description: getErrorMessage(error),
+        description: extractApiErrorMessage(error),
         variant: "destructive",
       })
     }
@@ -263,7 +250,7 @@ export function AdminReviewModerationPage() {
     } catch (error) {
       toast({
         title: "Could not delete review",
-        description: getErrorMessage(error),
+        description: extractApiErrorMessage(error),
         variant: "destructive",
       })
     }

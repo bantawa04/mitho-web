@@ -11,20 +11,12 @@ import { MithoButton } from "@/components/mitho/mitho-button"
 import { Input } from "@/components/ui/input"
 import { authQueryKeys, useAuthSnapshot } from "@/hooks/use-auth-session"
 import { checkUsernameAvailability, completeProfile, getUsernameSuggestion } from "@/lib/api/profile"
+import { extractApiErrorMessage } from "@/lib/api-error-utils"
 import { getAuthenticatedRedirect } from "@/lib/auth/redirects"
 import { isInternalUser } from "@/lib/auth/access"
 import { useAuthStore } from "@/store/authStore"
 
 type AvailabilityState = "idle" | "checking" | "available" | "unavailable" | "invalid"
-
-function getErrorMessage(error: unknown) {
-  if (axios.isAxiosError(error)) {
-    const message = (error.response?.data as { message?: string } | undefined)?.message
-    if (message) return message
-  }
-
-  return error instanceof Error ? error.message : "Something went wrong. Please try again."
-}
 
 export function CompleteProfilePage() {
   const router = useRouter()
@@ -74,7 +66,7 @@ export function CompleteProfilePage() {
     },
     onError: (error) => {
       setAvailability("invalid")
-      setMessage(getErrorMessage(error))
+      setMessage(extractApiErrorMessage(error))
     },
   })
 
@@ -87,7 +79,7 @@ export function CompleteProfilePage() {
     },
     onError: (error) => {
       setAvailability("invalid")
-      setMessage(getErrorMessage(error))
+      setMessage(extractApiErrorMessage(error))
     },
   })
 

@@ -10,6 +10,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { useClaimableBusiness, useClaimableBusinesses, useCreateBusinessClaim } from "@/hooks/use-business-claims"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
+import { getPublicBusinessHref } from "@/lib/business-public-href"
 import {
   claimRoleOptions,
   businessClaimSchema,
@@ -24,6 +25,7 @@ import { MithoButton } from "@/components/mitho/mitho-button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { RequiredLabel } from "@/components/ui/required-label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { confirmClaimDocumentUpload, requestClaimDocumentUpload } from "@/lib/api/business-claims"
 import { uploadFileToR2 } from "@/lib/api/media"
@@ -35,14 +37,6 @@ const inputClassName =
   "h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 const selectTriggerClassName =
   "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
-
-function RequiredLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <FormLabel>
-      {children} <span className="text-danger">*</span>
-    </FormLabel>
-  )
-}
 
 function claimableLocation(business: ClaimableBusiness) {
   return [
@@ -66,10 +60,6 @@ function claimableCue(business: ClaimableBusiness) {
     return `${business.establishmentType} listing available to claim.`
   }
   return "This published listing is available to claim after ownership verification."
-}
-
-function publicBusinessHref(business: ClaimableBusiness) {
-  return business.publicPath || `/business/${business.slug}`
 }
 
 function hasPublicBusinessPage(business: ClaimableBusiness) {
@@ -185,7 +175,7 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
             </MithoButton>
             {hasPublicBusinessPage(business) ? (
               <MithoButton variant="outline-secondary" asChild>
-                <Link href={publicBusinessHref(business)}>View public listing</Link>
+                <Link href={getPublicBusinessHref(business)}>View public listing</Link>
               </MithoButton>
             ) : null}
           </div>
@@ -653,7 +643,7 @@ export function BusinessClaimPage() {
                     <p className="mt-2 text-sm text-muted-foreground">{claimableLocation(selectedBusiness)}</p>
                     <p className="mt-4 text-sm leading-7 text-muted-foreground">{claimableCue(selectedBusiness)}</p>
                     <MithoButton variant="ghost" className="mt-4" asChild>
-                      <Link href={publicBusinessHref(selectedBusiness)}>View public listing</Link>
+                      <Link href={getPublicBusinessHref(selectedBusiness)}>View public listing</Link>
                     </MithoButton>
                   </div>
                 </section>

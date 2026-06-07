@@ -22,68 +22,14 @@ import { MediaPerformance } from "@/features/dashboard/components/media-performa
 import { ReviewsOverview } from "@/features/dashboard/components/reviews-overview"
 import { TrafficAnalytics } from "@/features/dashboard/components/traffic-analytics"
 import type { BusinessLifecycleStatus } from "@/features/dashboard/data/dashboard-business-data"
+import {
+  deriveBusinessLifecycleStatus,
+  getBusinessLifecyclePresentation,
+} from "@/features/dashboard/utils/dashboard-business-utils"
 import { useBusinessDetail, useMyBusiness } from "@/hooks/use-businesses"
-import type { MyBusinessEntry } from "@/types/business"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/mitho/mitho-card"
 import { ToggleSwitch } from "@/components/mitho/mitho-toggle-switch"
-
-
-
-function lifecycleStatusLabel(status: BusinessLifecycleStatus) {
-  switch (status) {
-    case "active":
-      return "Active"
-    case "temporarily_closed":
-      return "Temporarily closed"
-    case "permanently_closed":
-      return "Permanently closed"
-    case "unclaimed":
-      return "Unclaimed"
-    case "archived":
-      return "Archived"
-    case "draft":
-      return "Draft"
-    case "suspended":
-      return "Suspended"
-  }
-}
-
-function lifecycleStatusTone(status: BusinessLifecycleStatus) {
-  switch (status) {
-    case "active":
-      return "bg-success/12 text-success"
-    case "temporarily_closed":
-      return "bg-brand-soft-beige text-brand-orange"
-    case "permanently_closed":
-      return "bg-muted text-muted-foreground"
-    case "unclaimed":
-      return "bg-brand-deep-green/10 text-brand-deep-green"
-    case "archived":
-    case "draft":
-    case "suspended":
-      return "bg-muted text-muted-foreground"
-  }
-}
-
-function lifecycleStatusDescription(status: BusinessLifecycleStatus) {
-  switch (status) {
-    case "active":
-      return "The listing is visible as normal and can keep receiving customer traffic, reviews, and routine updates."
-    case "temporarily_closed":
-      return "The listing remains on Mitho but will clearly show that the business is temporarily closed until you reopen it."
-    case "permanently_closed":
-      return "The listing stays public as historical place data and is marked permanently closed for customers."
-    case "unclaimed":
-      return "This listing exists publicly but is not actively controlled by an owner account right now."
-    case "archived":
-      return "This workspace is archived internally and should not be treated as an active operating business."
-    case "draft":
-      return "This listing has not been fully published yet and can still change more aggressively."
-    case "suspended":
-      return "This listing is under platform or policy restriction and should be handled through support/admin review."
-  }
-}
 
 export function ReviewsRoutePage() {
   return (
@@ -111,26 +57,6 @@ export function AnalyticsRoutePage() {
       <TrafficAnalytics />
     </div>
   )
-}
-
-function deriveEntryLocation(entry: MyBusinessEntry): string {
-  const b = entry.business
-  const parts: string[] = []
-  if (b.area) parts.push(b.area)
-  if (b.nearestLandmark) parts.push(`Near ${b.nearestLandmark}`)
-  if (b.addressNote) parts.push(b.addressNote)
-  if (b.municipality?.name) parts.push(b.municipality.name)
-  if (b.district?.name) parts.push(b.district.name)
-  return parts.join(", ") || b.province?.name || "Nepal"
-}
-
-function deriveEntryLifecycleStatus(entry: MyBusinessEntry): BusinessLifecycleStatus {
-  const { ownershipStatus, listingStatus } = entry.business
-  if (ownershipStatus === "unclaimed") return "unclaimed"
-  if (listingStatus === "suspended") return "temporarily_closed"
-  if (listingStatus === "rejected") return "permanently_closed"
-  if (listingStatus === "pending_review") return "draft"
-  return "active"
 }
 
 export function BusinessInfoRoutePage({ businessId }: { businessId: string }) {
@@ -304,6 +230,7 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
   const [removalReason, setRemovalReason] = useState("duplicate")
   const [removalNote, setRemovalNote] = useState("")
   const [removalRequested, setRemovalRequested] = useState(false)
+  const lifecyclePresentation = getBusinessLifecyclePresentation(lifecycleStatus)
 
   const updateNotificationPreference = (id: string, enabled: boolean) => {
     setSettingsSaved(false)
@@ -372,10 +299,10 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
           <div className="rounded-[1.2rem] border border-brand-deep-green/10 bg-surface-business-inset px-5 py-5">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${lifecycleStatusTone(lifecycleStatus)}`}>
-                  {lifecycleStatusLabel(lifecycleStatus)}
+                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${lifecyclePresentation.tone}`}>
+                  {lifecyclePresentation.label}
                 </span>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{lifecycleStatusDescription(lifecycleStatus)}</p>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">{lifecyclePresentation.description}</p>
               </div>
               {removalRequested ? (
                 <span className="rounded-full bg-brand-soft-beige px-3 py-1 text-xs font-semibold text-brand-orange">
@@ -644,5 +571,5 @@ export function SettingsRoutePage({ businessId }: { businessId: string }) {
     )
   }
 
-  return <SettingsContent initialLifecycleStatus={deriveEntryLifecycleStatus(entry)} />
+  return <SettingsContent initialLifecycleStatus={deriveBusinessLifecycleStatus(entry)} />
 }
