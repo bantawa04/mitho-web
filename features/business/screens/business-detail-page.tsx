@@ -57,6 +57,10 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
     () => mapReviewSummaryToRatingsData(reviewsQuery.data?.summary) ?? pageData.ratingsData ?? null,
     [pageData.ratingsData, reviewsQuery.data?.summary],
   )
+  const infoPanelGalleryItems = React.useMemo(() => {
+    if (!pageData.coverImage) return pageData.galleryItems
+    return pageData.galleryItems.filter((item) => item.src !== pageData.coverImage)
+  }, [pageData.coverImage, pageData.galleryItems])
 
   React.useEffect(() => {
     setReviewPage(1)
@@ -202,8 +206,8 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         <div className="mt-8" id="overview">
           <InfoPanel
             isEarlyListing={isEarlyListing}
-            galleryItems={pageData.galleryItems}
-            galleryTotalCount={pageData.galleryTotalCount}
+            galleryItems={infoPanelGalleryItems}
+            galleryTotalCount={infoPanelGalleryItems.length}
             galleryEmptyMessage={pageData.galleryEmptyMessage}
             visitInfo={pageData.visitInfo}
           />
