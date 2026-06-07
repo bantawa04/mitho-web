@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useRef } from "react"
 import { ChevronRight, ImageIcon, Loader2, Upload, Video } from "lucide-react"
+import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { useMedia, useUploadMedia } from "@/hooks/use-media"
 import type { Media } from "@/types/media"
 import { Button } from "@/components/ui/button"
@@ -12,14 +13,6 @@ function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })
 }
 
 function MediaCard({ item }: { item: Media }) {
@@ -54,7 +47,7 @@ function MediaCard({ item }: { item: Media }) {
           <span className="text-xs text-muted-foreground">
             {item.sizeBytes ? formatBytes(item.sizeBytes) : "—"}
           </span>
-          <span className="text-xs text-muted-foreground">{formatDate(item.createdAt)}</span>
+          <span className="text-xs text-muted-foreground">{formatAdminDate(item.createdAt)}</span>
         </div>
       </div>
     </div>

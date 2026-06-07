@@ -5,46 +5,15 @@ import Link from "next/link"
 import { ChevronRight, Eye } from "lucide-react"
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
-import { formatDate, getUserStatusLabel, getUserStatusTone } from "@/features/admin/utils/admin-users-utils"
+import { formatAdminDateTime, formatAdminDate } from "@/features/admin/utils/admin-format-utils"
+import { getOauthProviderPresentation, getUserStatusPresentation } from "@/features/admin/utils/admin-status-utils"
 import { useAdminCustomers } from "@/hooks/use-admin-customers"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type { AdminCustomerItem } from "@/types/admin-customers"
 
 const pageSize = 6
-
-function getOauthLabel(provider?: string | null) {
-  switch ((provider ?? "").toLowerCase()) {
-    case "google":
-      return "Google"
-    case "apple":
-      return "Apple"
-    default:
-      return "Email"
-  }
-}
-
-function getOauthTone(provider?: string | null) {
-  switch ((provider ?? "").toLowerCase()) {
-    case "google":
-      return "bg-sky-50 text-sky-700 border-sky-100"
-    case "apple":
-      return "bg-stone-100 text-stone-700 border-stone-200"
-    default:
-      return "bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
-  }
-}
-
-function formatDateTime(value?: string | null) {
-  if (!value) return "Not signed in yet"
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value))
-}
 
 export function AdminCustomersPage() {
   const [query, setQuery] = useState("")
@@ -107,11 +76,7 @@ export function AdminCustomersPage() {
         label: "OAuth Type",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
-        cell: (customer) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOauthTone(customer.socialProvider)}`}>
-            {getOauthLabel(customer.socialProvider)}
-          </span>
-        ),
+        cell: (customer) => <AdminStatusBadge {...getOauthProviderPresentation(customer.socialProvider)} />,
       },
       {
         id: "has-business",
@@ -125,7 +90,7 @@ export function AdminCustomersPage() {
         label: "Joined Date",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (customer) => formatDate(customer.createdAt),
+        cell: (customer) => formatAdminDate(customer.createdAt),
       },
       {
         id: "action",
@@ -211,23 +176,19 @@ export function AdminCustomersPage() {
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">OAuth Type</p>
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOauthTone(selectedCustomer.socialProvider)}`}>
-                  {getOauthLabel(selectedCustomer.socialProvider)}
-                </span>
+                <AdminStatusBadge {...getOauthProviderPresentation(selectedCustomer.socialProvider)} />
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Joined</p>
-                <p className="text-sm text-muted-foreground">{formatDateTime(selectedCustomer.createdAt)}</p>
+                <p className="text-sm text-muted-foreground">{formatAdminDateTime(selectedCustomer.createdAt)}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Last sign in</p>
-                <p className="text-sm text-muted-foreground">{formatDateTime(selectedCustomer.lastSignInAt)}</p>
+                <p className="text-sm text-muted-foreground">{selectedCustomer.lastSignInAt ? formatAdminDateTime(selectedCustomer.lastSignInAt) : "Not signed in yet"}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Status</p>
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getUserStatusTone(selectedCustomer.status)}`}>
-                  {getUserStatusLabel(selectedCustomer.status)}
-                </span>
+                <AdminStatusBadge {...getUserStatusPresentation(selectedCustomer.status)} />
               </div>
             </div>
 

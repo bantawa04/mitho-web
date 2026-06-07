@@ -5,8 +5,10 @@ import axios from "axios"
 import Link from "next/link"
 import { ChevronRight, Eye, Trash2 } from "lucide-react"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminConfirmModal, AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { useApproveAdminReview, useAdminReview, useAdminReviews, useDeleteAdminReview, useRejectAdminReview } from "@/hooks/use-reviews"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useToast } from "@/hooks/use-toast"
@@ -88,16 +90,6 @@ function formatStatus(status: ReviewStatus) {
   }
 }
 
-function formatDate(value: string) {
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return value
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(date)
-}
-
 export function AdminReviewModerationPage() {
   const { toast } = useToast()
   const [query, setQuery] = useState("")
@@ -169,9 +161,7 @@ export function AdminReviewModerationPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (review) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getModerationStatusTone(review.status)}`}>
-            {formatStatus(review.status)}
-          </span>
+          <AdminStatusBadge label={formatStatus(review.status)} tone={getModerationStatusTone(review.status)} />
         ),
       },
       {
@@ -194,9 +184,7 @@ export function AdminReviewModerationPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (review) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getFlagTone(review.rejectionFlag)}`}>
-            {formatFlag(review.rejectionFlag)}
-          </span>
+          <AdminStatusBadge label={formatFlag(review.rejectionFlag)} tone={getFlagTone(review.rejectionFlag)} />
         ),
       },
       {
@@ -204,7 +192,7 @@ export function AdminReviewModerationPage() {
         label: "Submitted",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (review) => formatDate(review.createdAt),
+        cell: (review) => formatAdminDate(review.createdAt),
       },
       {
         id: "action",
@@ -354,12 +342,8 @@ export function AdminReviewModerationPage() {
           <>
             <section className="space-y-4 border-b border-brand-deep-green/10 pb-5">
               <div className="flex flex-wrap items-center gap-2">
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getFlagTone(selectedReview.rejectionFlag)}`}>
-                  {formatFlag(selectedReview.rejectionFlag)}
-                </span>
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getModerationStatusTone(selectedReview.status)}`}>
-                  {formatStatus(selectedReview.status)}
-                </span>
+                <AdminStatusBadge label={formatFlag(selectedReview.rejectionFlag)} tone={getFlagTone(selectedReview.rejectionFlag)} />
+                <AdminStatusBadge label={formatStatus(selectedReview.status)} tone={getModerationStatusTone(selectedReview.status)} />
               </div>
 
               <div className="grid gap-5 sm:grid-cols-3">
@@ -373,7 +357,7 @@ export function AdminReviewModerationPage() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Submitted</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{formatDate(selectedReview.createdAt)}</p>
+                  <p className="text-base font-semibold text-brand-dark-green">{formatAdminDate(selectedReview.createdAt)}</p>
                 </div>
               </div>
             </section>
