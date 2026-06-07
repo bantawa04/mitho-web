@@ -13,6 +13,7 @@ import {
   Loader2,
   Menu,
   MessageSquare,
+  QrCode,
   Settings,
 } from "lucide-react"
 import { DashboardFooter } from "@/features/dashboard/components/dashboard-footer"
@@ -33,6 +34,7 @@ const navItems = [
   { key: "overview", label: "Overview", icon: LayoutDashboard, segment: "overview" },
   { key: "reviews", label: "Reviews", icon: MessageSquare, segment: "reviews" },
   { key: "photos", label: "Photos", icon: Camera, segment: "photos" },
+  { key: "qr", label: "QR Code", icon: QrCode, segment: "qr" },
   { key: "edit", label: "Business Info", icon: Building2, segment: "edit" },
   { key: "hours", label: "Hours", icon: Clock3, segment: "hours" },
   { key: "analytics", label: "Analytics", icon: BarChart3, segment: "analytics" },
