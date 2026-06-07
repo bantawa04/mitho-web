@@ -6,41 +6,58 @@ import { ChevronRight, Eye } from "lucide-react"
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
-import { mockAdminCustomers, type AdminCustomerItem, type AdminCustomerOauthType } from "@/features/admin/data/admin-data"
+import { formatDate, getUserStatusLabel, getUserStatusTone } from "@/features/admin/utils/admin-users-utils"
+import { useAdminCustomers } from "@/hooks/use-admin-customers"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import type { AdminCustomerItem } from "@/types/admin-customers"
 
 const pageSize = 6
 
-function getOauthTone(oauthType: AdminCustomerOauthType) {
-  switch (oauthType) {
-    case "Google":
-      return "bg-sky-50 text-sky-700 border-sky-100"
-    case "Apple":
-      return "bg-stone-100 text-stone-700 border-stone-200"
+function getOauthLabel(provider?: string | null) {
+  switch ((provider ?? "").toLowerCase()) {
+    case "google":
+      return "Google"
+    case "apple":
+      return "Apple"
+    default:
+      return "Email"
   }
+}
+
+function getOauthTone(provider?: string | null) {
+  switch ((provider ?? "").toLowerCase()) {
+    case "google":
+      return "bg-sky-50 text-sky-700 border-sky-100"
+    case "apple":
+      return "bg-stone-100 text-stone-700 border-stone-200"
+    default:
+      return "bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
+  }
+}
+
+function formatDateTime(value?: string | null) {
+  if (!value) return "Not signed in yet"
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value))
 }
 
 export function AdminCustomersPage() {
   const [query, setQuery] = useState("")
   const debouncedQuery = useDebouncedValue(query, 300)
-  const [customers] = useState(mockAdminCustomers)
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null)
-
-  const filteredCustomers = useMemo(() => {
-    const normalizedQuery = debouncedQuery.trim().toLowerCase()
-
-    return customers.filter((customer) =>
-      normalizedQuery.length === 0
-        ? true
-        : [customer.name, customer.email, customer.oauthType, ...customer.businessNames]
-            .join(" ")
-            .toLowerCase()
-            .includes(normalizedQuery),
-    )
-  }, [customers, debouncedQuery])
-
-  const totalPages = Math.max(1, Math.ceil(filteredCustomers.length / pageSize))
+  const customersResult = useAdminCustomers({
+    page: currentPage,
+    per_page: pageSize,
+    query: debouncedQuery.trim() || undefined,
+  })
+  const customers = customersResult.data?.customers ?? []
+  const totalPages = customersResult.data?.meta.totalPages ?? 1
 
   useEffect(() => {
     setCurrentPage(1)
@@ -52,20 +69,22 @@ export function AdminCustomersPage() {
     }
   }, [currentPage, totalPages])
 
-  const paginatedCustomers = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize
-    return filteredCustomers.slice(startIndex, startIndex + pageSize)
-  }, [currentPage, filteredCustomers])
-
   const selectedCustomer = useMemo(
     () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
     [customers, selectedCustomerId],
   )
 
-  const resultSummary =
-    filteredCustomers.length === 0
-      ? "No customers match this search."
-      : `Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, filteredCustomers.length)} of ${filteredCustomers.length}`
+  const resultSummary = useMemo(() => {
+    if (customersResult.isError) return "Could not load customers."
+    const totalItems = customersResult.data?.meta.totalItems ?? 0
+    if (totalItems === 0) {
+      return debouncedQuery.trim().length > 0 ? "No customers match this search." : "No customers found."
+    }
+    const page = customersResult.data?.meta.page ?? currentPage
+    const start = (page - 1) * pageSize + 1
+    const end = Math.min(start + customers.length - 1, totalItems)
+    return `Showing ${start}-${end} of ${totalItems}`
+  }, [currentPage, customers.length, customersResult.data?.meta.page, customersResult.data?.meta.totalItems, customersResult.isError, debouncedQuery])
 
   const columns = useMemo<AdminTableColumn<AdminCustomerItem>[]>(
     () => [
@@ -74,7 +93,7 @@ export function AdminCustomersPage() {
         label: "Name",
         className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "px-6 py-5 align-top",
-        cell: (customer) => <p className="text-sm font-semibold text-brand-dark-green">{customer.name}</p>,
+        cell: (customer) => <p className="text-sm font-semibold text-brand-dark-green">{customer.fullName || customer.email}</p>,
       },
       {
         id: "email",
@@ -89,8 +108,8 @@ export function AdminCustomersPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (customer) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOauthTone(customer.oauthType)}`}>
-            {customer.oauthType}
+          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOauthTone(customer.socialProvider)}`}>
+            {getOauthLabel(customer.socialProvider)}
           </span>
         ),
       },
@@ -106,7 +125,7 @@ export function AdminCustomersPage() {
         label: "Joined Date",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (customer) => customer.joinedAt,
+        cell: (customer) => formatDate(customer.createdAt),
       },
       {
         id: "action",
@@ -152,7 +171,7 @@ export function AdminCustomersPage() {
 
         <AdminTable
           columns={columns}
-          data={paginatedCustomers}
+          data={customers}
           rowKey={(customer) => customer.id}
           searchValue={query}
           onSearchChange={setQuery}
@@ -162,7 +181,8 @@ export function AdminCustomersPage() {
           onPageChange={setCurrentPage}
           resultSummary={resultSummary}
           emptyTitle="No customers found"
-          emptyDescription="Try a different name, email, or connected business."
+          emptyDescription={customersResult.isError ? "Reload page and try again." : "Try a different name, email, or connected business."}
+          isLoading={customersResult.isLoading}
         />
       </div>
 
@@ -183,7 +203,7 @@ export function AdminCustomersPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Name</p>
-                <p className="text-sm font-semibold text-brand-dark-green">{selectedCustomer.name}</p>
+                <p className="text-sm font-semibold text-brand-dark-green">{selectedCustomer.fullName || selectedCustomer.email}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Email</p>
@@ -191,13 +211,23 @@ export function AdminCustomersPage() {
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">OAuth Type</p>
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOauthTone(selectedCustomer.oauthType)}`}>
-                  {selectedCustomer.oauthType}
+                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOauthTone(selectedCustomer.socialProvider)}`}>
+                  {getOauthLabel(selectedCustomer.socialProvider)}
                 </span>
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Joined</p>
-                <p className="text-sm text-muted-foreground">{selectedCustomer.joinedAt}</p>
+                <p className="text-sm text-muted-foreground">{formatDateTime(selectedCustomer.createdAt)}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Last sign in</p>
+                <p className="text-sm text-muted-foreground">{formatDateTime(selectedCustomer.lastSignInAt)}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Status</p>
+                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getUserStatusTone(selectedCustomer.status)}`}>
+                  {getUserStatusLabel(selectedCustomer.status)}
+                </span>
               </div>
             </div>
 
@@ -211,8 +241,8 @@ export function AdminCustomersPage() {
                 <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedCustomer.reviewsCount}</p>
               </div>
               <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Collections</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedCustomer.collectionsCount}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Profile complete</p>
+                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedCustomer.profileComplete ? "Yes" : "No"}</p>
               </div>
             </div>
 

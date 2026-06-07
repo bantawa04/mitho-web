@@ -1,4 +1,5 @@
 import type { ListAdminUsersParams } from "@/types/admin-users"
+import type { ListAdminCustomersParams } from "@/types/admin-customers"
 import type { ListBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
 import type { ListMediaParams } from "@/types/media"
@@ -52,6 +53,10 @@ export const queryKeys = {
     users: {
       all: ["admin", "users"] as const,
       list: (params: ListAdminUsersParams) => ["admin", "users", "list", params] as const,
+    },
+    customers: {
+      all: ["admin", "customers"] as const,
+      list: (params: ListAdminCustomersParams) => ["admin", "customers", "list", params] as const,
     },
     roles: {
       all: ["admin", "roles"] as const,
