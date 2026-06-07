@@ -7,7 +7,10 @@ import { ChevronRight, Eye, Pencil, Plus, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { AdminConfirmModal, AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
+import { getTaxonomyStatusPresentation } from "@/features/admin/utils/admin-status-utils"
 import {
   useAdminEstablishmentTypes,
   useCreateAdminEstablishmentType,
@@ -38,29 +41,6 @@ const statusOptions: Array<{ label: string; value: AdminEstablishmentTypeStatusF
   { label: "Active", value: "active" },
   { label: "Disabled", value: "disabled" },
 ]
-
-function getStatusLabel(status: EstablishmentTypeStatus) {
-  return status === "active" ? "Active" : "Disabled"
-}
-
-function getStatusTone(status: EstablishmentTypeStatus) {
-  switch (status) {
-    case "active":
-      return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    case "disabled":
-      return "bg-stone-100 text-stone-700 border-stone-200"
-  }
-}
-
-function formatAdminTimestamp(dateValue: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(dateValue))
-}
 
 export function AdminEstablishmentTypesPage() {
   const [query, setQuery] = useState("")
@@ -148,9 +128,7 @@ export function AdminEstablishmentTypesPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (item) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(item.status)}`}>
-            {getStatusLabel(item.status)}
-          </span>
+          <AdminStatusBadge {...getTaxonomyStatusPresentation(item.status)} />
         ),
       },
       {
@@ -320,9 +298,7 @@ export function AdminEstablishmentTypesPage() {
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Status</p>
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(selectedType.status)}`}>
-                  {getStatusLabel(selectedType.status)}
-                </span>
+                <AdminStatusBadge {...getTaxonomyStatusPresentation(selectedType.status)} />
               </div>
             </div>
 
@@ -333,7 +309,7 @@ export function AdminEstablishmentTypesPage() {
               </div>
               <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Last updated</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{formatAdminTimestamp(selectedType.updatedAt)}</p>
+                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{formatAdminDateTime(selectedType.updatedAt)}</p>
               </div>
             </div>
           </div>

@@ -13,6 +13,7 @@ import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { useUploadMedia } from "@/hooks/use-media"
 import { useCreateBusinessReview, useMyBusinessReview, useResubmitReview } from "@/hooks/use-reviews"
 import { useToast } from "@/hooks/use-toast"
+import { extractApiErrorMessage } from "@/lib/api-error-utils"
 import { addReviewSchema, type AddReviewFormValues } from "@/lib/validators/reviews"
 import type { Media } from "@/types/media"
 
@@ -33,20 +34,6 @@ interface StoredReviewDraft {
 
 function draftKey(businessId: string) {
   return `review-draft:${businessId}`
-}
-
-function getErrorMessage(error: unknown) {
-  if (axios.isAxiosError(error)) {
-    const payload = error.response?.data as { message?: string; errors?: Record<string, string[] | string> } | undefined
-    if (payload?.errors) {
-      const firstField = Object.values(payload.errors)[0]
-      if (Array.isArray(firstField) && firstField[0]) return firstField[0]
-      if (typeof firstField === "string") return firstField
-    }
-    if (payload?.message) return payload.message
-  }
-
-  return error instanceof Error ? error.message : "Something went wrong. Please try again."
 }
 
 export function AddReviewForm({
@@ -194,7 +181,7 @@ export function AddReviewForm({
     } catch (error) {
       toast({
         title: "Could not submit review",
-        description: getErrorMessage(error),
+        description: extractApiErrorMessage(error),
         variant: "destructive",
       })
     }

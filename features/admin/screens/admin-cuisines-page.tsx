@@ -7,7 +7,10 @@ import { ChevronRight, Eye, Pencil, Plus, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { AdminConfirmModal, AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
+import { getTaxonomyStatusPresentation } from "@/features/admin/utils/admin-status-utils"
 import {
   useAdminCuisines,
   useCreateAdminCuisine,
@@ -38,29 +41,6 @@ const statusOptions: Array<{ label: string; value: AdminCuisineStatusFilter }> =
   { label: "Active", value: "active" },
   { label: "Disabled", value: "disabled" },
 ]
-
-function getStatusLabel(status: CuisineStatus) {
-  return status === "active" ? "Active" : "Disabled"
-}
-
-function getStatusTone(status: CuisineStatus) {
-  switch (status) {
-    case "active":
-      return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    case "disabled":
-      return "bg-stone-100 text-stone-700 border-stone-200"
-  }
-}
-
-function formatAdminTimestamp(dateValue: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(dateValue))
-}
 
 export function AdminCuisinesPage() {
   const [query, setQuery] = useState("")
@@ -148,9 +128,7 @@ export function AdminCuisinesPage() {
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top",
         cell: (item) => (
-          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(item.status)}`}>
-            {getStatusLabel(item.status)}
-          </span>
+          <AdminStatusBadge {...getTaxonomyStatusPresentation(item.status)} />
         ),
       },
       {
@@ -317,9 +295,7 @@ export function AdminCuisinesPage() {
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Status</p>
-                <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(selectedCuisine.status)}`}>
-                  {getStatusLabel(selectedCuisine.status)}
-                </span>
+                <AdminStatusBadge {...getTaxonomyStatusPresentation(selectedCuisine.status)} />
               </div>
             </div>
 
@@ -330,7 +306,7 @@ export function AdminCuisinesPage() {
               </div>
               <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Last updated</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{formatAdminTimestamp(selectedCuisine.updatedAt)}</p>
+                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{formatAdminDateTime(selectedCuisine.updatedAt)}</p>
               </div>
             </div>
           </div>

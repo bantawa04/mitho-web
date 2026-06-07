@@ -26,49 +26,15 @@ import {
   User,
   ExternalLink,
 } from "lucide-react"
+import { getPublicBusinessHref } from "@/lib/business-public-href"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { useBusiness } from "@/hooks/use-businesses"
 import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
+import { formatAdminDate, formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
+import { getBusinessListingPresentation, getBusinessOwnershipPresentation } from "@/features/admin/utils/admin-status-utils"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import type { BusinessListingStatus, BusinessOwnershipStatus } from "@/types/business"
-
-const statusLabels: Record<BusinessListingStatus, string> = {
-  published: "Published",
-  pending_review: "Pending review",
-  suspended: "Suspended",
-  rejected: "Rejected",
-}
-
-const ownershipLabels: Record<BusinessOwnershipStatus, string> = {
-  unclaimed: "Unclaimed",
-  claim_under_review: "Claim under review",
-  claimed: "Claimed",
-}
-
-function getStatusTone(status: BusinessListingStatus) {
-  switch (status) {
-    case "published":
-      return "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30"
-    case "pending_review":
-      return "bg-sky-50 text-sky-700 border-sky-100 dark:bg-sky-950/20 dark:text-sky-400 dark:border-sky-900/30"
-    case "suspended":
-      return "bg-red-50 text-red-700 border-red-100 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/30"
-    case "rejected":
-      return "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-900/20 dark:text-stone-400 dark:border-stone-800/30"
-  }
-}
-
-function getOwnershipTone(status: BusinessOwnershipStatus) {
-  switch (status) {
-    case "claimed":
-      return "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30"
-    case "claim_under_review":
-      return "bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/30"
-    case "unclaimed":
-      return "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-900/20 dark:text-stone-400 dark:border-stone-800/30"
-  }
-}
 
 function MetricCard({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
@@ -208,19 +174,6 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
   )
 }
 
-function getPublicBusinessHref(business: {
-  slug: string
-  province?: { slug?: string }
-  district?: { slug?: string }
-  municipality?: { slug?: string }
-}) {
-  if (business.province?.slug && business.district?.slug && business.municipality?.slug) {
-    return `/${business.province.slug}/${business.district.slug}/${business.municipality.slug}/${business.slug}`
-  }
-
-  return `/business/${business.slug}`
-}
-
 export function AdminBusinessDetailPage({ id }: { id: string }) {
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null)
   const { data: business, isLoading, isError, error, refetch } = useBusiness(id)
@@ -289,20 +242,8 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
   }
 
   // Format dates
-  const createdDate = new Date(business.createdAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
-  const updatedDate = new Date(business.updatedAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+  const createdDate = formatAdminDateTime(business.createdAt)
+  const updatedDate = formatAdminDateTime(business.updatedAt)
 
   return (
     <div className="space-y-6 pb-12">
@@ -332,12 +273,16 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between mt-4">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getStatusTone(business.listingStatus)}`}>
-                Listing: {statusLabels[business.listingStatus]}
-              </span>
-              <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getOwnershipTone(business.ownershipStatus)}`}>
-                Ownership: {ownershipLabels[business.ownershipStatus]}
-              </span>
+              <AdminStatusBadge
+                {...getBusinessListingPresentation(business.listingStatus, { dark: true })}
+                size="md"
+                label={`Listing: ${getBusinessListingPresentation(business.listingStatus, { dark: true }).label}`}
+              />
+              <AdminStatusBadge
+                {...getBusinessOwnershipPresentation(business.ownershipStatus, { dark: true })}
+                size="md"
+                label={`Ownership: ${getBusinessOwnershipPresentation(business.ownershipStatus, { dark: true }).label}`}
+              />
               <span className="inline-flex rounded-full border border-brand-deep-green/10 bg-white px-3 py-1 text-xs font-semibold text-brand-dark-green dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15">
                 {establishmentTypeLabel}
               </span>
@@ -410,11 +355,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700/75">Ownership review</p>
                   <h2 className="mt-2 text-xl font-semibold text-amber-900">Claim request waiting for review</h2>
                   <p className="mt-2 text-sm leading-6 text-amber-800/80">
-                    {business.pendingClaim.claimantName || "Claimant"} submitted this request on {new Date(business.pendingClaim.createdAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}. Claim approval is handled from Business Claims, not from business publishing.
+                    {business.pendingClaim.claimantName || "Claimant"} submitted this request on {formatAdminDate(business.pendingClaim.createdAt)}. Claim approval is handled from Business Claims, not from business publishing.
                   </p>
                 </div>
                 <Button onClick={() => setSelectedClaimId(business.pendingClaim!.id)} className="shrink-0 rounded-xl bg-amber-700 text-white hover:bg-amber-800">

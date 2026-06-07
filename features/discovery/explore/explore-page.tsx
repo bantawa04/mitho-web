@@ -9,6 +9,11 @@ import { Footer } from "@/features/home/components/footer"
 import { EXPLORE_CATEGORY_OPTIONS, EXPLORE_CITY_OPTIONS, EXPLORE_PRICE_OPTIONS, EXPLORE_RESULTS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
 import { ExploreResultCard } from "@/features/discovery/explore/explore-result-card"
 import type { ExploreFilters } from "@/features/discovery/explore/explore-types"
+import {
+  buildExploreSearchString,
+  normalizeExplorePageFilters,
+  rankExploreResults,
+} from "@/features/discovery/utils/discovery-search-utils"
 import { MithoBreadcrumb } from "@/components/mitho/mitho-breadcrumb"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoInput } from "@/components/mitho/mitho-input"
@@ -31,36 +36,6 @@ import {
 } from "@/components/ui/sheet"
 
 const RESULTS_PER_PAGE = 6
-
-function normalizeFilters(params: ReadonlyURLSearchParams): ExploreFilters {
-  const city = params.get("city")
-  const category = params.get("category")
-  const sort = params.get("sort")
-  const price = params.get("price")
-
-  return {
-    q: params.get("q")?.trim() ?? "",
-    city: city && EXPLORE_CITY_OPTIONS.includes(city) ? city : "Kathmandu",
-    category:
-      category && EXPLORE_CATEGORY_OPTIONS.some((option) => option.value === category) ? category : "all",
-    sort: sort && EXPLORE_SORT_OPTIONS.some((option) => option.value === sort) ? sort : "recommended",
-    openNow: params.get("openNow") === "true",
-    price: price && EXPLORE_PRICE_OPTIONS.some((option) => option.value === price) ? price : "any",
-  }
-}
-
-function buildSearchString(filters: ExploreFilters) {
-  const params = new URLSearchParams()
-
-  if (filters.q) params.set("q", filters.q)
-  if (filters.city && filters.city !== "Kathmandu") params.set("city", filters.city)
-  if (filters.category !== "all") params.set("category", filters.category)
-  if (filters.sort !== "recommended") params.set("sort", filters.sort)
-  if (filters.openNow) params.set("openNow", "true")
-  if (filters.price !== "any") params.set("price", filters.price)
-
-  return params.toString()
-}
 
 function ExploreFilterButton({
   active,
@@ -90,7 +65,7 @@ export function ExplorePage() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const filters = React.useMemo(() => normalizeFilters(searchParams), [searchParams])
+  const filters = React.useMemo(() => normalizeExplorePageFilters(searchParams), [searchParams])
   const [queryDraft, setQueryDraft] = React.useState(filters.q)
   const [currentPage, setCurrentPage] = React.useState(1)
 
@@ -105,7 +80,7 @@ export function ExplorePage() {
   const applyFilters = React.useCallback(
     (patch: Partial<ExploreFilters>) => {
       const nextFilters: ExploreFilters = { ...filters, ...patch }
-      const search = buildSearchString(nextFilters)
+      const search = buildExploreSearchString(nextFilters)
       router.replace(search ? `${pathname}?${search}` : pathname, { scroll: false })
     },
     [filters, pathname, router],
@@ -125,25 +100,7 @@ export function ExplorePage() {
       return haystacks.some((value) => value.toLowerCase().includes(query))
     })
 
-    if (filters.sort === "top-rated") {
-      return nextResults.sort((a, b) => b.rating - a.rating)
-    }
-
-    if (filters.sort === "most-reviewed") {
-      return nextResults.sort((a, b) => b.reviewCount - a.reviewCount)
-    }
-
-    if (filters.sort === "nearest") {
-      return nextResults.sort((a, b) => (a.distanceKm ?? Number.MAX_SAFE_INTEGER) - (b.distanceKm ?? Number.MAX_SAFE_INTEGER))
-    }
-
-    return nextResults.sort((a, b) => {
-      const openBoost = Number(b.openNow) - Number(a.openNow)
-      if (openBoost !== 0) return openBoost
-      const scoreA = a.rating * 10 + Math.min(a.reviewCount / 25, 10)
-      const scoreB = b.rating * 10 + Math.min(b.reviewCount / 25, 10)
-      return scoreB - scoreA
-    })
+    return rankExploreResults(nextResults, filters.sort, { preferOpenNow: true })
   }, [filters])
 
   const totalPages = Math.max(1, Math.ceil(filteredResults.length / RESULTS_PER_PAGE))

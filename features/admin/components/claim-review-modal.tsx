@@ -6,6 +6,8 @@ import { AdminModal } from "@/features/admin/components/admin-modal"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
+import { formatAdminBusinessLocation } from "@/features/admin/utils/admin-business-utils"
+import { formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
 import { useToast } from "@/hooks/use-toast"
 import {
   useAdminBusinessClaim,
@@ -14,32 +16,6 @@ import {
 } from "@/hooks/use-business-claims"
 import { getClaimDocumentDownloadUrl } from "@/lib/api/business-claims"
 import type { BusinessClaim } from "@/types/business-claims"
-
-function businessLocation(claim: BusinessClaim) {
-  const business = claim.business
-  if (!business) return "Location not provided"
-  return [
-    business.area,
-    business.nearestLandmark ? `Near ${business.nearestLandmark}` : undefined,
-    business.addressNote,
-    business.municipality?.name,
-    business.district?.name,
-    business.province?.name,
-  ]
-    .filter(Boolean)
-    .join(", ")
-}
-
-function formatDate(value?: string) {
-  if (!value) return "Not reviewed"
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value))
-}
 
 function ReviewBlock({ label, value, helper }: { label: string; value?: string; helper?: string }) {
   return (
@@ -134,7 +110,7 @@ export function ClaimReviewModal({
       ) : claim ? (
         <div className="space-y-8">
           <div className="grid gap-6 md:grid-cols-2 pb-8 border-b border-brand-deep-green/10">
-            <ReviewBlock label="Business" value={claim.business?.name ?? claim.businessId} helper={businessLocation(claim)} />
+            <ReviewBlock label="Business" value={claim.business?.name ?? claim.businessId} helper={formatAdminBusinessLocation(claim.business)} />
             <ReviewBlock label="Submitted by" value={claim.claimantName || claim.user?.name || "Unknown"} helper={claim.user?.email} />
             <ReviewBlock label="Role" value={claim.role.replaceAll("-", " ")} />
             <ReviewBlock label="PAN/VAT" value={claim.panVatNumber} />
@@ -154,7 +130,7 @@ export function ClaimReviewModal({
             <div className="flex flex-wrap gap-4">
               {claim.status !== "pending" && claim.documentsDeletedAt ? (
                 <p className="text-sm text-muted-foreground">
-                  Documents deleted after review on {formatDate(claim.documentsDeletedAt)}.
+                  Documents deleted after review on {formatAdminDateTime(claim.documentsDeletedAt)}.
                 </p>
               ) : claim.status === "pending" && (claim.documents ?? []).length > 0 ? (
                 claim.documents?.map((document) => (

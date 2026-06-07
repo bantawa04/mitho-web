@@ -1,19 +1,23 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Bookmark, Globe, Lock } from "lucide-react"
+import { ArrowRight, Bookmark } from "lucide-react"
 import {
   getCollectionCoverImages,
   getCollectionPlaceCount,
   type CollectionRecord,
 } from "@/features/collections/data/collection-data"
+import { getCollectionVisibilityPresentation } from "@/features/collections/utils/collection-visibility-utils"
 import { cn } from "@/lib/utils"
 
 function VisibilityPill({ visibility }: { visibility: CollectionRecord["visibility"] }) {
+  const presentation = getCollectionVisibilityPresentation(visibility)
+  const Icon = presentation.icon
+
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-white/16 px-3 py-1.5 text-[0.72rem] font-semibold tracking-wide text-white backdrop-blur-sm">
-      {visibility === "public" ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-      {visibility === "public" ? "Public" : "Private"}
+      <Icon className="h-3 w-3" />
+      {presentation.label}
     </span>
   )
 }

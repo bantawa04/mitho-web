@@ -15,6 +15,7 @@ import { useCreateBusiness } from "@/hooks/use-businesses"
 import { useEstablishmentTypes } from "@/hooks/use-establishment-types"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { useDistricts, useMunicipalities, useProvinces } from "@/hooks/use-nepal-admin"
+import { extractApiErrorMessage } from "@/lib/api-error-utils"
 import { addBusinessSchema, BUSINESS_ROLE_OPTIONS, type AddBusinessFormValues } from "@/lib/validators/business"
 import { cn } from "@/lib/utils"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
@@ -23,6 +24,7 @@ import { MithoCard, MithoCardContent, MithoCardHeader, MithoCardTitle } from "@/
 import { Checkbox } from "@/components/ui/checkbox"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { RequiredLabel } from "@/components/ui/required-label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -66,27 +68,10 @@ const textareaClassName =
 const selectTriggerClassName =
   "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
-function RequiredLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <FormLabel>
-      {children} <span className="text-danger">*</span>
-    </FormLabel>
-  )
-}
-
 function normalizeOptionalUrl(value: string | undefined) {
   const trimmed = value?.trim()
   if (!trimmed) return undefined
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
-}
-
-function getApiErrorMessage(error: unknown) {
-  if (axios.isAxiosError(error)) {
-    const data = error.response?.data as { message?: string; error?: string } | undefined
-    return data?.message ?? data?.error ?? "Could not submit this business right now."
-  }
-
-  return "Could not submit this business right now."
 }
 
 interface SuccessReviewField {
@@ -481,7 +466,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
         setIsSignInOpen(false)
       })
       .catch((error) => {
-        setSubmitError(getApiErrorMessage(error))
+        setSubmitError(extractApiErrorMessage(error, "Could not submit this business right now."))
       })
   }, [isAuthenticated, pendingSubmission, submitBusiness])
 
@@ -495,7 +480,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
     try {
       await submitBusiness(values)
     } catch (error) {
-      setSubmitError(getApiErrorMessage(error))
+      setSubmitError(extractApiErrorMessage(error, "Could not submit this business right now."))
     }
   }
 

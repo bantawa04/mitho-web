@@ -13,6 +13,7 @@ import {
   type CollectionCandidate,
   type CollectionRecord,
 } from "@/features/collections/data/collection-data"
+import { CollectionVisibilityBadge } from "@/features/collections/components/collection-visibility-badge"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -46,20 +47,6 @@ interface AddToCollectionDialogProps {
   collections: CollectionRecord[]
   onAddToCollection: (collectionId: string) => void
   onCreateCollection: (values: CollectionFormValues) => void
-}
-
-function VisibilityBadge({ visibility }: { visibility: CollectionRecord["visibility"] }) {
-  return visibility === "public" ? (
-    <MithoBadge variant="neutral" className="gap-1">
-      <Globe className="h-3.5 w-3.5" />
-      Public
-    </MithoBadge>
-  ) : (
-    <MithoBadge variant="muted" className="gap-1">
-      <Lock className="h-3.5 w-3.5" />
-      Private
-    </MithoBadge>
-  )
 }
 
 export function AddToCollectionDialog({
@@ -202,7 +189,7 @@ export function AddToCollectionDialog({
                           <div className="min-w-0 flex-1">
                             <h4 className="line-clamp-1 text-sm font-semibold text-brand-dark-green">{collection.title}</h4>
                             <div className="mt-1 flex flex-wrap items-center gap-2">
-                              <VisibilityBadge visibility={collection.visibility} />
+                              <CollectionVisibilityBadge visibility={collection.visibility} />
                               {alreadyAdded ? <MithoBadge variant="muted">Already added</MithoBadge> : null}
                             </div>
                           </div>

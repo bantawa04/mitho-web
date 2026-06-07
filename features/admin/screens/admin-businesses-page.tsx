@@ -5,8 +5,12 @@ import { useEffect, useMemo, useState } from "react"
 import { Building2, ChevronRight, Eye, Pencil, Plus, ShieldCheck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
+import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { formatAdminBusinessTableLocation } from "@/features/admin/utils/admin-business-utils"
+import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
+import { getBusinessListingPresentation, getBusinessOwnershipPresentation } from "@/features/admin/utils/admin-status-utils"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -22,47 +26,6 @@ type OwnershipFilterValue = "All" | BusinessOwnershipStatus
 
 const statusOptions: StatusFilterValue[] = ["All", "published", "pending_review", "suspended", "rejected"]
 const ownershipOptions: OwnershipFilterValue[] = ["All", "unclaimed", "claim_under_review", "claimed"]
-
-const statusLabels: Record<BusinessListingStatus, string> = {
-  published: "Published",
-  pending_review: "Pending review",
-  suspended: "Suspended",
-  rejected: "Rejected",
-}
-
-const ownershipLabels: Record<BusinessOwnershipStatus, string> = {
-  unclaimed: "Unclaimed",
-  claim_under_review: "Claim under review",
-  claimed: "Claimed",
-}
-
-function getStatusTone(status: BusinessListingStatus) {
-  switch (status) {
-    case "published":
-      return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    case "pending_review":
-      return "bg-sky-50 text-sky-700 border-sky-100"
-    case "suspended":
-      return "bg-red-50 text-red-700 border-red-100"
-    case "rejected":
-      return "bg-stone-100 text-stone-700 border-stone-200"
-  }
-}
-
-function getOwnershipTone(status: BusinessOwnershipStatus) {
-  switch (status) {
-    case "claimed":
-      return "bg-emerald-50 text-emerald-700 border-emerald-100"
-    case "claim_under_review":
-      return "bg-amber-50 text-amber-700 border-amber-100"
-    case "unclaimed":
-      return "bg-stone-100 text-stone-700 border-stone-200"
-  }
-}
-
-function formatBusinessLocation(business: Business) {
-  return `${business.municipality.name}, ${business.district.name}`
-}
 
 export function AdminBusinessesPage() {
   const router = useRouter()
@@ -156,7 +119,7 @@ export function AdminBusinessesPage() {
         label: "Location",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (business) => formatBusinessLocation(business),
+        cell: (business) => formatAdminBusinessTableLocation(business),
       },
       {
         id: "status",
@@ -165,12 +128,8 @@ export function AdminBusinessesPage() {
         cellClassName: "py-5 align-top",
         cell: (business) => (
           <div className="flex flex-col items-start gap-2">
-            <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getStatusTone(business.listingStatus)}`}>
-              Listing: {statusLabels[business.listingStatus]}
-            </span>
-            <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getOwnershipTone(business.ownershipStatus)}`}>
-              Ownership: {ownershipLabels[business.ownershipStatus]}
-            </span>
+            <AdminStatusBadge {...getBusinessListingPresentation(business.listingStatus)} label={`Listing: ${getBusinessListingPresentation(business.listingStatus).label}`} />
+            <AdminStatusBadge {...getBusinessOwnershipPresentation(business.ownershipStatus)} label={`Ownership: ${getBusinessOwnershipPresentation(business.ownershipStatus).label}`} />
           </div>
         ),
       },
@@ -179,12 +138,7 @@ export function AdminBusinessesPage() {
         label: "Updated",
         className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
         cellClassName: "py-5 align-top text-sm text-muted-foreground",
-        cell: (business) =>
-          new Date(business.updatedAt).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          }),
+        cell: (business) => formatAdminDate(business.updatedAt),
       },
       {
         id: "action",
@@ -281,7 +235,7 @@ export function AdminBusinessesPage() {
                 <SelectContent>
                   {statusOptions.map((status) => (
                     <SelectItem key={status} value={status}>
-                      {status === "All" ? "All" : statusLabels[status]}
+                      {status === "All" ? "All" : getBusinessListingPresentation(status).label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -295,7 +249,7 @@ export function AdminBusinessesPage() {
                 <SelectContent>
                   {ownershipOptions.map((opt) => (
                     <SelectItem key={opt} value={opt}>
-                      {opt === "All" ? "All" : ownershipLabels[opt]}
+                      {opt === "All" ? "All" : getBusinessOwnershipPresentation(opt).label}
                     </SelectItem>
                   ))}
                 </SelectContent>
