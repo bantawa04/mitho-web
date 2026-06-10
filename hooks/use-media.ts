@@ -40,7 +40,7 @@ export function useUploadMedia() {
       const confirmed = await confirmUpload(ticket.media.id)
 
       if ((title || altText) && (confirmed.title !== title || confirmed.altText !== altText)) {
-        return updateMedia(confirmed.id, { title, altText })
+        return (await updateMedia(confirmed.id, { title, altText })) ?? confirmed
       }
 
       return confirmed

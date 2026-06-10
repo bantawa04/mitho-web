@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import axios from "axios"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CheckCircle2, CircleAlert, ImagePlus, Loader2, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"

@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import axios from "axios"
 import { ArrowRight, Building2, CheckCircle2, ClipboardList, ImagePlus, Mail, MapPin, Phone, Store } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { BusinessCuisineField } from "@/features/business/components/business-cuisine-field"
