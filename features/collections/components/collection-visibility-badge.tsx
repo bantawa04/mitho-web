@@ -1,6 +1,6 @@
 "use client"
 
-import type { CollectionVisibility } from "@/features/collections/data/collection-data"
+import type { CollectionVisibility } from "@/types/collections"
 import { getCollectionVisibilityPresentation } from "@/features/collections/utils/collection-visibility-utils"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
 
