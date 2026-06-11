@@ -53,6 +53,9 @@ export const queryKeys = {
       ["collections", "public", username, "list", params] as const,
     publicDetail: (username: string, id: string) => ["collections", "public", username, "detail", id] as const,
   },
+  profiles: {
+    public: (username: string) => ["profiles", "public", username] as const,
+  },
   reviews: {
     all: ["reviews"] as const,
     list: (businessId: string, params?: ListBusinessReviewsParams) => ["reviews", "business", businessId, params] as const,

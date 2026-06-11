@@ -16,13 +16,13 @@ import {
   followPublicProfile,
   getFollowingProfiles,
   getPublicCreatorDirectoryPage,
-  getPublicProfileByUsername,
   mockCustomerProfile,
   unfollowPublicProfile,
   type FollowingProfileListItem,
   type PublicCreatorDiscoveryItem,
   type PublicUserProfileData,
 } from "@/features/profile/data/profile-data"
+import { usePublicProfile } from "@/hooks/use-profile"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import {
   AlertDialog,
@@ -1106,28 +1106,39 @@ export function PublicUserDiscoveryPage() {
 }
 
 export function PublicUserProfilePage({ username }: { username: string }) {
-  const { isAuthenticated } = useAuthSnapshot()
+  const { isAuthenticated, authUser } = useAuthSnapshot()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
-  const [profile, setProfile] = React.useState(() => getPublicProfileByUsername(username))
+  const [isFollowing, setIsFollowing] = React.useState(false)
+
+  const profileQuery = usePublicProfile(username)
   const publicCollectionsQuery = usePublicCollections(username, { perPage: 100 })
 
   React.useEffect(() => {
     setIsSignInOpen(false)
     setPendingFollowAfterAuth(false)
-    setProfile(getPublicProfileByUsername(username))
+    setIsFollowing(false)
   }, [username])
 
   React.useEffect(() => {
-    if (!isAuthenticated || !pendingFollowAfterAuth || !profile || profile.isFollowedByCurrentUser) return
-
-    followPublicProfile(profile.username)
+    if (!isAuthenticated || !pendingFollowAfterAuth) return
+    setIsFollowing(true)
     setPendingFollowAfterAuth(false)
     setIsSignInOpen(false)
-    setProfile(getPublicProfileByUsername(username))
-  }, [isAuthenticated, pendingFollowAfterAuth, profile, username])
+  }, [isAuthenticated, pendingFollowAfterAuth])
 
-  if (!profile) {
+  if (profileQuery.isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-10 md:py-12">
+        <div className="space-y-6">
+          <div className="h-48 animate-pulse rounded-[1.75rem] border border-brand-deep-green/10 bg-white/70" />
+          <div className="h-24 animate-pulse rounded-[1.75rem] border border-brand-deep-green/10 bg-white/70" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!profileQuery.data) {
     return (
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white px-6 py-8 shadow-[0_12px_30px_rgba(10,70,53,0.05)] sm:px-8">
@@ -1140,32 +1151,25 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     )
   }
 
-  const profileWithCollections = {
-    ...profile,
-    collectionCount: publicCollectionsQuery.data?.items.length ?? profile.collectionCount,
+  const apiProfile = profileQuery.data
+  const profile: PublicUserProfileData = {
+    ...apiProfile,
+    avatarUrl: apiProfile.avatarUrl ?? "/placeholder.svg",
+    collectionCount: publicCollectionsQuery.data?.items.length ?? apiProfile.collectionCount,
+    isFollowedByCurrentUser: isFollowing,
   }
-  const isOwnProfile = isAuthenticated && profile.username === mockCustomerProfile.username
 
-  const syncProfile = () => {
-    setProfile(getPublicProfileByUsername(username))
-  }
+  const profileWithCollections = profile
+  const isOwnProfile = isAuthenticated && authUser?.user?.username === username
 
   const handleFollowToggle = () => {
     if (isOwnProfile) return
-
     if (!isAuthenticated) {
       setPendingFollowAfterAuth(true)
       setIsSignInOpen(true)
       return
     }
-
-    if (profile.isFollowedByCurrentUser) {
-      unfollowPublicProfile(profile.username)
-    } else {
-      followPublicProfile(profile.username)
-    }
-
-    syncProfile()
+    setIsFollowing((prev) => !prev)
   }
 
   return (
