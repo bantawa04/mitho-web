@@ -65,3 +65,36 @@ export async function followUser(username: string): Promise<void> {
 export async function unfollowUser(username: string): Promise<void> {
   await API.delete(`/users/${username}/follow`)
 }
+
+export interface PublicCreatorItem {
+  userId: string
+  name: string
+  username: string
+  avatarUrl: string | null
+  reviewCount: number
+  collectionCount: number
+  followerCount: number
+}
+
+export interface PublicCreatorDirectoryMeta {
+  page: number
+  totalPages: number
+  perPage: number
+  totalItems: number
+}
+
+export interface PublicCreatorDirectoryResponse {
+  items: PublicCreatorItem[]
+  meta: PublicCreatorDirectoryMeta
+}
+
+export interface ListPublicCreatorsParams {
+  query?: string
+  page?: number
+  perPage?: number
+}
+
+export async function listPublicCreators(params: ListPublicCreatorsParams = {}): Promise<PublicCreatorDirectoryResponse> {
+  const { data } = await API.get<ISuccessResponse<PublicCreatorDirectoryResponse>>("/users/directory", { params })
+  return data.data
+}

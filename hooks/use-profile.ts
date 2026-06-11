@@ -1,7 +1,18 @@
 "use client"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { followUser, getPublicProfile, unfollowUser, type PublicProfileData } from "@/lib/api/profile"
+import {
+  followUser,
+  getPublicProfile,
+  listPublicCreators,
+  unfollowUser,
+  type ListPublicCreatorsParams,
+  type PublicProfileData,
+} from "@/lib/api/profile"
+
+interface UsePublicCreatorDirectoryParams extends ListPublicCreatorsParams {
+  enabled?: boolean
+}
 import { queryKeys } from "@/lib/api/query-keys"
 
 export function usePublicProfile(username: string) {
@@ -10,6 +21,16 @@ export function usePublicProfile(username: string) {
     queryFn: () => getPublicProfile(username),
     enabled: !!username,
     staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function usePublicCreatorDirectory({ enabled = true, ...params }: UsePublicCreatorDirectoryParams = {}) {
+  return useQuery({
+    queryKey: queryKeys.profiles.directory(params),
+    queryFn: () => listPublicCreators(params),
+    staleTime: 1000 * 60 * 2,
+    placeholderData: (prev) => prev,
+    enabled,
   })
 }
 
