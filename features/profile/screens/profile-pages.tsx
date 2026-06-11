@@ -55,317 +55,208 @@ function ProfileTabsPanel() {
   )
 }
 
-function StatsStrip() {
-  const stats = [
-    { label: "Reviews written", value: mockCustomerProfile.reviewCount, accent: "text-brand-orange" },
-    { label: "Collections", value: mockCustomerProfile.collectionCount, accent: "text-brand-deep-green" },
-    { label: "Places across collections", value: mockCustomerProfile.placeCountAcrossCollections, accent: "text-brand-dark-green" },
-  ]
-
-  return (
-    <section className={sectionCardClass}>
-      <div className="grid gap-4 px-6 py-6 sm:grid-cols-3 sm:px-8">
-        {stats.map((stat) => (
-          <div key={stat.label} className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5">
-            <p className="text-sm text-muted-foreground">{stat.label}</p>
-            <p className={`mt-2 text-3xl font-semibold ${stat.accent}`}>{stat.value}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function QuickLinkGrid() {
-  const links = [
-    {
-      href: "/profile/reviews",
-      icon: MessageSquare,
-      title: "My reviews",
-      description: "Revisit what you have already shared and where your local notes are helping others decide.",
-    },
-    {
-      href: "/collections",
-      icon: Bookmark,
-      title: "Collections",
-      description: "Build personal food lists, keep private planning boards, and copy strong public collections into your own account.",
-    },
-    {
-      href: "/profile/settings",
-      icon: Settings,
-      title: "Account settings",
-      description: "Update your profile details and keep the basics around your Mitho account tidy.",
-    },
-  ]
-
-  return (
-    <section className={sectionCardClass}>
-      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-        <p className="type-eyebrow text-brand-deep-green/68">Quick links</p>
-        <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Jump straight into the parts of your account that matter most.</h2>
-      </div>
-      <div className="grid gap-4 px-6 py-6 md:grid-cols-3 sm:px-8">
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="group rounded-[1.45rem] border border-brand-deep-green/10 bg-white px-5 py-5 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_12px_28px_rgba(10,70,53,0.07)]"
-          >
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-soft-beige/75 text-brand-deep-green">
-              <link.icon className="h-5 w-5" />
-            </div>
-            <div className="mt-4 flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold text-brand-dark-green">{link.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{link.description}</p>
-              </div>
-              <ChevronRight className="mt-0.5 h-5 w-5 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" />
-            </div>
-          </Link>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function BusinessModule() {
+function BusinessBanner() {
   const businessContext = mockCustomerProfile.businessContext
 
   if (businessContext.status === "none") return null
 
   return (
-    <section className={sectionCardClass}>
-      <div className="border-b border-brand-deep-green/10 px-6 py-6">
+    <div className="border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-deep-green/10 text-brand-deep-green">
-            <Building2 className="h-5 w-5" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-deep-green/10 text-brand-deep-green">
+            <Building2 className="h-4 w-4" />
           </div>
-          <div>
-            <p className="type-eyebrow text-brand-deep-green/68">Business access</p>
-            <h2 className="mt-1 text-xl font-semibold text-brand-dark-green">Business management stays connected to the same Mitho account.</h2>
-          </div>
-        </div>
-      </div>
-      <div className="space-y-4 px-6 py-6">
-        {businessContext.status === "approved" ? (
-          <>
-            <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
-              <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {businessContext.status === "approved" ? (
+              <>
                 <MithoBadge variant="success">Business access live</MithoBadge>
                 <MithoBadge variant="muted">{businessContext.managedCount} workspace</MithoBadge>
-              </div>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                You can keep reviewing and saving places here while still managing your business workspace from the same account.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <MithoButton variant="secondary" asChild>
+              </>
+            ) : (
+              <>
+                <MithoBadge variant="warning">Claim pending</MithoBadge>
+                <span className="text-sm text-muted-foreground">
+                  {businessContext.pendingLabel ?? "Ownership claim under review."}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {businessContext.status === "approved" ? (
+            <>
+              <MithoButton variant="outline-secondary" size="sm" asChild>
                 <Link href="/dashboard/businesses">
                   Manage businesses
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </MithoButton>
-              <MithoButton variant="outline-secondary" asChild>
-                <Link href="/business/claim">Claim another business</Link>
+              <MithoButton variant="ghost" size="sm" asChild>
+                <Link href="/business/claim">Claim another</Link>
               </MithoButton>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <MithoBadge variant="warning">Claim pending</MithoBadge>
-              </div>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                {businessContext.pendingLabel ??
-                  "Your ownership claim is still being reviewed. We will email you once the admin team approves or rejects it."}
-              </p>
-            </div>
-            <MithoButton variant="outline-secondary" asChild>
-              <Link href="/business/claim">Review claim details</Link>
+            </>
+          ) : (
+            <MithoButton variant="outline-secondary" size="sm" asChild>
+              <Link href="/business/claim">Review claim</Link>
             </MithoButton>
-          </>
-        )}
-      </div>
-    </section>
-  )
-}
-
-function ReviewPreviewList() {
-  return (
-    <section className={sectionCardClass}>
-      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="type-eyebrow text-brand-deep-green/68">Recent reviews</p>
-            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">The local notes you have recently added to Mitho.</h2>
-          </div>
-          <MithoButton variant="outline-secondary" asChild>
-            <Link href="/profile/reviews">View all reviews</Link>
-          </MithoButton>
+          )}
         </div>
       </div>
-
-      <div className="divide-y divide-brand-deep-green/10 px-6 sm:px-8">
-        {mockCustomerProfile.recentReviews.slice(0, 3).map((review) => (
-          <div key={review.id} className="py-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <Link href={review.publicHref} className="text-lg font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
-                  {review.businessName}
-                </Link>
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    {review.location}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-brand-orange text-brand-orange" />
-                    {review.rating.toFixed(1)}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Clock3 className="h-4 w-4" />
-                    {review.date}
-                  </span>
-                </div>
-              </div>
-              <MithoBadge variant="muted">Review</MithoBadge>
-            </div>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{review.excerpt}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function CollectionPreviewList() {
-  return (
-    <section className={sectionCardClass}>
-      <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="type-eyebrow text-brand-deep-green/68">Collections</p>
-            <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">The place lists you can keep private, publish, or copy forward into better plans.</h2>
-          </div>
-          <MithoButton variant="outline-secondary" asChild>
-            <Link href="/collections">Open collections</Link>
-          </MithoButton>
-        </div>
-      </div>
-
-      <div className="grid gap-4 px-6 py-6 md:grid-cols-2 sm:px-8">
-        {ownedCollections.slice(0, 3).map((collection) => (
-          <Link
-            key={collection.id}
-            href={`/collections/${collection.id}`}
-            className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-4 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_12px_28px_rgba(10,70,53,0.06)]"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h3 className="line-clamp-1 text-base font-semibold text-brand-dark-green">{collection.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {collection.description ?? "A place list you can refine once it starts filling out."}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  {collection.visibility === "public" ? (
-                    <MithoBadge variant="neutral" className="gap-1">
-                      <Globe className="h-3.5 w-3.5" />
-                      Public
-                    </MithoBadge>
-                  ) : (
-                    <MithoBadge variant="muted" className="gap-1">
-                      <Lock className="h-3.5 w-3.5" />
-                      Private
-                    </MithoBadge>
-                  )}
-                  {collection.provenance ? <MithoBadge variant="outline-orange" className="gap-1"><Copy className="h-3.5 w-3.5" />Copied</MithoBadge> : null}
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-              {getCollectionCoverImages(collection).slice(0, 3).map((imageUrl, index) => (
-                <img key={`${collection.id}-${index}`} src={imageUrl} alt="" className="h-14 w-14 rounded-[1rem] object-cover" />
-              ))}
-            </div>
-            <p className="mt-4 text-xs font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
-              {getCollectionPlaceCount(collection)} places · {collection.updatedLabel}
-            </p>
-          </Link>
-        ))}
-      </div>
-    </section>
+    </div>
   )
 }
 
 export function ProfileHubPage() {
+  const stats = [
+    { label: "Reviews written", value: mockCustomerProfile.reviewCount, icon: Star, accent: "text-brand-orange", bg: "bg-brand-orange/10" },
+    { label: "Collections", value: mockCustomerProfile.collectionCount, icon: Bookmark, accent: "text-brand-deep-green", bg: "bg-brand-deep-green/10" },
+    { label: "Places saved", value: mockCustomerProfile.placeCountAcrossCollections, icon: MapPin, accent: "text-brand-dark-green", bg: "bg-brand-dark-green/10" },
+  ]
+
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
-      <div className="space-y-6">
-        <section className={sectionCardClass}>
-          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-            <ProfileNavigation />
-          </div>
-          <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1fr)_220px] sm:px-8">
+      <section className={sectionCardClass}>
+        {/* Navigation */}
+        <div className="px-6 py-4 sm:px-8">
+          <ProfileNavigation />
+        </div>
+
+        {/* Profile header */}
+        <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
               <img
                 src={mockCustomerProfile.avatarUrl}
                 alt={mockCustomerProfile.name}
-                className="h-20 w-20 rounded-full border-4 border-brand-soft-beige object-cover sm:h-24 sm:w-24"
+                className="h-16 w-16 rounded-full border-4 border-brand-soft-beige object-cover sm:h-20 sm:w-20"
               />
               <div>
-                <h1 className="type-page-title mt-4 text-brand-dark-green">{mockCustomerProfile.name}</h1>
-                <p className="mt-2 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
+                <h1 className="type-page-title text-brand-dark-green">{mockCustomerProfile.name}</h1>
+                <p className="mt-1.5 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
                   {mockCustomerProfile.joinedLabel}
                 </p>
-                <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">{mockCustomerProfile.bio}</p>
+                <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{mockCustomerProfile.bio}</p>
               </div>
             </div>
-
-            <div className="flex items-start justify-end lg:justify-start">
-              <MithoButton variant="outline-secondary" asChild>
-                <Link href="/profile/settings">
-                  Open settings
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </MithoButton>
-            </div>
-          </div>
-        </section>
-
-        <StatsStrip />
-        <QuickLinkGrid />
-
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="space-y-6">
-            <ReviewPreviewList />
-            <CollectionPreviewList />
-          </div>
-
-          <div className="space-y-6">
-            <BusinessModule />
-
-            <section className={sectionCardClass}>
-              <div className="px-6 py-6">
-                <p className="type-eyebrow text-brand-deep-green/68">Profile rhythm</p>
-                <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Use this page as the calmer customer base, then go deeper only when you need to.</h2>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
-                  <li className="flex gap-3">
-                    <Bookmark className="mt-0.5 h-4 w-4 text-brand-deep-green" />
-                    Collections are the place to keep shortlists, bucket lists, and copied public finds in one calmer system.
-                  </li>
-                  <li className="flex gap-3">
-                    <MessageSquare className="mt-0.5 h-4 w-4 text-brand-deep-green" />
-                    Reviews remain your strongest local contribution signal.
-                  </li>
-                </ul>
-              </div>
-            </section>
+            <MithoButton variant="outline-secondary" className="shrink-0 self-start" asChild>
+              <Link href="/profile/settings">
+                <Settings className="h-4 w-4" />
+                Settings
+              </Link>
+            </MithoButton>
           </div>
         </div>
-      </div>
+
+        {/* Stats row */}
+        <div className="border-t border-brand-deep-green/10">
+          <div className="grid grid-cols-1 divide-y divide-brand-deep-green/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex items-center gap-3 px-6 py-5 sm:px-8">
+                <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${stat.bg}`}>
+                  <stat.icon className={`h-5 w-5 ${stat.accent}`} />
+                </span>
+                <div>
+                  <p className={`text-2xl font-bold leading-none ${stat.accent}`}>{stat.value}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{stat.label}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Business banner */}
+        <BusinessBanner />
+
+        {/* Recent reviews */}
+        <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-brand-dark-green">Recent reviews</h2>
+            <MithoButton variant="ghost" size="sm" asChild>
+              <Link href="/profile/reviews">
+                View all
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </MithoButton>
+          </div>
+          <div className="mt-4 divide-y divide-brand-deep-green/10">
+            {mockCustomerProfile.recentReviews.slice(0, 3).map((review) => (
+              <div key={review.id} className="py-4 first:pt-0 last:pb-0">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <Link href={review.publicHref} className="text-base font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
+                      {review.businessName}
+                    </Link>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {review.location}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Star className="h-3.5 w-3.5 fill-brand-orange text-brand-orange" />
+                        {review.rating.toFixed(1)}
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <Clock3 className="h-3.5 w-3.5" />
+                        {review.date}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">{review.excerpt}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Collections */}
+        <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-brand-dark-green">Collections</h2>
+            <MithoButton variant="ghost" size="sm" asChild>
+              <Link href="/collections">
+                View all
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </MithoButton>
+          </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {ownedCollections.slice(0, 3).map((collection) => (
+              <Link
+                key={collection.id}
+                href={`/collections/${collection.id}`}
+                className="group rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_8px_20px_rgba(10,70,53,0.06)]"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="line-clamp-1 text-base font-semibold text-brand-dark-green">{collection.title}</h3>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {collection.visibility === "public" ? (
+                      <MithoBadge variant="neutral" className="gap-1">
+                        <Globe className="h-3 w-3" />
+                        Public
+                      </MithoBadge>
+                    ) : (
+                      <MithoBadge variant="muted" className="gap-1">
+                        <Lock className="h-3 w-3" />
+                        Private
+                      </MithoBadge>
+                    )}
+                    {collection.provenance ? <MithoBadge variant="outline-orange" className="gap-1"><Copy className="h-3 w-3" />Copied</MithoBadge> : null}
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center gap-2">
+                  {getCollectionCoverImages(collection).slice(0, 3).map((imageUrl, index) => (
+                    <img key={`${collection.id}-${index}`} src={imageUrl} alt="" className="h-12 w-12 rounded-xl object-cover" />
+                  ))}
+                </div>
+                <p className="mt-3 text-xs font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
+                  {getCollectionPlaceCount(collection)} places · {collection.updatedLabel}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
@@ -373,43 +264,65 @@ export function ProfileHubPage() {
 export function ProfileReviewsPage() {
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
-      <div className="space-y-6">
-        <ProfileTabsPanel />
+      <section className={sectionCardClass}>
+        {/* Navigation */}
+        <div className="px-6 py-4 sm:px-8">
+          <ProfileNavigation />
+        </div>
 
-        <section className={sectionCardClass}>
-          <div className="divide-y divide-brand-deep-green/10 px-6 sm:px-8">
-            {mockCustomerProfile.recentReviews.map((review) => (
-              <div key={review.id} className="py-6">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <Link href={review.publicHref} className="text-xl font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
-                      {review.businessName}
-                    </Link>
-                    <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {review.location}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-brand-orange text-brand-orange" />
-                        {review.rating.toFixed(1)}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Clock3 className="h-4 w-4" />
-                        {review.date}
-                      </span>
+        {/* Page header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
+          <h1 className="text-2xl font-semibold text-brand-dark-green">My Reviews</h1>
+          <MithoBadge variant="neutral">{mockCustomerProfile.recentReviews.length} reviews</MithoBadge>
+        </div>
+
+        {/* Review list */}
+        <div className="border-t border-brand-deep-green/10 px-6 sm:px-8">
+          {mockCustomerProfile.recentReviews.length > 0 ? (
+            <div className="divide-y divide-brand-deep-green/10">
+              {mockCustomerProfile.recentReviews.map((review) => (
+                <div key={review.id} className="py-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <Link href={review.publicHref} className="text-lg font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
+                        {review.businessName}
+                      </Link>
+                      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          {review.location}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Star className="h-4 w-4 fill-brand-orange text-brand-orange" />
+                          {review.rating.toFixed(1)}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Clock3 className="h-4 w-4" />
+                          {review.date}
+                        </span>
+                      </div>
                     </div>
+                    <MithoButton variant="ghost" size="sm" asChild>
+                      <Link href={review.publicHref}>View business</Link>
+                    </MithoButton>
                   </div>
-                  <MithoButton variant="ghost" size="sm" asChild>
-                    <Link href={review.publicHref}>Open business</Link>
-                  </MithoButton>
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{review.excerpt}</p>
                 </div>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">{review.excerpt}</p>
+              ))}
+            </div>
+          ) : (
+            <div className="py-12 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-orange/10">
+                <Star className="h-6 w-6 text-brand-orange" />
               </div>
-            ))}
-          </div>
-        </section>
-      </div>
+              <h2 className="mt-4 text-lg font-semibold text-brand-dark-green">No reviews yet</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-muted-foreground">
+                Start sharing your local food notes to help others discover places worth trying.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }
@@ -715,46 +628,42 @@ export function ProfileFollowingPage() {
 
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
-      <div className="space-y-6">
-        <ProfileTabsPanel />
+      <section className={sectionCardClass}>
+        {/* Navigation */}
+        <div className="px-6 py-4 sm:px-8">
+          <ProfileNavigation />
+        </div>
 
-        <section className={sectionCardClass}>
-          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="type-eyebrow text-brand-deep-green/68">Following</p>
-                <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Creators you chose to keep up with.</h2>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  Their public collections and review signals can stay easy to revisit from one signed-in place.
-                </p>
-              </div>
-              <MithoBadge variant="neutral">{followingProfiles.length} following</MithoBadge>
-            </div>
-          </div>
+        {/* Page header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
+          <h1 className="text-2xl font-semibold text-brand-dark-green">Following</h1>
+          <MithoBadge variant="neutral">{followingProfiles.length} following</MithoBadge>
+        </div>
 
-          <div className="px-6 py-6 sm:px-8">
-            {followingProfiles.length > 0 ? (
+        {/* Following list */}
+        <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
+          {followingProfiles.length > 0 ? (
+            <div className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2">
                 {followingProfiles.map((profile) => (
                   <div
                     key={profile.userId}
-                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.04)]"
+                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_8px_20px_rgba(10,70,53,0.06)]"
                   >
                     <div className="flex items-start justify-between gap-4">
-                      <Link href={`/users/${profile.username}`} className="flex min-w-0 items-start gap-4">
+                      <Link href={`/users/${profile.username}`} className="flex min-w-0 items-start gap-3">
                         <img
                           src={profile.avatarUrl}
                           alt={profile.name}
-                          className="h-14 w-14 rounded-full border-4 border-brand-soft-beige object-cover"
+                          className="h-12 w-12 rounded-full border-2 border-brand-soft-beige object-cover"
                         />
                         <div className="min-w-0">
-                          <h3 className="truncate text-lg font-semibold text-brand-dark-green">{profile.name}</h3>
-                          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
+                          <h3 className="truncate text-base font-semibold text-brand-dark-green">{profile.name}</h3>
+                          <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
                             @{profile.username}
                           </p>
                         </div>
                       </Link>
-
                       <MithoButton
                         type="button"
                         variant="outline-secondary"
@@ -765,8 +674,7 @@ export function ProfileFollowingPage() {
                         Following
                       </MithoButton>
                     </div>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
                       <MithoBadge variant="muted">{profile.followerCount} followers</MithoBadge>
                       <MithoBadge variant="neutral">{profile.publicCollectionCount} collections</MithoBadge>
                       <MithoBadge variant="muted">{profile.reviewCount} reviews</MithoBadge>
@@ -774,22 +682,35 @@ export function ProfileFollowingPage() {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
-                <p className="text-base font-semibold text-brand-dark-green">You are not following anyone yet.</p>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
-                  Follow public creators whose collections and reviews feel worth revisiting, and they will appear here for quick access.
-                </p>
-                <div className="mt-4">
-                  <MithoButton variant="outline-secondary" asChild>
-                    <Link href="/users">Browse creators</Link>
-                  </MithoButton>
-                </div>
+
+              {/* Discover more */}
+              <div className="flex items-center justify-center border-t border-brand-deep-green/10 pt-5">
+                <MithoButton variant="outline-secondary" asChild>
+                  <Link href="/users">
+                    Discover more creators
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </MithoButton>
               </div>
-            )}
-          </div>
-        </section>
-      </div>
+            </div>
+          ) : (
+            <div className="py-10 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-deep-green/10">
+                <Users className="h-6 w-6 text-brand-deep-green" />
+              </div>
+              <h2 className="mt-4 text-lg font-semibold text-brand-dark-green">Not following anyone yet</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-muted-foreground">
+                Follow public creators whose collections and reviews feel worth revisiting, and they will appear here.
+              </p>
+              <div className="mt-5">
+                <MithoButton variant="outline-secondary" asChild>
+                  <Link href="/users">Browse creators</Link>
+                </MithoButton>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }
