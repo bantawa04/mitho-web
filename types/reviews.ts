@@ -22,6 +22,7 @@ export interface ReviewItem {
   id: string
   businessId: string
   businessName?: string
+  businessSlug?: string
   userId: string
   rating: number
   body: string
@@ -69,6 +70,14 @@ export interface CreateReviewPayload {
 
 export interface ResubmitReviewPayload extends CreateReviewPayload {}
 
+export interface UpdateReviewPayload extends CreateReviewPayload {}
+
+export interface MyBusinessReviewStatus {
+  review: ReviewItem | null
+  canReview: boolean
+  canReviewAgainAt?: string | null
+}
+
 export interface RejectReviewPayload {
   rejectionFlag: ReviewRejectionFlag
   moderationNote?: string
@@ -90,6 +99,17 @@ export interface ListAdminReviewsParams {
 }
 
 export interface AdminReviewsResponse {
+  items: ReviewItem[]
+  meta: PaginationMeta
+}
+
+export interface ListMyReviewsParams {
+  page?: number
+  perPage?: number
+  status?: ReviewStatus | ""
+}
+
+export interface MyReviewsResponse {
   items: ReviewItem[]
   meta: PaginationMeta
 }

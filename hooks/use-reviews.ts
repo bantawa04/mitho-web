@@ -9,16 +9,20 @@ import {
   getMyBusinessReview,
   listAdminReviews,
   listBusinessReviews,
+  listMyReviews,
   rejectAdminReview,
   resubmitReview,
+  updateReview,
 } from "@/lib/api/reviews"
 import { queryKeys } from "@/lib/api/query-keys"
 import type {
   CreateReviewPayload,
   ListAdminReviewsParams,
   ListBusinessReviewsParams,
+  ListMyReviewsParams,
   RejectReviewPayload,
   ResubmitReviewPayload,
+  UpdateReviewPayload,
 } from "@/types/reviews"
 
 export function useBusinessReviews(businessId: string | undefined, params?: ListBusinessReviewsParams) {
@@ -46,6 +50,25 @@ export function useCreateBusinessReview(businessId: string) {
     mutationFn: (payload: CreateReviewPayload) => createBusinessReview(cleanBusinessId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.reviews.mine(cleanBusinessId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.reviews.all })
+    },
+  })
+}
+
+export function useMyReviews(params?: ListMyReviewsParams, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.reviews.myList(params),
+    queryFn: () => listMyReviews(params),
+    enabled,
+  })
+}
+
+export function useUpdateReview() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateReviewPayload }) => updateReview(id, payload),
+    onSuccess: (review) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.reviews.mine(review.businessId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.reviews.all })
     },
   })
