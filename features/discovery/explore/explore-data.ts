@@ -9,12 +9,7 @@ export const EXPLORE_CATEGORY_OPTIONS = [
   ...CATEGORY_OPTIONS,
 ]
 
-export const EXPLORE_PRICE_OPTIONS = [
-  { value: "any", label: "Any price" },
-  { value: "$", label: "$ Budget" },
-  { value: "$$", label: "$$ Mid-range" },
-  { value: "$$$", label: "$$$ Treat night" },
-]
+
 
 export const EXPLORE_SORT_OPTIONS = [
   { value: "recommended", label: "Recommended" },

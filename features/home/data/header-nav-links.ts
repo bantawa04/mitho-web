@@ -1,12 +1,18 @@
 export interface HeaderNavLink {
-  href: string
+  href?: string
   label: string
+  subLinks?: { href: string; label: string }[]
 }
 
 export const headerNavLinks: HeaderNavLink[] = [
-  { href: "/users", label: "Creators" },
-  { href: "/explore", label: "Trending" },
-  { href: "/cities/kathmandu", label: "Nearby" },
-  { href: "/categories/restaurants", label: "Cravings" },
-  { href: "/business/claim", label: "For Business" },
+  { href: "#", label: "Where to Eat" },
+  { href: "#", label: "Hidden Gems" },
+  { href: "#", label: "Top Rated" },
+  { 
+    label: "For Owners",
+    subLinks: [
+      { href: "/add-business", label: "Add Business" },
+      { href: "/business/claim", label: "Claim Business" },
+    ]
+  },
 ]

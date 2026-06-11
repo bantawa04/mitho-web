@@ -28,5 +28,4 @@ export interface ExploreFilters {
   category: string
   sort: string
   openNow: boolean
-  price: string
 }

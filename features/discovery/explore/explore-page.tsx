@@ -2,11 +2,11 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname, useRouter, useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
-import { Filter, Flame, Search, Store } from "lucide-react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { Filter, Search } from "lucide-react"
 import { Header } from "@/features/home/components/header"
 import { Footer } from "@/features/home/components/footer"
-import { EXPLORE_CATEGORY_OPTIONS, EXPLORE_CITY_OPTIONS, EXPLORE_PRICE_OPTIONS, EXPLORE_RESULTS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
+import { EXPLORE_CATEGORY_OPTIONS, EXPLORE_CITY_OPTIONS, EXPLORE_RESULTS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
 import { ExploreResultCard } from "@/features/discovery/explore/explore-result-card"
 import type { ExploreFilters } from "@/features/discovery/explore/explore-types"
 import {
@@ -16,15 +16,7 @@ import {
 } from "@/features/discovery/utils/discovery-search-utils"
 import { MithoBreadcrumb } from "@/components/mitho/mitho-breadcrumb"
 import { MithoButton } from "@/components/mitho/mitho-button"
-import { MithoInput } from "@/components/mitho/mitho-input"
 import { MithoPagination } from "@/components/mitho/mitho-pagination"
-import {
-  MithoSelect,
-  MithoSelectContent,
-  MithoSelectItem,
-  MithoSelectTrigger,
-  MithoSelectValue,
-} from "@/components/mitho/mitho-select"
 import {
   Sheet,
   SheetContent,
@@ -34,10 +26,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { cn } from "@/lib/utils"
 
 const RESULTS_PER_PAGE = 6
 
-function ExploreFilterButton({
+function RadioOption({
   active,
   onClick,
   children,
@@ -50,12 +43,54 @@ function ExploreFilterButton({
     <button
       type="button"
       onClick={onClick}
-      className={
-        active
-          ? "inline-flex items-center justify-center rounded-full border-2 border-brand-orange bg-brand-orange px-4 py-2 text-sm font-semibold text-white transition-colors"
-          : "inline-flex items-center justify-center rounded-full border-2 border-brand-deep-green/12 bg-white px-4 py-2 text-sm font-semibold text-brand-dark-green transition-colors hover:border-brand-orange/30 hover:bg-brand-soft-beige/55"
-      }
+      className={cn(
+        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
+        active ? "bg-brand-soft-beige/50 font-semibold text-brand-dark-green" : "font-medium text-muted-foreground hover:bg-surface-soft hover:text-foreground",
+      )}
     >
+      <div
+        className={cn(
+          "flex h-4 w-4 items-center justify-center rounded-full border border-brand-deep-green/30 transition-colors",
+          active && "border-brand-orange bg-white",
+        )}
+      >
+        {active && <div className="h-2 w-2 rounded-full bg-brand-orange" />}
+      </div>
+      {children}
+    </button>
+  )
+}
+
+function CheckboxOption({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
+        active ? "bg-brand-soft-beige/50 font-semibold text-brand-dark-green" : "font-medium text-muted-foreground hover:bg-surface-soft hover:text-foreground",
+      )}
+    >
+      <div
+        className={cn(
+          "flex h-4 w-4 items-center justify-center rounded-[4px] border border-brand-deep-green/30 transition-colors",
+          active && "border-brand-orange bg-brand-orange text-white",
+        )}
+      >
+        {active && (
+          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        )}
+      </div>
       {children}
     </button>
   )
@@ -75,7 +110,7 @@ export function ExplorePage() {
 
   React.useEffect(() => {
     setCurrentPage(1)
-  }, [filters.q, filters.city, filters.category, filters.sort, filters.openNow, filters.price])
+  }, [filters.q, filters.city, filters.category, filters.sort, filters.openNow])
 
   const applyFilters = React.useCallback(
     (patch: Partial<ExploreFilters>) => {
@@ -93,7 +128,6 @@ export function ExplorePage() {
       if (result.city !== filters.city) return false
       if (filters.category !== "all" && result.category !== filters.category) return false
       if (filters.openNow && !result.openNow) return false
-      if (filters.price !== "any" && result.priceRange !== filters.price) return false
       if (!query) return true
 
       const haystacks = [result.name, result.cuisine, result.location, result.standoutDish, result.trustNote, result.whyGo]
@@ -112,10 +146,7 @@ export function ExplorePage() {
   const hasActiveFilters =
     Boolean(filters.q) ||
     filters.category !== "all" ||
-    filters.openNow ||
-    filters.price !== "any" ||
-    filters.sort !== "recommended" ||
-    filters.city !== "Kathmandu"
+    filters.sort !== "recommended"
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -127,269 +158,142 @@ export function ExplorePage() {
     router.replace(pathname, { scroll: false })
   }
 
+  const renderFiltersContent = () => (
+    <div className="space-y-6 rounded-[1.4rem] border border-brand-deep-green/10 bg-white px-5 py-6 shadow-[0_8px_20px_rgba(10,70,53,0.04)]">
+      <div>
+        <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-[0.15em] text-brand-deep-green/60">Category</p>
+        <div className="space-y-0.5">
+          {EXPLORE_CATEGORY_OPTIONS.map((option) => (
+            <RadioOption
+              key={option.value}
+              active={filters.category === option.value}
+              onClick={() => applyFilters({ category: option.value })}
+            >
+              {option.label}
+            </RadioOption>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-[0.15em] text-brand-deep-green/60">Sort by</p>
+        <div className="space-y-0.5">
+          {EXPLORE_SORT_OPTIONS.map((option) => (
+            <RadioOption
+              key={option.value}
+              active={filters.sort === option.value}
+              onClick={() => applyFilters({ sort: option.value })}
+            >
+              {option.label}
+            </RadioOption>
+          ))}
+        </div>
+      </div>
+
+      {hasActiveFilters && (
+        <div className="pt-2">
+          <button
+            onClick={clearFilters}
+            className="w-full rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-brand-orange transition-colors hover:bg-brand-soft-beige/50"
+          >
+            Clear all filters
+          </button>
+        </div>
+      )}
+    </div>
+  )
+
   return (
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf5e8_34%,#fffdf9_100%)] pb-16">
-        <div className="container mx-auto px-4 py-5 md:py-6">
+      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf5e8_34%,#fffdf9_100%)] pb-20">
+        <div className="container mx-auto px-4 py-6 md:py-8">
           <MithoBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Explore" }]} />
 
-          <section className="mt-5 rounded-[2rem] border border-brand-deep-green/10 bg-white/78 p-5 shadow-[0_10px_28px_rgba(10,70,53,0.05)] backdrop-blur-sm md:p-6">
-            <div className="max-w-3xl">
-              <p className="type-eyebrow text-brand-deep-green/68">Search results</p>
-              <h1 className="type-page-title mt-3 text-brand-dark-green">Find something worth heading out for tonight.</h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-                Search by dish, neighborhood, or mood and scan places through local trust signals instead of generic
-                directory clutter.
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="mt-6 grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_auto]">
-              <MithoInput
-                type="search"
+          <div className="mt-8 flex flex-col items-center text-center">
+            <h1 className="type-page-title text-brand-dark-green">Explore local spots</h1>
+            <p className="mt-3 max-w-xl text-base text-muted-foreground">
+              Search by name, neighborhood, or what you&apos;re craving.
+            </p>
+            
+            <form onSubmit={handleSubmit} className="mt-8 w-full max-w-2xl relative flex items-center group">
+              <div className="absolute left-6 text-brand-deep-green/50">
+                <Search className="h-5 w-5" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search restaurants, cafes, dishes..."
                 value={queryDraft}
                 onChange={(event) => setQueryDraft(event.target.value)}
-                placeholder="Buff momo, thakali, quiet cafe, hidden spot..."
-                className="h-12 rounded-full pl-4"
-                aria-label="Search for dishes, neighborhoods, or businesses"
+                className="h-[64px] w-full rounded-full border border-brand-deep-green/10 bg-white pl-14 pr-[76px] text-base text-foreground shadow-[0_8px_20px_rgba(10,70,53,0.04)] outline-none transition-all duration-200 placeholder:text-muted-foreground focus:border-brand-orange/50 focus:ring-4 focus:ring-brand-orange/10"
               />
-
-              <MithoSelect value={filters.city} onValueChange={(value) => applyFilters({ city: value })}>
-                <MithoSelectTrigger className="h-12 rounded-full">
-                  <MithoSelectValue placeholder="Choose a city" />
-                </MithoSelectTrigger>
-                <MithoSelectContent>
-                  {EXPLORE_CITY_OPTIONS.map((city) => (
-                    <MithoSelectItem key={city} value={city}>
-                      {city}
-                    </MithoSelectItem>
-                  ))}
-                </MithoSelectContent>
-              </MithoSelect>
-
-              <MithoButton type="submit" size="lg" className="h-12 px-7">
-                <Search className="h-5 w-5" />
-                Search
+              <MithoButton 
+                type="submit" 
+                className="absolute right-2 h-[48px] w-[48px] p-0 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+                aria-label="Search"
+              >
+                <Search className="h-4 w-4" />
               </MithoButton>
             </form>
 
-            <div className="mt-5 hidden items-center gap-3 lg:flex">
-              <MithoSelect value={filters.category} onValueChange={(value) => applyFilters({ category: value })}>
-                <MithoSelectTrigger className="h-11 w-[190px] rounded-full bg-white">
-                  <MithoSelectValue placeholder="Category" />
-                </MithoSelectTrigger>
-                <MithoSelectContent>
-                  {EXPLORE_CATEGORY_OPTIONS.map((option) => (
-                    <MithoSelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MithoSelectItem>
-                  ))}
-                </MithoSelectContent>
-              </MithoSelect>
-
-              <MithoSelect value={filters.price} onValueChange={(value) => applyFilters({ price: value })}>
-                <MithoSelectTrigger className="h-11 w-[170px] rounded-full bg-white">
-                  <MithoSelectValue placeholder="Price" />
-                </MithoSelectTrigger>
-                <MithoSelectContent>
-                  {EXPLORE_PRICE_OPTIONS.map((option) => (
-                    <MithoSelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MithoSelectItem>
-                  ))}
-                </MithoSelectContent>
-              </MithoSelect>
-
-              <MithoSelect value={filters.sort} onValueChange={(value) => applyFilters({ sort: value })}>
-                <MithoSelectTrigger className="h-11 w-[190px] rounded-full bg-white">
-                  <MithoSelectValue placeholder="Sort" />
-                </MithoSelectTrigger>
-                <MithoSelectContent>
-                  {EXPLORE_SORT_OPTIONS.map((option) => (
-                    <MithoSelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MithoSelectItem>
-                  ))}
-                </MithoSelectContent>
-              </MithoSelect>
-            </div>
-
-            <div className="mt-5 flex items-center justify-between gap-3 lg:hidden">
+            <div className="mt-5 flex lg:hidden">
               <Sheet>
                 <SheetTrigger asChild>
-                  <MithoButton variant="outline-secondary" className="h-11">
+                  <MithoButton variant="outline-secondary" className="h-11 rounded-full px-6">
                     <Filter className="h-4 w-4" />
                     Filters
                   </MithoButton>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="rounded-t-[1.75rem] border-brand-deep-green/10 bg-[#fffdf8]">
-                  <SheetHeader>
-                    <SheetTitle>Refine results</SheetTitle>
-                    <SheetDescription>Filter by category, open-now status, price, and sort order.</SheetDescription>
+                <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] border-brand-deep-green/10 bg-[#fffdf8]">
+                  <SheetHeader className="text-left">
+                    <SheetTitle>Filters</SheetTitle>
+                    <SheetDescription>Refine your search results.</SheetDescription>
                   </SheetHeader>
-
-                  <div className="space-y-4 px-4 pb-2">
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold text-brand-dark-green">Open status</p>
-                      <ExploreFilterButton active={filters.openNow} onClick={() => applyFilters({ openNow: !filters.openNow })}>
-                        Open now
-                      </ExploreFilterButton>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold text-brand-dark-green">Category</p>
-                      <MithoSelect value={filters.category} onValueChange={(value) => applyFilters({ category: value })}>
-                        <MithoSelectTrigger>
-                          <MithoSelectValue placeholder="Category" />
-                        </MithoSelectTrigger>
-                        <MithoSelectContent>
-                          {EXPLORE_CATEGORY_OPTIONS.map((option) => (
-                            <MithoSelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MithoSelectItem>
-                          ))}
-                        </MithoSelectContent>
-                      </MithoSelect>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold text-brand-dark-green">Price</p>
-                      <MithoSelect value={filters.price} onValueChange={(value) => applyFilters({ price: value })}>
-                        <MithoSelectTrigger>
-                          <MithoSelectValue placeholder="Price" />
-                        </MithoSelectTrigger>
-                        <MithoSelectContent>
-                          {EXPLORE_PRICE_OPTIONS.map((option) => (
-                            <MithoSelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MithoSelectItem>
-                          ))}
-                        </MithoSelectContent>
-                      </MithoSelect>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold text-brand-dark-green">Sort</p>
-                      <MithoSelect value={filters.sort} onValueChange={(value) => applyFilters({ sort: value })}>
-                        <MithoSelectTrigger>
-                          <MithoSelectValue placeholder="Sort" />
-                        </MithoSelectTrigger>
-                        <MithoSelectContent>
-                          {EXPLORE_SORT_OPTIONS.map((option) => (
-                            <MithoSelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MithoSelectItem>
-                          ))}
-                        </MithoSelectContent>
-                      </MithoSelect>
-                    </div>
+                  <div className="mt-6 pb-6">
+                    {renderFiltersContent()}
                   </div>
-
-                  <SheetFooter>
-                    <MithoButton variant="outline-secondary" onClick={clearFilters}>
-                      Clear filters
-                    </MithoButton>
-                  </SheetFooter>
                 </SheetContent>
               </Sheet>
-
-              <MithoSelect value={filters.sort} onValueChange={(value) => applyFilters({ sort: value })}>
-                <MithoSelectTrigger className="h-11 w-[190px] rounded-full bg-white">
-                  <MithoSelectValue placeholder="Sort" />
-                </MithoSelectTrigger>
-                <MithoSelectContent>
-                  {EXPLORE_SORT_OPTIONS.map((option) => (
-                    <MithoSelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MithoSelectItem>
-                  ))}
-                </MithoSelectContent>
-              </MithoSelect>
             </div>
-          </section>
+          </div>
 
-          <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_310px]">
-            <div className="space-y-6">
-              <div className="flex flex-col gap-3 rounded-[1.4rem] border border-brand-deep-green/10 bg-white px-5 py-4 shadow-[0_8px_20px_rgba(10,70,53,0.04)] sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-brand-dark-green">
-                    {filteredResults.length} {filteredResults.length === 1 ? "place" : "places"} found
-                    <span className="text-muted-foreground"> in {filters.city}</span>
-                  </p>
-                  {filters.q ? (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Showing local picks related to “{filters.q}”.
-                    </p>
-                  ) : (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Search results are ranked to surface the places locals would actually recommend first.
-                    </p>
-                  )}
-                </div>
-                {hasActiveFilters ? (
-                  <MithoButton variant="outline-secondary" size="sm" onClick={clearFilters}>
-                    Clear filters
-                  </MithoButton>
-                ) : null}
+          <section className="mt-12 grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
+            <aside className="hidden lg:block">
+              <div className="sticky top-24">
+                {renderFiltersContent()}
               </div>
+            </aside>
 
+            <div className="space-y-6">
               {filteredResults.length === 0 ? (
-                <div className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white px-6 py-8 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-deep-green/60">No strong match yet</p>
-                  <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-dark-green">
-                    Nothing here feels worth sending you to just yet.
+                <div className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white px-6 py-10 text-center shadow-[0_10px_24px_rgba(10,70,53,0.03)]">
+                  <h2 className="text-2xl font-semibold text-brand-dark-green">
+                    No matching places found.
                   </h2>
-                  <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-                    Try broadening the dish, switching the city, or clearing one filter so we can show a more useful local shortlist.
+                  <p className="mt-3 text-base text-muted-foreground">
+                    Try broadening your search or clearing some filters.
                   </p>
-
-                  <div className="mt-6 flex flex-wrap gap-3">
+                  <div className="mt-6 flex justify-center">
                     <MithoButton onClick={clearFilters}>Clear all filters</MithoButton>
-                    <MithoButton variant="outline-secondary" asChild>
-                      <Link href="/">Back to home</Link>
-                    </MithoButton>
                   </div>
                 </div>
               ) : (
                 <>
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     {paginatedResults.map((result) => (
                       <ExploreResultCard key={result.id} result={result} />
                     ))}
                   </div>
 
-                  {totalPages > 1 && <MithoPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
+                  {totalPages > 1 && (
+                    <div className="pt-4">
+                      <MithoPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+                    </div>
+                  )}
                 </>
               )}
             </div>
-
-            <aside className="hidden space-y-5 xl:block">
-              <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white px-5 py-5 shadow-[0_8px_24px_rgba(10,70,53,0.05)]">
-                <div className="flex items-center gap-2 text-brand-dark-green">
-                  <Flame className="h-5 w-5 text-brand-orange" />
-                  <p className="font-semibold">How locals use this page</p>
-                </div>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
-                  <li>Start with the dish you are craving, not just the business name.</li>
-                  <li>Scan the trust note first. It usually tells you more than the score.</li>
-                  <li>Use price and open-now only after you have a shortlist worth comparing.</li>
-                </ul>
-              </div>
-
-              <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white px-5 py-5 shadow-[0_8px_24px_rgba(10,70,53,0.05)]">
-                <div className="flex items-center gap-2 text-brand-dark-green">
-                  <Store className="h-5 w-5 text-brand-orange" />
-                  <p className="font-semibold">Own a good local spot?</p>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Claim your listing and make it easier for people to trust the dish, the hours, and the visit before they arrive.
-                </p>
-                <MithoButton variant="outline-secondary" className="mt-4 w-full" asChild>
-                  <Link href="/#for-business">For restaurant owners</Link>
-                </MithoButton>
-              </div>
-            </aside>
           </section>
         </div>
       </main>

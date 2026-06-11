@@ -63,3 +63,12 @@ This file governs frontend work in `mitho-web`. Keep only behavior-critical rule
 - Do not use `any` for API response types when a real type can be defined.
 - Do not bypass React Hook Form submission flow for validated forms.
 
+# Mitho API Claude Context
+
+Backend behavior rules live in `AGENTS.md`. Shared reference comes from repo docs.
+
+@AGENTS.md
+@docs/ai/casing-contract.md
+@docs/ai/testing.md
+@docs/ai/architecture.md
+@docs/ai/product-context.md
