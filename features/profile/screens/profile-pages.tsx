@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation"
 import { ArrowRight, Bookmark, Building2, Camera, ChevronRight, Clock3, Copy, Globe, Lock, Mail, MapPin, MessageSquare, Search, Settings, ShieldAlert, Star, Trash2, UserCheck, UserPlus, Users } from "lucide-react"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
-import { getCollectionCoverImages, getCollectionPlaceCount, ownedCollections } from "@/features/collections/data/collection-data"
+import { useCollections, usePublicCollections } from "@/hooks/use-collections"
+import { getCollectionCoverImages, getCollectionPlaceCount } from "@/features/collections/utils/collection-helpers"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
 import {
   followPublicProfile,
   getFollowingProfiles,
   getPublicCreatorDirectoryPage,
   getPublicProfileByUsername,
-  getPublicProfileCollectionsPage,
   mockCustomerProfile,
   unfollowPublicProfile,
   type FollowingProfileListItem,
@@ -108,10 +108,14 @@ function BusinessBanner() {
 }
 
 export function ProfileHubPage() {
+  const collectionsQuery = useCollections({ perPage: 3 })
+  const previewCollections = collectionsQuery.data?.items ?? []
+  const collectionCount = collectionsQuery.data?.meta.total ?? 0
+  const placeCountAcrossCollections = previewCollections.reduce((total, collection) => total + collection.itemCount, 0)
   const stats = [
     { label: "Reviews written", value: mockCustomerProfile.reviewCount, icon: Star, accent: "text-brand-orange", bg: "bg-brand-orange/10" },
-    { label: "Collections", value: mockCustomerProfile.collectionCount, icon: Bookmark, accent: "text-brand-deep-green", bg: "bg-brand-deep-green/10" },
-    { label: "Places saved", value: mockCustomerProfile.placeCountAcrossCollections, icon: MapPin, accent: "text-brand-dark-green", bg: "bg-brand-dark-green/10" },
+    { label: "Collections", value: collectionCount, icon: Bookmark, accent: "text-brand-deep-green", bg: "bg-brand-deep-green/10" },
+    { label: "Places saved", value: placeCountAcrossCollections, icon: MapPin, accent: "text-brand-dark-green", bg: "bg-brand-dark-green/10" },
   ]
 
   return (
@@ -221,7 +225,7 @@ export function ProfileHubPage() {
             </MithoButton>
           </div>
           <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {ownedCollections.slice(0, 3).map((collection) => (
+            {previewCollections.map((collection) => (
               <Link
                 key={collection.id}
                 href={`/collections/${collection.id}`}
@@ -250,7 +254,7 @@ export function ProfileHubPage() {
                   ))}
                 </div>
                 <p className="mt-3 text-xs font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
-                  {getCollectionPlaceCount(collection)} places · {collection.updatedLabel}
+                  {getCollectionPlaceCount(collection)} places
                 </p>
               </Link>
             ))}
@@ -754,57 +758,23 @@ function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
 function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData }) {
   const [query, setQuery] = React.useState("")
   const deferredQuery = React.useDeferredValue(query.trim())
-  const [isPending, startTransition] = React.useTransition()
-  const [collectionsPage, setCollectionsPage] = React.useState(() =>
-    getPublicProfileCollectionsPage({
-      username: profile.username,
-      limit: PUBLIC_COLLECTION_PAGE_SIZE,
-    }),
-  )
-
-  const showSearch = profile.collectionCount > PUBLIC_COLLECTION_SEARCH_THRESHOLD
-
-  React.useEffect(() => {
-    setQuery("")
-  }, [profile.username])
-
-  React.useEffect(() => {
-    startTransition(() => {
-      setCollectionsPage(
-        getPublicProfileCollectionsPage({
-          username: profile.username,
-          query: deferredQuery,
-          limit: PUBLIC_COLLECTION_PAGE_SIZE,
-        }),
+  const publicCollectionsQuery = usePublicCollections(profile.username, { perPage: 100 })
+  const allCollections = publicCollectionsQuery.data?.items ?? []
+  const filteredCollections = deferredQuery
+    ? allCollections.filter((collection) =>
+        [collection.title, collection.description ?? "", ...collection.items.map((item) => item.business?.name ?? "")]
+          .join(" ")
+          .toLowerCase()
+          .includes(deferredQuery.toLowerCase()),
       )
-    })
-  }, [deferredQuery, profile.username])
-
-  const handleShowMore = () => {
-    if (!collectionsPage.nextCursor) return
-
-    startTransition(() => {
-      const nextPage = getPublicProfileCollectionsPage({
-        username: profile.username,
-        query: deferredQuery,
-        limit: PUBLIC_COLLECTION_PAGE_SIZE,
-        cursor: collectionsPage.nextCursor,
-      })
-
-      setCollectionsPage((currentPage) => ({
-        items: [...currentPage.items, ...nextPage.items],
-        totalCount: nextPage.totalCount,
-        nextCursor: nextPage.nextCursor,
-        hasMore: nextPage.hasMore,
-      }))
-    })
-  }
-
-  const hasNoCollections = collectionsPage.totalCount === 0
+    : allCollections
+  const collectionsPage = filteredCollections.slice(0, PUBLIC_COLLECTION_PAGE_SIZE)
+  const showSearch = allCollections.length > PUBLIC_COLLECTION_SEARCH_THRESHOLD
+  const hasNoCollections = filteredCollections.length === 0
   const isSearching = deferredQuery.length > 0
   const resultLabel = isSearching
-    ? `${collectionsPage.totalCount} matching ${collectionsPage.totalCount === 1 ? "collection" : "collections"}`
-    : `Showing ${collectionsPage.items.length} of ${collectionsPage.totalCount} collections`
+    ? `${filteredCollections.length} matching ${filteredCollections.length === 1 ? "collection" : "collections"}`
+    : `Showing ${collectionsPage.length} of ${allCollections.length} collections`
 
   return (
     <section className={sectionCardClass}>
@@ -818,7 +788,7 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
         </p>
       </div>
 
-      {profile.collectionCount > 0 ? (
+      {allCollections.length > 0 ? (
         <div className="flex flex-col gap-3 border-b border-brand-deep-green/10 px-6 py-4 sm:px-8 md:flex-row md:items-center md:justify-between">
           {showSearch ? (
             <div className="relative w-full md:max-w-sm">
@@ -843,7 +813,7 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
         {!hasNoCollections ? (
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {collectionsPage.items.map((collection) => (
+              {collectionsPage.map((collection) => (
                 <CollectionShowcaseCard
                   key={collection.id}
                   collection={collection}
@@ -851,18 +821,6 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
                 />
               ))}
             </div>
-            {collectionsPage.hasMore ? (
-              <div className="flex justify-center">
-                <MithoButton
-                  type="button"
-                  variant="outline-secondary"
-                  onClick={handleShowMore}
-                  disabled={isPending}
-                >
-                  {isPending ? "Loading more..." : "Show more"}
-                </MithoButton>
-              </div>
-            ) : null}
           </div>
         ) : isSearching ? (
           <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
@@ -1080,6 +1038,7 @@ export function PublicUserProfilePage({ username }: { username: string }) {
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
   const [profile, setProfile] = React.useState(() => getPublicProfileByUsername(username))
+  const publicCollectionsQuery = usePublicCollections(username, { perPage: 100 })
 
   React.useEffect(() => {
     setIsSignInOpen(false)
@@ -1109,6 +1068,10 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     )
   }
 
+  const profileWithCollections = {
+    ...profile,
+    collectionCount: publicCollectionsQuery.data?.items.length ?? profile.collectionCount,
+  }
   const isOwnProfile = isAuthenticated && profile.username === mockCustomerProfile.username
 
   const syncProfile = () => {
@@ -1141,25 +1104,25 @@ export function PublicUserProfilePage({ username }: { username: string }) {
           <div className="px-6 py-6 sm:px-8">
             <div className="flex items-start gap-4">
                 <img
-                  src={profile.avatarUrl}
-                  alt={profile.name}
+                  src={profileWithCollections.avatarUrl}
+                  alt={profileWithCollections.name}
                   className="h-20 w-20 rounded-full border-4 border-brand-soft-beige object-cover sm:h-24 sm:w-24"
                 />
                 <div className="min-w-0 flex-1">
-                <h1 className="type-page-title mt-4 text-brand-dark-green">{profile.name}</h1>
+                <h1 className="type-page-title mt-4 text-brand-dark-green">{profileWithCollections.name}</h1>
                 <p className="mt-2 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
-                  @{profile.username} · {profile.joinedLabel}
+                  @{profileWithCollections.username} · {profileWithCollections.joinedLabel}
                 </p>
                 <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
-                  <p className="max-w-2xl text-base leading-7 text-muted-foreground">{profile.bio}</p>
+                  <p className="max-w-2xl text-base leading-7 text-muted-foreground">{profileWithCollections.bio}</p>
                   <div className="shrink-0">
                     {!isOwnProfile ? (
                       <MithoButton
                         type="button"
-                        variant={profile.isFollowedByCurrentUser ? "outline-secondary" : "secondary"}
+                        variant={profileWithCollections.isFollowedByCurrentUser ? "outline-secondary" : "secondary"}
                         onClick={handleFollowToggle}
                       >
-                        {profile.isFollowedByCurrentUser ? (
+                        {profileWithCollections.isFollowedByCurrentUser ? (
                           <>
                             <UserCheck className="h-4 w-4" />
                             Following
@@ -1184,9 +1147,9 @@ export function PublicUserProfilePage({ username }: { username: string }) {
             </div>
           </section>
 
-          <PublicStatsStrip profile={profile} />
-          <PublicCollectionsSection profile={profile} />
-          <PublicReviewsSection profile={profile} />
+          <PublicStatsStrip profile={profileWithCollections} />
+          <PublicCollectionsSection profile={profileWithCollections} />
+          <PublicReviewsSection profile={profileWithCollections} />
         </div>
       </div>
 
