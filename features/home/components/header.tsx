@@ -3,7 +3,13 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, X } from "lucide-react"
+import { ChevronDown, Menu, X } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { AccountMenu } from "@/features/auth/components/account-menu"
 import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import { cn } from "@/lib/utils"
@@ -67,15 +73,35 @@ export function Header({ signedInUser }: HeaderProps = {}) {
             </Link>
 
             <nav className="hidden lg:flex items-center gap-1">
-              {headerNavLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className="rounded-full px-4 py-2 text-sm font-medium text-foreground/78 transition-colors hover:bg-brand-soft-beige/60 hover:text-brand-orange"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {headerNavLinks.map((link) => {
+                if (link.subLinks) {
+                  return (
+                    <DropdownMenu key={link.label}>
+                      <DropdownMenuTrigger className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-foreground/78 outline-none transition-colors hover:bg-brand-soft-beige/60 hover:text-brand-orange data-[state=open]:bg-brand-soft-beige/60 data-[state=open]:text-brand-orange">
+                        {link.label}
+                        <ChevronDown className="h-4 w-4 opacity-50" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48 rounded-2xl border-brand-deep-green/10 p-2 shadow-[0_10px_24px_rgba(10,70,53,0.06)]">
+                        {link.subLinks.map((subLink) => (
+                          <DropdownMenuItem key={subLink.label} asChild className="cursor-pointer rounded-xl px-3 py-2.5 text-sm font-medium focus:bg-brand-soft-beige/50 focus:text-brand-orange">
+                            <Link href={subLink.href}>{subLink.label}</Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )
+                }
+
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href!}
+                    className="rounded-full px-4 py-2 text-sm font-medium text-foreground/78 transition-colors hover:bg-brand-soft-beige/60 hover:text-brand-orange"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              })}
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-3">
@@ -103,16 +129,40 @@ export function Header({ signedInUser }: HeaderProps = {}) {
           {isMenuOpen && (
             <div className="border-t border-brand-deep-green/10 bg-background/98 py-4 lg:hidden">
               <nav className="space-y-1">
-                {headerNavLinks.map((link) => (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {headerNavLinks.map((link) => {
+                  if (link.subLinks) {
+                    return (
+                      <div key={link.label} className="py-2">
+                        <p className="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-brand-deep-green/50">
+                          {link.label}
+                        </p>
+                        <div className="mt-1 space-y-1">
+                          {link.subLinks.map((subLink) => (
+                            <Link
+                              key={subLink.label}
+                              href={subLink.href}
+                              className="block rounded-2xl px-4 py-2 pl-6 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                              onClick={() => setIsMenuOpen(false)}
+                            >
+                              {subLink.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <Link
+                      key={link.label}
+                      href={link.href!}
+                      className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  )
+                })}
               </nav>
               <div className="mt-4 flex flex-col gap-2 border-t border-brand-deep-green/10 pt-4">
                 {effectiveUser ? (
