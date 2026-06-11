@@ -9,9 +9,7 @@ import {
   Bookmark,
   CheckCircle2,
   Copy,
-  Globe,
   GripVertical,
-  Lock,
   MapPin,
   PencilLine,
   Plus,
@@ -21,31 +19,35 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
+import { updateCollectionItem as updateCollectionItemRequest } from "@/lib/api/collections"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import {
-  buildCopiedCollection,
-  buildDraftCollection,
-  createCollectionId,
-  currentCustomer,
-  getCollectionCoverImages,
-  getCollectionPlaceCount,
-  type CollectionRecord,
-  type CollectionVisibility,
-} from "@/features/collections/data/collection-data"
+  useCollection,
+  useCollections,
+  useCopyCollection,
+  useCreateCollection,
+  useDeleteCollection,
+  useDeleteCollectionItem,
+  usePublicCollection,
+  useReorderCollectionItems,
+  useUpdateCollection,
+} from "@/hooks/use-collections"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { CollectionVisibilityBadge } from "@/features/collections/components/collection-visibility-badge"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
+import { getCollectionCoverImages, getCollectionPlaceCount } from "@/features/collections/utils/collection-helpers"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleSwitch } from "@/components/mitho/mitho-toggle-switch"
 import { Textarea } from "@/components/ui/textarea"
 import { collectionSchema, collectionVisibilityOptions, type CollectionFormValues } from "@/lib/validators/collection"
+import type { CollectionItemRecord, CollectionRecord, CollectionVisibility } from "@/types/collections"
 import { cn } from "@/lib/utils"
+import { toast } from "@/hooks/use-toast"
 
 const sectionCardClass =
   "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
@@ -65,72 +67,7 @@ function ProfileTabsPanel() {
 }
 
 export function CollectionCard({ collection, href }: { collection: CollectionRecord; href: string }) {
-  return (
-    <CollectionShowcaseCard collection={collection} href={href} showStatus />
-  )
-}
-
-function CollectionDeckCover({
-  collection,
-  className,
-  size = "card",
-}: {
-  collection: CollectionRecord
-  className?: string
-  size?: "card" | "hero"
-}) {
-  const coverImages = getCollectionCoverImages(collection)
-  const centerImage = coverImages[0]
-  const leftImage = coverImages[1]
-  const rightImage = coverImages[2]
-  const dimensions =
-    size === "hero"
-      ? {
-          frame: "h-52 max-w-[360px] sm:h-60 sm:max-w-[420px]",
-          side: "top-8 h-36 w-[34%] rounded-[1.15rem]",
-          center: "h-44 w-[60%] rounded-[1.35rem] sm:h-52",
-          icon: "h-7 w-7",
-        }
-      : {
-          frame: "h-40 max-w-[290px]",
-          side: "top-5 h-28 w-[34%] rounded-[1rem]",
-          center: "h-36 w-[58%] rounded-[1.2rem]",
-          icon: "h-6 w-6",
-        }
-
-  return (
-    <div className={cn("relative", dimensions.frame, className)}>
-      <div className={cn("absolute left-4 -rotate-[7deg] overflow-hidden border border-brand-deep-green/10 bg-[#fff7eb] shadow-[0_10px_24px_rgba(10,70,53,0.06)]", dimensions.side)}>
-        {leftImage ? (
-          <img src={leftImage} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-brand-deep-green/38">
-            <Bookmark className="h-5 w-5" />
-          </div>
-        )}
-      </div>
-
-      <div className={cn("absolute right-4 rotate-[7deg] overflow-hidden border border-brand-deep-green/10 bg-[#fff7eb] shadow-[0_10px_24px_rgba(10,70,53,0.06)]", dimensions.side)}>
-        {rightImage ? (
-          <img src={rightImage} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-brand-deep-green/38">
-            <Bookmark className="h-5 w-5" />
-          </div>
-        )}
-      </div>
-
-      <div className={cn("absolute inset-x-0 top-0 mx-auto overflow-hidden border border-brand-deep-green/12 bg-brand-soft-beige/50 shadow-[0_16px_34px_rgba(10,70,53,0.08)]", dimensions.center)}>
-        {centerImage ? (
-          <img src={centerImage} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-brand-deep-green/45">
-            <Bookmark className={dimensions.icon} />
-          </div>
-        )}
-      </div>
-    </div>
-  )
+  return <CollectionShowcaseCard collection={collection} href={href} showStatus />
 }
 
 function CollectionItemRow({
@@ -139,73 +76,77 @@ function CollectionItemRow({
   onMoveUp,
   onMoveDown,
   onRemove,
+  onNoteChange,
 }: {
-  item: CollectionRecord["items"][number]
+  item: CollectionItemRecord
   showMoveControls?: boolean
   onMoveUp?: () => void
   onMoveDown?: () => void
   onRemove?: () => void
+  onNoteChange?: (value: string) => void
 }) {
+  const image = item.business?.image?.publicUrl
   return (
     <div className="flex gap-4 rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-4">
-      <img src={item.imageUrl} alt={item.businessName} className="h-24 w-24 rounded-[1rem] object-cover" />
+      <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1rem] bg-[#fff7eb]">
+        {image ? <img src={image} alt={item.business?.name ?? "Collection item"} className="h-full w-full object-cover" /> : <Bookmark className="h-6 w-6 text-brand-deep-green/35" />}
+      </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <Link href={item.publicHref} className="text-lg font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
-              {item.businessName}
-            </Link>
+            {item.business ? (
+              <Link href={item.business.publicHref} className="text-lg font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
+                {item.business.name}
+              </Link>
+            ) : (
+              <p className="text-lg font-semibold text-brand-dark-green">Unavailable place</p>
+            )}
             <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <MapPin className="h-4 w-4" />
-                {item.location}
-              </span>
-              <span>{item.category}</span>
+              {item.business ? (
+                <>
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin className="h-4 w-4" />
+                    {item.business.location}
+                  </span>
+                  <span>{item.business.category}</span>
+                </>
+              ) : (
+                <span>This place is no longer publicly available.</span>
+              )}
             </div>
           </div>
           {showMoveControls ? (
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={onMoveUp}
-                className="rounded-full border border-brand-deep-green/10 p-2 text-brand-deep-green transition-colors hover:bg-brand-soft-beige/50"
-                aria-label={`Move ${item.businessName} up`}
-              >
+              <button type="button" onClick={onMoveUp} className="rounded-full border border-brand-deep-green/10 p-2 text-brand-deep-green transition-colors hover:bg-brand-soft-beige/50">
                 <GripVertical className="h-4 w-4" />
               </button>
-              <button
-                type="button"
-                onClick={onMoveDown}
-                className="rounded-full border border-brand-deep-green/10 p-2 text-brand-deep-green transition-colors hover:bg-brand-soft-beige/50"
-                aria-label={`Move ${item.businessName} down`}
-              >
+              <button type="button" onClick={onMoveDown} className="rounded-full border border-brand-deep-green/10 p-2 text-brand-deep-green transition-colors hover:bg-brand-soft-beige/50">
                 <ArrowRight className="h-4 w-4 rotate-90" />
               </button>
-              <button
-                type="button"
-                onClick={onRemove}
-                className="rounded-full border border-danger/20 p-2 text-danger transition-colors hover:bg-danger/10"
-                aria-label={`Remove ${item.businessName}`}
-              >
+              <button type="button" onClick={onRemove} className="rounded-full border border-danger/20 p-2 text-danger transition-colors hover:bg-danger/10">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
           ) : null}
         </div>
-        <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.note}</p>
+        {showMoveControls ? (
+          <Textarea
+            value={item.note ?? ""}
+            onChange={(event) => onNoteChange?.(event.target.value)}
+            placeholder="Add note for why this place belongs here."
+            className="mt-3 min-h-24 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+          />
+        ) : (
+          <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.note ?? "No note yet."}</p>
+        )}
       </div>
     </div>
   )
 }
 
-function CreateCollectionModal({
-  open,
-  onOpenChange,
-}: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}) {
+function CreateCollectionModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const router = useRouter()
+  const createMutation = useCreateCollection()
   const form = useForm<CollectionFormValues>({
     resolver: zodResolver(collectionSchema),
     defaultValues: {
@@ -215,20 +156,10 @@ function CreateCollectionModal({
     },
   })
 
-  const onSubmit = (values: CollectionFormValues) => {
-    const collectionId = createCollectionId(values.title)
-    const params = new URLSearchParams({
-      draft: "1",
-      title: values.title,
-      visibility: values.visibility,
-    })
-
-    if (values.description) {
-      params.set("description", values.description)
-    }
-
+  const onSubmit = async (values: CollectionFormValues) => {
+    const collection = await createMutation.mutateAsync(values)
     onOpenChange(false)
-    router.push(`/collections/${collectionId}?${params.toString()}`)
+    router.push(`/collections/${collection.id}`)
   }
 
   return (
@@ -238,11 +169,10 @@ function CreateCollectionModal({
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold text-brand-dark-green">Create a new collection</DialogTitle>
             <DialogDescription className="mt-2 text-sm leading-7 text-muted-foreground">
-              Start with a title and privacy level, then add places and shape the list once it opens.
+              Start with title and privacy level, then shape list once it opens.
             </DialogDescription>
           </DialogHeader>
         </div>
-
         <div className="px-6 py-6 sm:px-8">
           <Form {...form}>
             <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
@@ -255,12 +185,10 @@ function CreateCollectionModal({
                     <FormControl>
                       <Input {...field} className={inputClassName} placeholder="Best Pizza Places" />
                     </FormControl>
-                    <FormDescription>Give the list a name that still makes sense when someone sees it later in your profile.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="description"
@@ -268,18 +196,12 @@ function CreateCollectionModal({
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...field}
-                        className="min-h-28 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
-                        placeholder="A short note about why these places belong together."
-                      />
+                      <Textarea {...field} className="min-h-28 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15" />
                     </FormControl>
-                    <FormDescription>Optional, but it helps later if the collection goes public or gets copied.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="visibility"
@@ -289,7 +211,7 @@ function CreateCollectionModal({
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className={selectTriggerClassName}>
-                          <SelectValue placeholder="Choose visibility" />
+                          <SelectValue />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -300,19 +222,17 @@ function CreateCollectionModal({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>Public collections can be viewed and copied by other people. Private ones stay only on your account.</FormDescription>
+                    <FormDescription>Public collections can be viewed and copied by other people.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <div className="flex flex-wrap justify-end gap-3 pt-2">
                 <MithoButton type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                   Cancel
                 </MithoButton>
-                <MithoButton type="submit">
-                  Create collection
-                  <ArrowRight className="h-4 w-4" />
+                <MithoButton type="submit" disabled={createMutation.isPending}>
+                  {createMutation.isPending ? "Creating..." : "Create collection"}
                 </MithoButton>
               </div>
             </form>
@@ -323,52 +243,28 @@ function CreateCollectionModal({
   )
 }
 
-export function CollectionsIndexPage({ collections }: { collections: CollectionRecord[] }) {
+export function CollectionsIndexPage() {
   const [isCreateOpen, setIsCreateOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const [sortOrder, setSortOrder] = React.useState<"recent" | "alpha" | "size">("recent")
-
-  const filteredCollections = React.useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
-    const matchingCollections = normalizedQuery
-      ? collections.filter((collection) =>
-          [collection.title, collection.description ?? "", collection.provenance?.sourceTitle ?? ""].some((value) =>
-            value.toLowerCase().includes(normalizedQuery),
-          ),
-        )
-      : collections
-
-    return [...matchingCollections].sort((a, b) => {
-      if (sortOrder === "alpha") {
-        return a.title.localeCompare(b.title)
-      }
-
-      if (sortOrder === "size") {
-        return b.items.length - a.items.length
-      }
-
-      return 0
-    })
-  }, [collections, query, sortOrder])
+  const collectionsQuery = useCollections({
+    search: query || undefined,
+    sort: sortOrder,
+    perPage: 100,
+  })
+  const collections = collectionsQuery.data?.items ?? []
 
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
         <ProfileTabsPanel />
-
         <section className={sectionCardClass}>
           <div className="flex flex-col gap-4 border-b border-brand-deep-green/10 px-6 py-5 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-1 flex-col gap-3 sm:flex-row">
               <div className="relative flex-1">
                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  className={cn(inputClassName, "pl-11")}
-                  placeholder="Search collections"
-                />
+                <Input value={query} onChange={(event) => setQuery(event.target.value)} className={cn(inputClassName, "pl-11")} placeholder="Search collections" />
               </div>
-
               <Select value={sortOrder} onValueChange={(value: "recent" | "alpha" | "size") => setSortOrder(value)}>
                 <SelectTrigger className={cn(selectTriggerClassName, "sm:w-[190px]")}>
                   <SelectValue />
@@ -380,340 +276,262 @@ export function CollectionsIndexPage({ collections }: { collections: CollectionR
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <MithoButton onClick={() => setIsCreateOpen(true)}>
-                <Plus className="h-4 w-4" />
-                Create collection
-              </MithoButton>
-            </div>
+            <MithoButton onClick={() => setIsCreateOpen(true)}>
+              <Plus className="h-4 w-4" />
+              Create collection
+            </MithoButton>
           </div>
-
           <div className="space-y-5 px-6 py-6 sm:px-8">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="type-eyebrow text-brand-deep-green/68">All collections</p>
-                <h2 className="mt-2 text-2xl font-semibold text-brand-dark-green">One place for the lists you make, shape, and keep coming back to.</h2>
-                <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
-                  Search and scan everything in one stream so collections feel easy to browse, easy to grow, and easy to page later.
-                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-brand-dark-green">One place for lists you make, shape, and revisit.</h2>
               </div>
-              <span className="text-sm text-muted-foreground">{filteredCollections.length} showing</span>
+              <span className="text-sm text-muted-foreground">{collectionsQuery.data?.meta.total ?? collections.length} showing</span>
             </div>
-
-            {filteredCollections.length > 0 ? (
+            {collectionsQuery.isLoading ? (
+              <div className="rounded-[1.5rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6 text-sm text-muted-foreground">Loading collections...</div>
+            ) : collections.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {filteredCollections.map((collection) => (
+                {collections.map((collection) => (
                   <CollectionCard key={collection.id} collection={collection} href={`/collections/${collection.id}`} />
                 ))}
               </div>
             ) : (
               <div className="rounded-[1.5rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
-                <p className="text-base font-semibold text-brand-dark-green">
-                  {query ? "No collections match this search." : "Start your first collection here."}
-                </p>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
-                  {query
-                    ? "Try another collection title or clear the search to see everything again."
-                    : "Create a collection for the places you want to keep returning to, comparing, or sharing later."}
-                </p>
+                <p className="text-base font-semibold text-brand-dark-green">{query ? "No collections match this search." : "Start your first collection here."}</p>
               </div>
             )}
           </div>
         </section>
-
         <CreateCollectionModal open={isCreateOpen} onOpenChange={setIsCreateOpen} />
       </div>
     </div>
   )
 }
 
-export function CollectionDetailPage({
+function CollectionDetailBody({
   collection,
-  isOwner = true,
-  publicSourceHref,
+  isOwner,
+  onToggleVisibility,
 }: {
   collection: CollectionRecord
-  isOwner?: boolean
-  publicSourceHref?: string
+  isOwner: boolean
+  onToggleVisibility?: (next: CollectionVisibility) => void
 }) {
-  const [visibility, setVisibility] = React.useState<CollectionVisibility>(collection.visibility)
-
   return (
-    <div className="container mx-auto px-4 py-10 md:py-12">
-      <div className="space-y-6">
-        <section className={sectionCardClass}>
-          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-            <Link href={isOwner ? "/collections" : publicSourceHref ?? `/users/${collection.owner.username}/collections/${collection.id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange">
-              <ArrowLeft className="h-4 w-4" />
-              {isOwner ? "Back to collections" : `Back to @${collection.owner.username}'s collection`}
-            </Link>
-
-            <div className="mt-5 flex flex-wrap items-center gap-2">
-              <CollectionVisibilityBadge visibility={visibility} />
-            </div>
-            <h1 className="type-page-title mt-4 text-brand-dark-green">{collection.title}</h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
-              {collection.description ?? "A place list that stays easier to reuse once the title and privacy are clear."}
-            </p>
-
-            <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              <span>{getCollectionPlaceCount(collection)} places</span>
-              <span>{collection.updatedLabel}</span>
-              <span>by @{collection.owner.username}</span>
-            </div>
+    <div className="space-y-6">
+      <section className={sectionCardClass}>
+        <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+          <Link href={isOwner ? "/collections" : `/users/${collection.owner.username}/collections/${collection.id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange">
+            <ArrowLeft className="h-4 w-4" />
+            {isOwner ? "Back to collections" : `Back to @${collection.owner.username}'s collection`}
+          </Link>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <CollectionVisibilityBadge visibility={collection.visibility} />
           </div>
-
-          <div className="flex flex-wrap gap-3 px-6 py-6 sm:px-8">
-            {isOwner ? (
-              <>
-                <MithoButton variant="secondary" asChild>
-                  <Link href={`/collections/${collection.id}/edit`}>
-                    <PencilLine className="h-4 w-4" />
-                    Edit collection
-                  </Link>
-                </MithoButton>
-                <div className="flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-2">
-                  <div>
-                    <p className="text-sm font-semibold text-brand-dark-green">Public</p>
-                    <p className="text-xs text-muted-foreground">
-                      {visibility === "public" ? "Anyone can view this collection." : "Only you can view this collection."}
-                    </p>
-                  </div>
-                  <ToggleSwitch
-                    checked={visibility === "public"}
-                    onCheckedChange={(checked) => setVisibility(checked ? "public" : "private")}
-                    aria-label="Toggle collection visibility"
-                  />
-                </div>
-                {visibility === "public" ? (
-                  <MithoButton variant="ghost" asChild>
-                    <Link href={`/users/${currentCustomer.username}/collections/${collection.id}`}>
-                      <Share2 className="h-4 w-4" />
-                      View public version
-                    </Link>
-                  </MithoButton>
-                ) : null}
-              </>
-            ) : (
-              <MithoButton asChild>
-                <Link href={`/users/${collection.owner.username}/collections/${collection.id}`}>
-                  <Copy className="h-4 w-4" />
-                  Copy collection
+          <h1 className="type-page-title mt-4 text-brand-dark-green">{collection.title}</h1>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">{collection.description ?? "No description yet."}</p>
+          <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <span>{getCollectionPlaceCount(collection)} places</span>
+            <span>by @{collection.owner.username ?? "mithouser"}</span>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-3 px-6 py-6 sm:px-8">
+          {isOwner ? (
+            <>
+              <MithoButton variant="secondary" asChild>
+                <Link href={`/collections/${collection.id}/edit`}>
+                  <PencilLine className="h-4 w-4" />
+                  Edit collection
                 </Link>
               </MithoButton>
-            )}
-          </div>
-        </section>
-
-        <section className={sectionCardClass}>
-          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-            <h2 className="text-2xl font-semibold text-brand-dark-green">Places in this collection</h2>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground">
-              {collection.items.length > 0
-                ? "Each place should earn its place in the list with enough context to make the collection useful later."
-                : "A new collection starts better when it has a clear name first, then you can add places one by one without rushing the structure."}
-            </p>
-          </div>
-          <div className="space-y-4 px-6 py-6 sm:px-8">
-            {collection.items.length > 0 ? (
-              collection.items.map((item) => <CollectionItemRow key={item.id} item={item} />)
-            ) : (
-              <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
-                <p className="text-base font-semibold text-brand-dark-green">No places here yet.</p>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
-                  Start from explore or a business page, then add the first place once the collection title is settled.
-                </p>
-                {isOwner ? (
-                  <MithoButton className="mt-4" asChild>
-                    <Link href="/explore">Browse places to add</Link>
-                  </MithoButton>
-                ) : null}
+              <div className="flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-2">
+                <div>
+                  <p className="text-sm font-semibold text-brand-dark-green">Public</p>
+                </div>
+                <ToggleSwitch checked={collection.visibility === "public"} onCheckedChange={(checked) => onToggleVisibility?.(checked ? "public" : "private")} />
               </div>
-            )}
-          </div>
-        </section>
-      </div>
+              {collection.visibility === "public" && collection.owner.username ? (
+                <MithoButton variant="ghost" asChild>
+                  <Link href={`/users/${collection.owner.username}/collections/${collection.id}`}>
+                    <Share2 className="h-4 w-4" />
+                    View public version
+                  </Link>
+                </MithoButton>
+              ) : null}
+            </>
+          ) : null}
+        </div>
+      </section>
+
+      <section className={sectionCardClass}>
+        <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
+          <h2 className="text-2xl font-semibold text-brand-dark-green">Places in this collection</h2>
+        </div>
+        <div className="space-y-4 px-6 py-6 sm:px-8">
+          {collection.items.length > 0 ? (
+            collection.items.map((item) => <CollectionItemRow key={item.id} item={item} />)
+          ) : (
+            <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+              <p className="text-base font-semibold text-brand-dark-green">No places here yet.</p>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }
 
-export function PublicCollectionDetailPage({ collection }: { collection: CollectionRecord }) {
-  const { isAuthenticated } = useAuthSnapshot()
-  const [isSignInOpen, setIsSignInOpen] = React.useState(false)
-  const [pendingCopyAfterAuth, setPendingCopyAfterAuth] = React.useState(false)
-  const [copySuccess, setCopySuccess] = React.useState(false)
-
-  const copiedCollection = React.useMemo(() => buildCopiedCollection(collection), [collection])
-
-  const handleCopy = React.useCallback(() => {
-    setCopySuccess(true)
-  }, [])
-
-  const handleCopyPress = () => {
-    if (!isAuthenticated) {
-      setPendingCopyAfterAuth(true)
-      setIsSignInOpen(true)
-      return
-    }
-
-    handleCopy()
-  }
-
-  React.useEffect(() => {
-    if (!isAuthenticated || !pendingCopyAfterAuth) return
-
-    handleCopy()
-    setPendingCopyAfterAuth(false)
-  }, [handleCopy, isAuthenticated, pendingCopyAfterAuth])
-
+export function CollectionDetailPage({ id }: { id: string }) {
+  const query = useCollection(id)
+  const updateMutation = useUpdateCollection(id)
+  const collection = query.data
+  if (query.isLoading) return <div className="container mx-auto px-4 py-10 text-sm text-muted-foreground">Loading collection...</div>
+  if (!collection) return <div className="container mx-auto px-4 py-10 text-sm text-muted-foreground">Collection not found.</div>
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
-      <div className="space-y-6">
-        <section className={cn(sectionCardClass, "overflow-hidden bg-[linear-gradient(180deg,#fffdf8_0%,#fff8ee_100%)]")}>
-          <div className="grid gap-8 px-6 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
-            <div className="space-y-5">
-              <Link
-                href="/collections"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Explore more collections
-              </Link>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <CollectionVisibilityBadge visibility={collection.visibility} />
-                <MithoBadge variant="muted">{getCollectionPlaceCount(collection)} places</MithoBadge>
-                <span className="text-sm text-muted-foreground">{collection.updatedLabel}</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <img
-                  src={collection.owner.avatarUrl}
-                  alt={collection.owner.name}
-                  className="h-12 w-12 rounded-full border border-brand-deep-green/10 object-cover"
-                />
-                <div>
-                  <p className="text-sm font-semibold text-brand-dark-green">{collection.owner.name}</p>
-                  <p className="text-sm text-muted-foreground">@{collection.owner.username}</p>
-                </div>
-                <Link
-                  href="/users"
-                  className="ml-auto text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
-                >
-                  Browse more creators
-                </Link>
-              </div>
-
-              <div>
-                <h1 className="type-page-title text-brand-dark-green">{collection.title}</h1>
-                {collection.description ? (
-                  <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">{collection.description}</p>
-                ) : null}
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <MithoButton onClick={handleCopyPress}>
-                  <Copy className="h-4 w-4" />
-                  Copy collection
-                </MithoButton>
-                <p className="text-sm leading-7 text-muted-foreground">
-                  Copy this list into your own account and shape it into your next food plan.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white/78 px-5 py-6 shadow-[0_16px_36px_rgba(10,70,53,0.06)]">
-              <CollectionDeckCover collection={collection} size="hero" className="mx-auto" />
-              <div className="mt-6 space-y-3 rounded-[1.35rem] border border-brand-deep-green/10 bg-white/84 p-4">
-                <p className="type-eyebrow text-brand-deep-green/68">Collection feel</p>
-                <p className="text-sm leading-7 text-muted-foreground">
-                  A public shortlist built to be shared, copied, and revisited when someone wants a quicker answer than an endless food debate.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {copySuccess ? (
-          <section className="rounded-[1.75rem] border border-success/18 bg-success/8 shadow-[0_12px_30px_rgba(10,70,53,0.05)]">
-            <div className="flex flex-col gap-4 px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
-                <div>
-                  <p className="text-base font-semibold text-brand-dark-green">Collection copied to your account.</p>
-                  <p className="mt-1 text-sm leading-7 text-muted-foreground">
-                    Your copy is private, independent, and ready to rename or expand whenever you want.
-                  </p>
-                </div>
-              </div>
-              <MithoButton variant="outline-secondary" asChild>
-                <Link href={`/collections/${copiedCollection.id}`}>
-                  Open copied collection
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </MithoButton>
-            </div>
-          </section>
-        ) : null}
-
-        <section className={sectionCardClass}>
-          <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-            <h2 className="text-2xl font-semibold text-brand-dark-green">Places in this collection</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
-              {collection.items.length > 0
-                ? "A collection is only useful if each stop earns its place, so every entry here should help someone decide faster and eat better."
-                : "This public list does not have any places yet."}
-            </p>
-          </div>
-
-          <div className="space-y-4 px-6 py-6 sm:px-8">
-            {collection.items.length > 0 ? (
-              collection.items.map((item) => <CollectionItemRow key={item.id} item={item} />)
-            ) : (
-              <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
-                <p className="text-base font-semibold text-brand-dark-green">No places are published in this collection yet.</p>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
-                  Check back later or explore other public collections for fresher food routes and neighborhood shortlists.
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
-
-      <GoogleSignInDialog
-        open={isSignInOpen}
-        onOpenChange={setIsSignInOpen}
-        title="Sign in to copy this collection."
-        description="Use Google so Mitho can save this collection under the same account you use for reviews, places, and future business actions."
-        helperCopy="After sign-in, Mitho will copy this collection right here and keep you on the same page."
-        onContinue={() => {
-          setIsSignInOpen(false)
-        }}
+      <CollectionDetailBody
+        collection={collection}
+        isOwner
+        onToggleVisibility={(visibility) =>
+          updateMutation.mutate({
+            title: collection.title,
+            description: collection.description ?? "",
+            visibility,
+          })
+        }
       />
     </div>
   )
 }
 
-export function CollectionEditPage({ collection }: { collection: CollectionRecord }) {
-  const [items, setItems] = React.useState(collection.items)
+export function PublicCollectionDetailPage({ username, id }: { username: string; id: string }) {
+  const router = useRouter()
+  const { isAuthenticated } = useAuthSnapshot()
+  const [isSignInOpen, setIsSignInOpen] = React.useState(false)
+  const [pendingCopyAfterAuth, setPendingCopyAfterAuth] = React.useState(false)
+  const copyMutation = useCopyCollection()
+  const query = usePublicCollection(username, id)
+
+  React.useEffect(() => {
+    if (!isAuthenticated || !pendingCopyAfterAuth) return
+    copyMutation.mutate(id, {
+      onSuccess: (collection) => {
+        setPendingCopyAfterAuth(false)
+        router.push(`/collections/${collection.id}`)
+      },
+    })
+  }, [copyMutation, id, isAuthenticated, pendingCopyAfterAuth, router])
+
+  if (query.isLoading) return <div className="container mx-auto px-4 py-10 text-sm text-muted-foreground">Loading collection...</div>
+  if (!query.data) return <div className="container mx-auto px-4 py-10 text-sm text-muted-foreground">Collection not available.</div>
+
+  const collection = query.data
+  const handleCopy = () => {
+    if (!isAuthenticated) {
+      setPendingCopyAfterAuth(true)
+      setIsSignInOpen(true)
+      return
+    }
+    copyMutation.mutate(id, {
+      onSuccess: (copied) => {
+        toast({ title: "Collection copied", description: `${collection.title} is now in your account.` })
+        router.push(`/collections/${copied.id}`)
+      },
+    })
+  }
+
+  return (
+    <>
+      <div className="container mx-auto px-4 py-10 md:py-12">
+        <div className="space-y-6">
+          <section className={cn(sectionCardClass, "overflow-hidden bg-[linear-gradient(180deg,#fffdf8_0%,#fff8ee_100%)]")}>
+            <div className="grid gap-8 px-6 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
+              <div className="space-y-5">
+                <Link href="/users" className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange">
+                  <ArrowLeft className="h-4 w-4" />
+                  Explore more collections
+                </Link>
+                <div className="flex flex-wrap items-center gap-3">
+                  <CollectionVisibilityBadge visibility={collection.visibility} />
+                  <span className="text-sm text-muted-foreground">{getCollectionPlaceCount(collection)} places</span>
+                </div>
+                <div>
+                  <h1 className="type-page-title text-brand-dark-green">{collection.title}</h1>
+                  {collection.description ? <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">{collection.description}</p> : null}
+                </div>
+                <MithoButton onClick={handleCopy} disabled={copyMutation.isPending}>
+                  <Copy className="h-4 w-4" />
+                  {copyMutation.isPending ? "Copying..." : "Copy collection"}
+                </MithoButton>
+              </div>
+              <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white/78 px-5 py-6 shadow-[0_16px_36px_rgba(10,70,53,0.06)]">
+                <div className="mx-auto flex justify-center gap-2">
+                  {getCollectionCoverImages(collection).slice(0, 3).map((image, index) => (
+                    <img key={`${collection.id}-${index}`} src={image} alt="" className="h-24 w-24 rounded-[1rem] object-cover" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+          {copyMutation.isSuccess ? (
+            <section className="rounded-[1.75rem] border border-success/18 bg-success/8 shadow-[0_12px_30px_rgba(10,70,53,0.05)] px-6 py-6 sm:px-8">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+                <p className="text-sm leading-7 text-muted-foreground">Collection copied to your account.</p>
+              </div>
+            </section>
+          ) : null}
+          <CollectionDetailBody collection={collection} isOwner={false} />
+        </div>
+      </div>
+      <GoogleSignInDialog
+        open={isSignInOpen}
+        onOpenChange={setIsSignInOpen}
+        title="Sign in to copy this collection."
+        description="Use Google so Mitho can save this collection under same account."
+        helperCopy="After sign-in, Mitho will copy this collection and keep you here."
+        onContinue={() => setIsSignInOpen(false)}
+      />
+    </>
+  )
+}
+
+export function CollectionEditPage({ id }: { id: string }) {
+  const router = useRouter()
+  const query = useCollection(id)
+  const updateMutation = useUpdateCollection(id)
+  const deleteMutation = useDeleteCollection()
+  const reorderMutation = useReorderCollectionItems(id)
+  const deleteItemMutation = useDeleteCollectionItem(id)
+  const [items, setItems] = React.useState<CollectionItemRecord[]>([])
   const [saved, setSaved] = React.useState(false)
-  const [deleted, setDeleted] = React.useState(false)
+  const originalItemsRef = React.useRef<CollectionItemRecord[]>([])
 
   const form = useForm<CollectionFormValues>({
     resolver: zodResolver(collectionSchema),
     defaultValues: {
-      title: collection.title,
-      description: collection.description ?? "",
-      visibility: collection.visibility,
+      title: "",
+      description: "",
+      visibility: "private",
     },
   })
+
+  React.useEffect(() => {
+    if (!query.data) return
+    form.reset({
+      title: query.data.title,
+      description: query.data.description ?? "",
+      visibility: query.data.visibility,
+    })
+    setItems(query.data.items)
+    originalItemsRef.current = query.data.items
+  }, [form, query.data])
 
   const moveItem = (index: number, direction: -1 | 1) => {
     const nextIndex = index + direction
     if (nextIndex < 0 || nextIndex >= items.length) return
-
     const nextItems = [...items]
     const current = nextItems[index]
     nextItems[index] = nextItems[nextIndex]
@@ -722,128 +540,76 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
     setSaved(false)
   }
 
-  const removeItem = (id: string) => {
-    setItems((current) => current.filter((item) => item.id !== id))
-    setSaved(false)
-  }
-
-  const onSubmit = () => {
+  const onSubmit = async (values: CollectionFormValues) => {
+    await updateMutation.mutateAsync(values)
+    await reorderMutation.mutateAsync({
+      itemIds: items.map((item) => item.id),
+    })
+    const originalById = new Map(originalItemsRef.current.map((item) => [item.id, item]))
+    await Promise.all(
+      items
+        .filter((item) => (originalById.get(item.id)?.note ?? "") !== (item.note ?? ""))
+        .map((item) => updateCollectionItemRequest(id, item.id, { note: item.note ?? "" })),
+    )
     setSaved(true)
   }
 
-  if (deleted) {
-    return (
-      <div className="container mx-auto px-4 py-10 md:py-12">
-        <section className={sectionCardClass}>
-          <div className="px-6 py-8 sm:px-8">
-            <MithoBadge variant="danger">Collection deleted</MithoBadge>
-            <h1 className="type-page-title mt-4 text-brand-dark-green">This collection is removed in this mock flow.</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-              Use this as the future destructive state. Real persistence can hook into the same route and messaging later.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <MithoButton asChild>
-                <Link href="/collections">Back to collections</Link>
-              </MithoButton>
-              <MithoButton variant="outline-secondary" asChild>
-                <Link href="/profile">Return to profile</Link>
-              </MithoButton>
-            </div>
-          </div>
-        </section>
-      </div>
-    )
-  }
+  if (query.isLoading) return <div className="container mx-auto px-4 py-10 text-sm text-muted-foreground">Loading collection...</div>
+  if (!query.data) return <div className="container mx-auto px-4 py-10 text-sm text-muted-foreground">Collection not found.</div>
 
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <div className="space-y-6">
         <ProfileTabsPanel />
-
         <section className={sectionCardClass}>
           <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-2xl font-semibold text-brand-dark-green">Collection details</h2>
-                <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  Edit the collection identity here, then adjust the items below before saving.
-                </p>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">Edit collection identity, then adjust items below before saving.</p>
               </div>
-              {saved ? <span className="text-sm font-medium text-success">Changes are updated in this mock screen.</span> : null}
+              {saved ? <span className="text-sm font-medium text-success">Changes saved.</span> : null}
             </div>
           </div>
-
           <div className="px-6 py-6 sm:px-8">
             <Form {...form}>
               <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="grid gap-5 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Collection title</FormLabel>
-                        <FormControl>
-                          <Input {...field} className={inputClassName} />
-                        </FormControl>
-                        <FormDescription>Keep the title readable when someone sees it in profile or on a copied public version later.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="visibility"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Visibility</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className={selectTriggerClassName}>
-                              <SelectValue placeholder="Choose visibility" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {collectionVisibilityOptions.map((option) => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>Public collections can be viewed and copied. Private ones stay only on your account.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
+                  <FormField control={form.control} name="title" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          className="min-h-28 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
-                        />
-                      </FormControl>
-                      <FormDescription>A short description helps explain why these places belong together when the list is shared or copied.</FormDescription>
+                      <FormLabel>Collection title</FormLabel>
+                      <FormControl><Input {...field} className={inputClassName} /></FormControl>
                       <FormMessage />
                     </FormItem>
-                  )}
-                />
-
+                  )} />
+                  <FormField control={form.control} name="visibility" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Visibility</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl><SelectTrigger className={selectTriggerClassName}><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {collectionVisibilityOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
+                <FormField control={form.control} name="description" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl><Textarea {...field} className="min-h-28 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
                 <div className="flex flex-wrap gap-3">
-                  <MithoButton type="submit">
+                  <MithoButton type="submit" disabled={updateMutation.isPending || reorderMutation.isPending}>
                     Save collection
-                    <ArrowRight className="h-4 w-4" />
                   </MithoButton>
                   <MithoButton variant="outline-secondary" asChild>
-                    <Link href={`/collections/${collection.id}`}>View collection</Link>
+                    <Link href={`/collections/${id}`}>View collection</Link>
                   </MithoButton>
                 </div>
               </form>
@@ -854,9 +620,6 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
         <section className={sectionCardClass}>
           <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
             <h2 className="text-2xl font-semibold text-brand-dark-green">Collection items</h2>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground">
-              Move places up or down to shape the order, or remove items that no longer deserve space in the list.
-            </p>
           </div>
           <div className="space-y-4 px-6 py-6 sm:px-8">
             {items.map((item, index) => (
@@ -866,7 +629,13 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
                 showMoveControls
                 onMoveUp={() => moveItem(index, -1)}
                 onMoveDown={() => moveItem(index, 1)}
-                onRemove={() => removeItem(item.id)}
+                onRemove={async () => {
+                  const next = await deleteItemMutation.mutateAsync(item.id)
+                  setItems(next.items)
+                }}
+                onNoteChange={(value) => {
+                  setItems((current) => current.map((entry) => (entry.id === item.id ? { ...entry, note: value } : entry)))
+                }}
               />
             ))}
           </div>
@@ -875,18 +644,15 @@ export function CollectionEditPage({ collection }: { collection: CollectionRecor
         <section className={cn(sectionCardClass, "border-danger/18")}>
           <div className="border-b border-danger/12 px-6 py-6 sm:px-8">
             <h2 className="text-2xl font-semibold text-brand-dark-green">Danger zone</h2>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground">
-              Keep destructive actions separate so editing a collection never feels confused with removing it entirely.
-            </p>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-6 sm:px-8">
             <div>
               <p className="text-base font-semibold text-brand-dark-green">Delete this collection</p>
-              <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                Use a separated destructive action so users do not confuse editing the list with deleting it entirely.
-              </p>
             </div>
-            <MithoButton variant="outline-danger" onClick={() => setDeleted(true)}>
+            <MithoButton variant="outline-danger" onClick={async () => {
+              await deleteMutation.mutateAsync(id)
+              router.push("/collections")
+            }}>
               <Trash2 className="h-4 w-4" />
               Delete collection
             </MithoButton>

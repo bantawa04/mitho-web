@@ -2,6 +2,7 @@ import type { ListAdminUsersParams } from "@/types/admin-users"
 import type { ListAdminCustomersParams } from "@/types/admin-customers"
 import type { ListBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
+import type { ListCollectionsParams } from "@/types/collections"
 import type { ListMediaParams } from "@/types/media"
 import type { ListAdminReviewsParams, ListBusinessReviewsParams } from "@/types/reviews"
 
@@ -43,6 +44,14 @@ export const queryKeys = {
   media: {
     all: ["media"] as const,
     list: (params?: ListMediaParams) => ["media", "list", params] as const,
+  },
+  collections: {
+    all: ["collections"] as const,
+    list: (params?: ListCollectionsParams) => ["collections", "list", params] as const,
+    detail: (id: string) => ["collections", "detail", id] as const,
+    publicList: (username: string, params?: Pick<ListCollectionsParams, "page" | "perPage">) =>
+      ["collections", "public", username, "list", params] as const,
+    publicDetail: (username: string, id: string) => ["collections", "public", username, "detail", id] as const,
   },
   reviews: {
     all: ["reviews"] as const,

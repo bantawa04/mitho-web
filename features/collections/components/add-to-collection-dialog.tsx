@@ -10,9 +10,7 @@ import {
   createCollectionId,
   getCollectionCoverImages,
   searchOwnedCollections,
-  type CollectionCandidate,
-  type CollectionRecord,
-} from "@/features/collections/data/collection-data"
+} from "@/features/collections/utils/collection-helpers"
 import { CollectionVisibilityBadge } from "@/features/collections/components/collection-visibility-badge"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -21,6 +19,7 @@ import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { collectionVisibilityOptions, type CollectionFormValues } from "@/lib/validators/collection"
+import type { CollectionCandidate, CollectionRecord } from "@/types/collections"
 import { cn } from "@/lib/utils"
 
 const initialCollectionCount = 3

@@ -1,21 +1,17 @@
 "use client"
 
 import * as React from "react"
+import { useMutation } from "@tanstack/react-query"
+import { addCollectionItem } from "@/lib/api/collections"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
+import { useCollections, useCreateCollection } from "@/hooks/use-collections"
 import { useBusinessReviews } from "@/hooks/use-reviews"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { Header } from "@/features/home/components/header"
 import { Footer } from "@/features/home/components/footer"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { AddToCollectionDialog } from "@/features/collections/components/add-to-collection-dialog"
-import {
-  buildCollectionItemFromCandidate,
-  createCollectionId,
-  currentCustomer,
-  ownedCollections,
-  type CollectionCandidate,
-  type CollectionRecord,
-} from "@/features/collections/data/collection-data"
+import { createCollectionId } from "@/features/collections/utils/collection-helpers"
 import { toast } from "@/hooks/use-toast"
 import { MithoBreadcrumb } from "@/components/mitho/mitho-breadcrumb"
 import { BusinessHero } from "@/features/business/components/business-hero"
@@ -28,6 +24,7 @@ import { ClaimReport } from "@/features/business/components/claim-report"
 import type { BusinessPageData } from "@/features/business/business-detail-types"
 import { isBusinessEarlyListing } from "@/features/business/business-detail-utils"
 import { mapReviewItemToBusinessReview, mapReviewSummaryToRatingsData } from "@/features/business/mappers/public-business-page-data"
+import type { CollectionCandidate } from "@/types/collections"
 
 interface BusinessDetailPageProps {
   pageData: BusinessPageData
@@ -39,10 +36,15 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   const [sortOrder, setSortOrder] = React.useState<"latest" | "oldest" | "highest" | "lowest">("latest")
   const [reviewPage, setReviewPage] = React.useState(1)
   const { isAuthenticated } = useAuthSnapshot()
-  const [collections, setCollections] = React.useState<CollectionRecord[]>(ownedCollections)
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = React.useState(false)
   const [signInIntent, setSignInIntent] = React.useState<"collection" | "review" | null>(null)
   const [reopenCollectionDialogAfterAuth, setReopenCollectionDialogAfterAuth] = React.useState(false)
+  const collectionsQuery = useCollections({ perPage: 100 })
+  const createCollectionMutation = useCreateCollection()
+  const addCollectionItemMutation = useMutation({
+    mutationFn: ({ collectionId, businessId, note }: { collectionId: string; businessId: string; note?: string }) =>
+      addCollectionItem(collectionId, { businessId, note }),
+  })
   const isEarlyListing = isBusinessEarlyListing(pageData)
   const reviewsQuery = useBusinessReviews(pageData.id, {
     page: reviewPage,
@@ -113,6 +115,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
       note: pageData.heroNote,
       imageUrl: previewImage,
       publicHref,
+      businessId: pageData.id,
     }
   }, [pageData.categories, pageData.coverImage, pageData.galleryItems, pageData.heroNote, pageData.location, pageData.name, publicHref])
 
@@ -127,47 +130,46 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   }
 
   const handleAddToExistingCollection = (collectionId: string) => {
-    let addedCollectionTitle = ""
-
-    setCollections((current) =>
-      current.map((collection) => {
-        if (collection.id !== collectionId) return collection
-
-        addedCollectionTitle = collection.title
-
-        return {
-          ...collection,
-          items: [...collection.items, buildCollectionItemFromCandidate(collectionCandidate)],
-          updatedLabel: "Updated just now",
-        }
-      }),
+    const addedCollectionTitle = collectionsQuery.data?.items.find((item) => item.id === collectionId)?.title ?? "collection"
+    addCollectionItemMutation.mutate(
+      {
+        collectionId,
+        businessId: collectionCandidate.businessId,
+        note: collectionCandidate.note,
+      },
+      {
+        onSuccess: () => {
+          setIsCollectionDialogOpen(false)
+          collectionsQuery.refetch()
+          toast({
+            title: "Collection updated",
+            description: `Added ${pageData.name} to ${addedCollectionTitle}.`,
+          })
+        },
+      },
     )
-
-    setIsCollectionDialogOpen(false)
-    toast({
-      title: "Collection updated",
-      description: `Added ${pageData.name} to ${addedCollectionTitle}.`,
-    })
   }
 
   const handleCreateCollectionAndAdd = (values: { title: string; description?: string; visibility: "private" | "public" }) => {
-    const newCollectionTitle = values.title
-    const newCollection: CollectionRecord = {
-      id: createCollectionId(values.title),
-      title: values.title,
-      description: values.description,
-      visibility: values.visibility,
-      updatedLabel: "Created just now",
-      owner: currentCustomer,
-      items: [buildCollectionItemFromCandidate(collectionCandidate)],
-    }
-
-    setCollections((current) => [newCollection, ...current])
-    setIsCollectionDialogOpen(false)
-    toast({
-      title: "Collection created",
-      description: `Created ${newCollectionTitle} and added ${pageData.name}.`,
-    })
+    createCollectionMutation.mutate(
+      {
+        ...values,
+        initialItem: {
+          businessId: collectionCandidate.businessId,
+          note: collectionCandidate.note,
+        },
+      },
+      {
+        onSuccess: () => {
+          setIsCollectionDialogOpen(false)
+          collectionsQuery.refetch()
+          toast({
+            title: "Collection created",
+            description: `Created ${values.title} and added ${pageData.name}.`,
+          })
+        },
+      },
+    )
   }
 
   React.useEffect(() => {
@@ -269,7 +271,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         open={isCollectionDialogOpen}
         onOpenChange={setIsCollectionDialogOpen}
         candidate={collectionCandidate}
-        collections={collections}
+        collections={collectionsQuery.data?.items ?? []}
         onAddToCollection={handleAddToExistingCollection}
         onCreateCollection={handleCreateCollectionAndAdd}
       />

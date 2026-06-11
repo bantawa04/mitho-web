@@ -1,6 +1,6 @@
 import { Globe, Lock, type LucideIcon } from "lucide-react"
 import type { BadgeProps } from "@/components/mitho/mitho-badge"
-import type { CollectionVisibility } from "@/features/collections/data/collection-data"
+import type { CollectionVisibility } from "@/types/collections"
 
 interface CollectionVisibilityPresentation {
   label: string

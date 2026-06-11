@@ -2,12 +2,9 @@
 
 import Link from "next/link"
 import { ArrowRight, Bookmark } from "lucide-react"
-import {
-  getCollectionCoverImages,
-  getCollectionPlaceCount,
-  type CollectionRecord,
-} from "@/features/collections/data/collection-data"
+import { getCollectionCoverImages, getCollectionPlaceCount } from "@/features/collections/utils/collection-helpers"
 import { getCollectionVisibilityPresentation } from "@/features/collections/utils/collection-visibility-utils"
+import type { CollectionRecord } from "@/types/collections"
 import { cn } from "@/lib/utils"
 
 function VisibilityPill({ visibility }: { visibility: CollectionRecord["visibility"] }) {
@@ -20,6 +17,12 @@ function VisibilityPill({ visibility }: { visibility: CollectionRecord["visibili
       {presentation.label}
     </span>
   )
+}
+
+function formatUpdatedLabel(updatedAt: string) {
+  const value = new Date(updatedAt)
+  if (Number.isNaN(value.getTime())) return "Updated recently"
+  return `Updated ${value.toLocaleDateString()}`
 }
 
 export function CollectionShowcaseCard({
@@ -82,7 +85,7 @@ export function CollectionShowcaseCard({
               {itemCount} {itemCount === 1 ? "place" : "places"}
             </span>
             <span className="h-1 w-1 rounded-full bg-white/45" />
-            <span>{collection.updatedLabel}</span>
+            <span>{formatUpdatedLabel(collection.updatedAt)}</span>
           </div>
           <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" />
         </div>
