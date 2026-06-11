@@ -1,7 +1,7 @@
 "use client"
 
-import * as React from "react"
-import { ThumbsUp, Flag, Play } from "lucide-react"
+import Link from "next/link"
+import { Play } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { StarRating } from "./mitho-rating"
 
@@ -13,12 +13,12 @@ interface ReviewMedia {
 
 interface ReviewCardProps {
   author: string
+  authorUsername?: string | null
   authorImage: string
   rating: number
   date: string
   content: string
   media?: ReviewMedia[]
-  helpful?: number
   ownerResponse?: {
     content: string
     date: string
@@ -28,35 +28,43 @@ interface ReviewCardProps {
 
 export function MithoReviewCard({
   author,
+  authorUsername,
   authorImage,
   rating,
   date,
   content,
   media,
-  helpful = 0,
   ownerResponse,
   className,
 }: ReviewCardProps) {
-  const [isHelpful, setIsHelpful] = React.useState(false)
-  const [helpfulCount, setHelpfulCount] = React.useState(helpful)
-
-  const handleHelpful = () => {
-    if (!isHelpful) {
-      setHelpfulCount((prev) => prev + 1)
-      setIsHelpful(true)
-    }
-  }
+  const authorHref = authorUsername ? `/users/${authorUsername}` : null
 
   return (
     <div className={cn("rounded-[1.6rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)]", className)}>
       <div className="mb-4 flex items-start gap-3">
-        <img
-          src={authorImage || "/placeholder.svg"}
-          alt={author}
-          className="h-12 w-12 rounded-full border-2 border-brand-soft-beige object-cover"
-        />
+        {authorHref ? (
+          <Link href={authorHref} className="shrink-0">
+            <img
+              src={authorImage || "/placeholder.svg"}
+              alt={author}
+              className="h-12 w-12 rounded-full border-2 border-brand-soft-beige object-cover transition-opacity hover:opacity-80"
+            />
+          </Link>
+        ) : (
+          <img
+            src={authorImage || "/placeholder.svg"}
+            alt={author}
+            className="h-12 w-12 shrink-0 rounded-full border-2 border-brand-soft-beige object-cover"
+          />
+        )}
         <div className="flex-1">
-          <h4 className="font-semibold text-brand-dark-green">{author}</h4>
+          {authorHref ? (
+            <Link href={authorHref} className="group inline-block">
+              <h4 className="font-semibold text-brand-dark-green group-hover:underline">{author}</h4>
+            </Link>
+          ) : (
+            <h4 className="font-semibold text-brand-dark-green">{author}</h4>
+          )}
           <p className="text-sm text-muted-foreground">{date}</p>
         </div>
         <StarRating rating={rating} size="sm" />
@@ -85,27 +93,6 @@ export function MithoReviewCard({
           ))}
         </div>
       )}
-
-      <div className="flex items-center gap-4 border-t border-brand-deep-green/10 pt-3">
-        <button
-          type="button"
-          onClick={handleHelpful}
-          className={cn(
-            "flex items-center gap-2 text-sm transition-colors",
-            isHelpful ? "text-brand-orange" : "text-muted-foreground hover:text-brand-orange",
-          )}
-        >
-          <ThumbsUp className={cn("h-4 w-4", isHelpful && "fill-brand-orange")} />
-          Helpful {helpfulCount > 0 && `(${helpfulCount})`}
-        </button>
-        <button
-          type="button"
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-danger transition-colors"
-        >
-          <Flag className="h-4 w-4" />
-          Report
-        </button>
-      </div>
 
       {ownerResponse && (
         <div className="mt-4 rounded-[1.2rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">

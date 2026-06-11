@@ -21,6 +21,7 @@ export interface BusinessMenuItem {
 export interface BusinessReview {
   id: string
   author: string
+  authorUsername?: string | null
   authorImage: string
   rating: number
   date: string

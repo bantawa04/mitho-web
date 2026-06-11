@@ -86,6 +86,7 @@ export function mapReviewItemToBusinessReview(item: ReviewItem): BusinessReview 
   return {
     id: item.id,
     author: item.author.name,
+    authorUsername: item.author.username,
     authorImage: item.author.avatarUrl || "/placeholder.svg",
     rating: item.rating,
     date: formatReviewDate(item.createdAt),

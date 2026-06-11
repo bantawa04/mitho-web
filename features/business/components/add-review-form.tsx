@@ -10,7 +10,7 @@ import { StarRating } from "@/components/mitho/mitho-rating"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { useUploadMedia } from "@/hooks/use-media"
-import { useCreateBusinessReview, useMyBusinessReview, useResubmitReview } from "@/hooks/use-reviews"
+import { useCreateBusinessReview, useMyBusinessReview, useResubmitReview, useUpdateReview } from "@/hooks/use-reviews"
 import { useToast } from "@/hooks/use-toast"
 import { extractApiErrorMessage } from "@/lib/api-error-utils"
 import { addReviewSchema, type AddReviewFormValues } from "@/lib/validators/reviews"
@@ -49,7 +49,7 @@ export function AddReviewForm({
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([])
   const [retainedMedia, setRetainedMedia] = React.useState<Media[]>([])
   const [needsMediaReselect, setNeedsMediaReselect] = React.useState(false)
-  const [hasInitializedRejectedDraft, setHasInitializedRejectedDraft] = React.useState(false)
+  const [hasInitializedServerDraft, setHasInitializedServerDraft] = React.useState(false)
   const form = useForm<AddReviewFormValues>({
     resolver: zodResolver(addReviewSchema),
     defaultValues: {
@@ -60,11 +60,14 @@ export function AddReviewForm({
 
   const reviewQuery = useMyBusinessReview(businessId, isAuthenticated)
   const createReview = useCreateBusinessReview(businessId)
+  const updateReview = useUpdateReview()
   const resubmitReview = useResubmitReview()
   const uploadMedia = useUploadMedia()
   const watchedRating = form.watch("rating")
   const watchedBody = form.watch("body")
-  const review = reviewQuery.data
+  const review = reviewQuery.data?.review ?? null
+  const canReview = reviewQuery.data?.canReview ?? true
+  const canReviewAgainAt = reviewQuery.data?.canReviewAgainAt ?? null
   const selectedFilePreviews = React.useMemo(
     () =>
       selectedFiles.map((file) => ({
@@ -100,14 +103,15 @@ export function AddReviewForm({
   }, [businessId, form])
 
   React.useEffect(() => {
-    if (!review || review.status !== "rejected" || hasInitializedRejectedDraft) return
+    if (!review || hasInitializedServerDraft) return
+    if (review.status !== "rejected" && review.status !== "pending") return
     form.reset({
       rating: review.rating,
       body: review.body,
     })
     setRetainedMedia(review.media ?? [])
-    setHasInitializedRejectedDraft(true)
-  }, [form, hasInitializedRejectedDraft, review])
+    setHasInitializedServerDraft(true)
+  }, [form, hasInitializedServerDraft, review])
 
   React.useEffect(() => {
     if (typeof window === "undefined") return
@@ -123,8 +127,13 @@ export function AddReviewForm({
     window.sessionStorage.setItem(draftKey(businessId), JSON.stringify(payload))
   }, [businessId, needsMediaReselect, watchedBody, watchedRating])
 
-  const isLocked = review?.status === "pending" || review?.status === "approved"
-  const isBusy = createReview.isPending || resubmitReview.isPending || uploadMedia.isPending
+  const isEditingPending = review?.status === "pending"
+  const isCooldownLocked = review?.status === "approved" && !canReview
+  const isLocked = isCooldownLocked
+  const isBusy = createReview.isPending || updateReview.isPending || resubmitReview.isPending || uploadMedia.isPending
+  const cooldownDateLabel = canReviewAgainAt
+    ? new Date(canReviewAgainAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
+    : null
 
   async function onSubmit(values: AddReviewFormValues) {
     if (isLocked) return
@@ -159,6 +168,22 @@ export function AddReviewForm({
         mediaIds: [...retainedMedia.map((media) => media.id), ...uploadedMediaIds],
       }
 
+      if (review?.status === "pending") {
+        const updated = await updateReview.mutateAsync({ id: review.id, payload })
+        if (typeof window !== "undefined") {
+          window.sessionStorage.removeItem(draftKey(businessId))
+        }
+        form.reset({ rating: updated.rating, body: updated.body })
+        setRetainedMedia(updated.media ?? [])
+        setSelectedFiles([])
+        setNeedsMediaReselect(false)
+        toast({
+          title: "Review updated",
+          description: "Your changes are saved and still pending moderation.",
+        })
+        return
+      }
+
       if (review?.status === "rejected") {
         await resubmitReview.mutateAsync({ id: review.id, payload })
       } else {
@@ -172,7 +197,7 @@ export function AddReviewForm({
       setSelectedFiles([])
       setRetainedMedia([])
       setNeedsMediaReselect(false)
-      setHasInitializedRejectedDraft(false)
+      setHasInitializedServerDraft(false)
       toast({
         title: "Review submitted",
         description: "Your review is now waiting for moderation.",
@@ -208,19 +233,35 @@ export function AddReviewForm({
                 <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-orange" />
                 <div>
                   <p className="font-semibold">Review submitted for moderation</p>
-                  <p className="mt-1 text-muted-foreground">We’ll publish it once an internal moderator approves it.</p>
+                  <p className="mt-1 text-muted-foreground">You can still edit it below until a moderator reviews it.</p>
                 </div>
               </div>
             </div>
           ) : null}
 
-          {review?.status === "approved" ? (
+          {isCooldownLocked ? (
             <div className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-4 w-4" />
                 <div>
-                  <p className="font-semibold">Your review is already live.</p>
-                  <p className="mt-1">Editing approved reviews is not available yet.</p>
+                  <p className="font-semibold">Your review is live.</p>
+                  <p className="mt-1">
+                    {cooldownDateLabel
+                      ? `You can write a new review for this place on ${cooldownDateLabel}.`
+                      : "You can write a new review for this place after the cooldown period."}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {review?.status === "approved" && canReview ? (
+            <div className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="mt-0.5 h-4 w-4" />
+                <div>
+                  <p className="font-semibold">Your previous review stays published.</p>
+                  <p className="mt-1">Been back since? Write an update below.</p>
                 </div>
               </div>
             </div>
@@ -354,7 +395,7 @@ export function AddReviewForm({
 
               <MithoButton type="submit" variant="primary" size="lg" className="w-full sm:w-auto" disabled={isLocked || isBusy}>
                 {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {review?.status === "rejected" ? "Resubmit review" : "Submit review"}
+                {review?.status === "rejected" ? "Resubmit review" : isEditingPending ? "Save changes" : "Submit review"}
               </MithoButton>
             </form>
           </Form>
