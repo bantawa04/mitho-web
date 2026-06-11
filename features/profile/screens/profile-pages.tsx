@@ -7,19 +7,22 @@ import { ArrowRight, Bookmark, Building2, Camera, ChevronRight, Clock3, Copy, Gl
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import { useCollections, usePublicCollections } from "@/hooks/use-collections"
+import { useMyReviews } from "@/hooks/use-reviews"
+import { MithoPagination } from "@/components/mitho/mitho-pagination"
+import type { ReviewItem, ReviewStatus } from "@/types/reviews"
 import { getCollectionCoverImages, getCollectionPlaceCount } from "@/features/collections/utils/collection-helpers"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
 import {
   followPublicProfile,
   getFollowingProfiles,
   getPublicCreatorDirectoryPage,
-  getPublicProfileByUsername,
   mockCustomerProfile,
   unfollowPublicProfile,
   type FollowingProfileListItem,
   type PublicCreatorDiscoveryItem,
   type PublicUserProfileData,
 } from "@/features/profile/data/profile-data"
+import { usePublicProfile } from "@/hooks/use-profile"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import {
   AlertDialog,
@@ -109,11 +112,13 @@ function BusinessBanner() {
 
 export function ProfileHubPage() {
   const collectionsQuery = useCollections({ perPage: 3 })
+  const recentReviewsQuery = useMyReviews({ perPage: 3 })
+  const recentReviews = recentReviewsQuery.data?.items ?? []
   const previewCollections = collectionsQuery.data?.items ?? []
   const collectionCount = collectionsQuery.data?.meta.total ?? 0
   const placeCountAcrossCollections = previewCollections.reduce((total, collection) => total + collection.itemCount, 0)
   const stats = [
-    { label: "Reviews written", value: mockCustomerProfile.reviewCount, icon: Star, accent: "text-brand-orange", bg: "bg-brand-orange/10" },
+    { label: "Reviews written", value: recentReviewsQuery.data?.meta.total ?? 0, icon: Star, accent: "text-brand-orange", bg: "bg-brand-orange/10" },
     { label: "Collections", value: collectionCount, icon: Bookmark, accent: "text-brand-deep-green", bg: "bg-brand-deep-green/10" },
     { label: "Places saved", value: placeCountAcrossCollections, icon: MapPin, accent: "text-brand-dark-green", bg: "bg-brand-dark-green/10" },
   ]
@@ -184,32 +189,45 @@ export function ProfileHubPage() {
             </MithoButton>
           </div>
           <div className="mt-4 divide-y divide-brand-deep-green/10">
-            {mockCustomerProfile.recentReviews.slice(0, 3).map((review) => (
-              <div key={review.id} className="py-4 first:pt-0 last:pb-0">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <Link href={review.publicHref} className="text-base font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
-                      {review.businessName}
-                    </Link>
-                    <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {review.location}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Star className="h-3.5 w-3.5 fill-brand-orange text-brand-orange" />
-                        {review.rating.toFixed(1)}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Clock3 className="h-3.5 w-3.5" />
-                        {review.date}
-                      </span>
+            {recentReviews.length > 0 ? (
+              recentReviews.map((review) => {
+                const href = reviewBusinessHref(review)
+                const badge = reviewStatusBadge[review.status]
+                return (
+                  <div key={review.id} className="py-4 first:pt-0 last:pb-0">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {href ? (
+                            <Link href={href} className="text-base font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
+                              {review.businessName || "Business"}
+                            </Link>
+                          ) : (
+                            <span className="text-base font-semibold text-brand-dark-green">{review.businessName || "Business"}</span>
+                          )}
+                          <MithoBadge variant={badge.variant}>{badge.label}</MithoBadge>
+                        </div>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            <Star className="h-3.5 w-3.5 fill-brand-orange text-brand-orange" />
+                            {review.rating.toFixed(1)}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Clock3 className="h-3.5 w-3.5" />
+                            {formatReviewDate(review.createdAt)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
+                    <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">{review.body}</p>
                   </div>
-                </div>
-                <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">{review.excerpt}</p>
-              </div>
-            ))}
+                )
+              })
+            ) : (
+              <p className="py-4 text-sm leading-7 text-muted-foreground">
+                {recentReviewsQuery.isLoading ? "Loading your reviews…" : "No reviews yet — your local notes will show up here."}
+              </p>
+            )}
           </div>
         </div>
 
@@ -265,7 +283,26 @@ export function ProfileHubPage() {
   )
 }
 
+const reviewStatusBadge: Record<ReviewStatus, { variant: "warning" | "success" | "danger"; label: string }> = {
+  pending: { variant: "warning", label: "Pending moderation" },
+  approved: { variant: "success", label: "Published" },
+  rejected: { variant: "danger", label: "Needs changes" },
+}
+
+function formatReviewDate(value: string) {
+  return new Date(value).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+}
+
+function reviewBusinessHref(review: ReviewItem) {
+  return review.businessSlug ? `/business/${review.businessSlug}` : null
+}
+
 export function ProfileReviewsPage() {
+  const [page, setPage] = React.useState(1)
+  const reviewsQuery = useMyReviews({ page, perPage: 10 })
+  const reviews = reviewsQuery.data?.items ?? []
+  const meta = reviewsQuery.data?.meta
+
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <section className={sectionCardClass}>
@@ -277,42 +314,71 @@ export function ProfileReviewsPage() {
         {/* Page header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
           <h1 className="text-2xl font-semibold text-brand-dark-green">My Reviews</h1>
-          <MithoBadge variant="neutral">{mockCustomerProfile.recentReviews.length} reviews</MithoBadge>
+          <MithoBadge variant="neutral">{meta?.total ?? 0} reviews</MithoBadge>
         </div>
 
         {/* Review list */}
         <div className="border-t border-brand-deep-green/10 px-6 sm:px-8">
-          {mockCustomerProfile.recentReviews.length > 0 ? (
-            <div className="divide-y divide-brand-deep-green/10">
-              {mockCustomerProfile.recentReviews.map((review) => (
-                <div key={review.id} className="py-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <Link href={review.publicHref} className="text-lg font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
-                        {review.businessName}
-                      </Link>
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {review.location}
-                        </span>
-                        <span className="inline-flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-brand-orange text-brand-orange" />
-                          {review.rating.toFixed(1)}
-                        </span>
-                        <span className="inline-flex items-center gap-1">
-                          <Clock3 className="h-4 w-4" />
-                          {review.date}
-                        </span>
-                      </div>
-                    </div>
-                    <MithoButton variant="ghost" size="sm" asChild>
-                      <Link href={review.publicHref}>View business</Link>
-                    </MithoButton>
-                  </div>
-                  <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{review.excerpt}</p>
-                </div>
+          {reviewsQuery.isLoading ? (
+            <div className="space-y-4 py-5">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="h-28 animate-pulse rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8]" />
               ))}
+            </div>
+          ) : reviewsQuery.isError ? (
+            <div className="py-10 text-center">
+              <p className="text-sm leading-7 text-muted-foreground">Could not load your reviews right now. Please try again shortly.</p>
+            </div>
+          ) : reviews.length > 0 ? (
+            <div className="divide-y divide-brand-deep-green/10">
+              {reviews.map((review) => {
+                const href = reviewBusinessHref(review)
+                const badge = reviewStatusBadge[review.status]
+                return (
+                  <div key={review.id} className="py-5">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {href ? (
+                            <Link href={href} className="text-lg font-semibold text-brand-dark-green transition-colors hover:text-brand-orange">
+                              {review.businessName || "Business"}
+                            </Link>
+                          ) : (
+                            <span className="text-lg font-semibold text-brand-dark-green">{review.businessName || "Business"}</span>
+                          )}
+                          <MithoBadge variant={badge.variant}>{badge.label}</MithoBadge>
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            <Star className="h-4 w-4 fill-brand-orange text-brand-orange" />
+                            {review.rating.toFixed(1)}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Clock3 className="h-4 w-4" />
+                            {formatReviewDate(review.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+                      {href ? (
+                        <MithoButton variant="ghost" size="sm" asChild>
+                          <Link href={href}>View business</Link>
+                        </MithoButton>
+                      ) : null}
+                    </div>
+                    <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{review.body}</p>
+                    {review.status === "rejected" ? (
+                      <div className="mt-3 max-w-3xl rounded-[1rem] border border-danger/15 bg-danger/5 p-3 text-sm text-danger">
+                        {review.moderationNote ? <p>{review.moderationNote}</p> : <p>This review was not approved.</p>}
+                        {href ? (
+                          <Link href={`${href}#add-review`} className="mt-1 inline-block font-semibold underline-offset-2 hover:underline">
+                            Fix and resubmit
+                          </Link>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              })}
             </div>
           ) : (
             <div className="py-12 text-center">
@@ -325,6 +391,12 @@ export function ProfileReviewsPage() {
               </p>
             </div>
           )}
+
+          {meta && meta.totalPages > 1 ? (
+            <div className="border-t border-brand-deep-green/10 py-5">
+              <MithoPagination currentPage={page} totalPages={Number(meta.totalPages)} onPageChange={setPage} />
+            </div>
+          ) : null}
         </div>
       </section>
     </div>
@@ -1034,28 +1106,39 @@ export function PublicUserDiscoveryPage() {
 }
 
 export function PublicUserProfilePage({ username }: { username: string }) {
-  const { isAuthenticated } = useAuthSnapshot()
+  const { isAuthenticated, authUser } = useAuthSnapshot()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
-  const [profile, setProfile] = React.useState(() => getPublicProfileByUsername(username))
+  const [isFollowing, setIsFollowing] = React.useState(false)
+
+  const profileQuery = usePublicProfile(username)
   const publicCollectionsQuery = usePublicCollections(username, { perPage: 100 })
 
   React.useEffect(() => {
     setIsSignInOpen(false)
     setPendingFollowAfterAuth(false)
-    setProfile(getPublicProfileByUsername(username))
+    setIsFollowing(false)
   }, [username])
 
   React.useEffect(() => {
-    if (!isAuthenticated || !pendingFollowAfterAuth || !profile || profile.isFollowedByCurrentUser) return
-
-    followPublicProfile(profile.username)
+    if (!isAuthenticated || !pendingFollowAfterAuth) return
+    setIsFollowing(true)
     setPendingFollowAfterAuth(false)
     setIsSignInOpen(false)
-    setProfile(getPublicProfileByUsername(username))
-  }, [isAuthenticated, pendingFollowAfterAuth, profile, username])
+  }, [isAuthenticated, pendingFollowAfterAuth])
 
-  if (!profile) {
+  if (profileQuery.isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-10 md:py-12">
+        <div className="space-y-6">
+          <div className="h-48 animate-pulse rounded-[1.75rem] border border-brand-deep-green/10 bg-white/70" />
+          <div className="h-24 animate-pulse rounded-[1.75rem] border border-brand-deep-green/10 bg-white/70" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!profileQuery.data) {
     return (
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white px-6 py-8 shadow-[0_12px_30px_rgba(10,70,53,0.05)] sm:px-8">
@@ -1068,32 +1151,25 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     )
   }
 
-  const profileWithCollections = {
-    ...profile,
-    collectionCount: publicCollectionsQuery.data?.items.length ?? profile.collectionCount,
+  const apiProfile = profileQuery.data
+  const profile: PublicUserProfileData = {
+    ...apiProfile,
+    avatarUrl: apiProfile.avatarUrl ?? "/placeholder.svg",
+    collectionCount: publicCollectionsQuery.data?.items.length ?? apiProfile.collectionCount,
+    isFollowedByCurrentUser: isFollowing,
   }
-  const isOwnProfile = isAuthenticated && profile.username === mockCustomerProfile.username
 
-  const syncProfile = () => {
-    setProfile(getPublicProfileByUsername(username))
-  }
+  const profileWithCollections = profile
+  const isOwnProfile = isAuthenticated && authUser?.user?.username === username
 
   const handleFollowToggle = () => {
     if (isOwnProfile) return
-
     if (!isAuthenticated) {
       setPendingFollowAfterAuth(true)
       setIsSignInOpen(true)
       return
     }
-
-    if (profile.isFollowedByCurrentUser) {
-      unfollowPublicProfile(profile.username)
-    } else {
-      followPublicProfile(profile.username)
-    }
-
-    syncProfile()
+    setIsFollowing((prev) => !prev)
   }
 
   return (
