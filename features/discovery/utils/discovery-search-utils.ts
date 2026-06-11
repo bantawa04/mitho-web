@@ -1,20 +1,18 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
 import { CATEGORY_OPTIONS } from "@/content/taxonomy/category-taxonomy"
-import { EXPLORE_CATEGORY_OPTIONS, EXPLORE_CITY_OPTIONS, EXPLORE_PRICE_OPTIONS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
+import { EXPLORE_CATEGORY_OPTIONS, EXPLORE_CITY_OPTIONS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
 import type { ExploreFilters, ExploreResult } from "@/features/discovery/explore/explore-types"
 
 export interface CategoryPageFilters {
   q: string
   city: string
   sort: string
-  price: string
 }
 
 export interface CityPageFilters {
   q: string
   category: string
   sort: string
-  price: string
 }
 
 function readTrimmedQuery(params: ReadonlyURLSearchParams) {
@@ -67,7 +65,6 @@ export function normalizeCategoryPageFilters(params: ReadonlyURLSearchParams): C
     q: readTrimmedQuery(params),
     city: readAllowedValue(params, "city", EXPLORE_CITY_OPTIONS, "Kathmandu"),
     sort: readAllowedOptionValue(params, "sort", EXPLORE_SORT_OPTIONS, "recommended"),
-    price: readAllowedOptionValue(params, "price", EXPLORE_PRICE_OPTIONS, "any"),
   }
 }
 
@@ -75,7 +72,6 @@ export function buildCategorySearchString(filters: CategoryPageFilters) {
   return buildSearchString(filters, {
     city: "Kathmandu",
     sort: "recommended",
-    price: "any",
   })
 }
 
@@ -84,7 +80,6 @@ export function normalizeCityPageFilters(params: ReadonlyURLSearchParams): CityP
     q: readTrimmedQuery(params),
     category: readAllowedOptionValue(params, "category", CATEGORY_OPTIONS, "all"),
     sort: readAllowedOptionValue(params, "sort", EXPLORE_SORT_OPTIONS, "recommended"),
-    price: readAllowedOptionValue(params, "price", EXPLORE_PRICE_OPTIONS, "any"),
   }
 }
 
@@ -92,7 +87,6 @@ export function buildCitySearchString(filters: CityPageFilters) {
   return buildSearchString(filters, {
     category: "all",
     sort: "recommended",
-    price: "any",
   })
 }
 
@@ -103,7 +97,6 @@ export function normalizeExplorePageFilters(params: ReadonlyURLSearchParams): Ex
     category: readAllowedOptionValue(params, "category", EXPLORE_CATEGORY_OPTIONS, "all"),
     sort: readAllowedOptionValue(params, "sort", EXPLORE_SORT_OPTIONS, "recommended"),
     openNow: params.get("openNow") === "true",
-    price: readAllowedOptionValue(params, "price", EXPLORE_PRICE_OPTIONS, "any"),
   }
 }
 
@@ -113,7 +106,6 @@ export function buildExploreSearchString(filters: ExploreFilters) {
     category: "all",
     sort: "recommended",
     openNow: false,
-    price: "any",
   })
 }
 

@@ -27,9 +27,7 @@ export function ExploreResultCard({ result }: ExploreResultCardProps) {
           <div className="flex flex-wrap items-center gap-2">
             {result.openNow ? <OpenNowBadge /> : <ClosedBadge />}
             <MithoBadge variant="muted">{result.cuisine}</MithoBadge>
-            <MithoBadge variant="outline" className="border-brand-deep-green/18 text-brand-dark-green hover:bg-white">
-              {result.priceRange}
-            </MithoBadge>
+
           </div>
 
           <div className="mt-4 flex items-start justify-between gap-4">
@@ -63,16 +61,11 @@ export function ExploreResultCard({ result }: ExploreResultCardProps) {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)]">
+          <div className="mt-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-deep-green/58">What to order</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-deep-green/58">Known for</p>
               <p className="mt-2 text-lg font-semibold text-brand-dark-green">{result.standoutDish}</p>
               <p className="mt-2 text-sm leading-6 text-foreground">{result.whyGo}</p>
-            </div>
-
-            <div className="rounded-[1.35rem] bg-surface-soft px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-deep-green/58">Why locals trust it</p>
-              <p className="mt-2 text-sm leading-6 text-foreground">{result.trustNote}</p>
             </div>
           </div>
 
