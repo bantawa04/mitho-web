@@ -57,3 +57,11 @@ export async function getPublicProfile(username: string): Promise<PublicProfileD
   const { data } = await API.get<ISuccessResponse<PublicProfileData>>(`/users/${username}`)
   return data.data
 }
+
+export async function followUser(username: string): Promise<void> {
+  await API.post(`/users/${username}/follow`)
+}
+
+export async function unfollowUser(username: string): Promise<void> {
+  await API.delete(`/users/${username}/follow`)
+}
