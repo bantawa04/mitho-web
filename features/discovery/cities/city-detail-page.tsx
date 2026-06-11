@@ -8,7 +8,7 @@ import { ArrowRight, ArrowUpRight, Filter, Search } from "lucide-react"
 import { CATEGORY_OPTIONS, getCategoryBySlug, getCategoryIcon } from "@/content/taxonomy/category-taxonomy"
 import type { CitySlug } from "@/content/taxonomy/city-taxonomy"
 import { CITY_METADATA, getCityBySlug } from "@/content/taxonomy/city-taxonomy"
-import { EXPLORE_PRICE_OPTIONS, EXPLORE_RESULTS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
+import { EXPLORE_RESULTS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
 import { ExploreResultCard } from "@/features/discovery/explore/explore-result-card"
 import type { ExploreResult } from "@/features/discovery/explore/explore-types"
 import {
@@ -131,7 +131,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
 
   React.useEffect(() => {
     setCurrentPage(1)
-  }, [filters.q, filters.category, filters.sort, filters.price])
+  }, [filters.q, filters.category, filters.sort])
 
   const applyFilters = React.useCallback(
     (patch: Partial<CityPageFilters>) => {
@@ -153,7 +153,6 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
 
     const nextResults = cityResults.filter((result) => {
       if (filters.category !== "all" && result.category !== filters.category) return false
-      if (filters.price !== "any" && result.priceRange !== filters.price) return false
       if (!query) return true
 
       const haystacks = [
@@ -173,7 +172,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
     })
 
     return rankExploreResults(nextResults, filters.sort, { preferFeatured: true })
-  }, [cityResults, filters.category, filters.price, filters.q, filters.sort])
+  }, [cityResults, filters.category, filters.q, filters.sort])
 
   const paginatedResults = React.useMemo(() => {
     const startIndex = (currentPage - 1) * RESULTS_PER_PAGE
@@ -182,7 +181,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
 
   const totalPages = Math.max(1, Math.ceil(filteredResults.length / RESULTS_PER_PAGE))
   const hasActiveFilters =
-    Boolean(filters.q) || filters.category !== "all" || filters.sort !== "recommended" || filters.price !== "any"
+    Boolean(filters.q) || filters.category !== "all" || filters.sort !== "recommended"
 
   const relatedCities = city.relatedCitySlugs
     .map((relatedSlug) => CITY_METADATA.find((item) => item.slug === relatedSlug))
@@ -396,7 +395,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
                   <SheetContent side="bottom" className="rounded-t-[1.75rem] border-brand-deep-green/10 bg-[#fffdf8]">
                     <SheetHeader>
                       <SheetTitle>Refine this city</SheetTitle>
-                      <SheetDescription>Adjust category, price, and ranking without leaving this city guide.</SheetDescription>
+                      <SheetDescription>Adjust category and ranking without leaving this city guide.</SheetDescription>
                     </SheetHeader>
 
                     <div className="space-y-4 px-4 pb-2">
@@ -409,22 +408,6 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
                           <MithoSelectContent>
                             <MithoSelectItem value="all">All categories</MithoSelectItem>
                             {CATEGORY_OPTIONS.map((option) => (
-                              <MithoSelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </MithoSelectItem>
-                            ))}
-                          </MithoSelectContent>
-                        </MithoSelect>
-                      </div>
-
-                      <div className="space-y-2">
-                        <p className="text-sm font-semibold text-brand-dark-green">Price</p>
-                        <MithoSelect value={filters.price} onValueChange={(value) => applyFilters({ price: value })}>
-                          <MithoSelectTrigger>
-                            <MithoSelectValue placeholder="Price" />
-                          </MithoSelectTrigger>
-                          <MithoSelectContent>
-                            {EXPLORE_PRICE_OPTIONS.map((option) => (
                               <MithoSelectItem key={option.value} value={option.value}>
                                 {option.label}
                               </MithoSelectItem>
@@ -488,18 +471,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
                 </MithoSelectContent>
               </MithoSelect>
 
-              <MithoSelect value={filters.price} onValueChange={(value) => applyFilters({ price: value })}>
-                <MithoSelectTrigger className="h-11 w-[170px] rounded-full bg-white">
-                  <MithoSelectValue placeholder="Price" />
-                </MithoSelectTrigger>
-                <MithoSelectContent>
-                  {EXPLORE_PRICE_OPTIONS.map((option) => (
-                    <MithoSelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MithoSelectItem>
-                  ))}
-                </MithoSelectContent>
-              </MithoSelect>
+
 
               <MithoSelect value={filters.sort} onValueChange={(value) => applyFilters({ sort: value })}>
                 <MithoSelectTrigger className="h-11 w-[190px] rounded-full bg-white">

@@ -2,7 +2,7 @@ import { Header } from "@/features/home/components/header"
 import { TrendingSection } from "@/features/home/components/trending-section"
 import { CategoriesSection } from "@/features/home/components/categories-section"
 import { PopularNearYouSection } from "@/features/home/components/popular-near-you-section"
-import { FeaturedReviewsSection } from "@/features/home/components/featured-reviews-section"
+import { WhyMithoSection } from "@/features/home/components/why-mitho-section"
 import { AppPromotionSection } from "@/features/home/components/app-promotion-section"
 import { BusinessCtaSection } from "@/features/home/components/business-cta-section"
 import { SponsoredListingsSection } from "@/features/home/components/sponsored-listings-section"
@@ -19,7 +19,7 @@ export default function HomePage() {
         <HeroV2 />
 
         <div className="bg-[linear-gradient(180deg,#fffdf8_0%,#fff9f0_100%)]">
-          <FeaturedReviewsSection />
+          <WhyMithoSection />
         </div>
 
         <div className="border-y border-brand-deep-green/10 bg-[linear-gradient(180deg,#fffef9_0%,#fbf6eb_100%)]">
