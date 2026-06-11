@@ -22,7 +22,7 @@ import {
   type PublicCreatorDiscoveryItem,
   type PublicUserProfileData,
 } from "@/features/profile/data/profile-data"
-import { usePublicProfile } from "@/hooks/use-profile"
+import { useFollowUser, usePublicProfile, useUnfollowUser } from "@/hooks/use-profile"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import {
   AlertDialog,
@@ -1109,20 +1109,20 @@ export function PublicUserProfilePage({ username }: { username: string }) {
   const { isAuthenticated, authUser } = useAuthSnapshot()
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const [pendingFollowAfterAuth, setPendingFollowAfterAuth] = React.useState(false)
-  const [isFollowing, setIsFollowing] = React.useState(false)
 
   const profileQuery = usePublicProfile(username)
+  const followMutation = useFollowUser(username)
+  const unfollowMutation = useUnfollowUser(username)
   const publicCollectionsQuery = usePublicCollections(username, { perPage: 100 })
 
   React.useEffect(() => {
     setIsSignInOpen(false)
     setPendingFollowAfterAuth(false)
-    setIsFollowing(false)
   }, [username])
 
   React.useEffect(() => {
     if (!isAuthenticated || !pendingFollowAfterAuth) return
-    setIsFollowing(true)
+    followMutation.mutate()
     setPendingFollowAfterAuth(false)
     setIsSignInOpen(false)
   }, [isAuthenticated, pendingFollowAfterAuth])
@@ -1156,20 +1156,24 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     ...apiProfile,
     avatarUrl: apiProfile.avatarUrl ?? "/placeholder.svg",
     collectionCount: publicCollectionsQuery.data?.items.length ?? apiProfile.collectionCount,
-    isFollowedByCurrentUser: isFollowing,
   }
 
   const profileWithCollections = profile
   const isOwnProfile = isAuthenticated && authUser?.user?.username === username
+  const isToggling = followMutation.isPending || unfollowMutation.isPending
 
   const handleFollowToggle = () => {
-    if (isOwnProfile) return
+    if (isOwnProfile || isToggling) return
     if (!isAuthenticated) {
       setPendingFollowAfterAuth(true)
       setIsSignInOpen(true)
       return
     }
-    setIsFollowing((prev) => !prev)
+    if (profile.isFollowedByCurrentUser) {
+      unfollowMutation.mutate()
+    } else {
+      followMutation.mutate()
+    }
   }
 
   return (
@@ -1197,6 +1201,8 @@ export function PublicUserProfilePage({ username }: { username: string }) {
                         type="button"
                         variant={profileWithCollections.isFollowedByCurrentUser ? "outline-secondary" : "secondary"}
                         onClick={handleFollowToggle}
+                        disabled={isToggling}
+                        className="cursor-pointer"
                       >
                         {profileWithCollections.isFollowedByCurrentUser ? (
                           <>
