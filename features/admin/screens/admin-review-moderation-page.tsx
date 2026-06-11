@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import axios from "axios"
 import Link from "next/link"
 import { ChevronRight, Eye, Trash2 } from "lucide-react"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
