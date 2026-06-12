@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import type { Resolver } from "react-hook-form"
-import { Building2, Globe, Image, MapPin, Phone, Sparkles, UtensilsCrossed, X } from "lucide-react"
+import { Building2, Globe, MapPin, Phone, Sparkles, UtensilsCrossed, X } from "lucide-react"
 import { useEstablishmentTypes } from "@/hooks/use-establishment-types"
 import { useUpdateBusiness } from "@/hooks/use-businesses"
 import { useMunicipalities } from "@/hooks/use-nepal-admin"
@@ -80,11 +80,9 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
 
   const [logoMedia, setLogoMedia] = useState<Media | null>(null)
   const [bannerMedia, setBannerMedia] = useState<Media | null>(null)
-  const [photosMedia, setPhotosMedia] = useState<Media[]>([])
   const [formRenderKey, setFormRenderKey] = useState(0)
   const [logoPickerOpen, setLogoPickerOpen] = useState(false)
   const [bannerPickerOpen, setBannerPickerOpen] = useState(false)
-  const [photosPickerOpen, setPhotosPickerOpen] = useState(false)
 
   const form = useForm<BusinessOwnerFormValues>({
     resolver: zodResolver(businessOwnerSchema) as Resolver<BusinessOwnerFormValues>,
@@ -96,7 +94,6 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
     setFormRenderKey((k) => k + 1)
     setLogoMedia(b.logo ?? null)
     setBannerMedia(b.banner ?? null)
-    setPhotosMedia(b.photos ?? [])
   }, [b, form])
 
   function handleLogoSelect(media: Media) {
@@ -109,27 +106,10 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
     form.setValue("bannerId", media.id)
   }
 
-  function handlePhotoSelect(media: Media) {
-    setPhotosMedia((prev) => {
-      if (prev.find((m) => m.id === media.id)) return prev
-      return [...prev, media]
-    })
-    const current = form.getValues("photos") ?? []
-    if (!current.includes(media.id)) {
-      form.setValue("photos", [...current, media.id])
-    }
-  }
-
-  function removePhoto(id: string) {
-    setPhotosMedia((prev) => prev.filter((m) => m.id !== id))
-    form.setValue("photos", (form.getValues("photos") ?? []).filter((pid) => pid !== id))
-  }
-
   function handleDiscard() {
     form.reset(buildBusinessOwnerFormValues(b))
     setLogoMedia(b.logo ?? null)
     setBannerMedia(b.banner ?? null)
-    setPhotosMedia(b.photos ?? [])
   }
 
   async function onSubmit(values: BusinessOwnerFormValues) {
@@ -178,7 +158,6 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
           cuisineIds: values.cuisineIds,
           logoId: values.logoId,
           bannerId: values.bannerId,
-          photos: values.photos ?? [],
           phone: values.phone,
           phoneSecondary: values.phoneSecondary || undefined,
           email: values.email || undefined,
@@ -229,7 +208,6 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
 
   const existingLogoId = form.watch("logoId")
   const existingBannerId = form.watch("bannerId")
-  const existingPhotos = form.watch("photos") ?? []
   const establishmentTypeOptions =
     b.establishmentType && !establishmentTypes?.some((type) => type.id === b.establishmentType?.id)
       ? [...(establishmentTypes ?? []), b.establishmentType]
@@ -537,59 +515,6 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
               </div>
             </section>
 
-            {/* Photos gallery */}
-            <section className="rounded-lg border border-border bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                  <Image className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-foreground">Photos gallery</h2>
-                  <p className="text-sm text-muted-foreground">Gallery images shown on the business details page.</p>
-                </div>
-              </div>
-              <div className="mt-6 border-t border-border pt-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-muted-foreground">Images</p>
-                  <button
-                    type="button"
-                    onClick={() => setPhotosPickerOpen(true)}
-                    className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
-                  >
-                    Add photo
-                  </button>
-                </div>
-                {photosMedia.length > 0 ? (
-                  <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
-                    {photosMedia.map((photo) => (
-                      <div key={photo.id} className="relative aspect-square">
-                        <img
-                          src={photo.publicUrl}
-                          alt={photo.altText ?? photo.filename}
-                          className="h-full w-full rounded-lg border border-border object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removePhoto(photo.id)}
-                          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm border border-border text-muted-foreground hover:text-foreground cursor-pointer"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : existingPhotos.length > 0 ? (
-                  <p className="text-xs text-muted-foreground">
-                    {existingPhotos.length} photo{existingPhotos.length > 1 ? "s" : ""} already set.
-                  </p>
-                ) : (
-                  <div className="rounded-lg border border-dashed border-border bg-muted px-6 py-6 text-center">
-                    <p className="text-sm text-muted-foreground">No gallery photos added yet.</p>
-                  </div>
-                )}
-              </div>
-            </section>
-
             {/* Contact & links */}
             <section className="rounded-lg border border-border bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
@@ -874,12 +799,6 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
         onOpenChange={setBannerPickerOpen}
         accept="image"
         onSelect={handleBannerSelect}
-      />
-      <MediaPickerDialog
-        open={photosPickerOpen}
-        onOpenChange={setPhotosPickerOpen}
-        accept="image"
-        onSelect={handlePhotoSelect}
       />
     </div>
   )

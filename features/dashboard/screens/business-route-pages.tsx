@@ -17,8 +17,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { BusinessGallery } from "@/features/dashboard/components/business-gallery"
 import { KeyMetrics } from "@/features/dashboard/components/key-metrics"
-import { MediaPerformance } from "@/features/dashboard/components/media-performance"
 import { ReviewsOverview } from "@/features/dashboard/components/reviews-overview"
 import { TrafficAnalytics } from "@/features/dashboard/components/traffic-analytics"
 import type { BusinessLifecycleStatus } from "@/features/dashboard/data/dashboard-business-data"
@@ -39,10 +39,10 @@ export function ReviewsRoutePage() {
   )
 }
 
-export function PhotosRoutePage() {
+export function PhotosRoutePage({ businessId }: { businessId: string }) {
   return (
     <div className="space-y-6 pb-12">
-      <MediaPerformance />
+      <BusinessGallery businessId={businessId} />
     </div>
   )
 }

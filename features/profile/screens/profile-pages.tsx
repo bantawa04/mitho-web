@@ -15,14 +15,14 @@ import { CollectionShowcaseCard } from "@/features/collections/components/collec
 import {
   followPublicProfile,
   getFollowingProfiles,
-  getPublicCreatorDirectoryPage,
   mockCustomerProfile,
   unfollowPublicProfile,
   type FollowingProfileListItem,
-  type PublicCreatorDiscoveryItem,
   type PublicUserProfileData,
 } from "@/features/profile/data/profile-data"
-import { useFollowUser, usePublicProfile, useUnfollowUser } from "@/hooks/use-profile"
+import type { PublicCreatorItem } from "@/lib/api/profile"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { useFollowUser, usePublicCreatorDirectory, usePublicProfile, useUnfollowUser } from "@/hooks/use-profile"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import {
   AlertDialog,
@@ -46,7 +46,7 @@ const sectionCardClass =
   "rounded-xl border border-brand-deep-green/10 bg-white shadow-sm"
 const PUBLIC_COLLECTION_PAGE_SIZE = 12
 const PUBLIC_COLLECTION_SEARCH_THRESHOLD = 6
-const PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE = 4
+const PUBLIC_CREATOR_DIRECTORY_PER_PAGE = 12
 
 function ProfileTabsPanel() {
   return (
@@ -967,22 +967,28 @@ function PublicReviewsSection({ profile }: { profile: PublicUserProfileData }) {
   )
 }
 
-function CreatorDiscoveryCard({ creator }: { creator: PublicCreatorDiscoveryItem }) {
+function CreatorDiscoveryCard({ creator }: { creator: PublicCreatorItem }) {
   return (
     <Link
       href={`/users/${creator.username}`}
       className="group flex h-full flex-col rounded-xl border border-brand-deep-green/10 bg-white p-5 transition-colors duration-200 hover:border-brand-deep-green/18"
     >
       <div className="flex items-start gap-4">
-        <img
-          src={creator.avatarUrl}
-          alt={creator.name}
-          className="h-16 w-16 rounded-full border-4 border-brand-soft-beige object-cover"
-        />
+        {creator.avatarUrl ? (
+          <img
+            src={creator.avatarUrl}
+            alt={creator.name}
+            className="h-16 w-16 rounded-full border-4 border-brand-soft-beige object-cover"
+          />
+        ) : (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-brand-soft-beige bg-brand-deep-green/10 text-xl font-semibold text-brand-deep-green">
+            {creator.name ? creator.name[0].toUpperCase() : "?"}
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <MithoBadge variant="muted">{creator.followerCount} followers</MithoBadge>
-            <MithoBadge variant="neutral">{creator.publicCollectionCount} collections</MithoBadge>
+            <MithoBadge variant="neutral">{creator.collectionCount} collections</MithoBadge>
             <MithoBadge variant="muted">{creator.reviewCount} reviews</MithoBadge>
           </div>
           <h2 className="mt-3 line-clamp-2 text-xl font-semibold text-brand-dark-green">{creator.name}</h2>
@@ -996,47 +1002,50 @@ function CreatorDiscoveryCard({ creator }: { creator: PublicCreatorDiscoveryItem
 }
 
 export function PublicUserDiscoveryPage() {
-  const [query, setQuery] = React.useState("")
-  const deferredQuery = React.useDeferredValue(query.trim())
-  const [isPending, startTransition] = React.useTransition()
-  const [directoryPage, setDirectoryPage] = React.useState(() =>
-    getPublicCreatorDirectoryPage({ limit: PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE }),
-  )
+  const [inputQuery, setInputQuery] = React.useState("")
+  const debouncedQuery = useDebouncedValue(inputQuery.trim(), 300)
+  const [page, setPage] = React.useState(1)
+  const [allItems, setAllItems] = React.useState<PublicCreatorItem[]>([])
+  const appendRef = React.useRef(false)
+
+  const hasQuery = debouncedQuery.length > 0
 
   React.useEffect(() => {
-    startTransition(() => {
-      setDirectoryPage(
-        getPublicCreatorDirectoryPage({
-          query: deferredQuery,
-          limit: PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE,
-        }),
-      )
-    })
-  }, [deferredQuery])
+    setPage(1)
+    appendRef.current = false
+    if (!hasQuery) setAllItems([])
+  }, [debouncedQuery, hasQuery])
+
+  const { data, isLoading, isFetching } = usePublicCreatorDirectory({
+    query: debouncedQuery,
+    page,
+    perPage: PUBLIC_CREATOR_DIRECTORY_PER_PAGE,
+    enabled: hasQuery,
+  })
+
+  React.useEffect(() => {
+    if (!data) return
+    if (appendRef.current) {
+      setAllItems((prev) => [...prev, ...data.items])
+      appendRef.current = false
+    } else {
+      setAllItems(data.items)
+    }
+  }, [data])
 
   const handleShowMore = () => {
-    if (!directoryPage.nextCursor) return
-
-    startTransition(() => {
-      const nextPage = getPublicCreatorDirectoryPage({
-        query: deferredQuery,
-        limit: PUBLIC_CREATOR_DIRECTORY_PAGE_SIZE,
-        cursor: directoryPage.nextCursor,
-      })
-
-      setDirectoryPage((currentPage) => ({
-        items: [...currentPage.items, ...nextPage.items],
-        totalCount: nextPage.totalCount,
-        nextCursor: nextPage.nextCursor,
-        hasMore: nextPage.hasMore,
-      }))
-    })
+    appendRef.current = true
+    setPage((p) => p + 1)
   }
 
-  const isSearching = deferredQuery.length > 0
-  const resultLabel = isSearching
-    ? `${directoryPage.totalCount} matching ${directoryPage.totalCount === 1 ? "creator" : "creators"}`
-    : `Showing ${directoryPage.items.length} of ${directoryPage.totalCount} creators`
+  const totalItems = data?.meta.totalItems ?? 0
+  const hasMore = data ? page < data.meta.totalPages : false
+
+  const resultLabel = isLoading
+    ? "Searching..."
+    : hasQuery
+      ? `${totalItems} matching ${totalItems === 1 ? "creator" : "creators"}`
+      : null
 
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
@@ -1056,43 +1065,52 @@ export function PublicUserDiscoveryPage() {
                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  className="h-12 rounded-lg border-brand-deep-green/12 bg-muted pl-11 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  value={inputQuery}
+                  onChange={(event) => setInputQuery(event.target.value)}
+                  className="h-12 rounded-lg border-border bg-muted pl-11 shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
                   placeholder="Search creators by name or username"
                 />
               </div>
-              <span className="text-sm text-muted-foreground">{resultLabel}</span>
+              {resultLabel ? <span className="text-sm text-muted-foreground">{resultLabel}</span> : null}
             </div>
 
-            {!directoryPage.totalCount ? (
-              <div className="rounded-xl border border-dashed border-brand-deep-green/18 bg-muted p-6">
-                <p className="text-base font-semibold text-brand-dark-green">
-                  {isSearching ? "No creators match this search." : "Public creators will appear here soon."}
-                </p>
+            {!hasQuery ? (
+              <div className="rounded-xl border border-dashed border-border bg-muted p-6">
+                <p className="text-base font-semibold text-foreground">Search to find creators.</p>
                 <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
-                  {isSearching
-                    ? "Try another name or username to keep browsing public profiles."
-                    : "Once more people publish their collections and reviews, this page will become a stronger discovery layer."}
+                  Type a name or username above to discover people who have built public food lists on Mitho.
+                </p>
+              </div>
+            ) : isLoading ? (
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="h-32 animate-pulse rounded-xl bg-muted" />
+                ))}
+              </div>
+            ) : !allItems.length ? (
+              <div className="rounded-xl border border-dashed border-border bg-muted p-6">
+                <p className="text-base font-semibold text-foreground">No creators match this search.</p>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                  Try another name or username to keep browsing public profiles.
                 </p>
               </div>
             ) : (
               <div className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {directoryPage.items.map((creator) => (
-                    <CreatorDiscoveryCard key={creator.username} creator={creator} />
+                  {allItems.map((creator) => (
+                    <CreatorDiscoveryCard key={creator.userId} creator={creator} />
                   ))}
                 </div>
 
-                {directoryPage.hasMore ? (
+                {hasMore ? (
                   <div className="flex justify-center">
                     <MithoButton
                       type="button"
                       variant="outline-secondary"
                       onClick={handleShowMore}
-                      disabled={isPending}
+                      disabled={isFetching}
                     >
-                      {isPending ? "Loading more..." : "Show more"}
+                      {isFetching ? "Loading more..." : "Show more"}
                     </MithoButton>
                   </div>
                 ) : null}
