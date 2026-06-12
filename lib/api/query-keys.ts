@@ -1,4 +1,5 @@
 import type { ListAdminUsersParams } from "@/types/admin-users"
+import type { ListPublicCreatorsParams } from "@/lib/api/profile"
 import type { ListAdminCustomersParams } from "@/types/admin-customers"
 import type { ListBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
@@ -55,6 +56,7 @@ export const queryKeys = {
   },
   profiles: {
     public: (username: string) => ["profiles", "public", username] as const,
+    directory: (params: ListPublicCreatorsParams) => ["profiles", "directory", params] as const,
   },
   reviews: {
     all: ["reviews"] as const,
