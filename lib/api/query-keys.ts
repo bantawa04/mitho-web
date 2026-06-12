@@ -4,6 +4,7 @@ import type { ListAdminCustomersParams } from "@/types/admin-customers"
 import type { ListBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
 import type { ListCollectionsParams } from "@/types/collections"
+import type { ListAdminGalleryParams } from "@/types/gallery"
 import type { ListMediaParams } from "@/types/media"
 import type { ListAdminReviewsParams, ListBusinessReviewsParams, ListMyReviewsParams } from "@/types/reviews"
 
@@ -28,6 +29,7 @@ export const queryKeys = {
     detail: (id: string) => ["businesses", "detail", id] as const,
     mine: ["businesses", "mine"] as const,
     hours: (id: string) => ["businesses", id, "hours"] as const,
+    gallery: (id: string) => ["businesses", id, "gallery"] as const,
   },
   establishmentTypes: {
     all: ["establishment-types"] as const,
@@ -98,6 +100,10 @@ export const queryKeys = {
       all: ["admin", "reviews"] as const,
       list: (params: ListAdminReviewsParams) => ["admin", "reviews", "list", params] as const,
       detail: (id: string | null) => ["admin", "reviews", "detail", id] as const,
+    },
+    gallery: {
+      all: ["admin", "gallery"] as const,
+      list: (params: ListAdminGalleryParams) => ["admin", "gallery", "list", params] as const,
     },
   },
 }
