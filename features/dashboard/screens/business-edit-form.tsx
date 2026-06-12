@@ -245,24 +245,24 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
         >
 
           {/* Sticky action bar */}
-          <div className="sticky top-40 sm:top-[100px] z-20 flex items-center justify-between gap-4 rounded-[1.5rem] border border-brand-deep-green/10 bg-white/96 px-5 py-4 shadow-[0_8px_24px_rgba(10,70,53,0.07)] backdrop-blur-sm">
+          <div className="sticky top-40 sm:top-[100px] z-20 flex items-center justify-between gap-4 rounded-lg border border-border bg-white px-4 py-3 shadow-sm">
             <div className="min-w-0">
-              <p className="type-eyebrow text-brand-deep-green/60">Business info</p>
-              <h1 className="mt-0.5 truncate text-lg font-semibold leading-tight text-brand-dark-green">{b.name}</h1>
+              <p className="text-xs font-medium text-muted-foreground">Business info</p>
+              <h1 className="mt-0.5 truncate text-lg font-semibold leading-tight text-foreground">{b.name}</h1>
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
                 onClick={handleDiscard}
                 disabled={isPending}
-                className="hidden h-9 cursor-pointer items-center rounded-xl border border-brand-deep-green/14 px-4 text-sm font-medium text-brand-dark-green transition hover:bg-brand-soft-beige/40 disabled:cursor-not-allowed disabled:opacity-60 sm:inline-flex"
+                className="hidden h-9 cursor-pointer items-center rounded-lg border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60 sm:inline-flex"
               >
                 Discard
               </button>
               <button
                 type="submit"
                 disabled={isPending}
-                className="h-9 cursor-pointer rounded-xl bg-brand-dark-green px-5 text-sm font-medium text-white transition hover:bg-brand-dark-green/92 disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-9 cursor-pointer rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isPending ? "Saving…" : "Save changes"}
               </button>
@@ -275,17 +275,17 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
           {/* Left column */}
           <div className="space-y-5">
             {/* Core details */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-lg border border-border bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <Building2 className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-brand-dark-green">Core details</h2>
+                  <h2 className="text-xl font-semibold text-foreground">Core details</h2>
                   <p className="text-sm text-muted-foreground">The public business identity and listing categorization.</p>
                 </div>
               </div>
-              <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 grid-cols-1 md:grid-cols-2">
+              <div className="mt-6 grid gap-4 border-t border-border pt-6 grid-cols-1 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="name"
@@ -296,7 +296,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                         <Input
                           {...field}
                           placeholder="e.g. The Himalayan Kitchen"
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -314,7 +314,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                           {...field}
                           rows={4}
                           placeholder="A short description of the business for the public listing…"
-                          className="w-full rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-3 text-sm leading-6 text-brand-dark-green shadow-none outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
+                          className="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm leading-6 text-foreground shadow-none outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                         />
                       </FormControl>
                       <FormMessage />
@@ -333,7 +333,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                         disabled={isLoadingTypes || isErrorLoadingTypes}
                       >
                         <FormControl>
-                          <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                          <SelectTrigger className="h-11 w-full rounded-lg border-border bg-white shadow-none">
                             <SelectValue
                               placeholder={
                                 isLoadingTypes
@@ -370,34 +370,34 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                 <BusinessCuisineField
                   control={form.control}
                   name="cuisineIds"
-                  chipsClassName="min-h-[44px] rounded-xl border-brand-deep-green/10 bg-white shadow-none"
+                  chipsClassName="min-h-[44px] rounded-lg border-border bg-white shadow-none"
                 />
               </div>
             </section>
 
             {/* Location */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-lg border border-border bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-brand-dark-green">Location</h2>
+                  <h2 className="text-xl font-semibold text-foreground">Location</h2>
                   <p className="text-sm text-muted-foreground">Where the business is physically located.</p>
                 </div>
               </div>
-              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 space-y-4">
+              <div className="mt-6 border-t border-border pt-6 space-y-4">
                 <BusinessLocationFields
                   form={form}
-                  inputClassName="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
-                  selectTriggerClassName="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none"
+                  inputClassName="h-11 rounded-lg border-border shadow-none"
+                  selectTriggerClassName="h-11 w-full rounded-lg border-border bg-white shadow-none"
                   selectedLocation={{
                     province: b.province,
                     district: b.district,
                     municipality: b.municipality,
                   }}
                 />
-                <div className="space-y-3 pt-4 border-t border-brand-deep-green/5">
+                <div className="space-y-3 pt-4 border-t border-border">
                   <div className="space-y-1">
                     <FormLabel>Map marker</FormLabel>
                     <FormDescription className="text-xs text-muted-foreground">
@@ -418,21 +418,21 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
             </section>
 
             {/* Amenities */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-lg border border-border bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <UtensilsCrossed className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-brand-dark-green">Amenities</h2>
+                  <h2 className="text-xl font-semibold text-foreground">Amenities</h2>
                   <p className="text-sm text-muted-foreground">
                     Services, payment options, facilities, and dietary accommodations.
                   </p>
                 </div>
               </div>
-              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
+              <div className="mt-6 border-t border-border pt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
                 <div className="space-y-3">
-                  <p className="text-sm font-semibold text-brand-dark-green">Services</p>
+                  <p className="text-sm font-semibold text-foreground">Services</p>
                   <div className="space-y-2">
                     {serviceAmenityFields.map(({ name, label }) => (
                       <FormField
@@ -447,7 +447,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                                 onCheckedChange={(checked) => field.onChange(checked === true)}
                               />
                             </FormControl>
-                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                            <FormLabel className="font-normal cursor-pointer text-sm text-foreground">
                               {label}
                             </FormLabel>
                           </FormItem>
@@ -458,7 +458,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-sm font-semibold text-brand-dark-green">Payment methods</p>
+                  <p className="text-sm font-semibold text-foreground">Payment methods</p>
                   <div className="space-y-2">
                     {paymentAmenityFields.map(({ name, label }) => (
                       <FormField
@@ -473,7 +473,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                                 onCheckedChange={(checked) => field.onChange(checked === true)}
                               />
                             </FormControl>
-                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                            <FormLabel className="font-normal cursor-pointer text-sm text-foreground">
                               {label}
                             </FormLabel>
                           </FormItem>
@@ -483,8 +483,8 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                   </div>
                 </div>
 
-                <div className="space-y-3 border-t border-brand-deep-green/10 pt-4 sm:border-t-0 sm:pt-0">
-                  <p className="text-sm font-semibold text-brand-dark-green">Facilities</p>
+                <div className="space-y-3 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
+                  <p className="text-sm font-semibold text-foreground">Facilities</p>
                   <div className="space-y-2">
                     {facilityAmenityFields.map(({ name, label }) => (
                       <FormField
@@ -499,7 +499,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                                 onCheckedChange={(checked) => field.onChange(checked === true)}
                               />
                             </FormControl>
-                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                            <FormLabel className="font-normal cursor-pointer text-sm text-foreground">
                               {label}
                             </FormLabel>
                           </FormItem>
@@ -509,8 +509,8 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                   </div>
                 </div>
 
-                <div className="space-y-3 border-t border-brand-deep-green/10 pt-4 sm:border-t-0 sm:pt-0">
-                  <p className="text-sm font-semibold text-brand-dark-green">Dietary</p>
+                <div className="space-y-3 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
+                  <p className="text-sm font-semibold text-foreground">Dietary</p>
                   <div className="space-y-2">
                     {dietaryAmenityFields.map(({ name, label }) => (
                       <FormField
@@ -525,7 +525,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                                 onCheckedChange={(checked) => field.onChange(checked === true)}
                               />
                             </FormControl>
-                            <FormLabel className="font-normal cursor-pointer text-sm text-brand-dark-green">
+                            <FormLabel className="font-normal cursor-pointer text-sm text-foreground">
                               {label}
                             </FormLabel>
                           </FormItem>
@@ -538,23 +538,23 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
             </section>
 
             {/* Photos gallery */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-lg border border-border bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <Image className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-brand-dark-green">Photos gallery</h2>
+                  <h2 className="text-xl font-semibold text-foreground">Photos gallery</h2>
                   <p className="text-sm text-muted-foreground">Gallery images shown on the business details page.</p>
                 </div>
               </div>
-              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 space-y-4">
+              <div className="mt-6 border-t border-border pt-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Images</p>
+                  <p className="text-xs font-medium text-muted-foreground">Images</p>
                   <button
                     type="button"
                     onClick={() => setPhotosPickerOpen(true)}
-                    className="rounded-xl border border-brand-deep-green/14 px-3 py-1.5 text-xs font-medium text-brand-dark-green hover:bg-brand-soft-beige/40 transition cursor-pointer"
+                    className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
                   >
                     Add photo
                   </button>
@@ -566,12 +566,12 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                         <img
                           src={photo.publicUrl}
                           alt={photo.altText ?? photo.filename}
-                          className="h-full w-full rounded-xl border border-brand-deep-green/10 object-cover"
+                          className="h-full w-full rounded-lg border border-border object-cover"
                         />
                         <button
                           type="button"
                           onClick={() => removePhoto(photo.id)}
-                          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green cursor-pointer"
+                          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm border border-border text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -583,7 +583,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                     {existingPhotos.length} photo{existingPhotos.length > 1 ? "s" : ""} already set.
                   </p>
                 ) : (
-                  <div className="rounded-xl border border-dashed border-brand-deep-green/20 bg-brand-soft-beige/10 px-6 py-6 text-center">
+                  <div className="rounded-lg border border-dashed border-border bg-muted px-6 py-6 text-center">
                     <p className="text-sm text-muted-foreground">No gallery photos added yet.</p>
                   </div>
                 )}
@@ -591,17 +591,17 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
             </section>
 
             {/* Contact & links */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-lg border border-border bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-brand-dark-green">Contact & links</h2>
+                  <h2 className="text-xl font-semibold text-foreground">Contact & links</h2>
                   <p className="text-sm text-muted-foreground">How customers reach the business online and by phone.</p>
                 </div>
               </div>
-              <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 grid-cols-1 md:grid-cols-2">
+              <div className="mt-6 grid gap-4 border-t border-border pt-6 grid-cols-1 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="phone"
@@ -612,7 +612,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                         <Input
                           {...field}
                           placeholder="+977 9800000000"
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -629,7 +629,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                         <Input
                           {...field}
                           placeholder="+977 9800000001"
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -647,7 +647,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                           {...field}
                           type="email"
                           placeholder="hello@business.com"
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -665,7 +665,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                           {...field}
                           type="url"
                           placeholder="https://example.com"
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -683,7 +683,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                           {...field}
                           type="url"
                           placeholder="https://facebook.com/..."
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -701,7 +701,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                           {...field}
                           type="url"
                           placeholder="https://instagram.com/..."
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -719,7 +719,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                           {...field}
                           type="url"
                           placeholder="https://twitter.com/..."
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -737,7 +737,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                           {...field}
                           type="url"
                           placeholder="https://tiktok.com/@..."
-                          className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          className="h-11 rounded-lg border-border shadow-none"
                         />
                       </FormControl>
                       <FormMessage />
@@ -752,8 +752,8 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
           <div className="space-y-5 xl:sticky xl:top-[180px]">
 
             {/* Primary media */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
-              <h3 className="text-lg font-semibold text-brand-dark-green">Primary media</h3>
+            <section className="rounded-lg border border-border bg-white p-4 shadow-sm space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">Primary media</h3>
 
               {/* Logo */}
               <div className="space-y-2">
@@ -764,29 +764,29 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                       <img
                         src={logoMedia.publicUrl}
                         alt="Logo"
-                        className="h-14 w-14 rounded-xl border border-brand-deep-green/10 object-cover bg-white"
+                        className="h-14 w-14 rounded-lg border border-border object-cover bg-white"
                       />
                       <button
                         type="button"
                         onClick={() => { setLogoMedia(null); form.setValue("logoId", "") }}
-                        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green cursor-pointer"
+                        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm border border-border text-muted-foreground hover:text-foreground cursor-pointer"
                       >
                         <X className="h-3 w-3" />
                       </button>
                     </div>
                   ) : existingLogoId ? (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30 text-xs text-muted-foreground shrink-0">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-border bg-muted text-xs text-muted-foreground shrink-0">
                       Set
                     </div>
                   ) : (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/10 text-brand-deep-green/40 shrink-0">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground shrink-0">
                       <Building2 className="h-5 w-5" />
                     </div>
                   )}
                   <button
                     type="button"
                     onClick={() => setLogoPickerOpen(true)}
-                    className="w-full rounded-xl border border-brand-deep-green/14 py-2 text-xs font-medium text-brand-dark-green hover:bg-brand-soft-beige/40 transition cursor-pointer"
+                    className="w-full rounded-lg border border-border py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
                   >
                     {existingLogoId || logoMedia ? "Change logo" : "Choose logo"}
                   </button>
@@ -794,11 +794,11 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
               </div>
 
               {/* Banner */}
-              <div className="space-y-2 border-t border-brand-deep-green/10 pt-4">
+              <div className="space-y-2 border-t border-border pt-4">
                 <FormLabel>Cover banner</FormLabel>
                 <div className="space-y-3">
                   {bannerMedia ? (
-                    <div className="relative w-full h-24 overflow-hidden rounded-xl border border-brand-deep-green/10">
+                    <div className="relative w-full h-24 overflow-hidden rounded-lg border border-border">
                       <img
                         src={bannerMedia.publicUrl}
                         alt="Banner"
@@ -807,24 +807,24 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                       <button
                         type="button"
                         onClick={() => { setBannerMedia(null); form.setValue("bannerId", "") }}
-                        className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-md border border-brand-deep-green/10 text-brand-deep-green/60 hover:text-brand-dark-green cursor-pointer"
+                        className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white shadow-sm border border-border text-muted-foreground hover:text-foreground cursor-pointer"
                       >
                         <X className="h-3 w-3" />
                       </button>
                     </div>
                   ) : existingBannerId ? (
-                    <div className="flex w-full h-20 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30 text-xs text-muted-foreground">
+                    <div className="flex w-full h-20 items-center justify-center rounded-lg border border-border bg-muted text-xs text-muted-foreground">
                       Cover configured
                     </div>
                   ) : (
-                    <div className="flex w-full h-20 items-center justify-center rounded-xl border border-dashed border-brand-deep-green/15 bg-brand-soft-beige/5 text-xs text-muted-foreground">
+                    <div className="flex w-full h-20 items-center justify-center rounded-lg border border-dashed border-border bg-muted text-xs text-muted-foreground">
                       No cover photo chosen
                     </div>
                   )}
                   <button
                     type="button"
                     onClick={() => setBannerPickerOpen(true)}
-                    className="w-full rounded-xl border border-brand-deep-green/14 py-2 text-xs font-medium text-brand-dark-green hover:bg-brand-soft-beige/40 transition cursor-pointer"
+                    className="w-full rounded-lg border border-border py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
                   >
                     {existingBannerId || bannerMedia ? "Change banner" : "Choose banner"}
                   </button>
@@ -833,25 +833,25 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
             </section>
 
           {/* Live preview */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-3">
+            <section className="rounded-lg border border-border bg-white p-4 shadow-sm space-y-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-brand-orange" />
-                <h3 className="text-sm font-semibold text-brand-dark-green">Live preview</h3>
+                <Sparkles className="h-4 w-4 text-muted-foreground" />
+                <h3 className="text-sm font-semibold text-foreground">Live preview</h3>
               </div>
-              <div className="space-y-2 text-sm text-brand-dark-green">
+              <div className="space-y-2 text-sm text-foreground">
                 <p className="font-semibold leading-snug">{watchedName || "Business name"}</p>
                 {watchedDescription ? (
                   <p className="text-xs leading-5 text-muted-foreground line-clamp-3">{watchedDescription}</p>
                 ) : null}
                 {watchedPhone ? (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Phone className="h-3 w-3 shrink-0 text-brand-orange" />
+                    <Phone className="h-3 w-3 shrink-0 text-muted-foreground" />
                     <span>{watchedPhone}</span>
                   </div>
                 ) : null}
                 {watchedWebsite ? (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Globe className="h-3 w-3 shrink-0 text-brand-orange" />
+                    <Globe className="h-3 w-3 shrink-0 text-muted-foreground" />
                     <span className="break-all">{watchedWebsite}</span>
                   </div>
                 ) : null}

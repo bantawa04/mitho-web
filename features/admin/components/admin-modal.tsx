@@ -52,25 +52,24 @@ export function AdminModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          "max-h-[calc(100vh-2rem)] max-w-[calc(100%-2rem)] overflow-hidden rounded-[1.75rem] border-brand-deep-green/10 bg-white p-0 shadow-[0_24px_60px_rgba(10,70,53,0.16)]",
+          "max-h-[calc(100vh-2rem)] max-w-[calc(100%-2rem)] overflow-hidden rounded-xl border border-border bg-white p-0 shadow-[0_8px_30px_rgba(0,0,0,0.12)]",
           sizeClassMap[size],
         )}
       >
         <div className="flex max-h-[calc(100vh-2rem)] flex-col">
           <DialogHeader className="shrink-0 space-y-0 px-6 pt-6 text-left sm:px-7 sm:pt-7">
-            <DialogTitle className="text-2xl font-semibold text-brand-dark-green">{title}</DialogTitle>
+            <DialogTitle className="text-lg font-semibold text-foreground">{title}</DialogTitle>
             {description ? (
-              <DialogDescription className="mt-2 text-sm leading-7 text-muted-foreground">{description}</DialogDescription>
+              <DialogDescription className="mt-2 text-sm leading-6 text-muted-foreground">{description}</DialogDescription>
             ) : null}
           </DialogHeader>
 
           {children ? <div className={cn("min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-6 sm:px-7", bodyClassName)}>{children}</div> : null}
 
           {showFooter ? (
-            <DialogFooter className="shrink-0 flex-col-reverse gap-3 border-t border-brand-deep-green/10 px-6 py-5 sm:flex-row sm:justify-end sm:px-7">
+            <DialogFooter className="shrink-0 flex-col-reverse gap-3 border-t border-border px-6 py-5 sm:flex-row sm:justify-end sm:px-7">
               <Button
                 variant="outline"
-                className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"
                 onClick={() => onOpenChange(false)}
               >
                 {cancelLabel}
@@ -78,11 +77,6 @@ export function AdminModal({
               {onConfirm ? (
                 <Button
                   variant={confirmVariant}
-                  className={cn(
-                    "rounded-xl",
-                    confirmVariant === "default" && "bg-brand-dark-green text-white hover:bg-brand-dark-green/92",
-                    confirmVariant === "destructive" && "bg-red-600 text-white hover:bg-red-600/92",
-                  )}
                   onClick={onConfirm}
                   disabled={isConfirmDisabled || isLoading}
                 >

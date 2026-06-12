@@ -15,28 +15,28 @@ export function ProfileStatus() {
   ]
 
   return (
-    <section className="py-8">
-      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Readiness</p>
-      <h2 className="type-section-title mb-6 text-foreground">Business profile status</h2>
-      <MithoCard surface="business" interactive="subtle" className="border-brand-deep-green/10 bg-white">
-        <MithoCardHeader>
+    <section>
+      <p className="mb-2 text-xs font-semibold text-muted-foreground">Readiness</p>
+      <h2 className="type-section-title mb-4 text-foreground">Business profile status</h2>
+      <MithoCard surface="business" interactive="none" className="rounded-lg border-border bg-white shadow-sm">
+        <MithoCardHeader className="p-4">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="type-card-title text-foreground">Profile completion</h3>
               <p className="type-meta">Complete your profile to attract more customers</p>
             </div>
             <div className="text-right">
-              <span className="text-3xl font-bold text-brand-orange">{completionPercentage}%</span>
+              <span className="text-3xl font-bold text-foreground">{completionPercentage}%</span>
             </div>
           </div>
           <MithoProgress value={completionPercentage} variant="default" size="lg" />
         </MithoCardHeader>
-        <MithoCardContent>
-          <div className="space-y-3">
+        <MithoCardContent className="p-4 pt-0">
+          <div className="space-y-2">
             {tasks.map((task, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-3 rounded-[1rem] border border-brand-deep-green/10 bg-white p-3 transition-colors hover:border-brand-deep-green/18"
+                className="flex items-center gap-3 rounded-lg border border-border bg-white p-3"
               >
                 {task.completed ? (
                   <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />
@@ -52,7 +52,7 @@ export function ProfileStatus() {
             ))}
           </div>
         </MithoCardContent>
-        <MithoCardFooter>
+        <MithoCardFooter className="p-4 pt-0">
           <MithoButton
             variant="primary"
             size="sm"

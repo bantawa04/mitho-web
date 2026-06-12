@@ -54,7 +54,7 @@ function BusinessWorkspaceNav({
     <nav aria-label="Business dashboard navigation" className={cn(mobile ? "space-y-2" : "space-y-2")}>
       <Link
         href="/dashboard/businesses"
-        className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+        className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-foreground transition-colors hover:text-brand-deep-green"
       >
         <ChevronLeft className="h-4 w-4" />
         Back to businesses
@@ -71,10 +71,10 @@ function BusinessWorkspaceNav({
             href={href}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-[1rem] px-4 py-3 text-sm font-medium transition-all duration-200",
+              "flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors",
               isActive
-                ? "bg-brand-deep-green text-white shadow-[0_12px_24px_rgba(10,70,53,0.18)]"
-                : "text-brand-dark-green hover:bg-brand-soft-beige/45",
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-muted",
             )}
           >
             <Icon className="h-4 w-4" />
@@ -110,8 +110,8 @@ export function BusinessWorkspaceShell({ businessId, children }: BusinessWorkspa
                 <span className="sr-only">Open navigation</span>
               </MithoButton>
             </SheetTrigger>
-            <SheetContent side="left" className="border-brand-deep-green/10 bg-white">
-              <SheetHeader className="border-b border-brand-deep-green/10">
+            <SheetContent side="left" className="border-border bg-white">
+              <SheetHeader className="border-b border-border">
                 <SheetTitle>{entry?.business.name ?? "Business"}</SheetTitle>
               </SheetHeader>
               <div className="px-4 pb-6">
@@ -128,16 +128,16 @@ export function BusinessWorkspaceShell({ businessId, children }: BusinessWorkspa
             <Loader2 className="h-6 w-6 animate-spin text-brand-deep-green/40" />
           </div>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
             <aside className="hidden lg:block">
-              <div className="sticky top-24 rounded-[1.7rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+              <div className="sticky top-24 rounded-lg border border-border bg-white p-4 shadow-sm">
                 <BusinessWorkspaceNav businessId={cleanBusinessId} pathname={pathname} />
               </div>
             </aside>
 
             <div>
-              <div className="mb-5 lg:hidden">
-                <p className="type-eyebrow text-brand-deep-green/68">Current section</p>
+              <div className="mb-4 lg:hidden">
+                <p className="text-xs font-semibold text-muted-foreground">Current section</p>
                 <h2 className="mt-2 text-2xl font-semibold text-foreground">{activeItem?.label ?? "Overview"}</h2>
               </div>
               {children}

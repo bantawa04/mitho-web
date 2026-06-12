@@ -98,7 +98,7 @@ export function AdminSidebarNav({ pathname }: { pathname: string }) {
               tooltip={item.label}
               size="lg"
               className={cn(
-                "rounded-[0.95rem] px-4 text-sm font-medium text-brand-dark-green transition-colors duration-200 hover:bg-white/72 hover:text-brand-dark-green data-[active=true]:bg-brand-dark-green data-[active=true]:text-white group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2",
+                "rounded-md border-l-2 border-transparent px-4 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground data-[active=true]:border-l-primary data-[active=true]:bg-primary/8 data-[active=true]:font-medium data-[active=true]:text-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2",
               )}
             >
               <Link href={item.href} aria-current={isActive ? "page" : undefined}>
@@ -117,15 +117,15 @@ export function AdminSidebarFrame({ pathname }: { pathname: string }) {
   return (
     <Sidebar
       collapsible="icon"
-      className="border-brand-deep-green/10 bg-surface-admin/72"
+      className="border-border bg-surface-admin"
     >
-      <SidebarHeader className="border-b border-brand-deep-green/10 px-4 py-5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
+      <SidebarHeader className="border-b border-border px-4 py-5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-2">
         <AdminSidebarBrand />
       </SidebarHeader>
       <SidebarContent className="px-3 py-5 group-data-[collapsible=icon]:px-2">
         <AdminSidebarNav pathname={pathname} />
       </SidebarContent>
-      <SidebarRail className="after:bg-brand-deep-green/12 hover:after:bg-brand-deep-green/20" />
+      <SidebarRail className="after:bg-border hover:after:bg-border" />
     </Sidebar>
   )
 }
