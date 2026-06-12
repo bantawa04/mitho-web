@@ -31,38 +31,41 @@
   --card-foreground: #15382d;
   --popover: #ffffff;
   --popover-foreground: #15382d;
-  --primary: #ef8a00;
-  --primary-foreground: #0a4635;
+  --primary: #007936;
+  --primary-foreground: #ffffff;
   --secondary: #007936;
   --secondary-foreground: #ffffff;
-  --muted: #f7efdf;
+  --muted: #f7f3e8;
   --muted-foreground: #4f665e;
-  --accent: #f4e0a6;
+  --accent: #f7f3e8;
   --accent-foreground: #0a4635;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --border: #e6dcc5;
   --input: #e6dcc5;
   --ring: #ef8a00;
-  --radius: 1.5rem;
+  --radius: 0.625rem;
 
   /* Extended surfaces */
-  --surface-warm: #fbefd0;
+  --surface-warm: #f7f3e8;
   --surface-soft: #fdf7ea;
   --surface-strong: #0a4635;
   --surface-strong-foreground: #fff4da;
-  --surface-highlight: #fff0d8;
+  --surface-highlight: #f7f3e8;
   --page-customer: #fffbf3;
   --page-business: #f8fbf8;
   --page-admin: #f6f7f4;
   --surface-raised: #ffffff;
-  --surface-inset: #f8f3e4;
+  --surface-inset: #f7f3e8;
   --surface-business: #ffffff;
   --surface-business-inset: #fbfdfb;
   --surface-admin: #fbfbf8;
   --surface-positive: #eef8ef;
-  --surface-spotlight: #f8e6bd;
+  --surface-spotlight: #f7f3e8;
   --border-strong: #bfd0b6;
+
+  /* Brand ink */
+  --brand-orange-ink: #b45a00;
 
   /* Chart Colors */
   --chart-1: #ef8a00;
@@ -89,7 +92,7 @@
   --card-foreground: #f4e0a6;
   --popover: #0d5a44;
   --popover-foreground: #f4e0a6;
-  --primary: #ef8a00;
+  --primary: #00853f;
   --primary-foreground: #ffffff;
   --secondary: #007936;
   --secondary-foreground: #ffffff;
@@ -141,6 +144,7 @@
   --color-brand-dark-green: var(--brand-dark-green);
   --color-brand-fresh-orange: var(--brand-fresh-orange);
   --color-brand-soft-beige: var(--brand-soft-beige);
+  --color-brand-orange-ink: var(--brand-orange-ink);
 
   /* System Colors */
   --color-success: var(--success);
@@ -231,30 +235,27 @@
 
 @layer components {
   .page-shell-customer {
-    background:
-      radial-gradient(circle at top left, rgba(244, 224, 166, 0.14), transparent 24%),
-      linear-gradient(180deg, #fffdf8 0%, #fffaf3 32%, #ffffff 100%);
+    background: #fdfcf8;
   }
 
   .page-shell-business {
-    background: linear-gradient(180deg, var(--page-business) 0%, #ffffff 22%, #fcfefc 100%);
+    background: #fafbfa;
   }
 
   .page-shell-admin {
-    background:
-      linear-gradient(180deg, var(--page-admin) 0%, #fbfaf6 100%);
+    background: #fafaf8;
   }
 
   .surface-raised {
-    @apply bg-surface-raised border border-brand-deep-green/10 shadow-[0_12px_36px_rgba(10,70,53,0.08)];
+    @apply bg-surface-raised border border-brand-deep-green/10 shadow-[0_4px_12px_rgba(0,0,0,0.08)];
   }
 
   .surface-inset {
-    @apply bg-surface-inset border border-brand-deep-green/10;
+    @apply bg-surface-inset border border-brand-deep-green/10 shadow-[0_1px_2px_rgba(0,0,0,0.05)];
   }
 
   .surface-business-panel {
-    @apply bg-surface-business border border-brand-deep-green/10 shadow-[0_12px_28px_rgba(10,70,53,0.05)];
+    @apply bg-surface-business border border-brand-deep-green/10 shadow-[0_1px_2px_rgba(0,0,0,0.05)];
   }
 
   .surface-business-inset {
@@ -262,22 +263,20 @@
   }
 
   .surface-admin-panel {
-    @apply bg-surface-admin border border-brand-deep-green/10 shadow-[0_8px_24px_rgba(10,70,53,0.05)];
+    @apply bg-surface-admin border border-brand-deep-green/10 shadow-[0_1px_2px_rgba(0,0,0,0.05)];
   }
 
   .taste-spotlight {
-    background:
-      radial-gradient(circle at top right, rgba(239, 138, 0, 0.08), transparent 28%),
-      linear-gradient(135deg, rgba(255, 252, 246, 0.98) 0%, rgba(255, 248, 236, 0.96) 100%);
+    background: #ffffff;
   }
 
   .capsule-cluster {
-    @apply inline-flex items-center gap-2 rounded-full border border-brand-deep-green/10 bg-white/90 px-3 py-1.5 text-xs font-semibold text-brand-dark-green shadow-[0_8px_24px_rgba(10,70,53,0.06)];
+    @apply inline-flex items-center gap-2 rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-semibold text-brand-dark-green;
   }
 
   .type-display {
     font-family: var(--font-heading);
-    font-size: clamp(2.75rem, 5.5vw, 4.75rem);
+    font-size: clamp(2.25rem, 4.5vw, 3.4rem);
     line-height: 0.98;
     letter-spacing: -0.04em;
     font-weight: 700;
@@ -319,7 +318,7 @@
   }
 
   .type-eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-[0.24em];
+    @apply text-[11px] font-semibold uppercase tracking-[0.12em];
   }
 
   .motion-soft-rise {

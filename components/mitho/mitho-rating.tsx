@@ -48,8 +48,7 @@ export function StarRating({
               key={i}
               type="button"
               className={cn(
-                "transition-transform",
-                interactive && "cursor-pointer hover:scale-110",
+                interactive && "cursor-pointer",
                 !interactive && "cursor-default",
               )}
               onClick={() => handleClick(value)}
@@ -133,9 +132,9 @@ interface ReviewSummaryProps {
 
 export function ReviewSummary({ ratings, averageRating, totalReviews }: ReviewSummaryProps) {
   return (
-    <div className="flex flex-col gap-6 rounded-[1.75rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_14px_32px_rgba(10,70,53,0.06)] sm:flex-row sm:items-center">
-      <div className="flex min-w-[180px] flex-col items-center justify-center gap-2 rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] px-6 py-5">
-        <span className="text-5xl font-bold text-brand-orange">{averageRating.toFixed(1)}</span>
+    <div className="flex flex-col gap-6 rounded-xl border border-border bg-white p-6 shadow-sm sm:flex-row sm:items-center">
+      <div className="flex min-w-[180px] flex-col items-center justify-center gap-2 rounded-lg border border-border bg-[#fffdf8] px-6 py-5">
+        <span className="text-5xl font-bold text-[#b45a00]">{averageRating.toFixed(1)}</span>
         <StarRating rating={averageRating} size="lg" />
         <span className="text-sm text-muted-foreground">{totalReviews} reviews</span>
       </div>

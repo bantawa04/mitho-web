@@ -13,7 +13,7 @@ export function DishCard({ name, price, imageUrl, description, isPopular, classN
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-40 sm:w-48 rounded-2xl bg-card border border-border overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group cursor-pointer",
+        "flex-shrink-0 w-40 sm:w-48 rounded-xl bg-card border border-border overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 group cursor-pointer",
         className,
       )}
     >
@@ -21,10 +21,10 @@ export function DishCard({ name, price, imageUrl, description, isPopular, classN
         <img
           src={imageUrl || "/placeholder.svg"}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full object-cover"
         />
         {isPopular && (
-          <div className="absolute top-2 left-2 px-2 py-1 bg-brand-orange text-white text-xs font-semibold rounded-lg">
+          <div className="absolute top-2 left-2 px-2 py-1 bg-brand-deep-green text-white text-xs font-semibold rounded-lg">
             Popular
           </div>
         )}
@@ -32,7 +32,7 @@ export function DishCard({ name, price, imageUrl, description, isPopular, classN
       <div className="p-3">
         <h4 className="font-semibold text-sm line-clamp-1">{name}</h4>
         {description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{description}</p>}
-        <p className="text-brand-orange font-bold text-sm mt-2">{price}</p>
+        <p className="text-[#b45a00] font-bold text-sm mt-2">{price}</p>
       </div>
     </div>
   )

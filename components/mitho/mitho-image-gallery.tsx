@@ -53,7 +53,7 @@ export function MithoImageGallery({ items, className }: ImageGalleryProps) {
             <img
               src={item.type === "video" ? item.thumbnail || item.src : item.src}
               alt={item.alt}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              className="w-full h-full object-cover"
             />
             {item.type === "video" && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
