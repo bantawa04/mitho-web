@@ -228,7 +228,7 @@ export function AddReviewForm({
         </MithoCardHeader>
         <MithoCardContent className="space-y-5">
           {review?.status === "pending" ? (
-            <div className="rounded-[1.2rem] border border-brand-orange/20 bg-brand-orange/5 p-4 text-sm text-brand-dark-green">
+            <div className="rounded-xl border border-brand-orange/20 bg-brand-orange/5 p-4 text-sm text-brand-dark-green">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-orange" />
                 <div>
@@ -240,7 +240,7 @@ export function AddReviewForm({
           ) : null}
 
           {isCooldownLocked ? (
-            <div className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-4 w-4" />
                 <div>
@@ -256,7 +256,7 @@ export function AddReviewForm({
           ) : null}
 
           {review?.status === "approved" && canReview ? (
-            <div className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-4 w-4" />
                 <div>
@@ -268,7 +268,7 @@ export function AddReviewForm({
           ) : null}
 
           {review?.status === "rejected" ? (
-            <div className="rounded-[1.2rem] border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
               <div className="flex items-start gap-3">
                 <CircleAlert className="mt-0.5 h-4 w-4" />
                 <div>
@@ -281,7 +281,7 @@ export function AddReviewForm({
           ) : null}
 
           {needsMediaReselect ? (
-            <div className="rounded-[1.2rem] border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
               <div className="flex items-start gap-3">
                 <CircleAlert className="mt-0.5 h-4 w-4" />
                 <p>You’re back on the review form. Please reselect any images before submitting again.</p>
@@ -317,7 +317,7 @@ export function AddReviewForm({
                         rows={5}
                         disabled={isLocked || isBusy}
                         placeholder="Tell people what stood out: dishes worth ordering, service, portions, wait time, and whether you'd come back."
-                        className="w-full resize-none rounded-[1.25rem] border border-brand-deep-green/12 bg-white/90 px-4 py-3 text-sm transition-all duration-200 placeholder:text-muted-foreground focus:border-brand-orange focus:outline-none focus:ring-4 focus:ring-brand-orange/12 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="w-full resize-none rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
                       />
                     </FormControl>
                     <FormMessage />
@@ -356,7 +356,7 @@ export function AddReviewForm({
                 {retainedMedia.length > 0 || selectedFiles.length > 0 ? (
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {retainedMedia.map((media) => (
-                      <div key={media.id} className="overflow-hidden rounded-[1rem] border border-brand-deep-green/10 bg-white">
+                      <div key={media.id} className="overflow-hidden rounded-lg border border-border bg-white">
                         <img src={media.publicUrl} alt={media.altText || businessName} className="h-28 w-full object-cover" />
                         <div className="flex items-center justify-between px-3 py-2 text-xs">
                           <span className="truncate text-muted-foreground">{media.filename}</span>
@@ -373,7 +373,7 @@ export function AddReviewForm({
                       </div>
                     ))}
                     {selectedFilePreviews.map(({ file, url }, index) => (
-                      <div key={`${file.name}-${index}`} className="overflow-hidden rounded-[1rem] border border-brand-deep-green/10 bg-white">
+                      <div key={`${file.name}-${index}`} className="overflow-hidden rounded-lg border border-border bg-white">
                         <img src={url} alt={file.name} className="h-28 w-full object-cover" />
                         <div className="flex items-center justify-between px-3 py-2 text-xs">
                           <span className="truncate text-muted-foreground">{Math.round(file.size / 1024)} KB</span>

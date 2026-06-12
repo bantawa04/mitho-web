@@ -50,14 +50,14 @@ function getFlagTone(flag?: ReviewRejectionFlag | null) {
     case "other":
       return "bg-violet-50 text-violet-700 border-violet-100"
     default:
-      return "bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
+      return "bg-muted text-foreground border-border"
   }
 }
 
 function getModerationStatusTone(status: ReviewStatus) {
   switch (status) {
     case "pending":
-      return "bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
+      return "bg-muted text-foreground border-border"
     case "approved":
       return "bg-emerald-50 text-emerald-700 border-emerald-100"
     case "rejected":
@@ -132,11 +132,11 @@ export function AdminReviewModerationPage() {
       {
         id: "review",
         label: "Review",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
         cell: (review) => (
           <div className="space-y-1">
-            <p className="max-w-[24rem] text-sm font-semibold leading-6 text-brand-dark-green">{review.body.slice(0, 90)}{review.body.length > 90 ? "..." : ""}</p>
+            <p className="max-w-[24rem] text-sm font-semibold leading-6 text-foreground">{review.body.slice(0, 90)}{review.body.length > 90 ? "..." : ""}</p>
             <p className="text-sm text-muted-foreground">{review.rating}/5</p>
           </div>
         ),
@@ -144,8 +144,8 @@ export function AdminReviewModerationPage() {
       {
         id: "status",
         label: "Status",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (review) => (
           <AdminStatusBadge label={formatStatus(review.status)} tone={getModerationStatusTone(review.status)} />
         ),
@@ -153,22 +153,22 @@ export function AdminReviewModerationPage() {
       {
         id: "business",
         label: "Business",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm font-medium text-brand-dark-green",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm font-medium text-foreground",
         cell: (review) => review.businessName || "Unknown business",
       },
       {
         id: "reviewer",
         label: "Reviewer",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (review) => review.author.name,
       },
       {
         id: "flag",
         label: "Flag",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (review) => (
           <AdminStatusBadge label={formatFlag(review.rejectionFlag)} tone={getFlagTone(review.rejectionFlag)} />
         ),
@@ -176,15 +176,15 @@ export function AdminReviewModerationPage() {
       {
         id: "submitted",
         label: "Submitted",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (review) => formatAdminDate(review.createdAt),
       },
       {
         id: "action",
         label: "Action",
-        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-right",
+        className: "pr-6 text-right text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-right",
         cell: (review) => (
           <div className="flex justify-end">
             <AdminRowActions
@@ -326,7 +326,7 @@ export function AdminReviewModerationPage() {
       >
         {selectedReview ? (
           <>
-            <section className="space-y-4 border-b border-brand-deep-green/10 pb-5">
+            <section className="space-y-4 border-b border-border pb-5">
               <div className="flex flex-wrap items-center gap-2">
                 <AdminStatusBadge label={formatFlag(selectedReview.rejectionFlag)} tone={getFlagTone(selectedReview.rejectionFlag)} />
                 <AdminStatusBadge label={formatStatus(selectedReview.status)} tone={getModerationStatusTone(selectedReview.status)} />
@@ -334,31 +334,31 @@ export function AdminReviewModerationPage() {
 
               <div className="grid gap-5 sm:grid-cols-3">
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Business</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{selectedReview.businessName || "Unknown business"}</p>
+                  <p className="text-xs font-medium text-muted-foreground">Business</p>
+                  <p className="text-base font-semibold text-foreground">{selectedReview.businessName || "Unknown business"}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Reviewer</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{selectedReview.author.name}</p>
+                  <p className="text-xs font-medium text-muted-foreground">Reviewer</p>
+                  <p className="text-base font-semibold text-foreground">{selectedReview.author.name}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Submitted</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{formatAdminDate(selectedReview.createdAt)}</p>
+                  <p className="text-xs font-medium text-muted-foreground">Submitted</p>
+                  <p className="text-base font-semibold text-foreground">{formatAdminDate(selectedReview.createdAt)}</p>
                 </div>
               </div>
             </section>
 
-            <section className="space-y-3 border-b border-brand-deep-green/10 pb-5">
+            <section className="space-y-3 border-b border-border pb-5">
               <p className="text-sm font-medium text-muted-foreground">{selectedReview.rating}/5 rating</p>
-              <p className="text-sm leading-7 text-brand-dark-green">{selectedReview.body}</p>
+              <p className="text-sm leading-7 text-foreground">{selectedReview.body}</p>
             </section>
 
             {selectedReview.media.length > 0 ? (
-              <section className="space-y-3 border-b border-brand-deep-green/10 pb-5">
-                <p className="text-sm font-semibold text-brand-dark-green">Attached images</p>
+              <section className="space-y-3 border-b border-border pb-5">
+                <p className="text-sm font-semibold text-foreground">Attached images</p>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {selectedReview.media.map((media) => (
-                    <a key={media.id} href={media.publicUrl} target="_blank" rel="noreferrer" className="overflow-hidden rounded-[1rem] border border-brand-deep-green/10 bg-white">
+                    <a key={media.id} href={media.publicUrl} target="_blank" rel="noreferrer" className="overflow-hidden rounded-xl border border-border bg-white">
                       <img src={media.publicUrl} alt={media.altText || media.filename} className="h-32 w-full object-cover" />
                     </a>
                   ))}
@@ -369,7 +369,7 @@ export function AdminReviewModerationPage() {
             {selectedReview.status === "pending" ? (
               <div className="space-y-3">
                 <div>
-                  <p className="text-sm font-semibold text-brand-dark-green">Moderation decision</p>
+                  <p className="text-sm font-semibold text-foreground">Moderation decision</p>
                   <p className="mt-1 text-sm text-muted-foreground">Choose how this review should move forward.</p>
                 </div>
                 <RadioGroup value={selectedDecision} onValueChange={(value) => setSelectedDecision(value as "approved" | "rejected")} className="gap-3">
@@ -379,11 +379,11 @@ export function AdminReviewModerationPage() {
                   ].map((option) => (
                     <label
                       key={option.value}
-                      className="flex cursor-pointer items-start gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-4 transition-colors hover:bg-brand-soft-beige/18"
+                      className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-white px-4 py-4 transition-colors hover:bg-muted"
                     >
                       <RadioGroupItem value={option.value} className="mt-1" />
                       <span className="space-y-1">
-                        <span className="block text-sm font-semibold text-brand-dark-green">{option.title}</span>
+                        <span className="block text-sm font-semibold text-foreground">{option.title}</span>
                         <span className="block text-sm leading-6 text-muted-foreground">{option.description}</span>
                       </span>
                     </label>
@@ -393,7 +393,7 @@ export function AdminReviewModerationPage() {
                 {selectedDecision === "rejected" ? (
                   <div className="space-y-3">
                     <div className="space-y-2">
-                      <p className="text-sm font-semibold text-brand-dark-green">Rejection reason</p>
+                      <p className="text-sm font-semibold text-foreground">Rejection reason</p>
                       <Select value={selectedRejectReason} onValueChange={(value) => setSelectedRejectReason(value as ReviewRejectionFlag)}>
                         <SelectTrigger className="h-11 w-full rounded-xl border-brand-deep-green/10 bg-white shadow-none">
                           <SelectValue placeholder="Choose a rejection reason" />
@@ -409,7 +409,7 @@ export function AdminReviewModerationPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <p className="text-sm font-semibold text-brand-dark-green">Moderation note {selectedRejectReason === "other" ? "*" : ""}</p>
+                      <p className="text-sm font-semibold text-foreground">Moderation note {selectedRejectReason === "other" ? "*" : ""}</p>
                       <textarea
                         value={moderationNote}
                         onChange={(event) => setModerationNote(event.target.value)}
@@ -422,7 +422,7 @@ export function AdminReviewModerationPage() {
                 ) : null}
               </div>
             ) : (
-              <div className="rounded-[1rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4 text-sm text-muted-foreground">
+              <div className="rounded-xl border border-border bg-white p-4 text-sm text-muted-foreground">
                 This review has already been moderated. You can still delete it from the queue.
               </div>
             )}

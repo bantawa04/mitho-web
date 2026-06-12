@@ -28,7 +28,7 @@ export function MithoNavbar({ className }: NavbarProps) {
   return (
     <nav
       className={cn(
-        "sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "sticky top-0 z-50 w-full border-b border-border bg-background",
         className,
       )}
     >
@@ -137,7 +137,7 @@ export function MithoTabBar({ className }: TabBarProps) {
   return (
     <nav
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden",
+        "fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background lg:hidden",
         className,
       )}
     >

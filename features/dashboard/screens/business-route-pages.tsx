@@ -33,8 +33,7 @@ import { ToggleSwitch } from "@/components/mitho/mitho-toggle-switch"
 
 export function ReviewsRoutePage() {
   return (
-    <div className="space-y-8 pb-12">
-
+    <div className="space-y-6 pb-12">
       <ReviewsOverview />
     </div>
   )
@@ -42,8 +41,7 @@ export function ReviewsRoutePage() {
 
 export function PhotosRoutePage({ businessId }: { businessId: string }) {
   return (
-    <div className="space-y-8 pb-12">
-
+    <div className="space-y-6 pb-12">
       <BusinessGallery businessId={businessId} />
     </div>
   )
@@ -51,8 +49,7 @@ export function PhotosRoutePage({ businessId }: { businessId: string }) {
 
 export function AnalyticsRoutePage() {
   return (
-    <div className="space-y-8 pb-12">
-
+    <div className="space-y-6 pb-12">
       <KeyMetrics />
       <TrafficAnalytics />
     </div>
@@ -131,40 +128,40 @@ function HoursForm({ businessId, initialHours }: { businessId: string; initialHo
 
   return (
     <section>
-      <div className="mb-6">
+      <div className="mb-4">
         <h2 className="type-section-title text-foreground">Weekly schedule</h2>
         <p className="type-meta mt-1">Update open and close times here, then save the full schedule in one pass.</p>
       </div>
-      
-      <div className="divide-y divide-brand-deep-green/10 rounded-[1.2rem] border border-brand-deep-green/10 bg-white">
+
+      <div className="divide-y divide-border rounded-lg border border-border bg-white">
         {rows.map((item, index) => (
           <div
             key={item.dayOfWeek}
-            className="grid gap-4 px-4 py-5 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_120px] md:px-6"
+            className="grid gap-4 px-4 py-3 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_120px] md:px-6"
           >
             <div className="flex items-center">
               <p className="text-sm font-semibold text-foreground">{item.dayName}</p>
             </div>
 
             <label className="space-y-2">
-              <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Opens</span>
+              <span className="block text-xs font-semibold text-muted-foreground">Opens</span>
               <input
                 type="time"
                 value={item.opensAt}
                 onChange={(e) => updateRow(index, { opensAt: e.target.value })}
                 disabled={item.isClosed || isPending}
-                className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-lg border border-border bg-surface-business-inset px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </label>
 
             <label className="space-y-2">
-              <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Closes</span>
+              <span className="block text-xs font-semibold text-muted-foreground">Closes</span>
               <input
                 type="time"
                 value={item.closesAt}
                 onChange={(e) => updateRow(index, { closesAt: e.target.value })}
                 disabled={item.isClosed || isPending}
-                className="w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-lg border border-border bg-surface-business-inset px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </label>
 
@@ -180,7 +177,7 @@ function HoursForm({ businessId, initialHours }: { businessId: string; initialHo
         ))}
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
         {isSuccess ? <span className="text-sm font-medium text-success">Hours saved.</span> : null}
         {isError ? <span className="text-sm font-medium text-danger">Something went wrong. Please try again.</span> : null}
         <MithoButton size="sm" onClick={handleSave} disabled={isPending}>
@@ -195,9 +192,7 @@ export function HoursRoutePage({ businessId }: { businessId: string }) {
   const { data, isLoading, dataUpdatedAt } = useBusinessHours(businessId)
 
   return (
-    <div className="space-y-8 pb-12">
-
-
+    <div className="space-y-6 pb-12">
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-deep-green/20 border-t-brand-deep-green/60" />
@@ -240,13 +235,11 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
   }
 
   return (
-    <div className="space-y-8 pb-12">
-
-
-      <div className="space-y-8">
-        <section id="notification-preferences" className="py-8">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+    <div className="space-y-6 pb-12">
+      <div className="space-y-6">
+        <section id="notification-preferences">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               <Mail className="h-5 w-5" />
             </div>
             <div>
@@ -254,15 +247,15 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
               <p className="type-meta mt-1">Choose which updates should reach the owner or manager.</p>
             </div>
           </div>
-          
-          <div className="space-y-3">
+
+          <div className="space-y-2">
             {notificationPreferences.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col gap-4 rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-4 rounded-lg border border-border bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-deep-green/8 text-brand-deep-green">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-foreground">
                     <Bell className="h-4 w-4" />
                   </div>
                   <div>
@@ -279,15 +272,15 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
             ))}
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             {settingsSaved ? <span className="text-sm font-medium text-success">Settings updated in this mock flow.</span> : null}
             <MithoButton onClick={() => setSettingsSaved(true)}>Save settings</MithoButton>
           </div>
         </section>
 
-        <section className="py-8">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+        <section>
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               <Clock3 className="h-5 w-5" />
             </div>
             <div>
@@ -295,34 +288,34 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
               <p className="type-meta mt-1">Use lifecycle controls here instead of deleting or hiding a published listing directly.</p>
             </div>
           </div>
-          
-          <div className="rounded-[1.2rem] border border-brand-deep-green/10 bg-surface-business-inset px-5 py-5">
+
+          <div className="rounded-lg border border-border bg-surface-business-inset px-5 py-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${lifecyclePresentation.tone}`}>
+                <span className={`inline-flex rounded-md px-3 py-1 text-xs font-semibold ${lifecyclePresentation.tone}`}>
                   {lifecyclePresentation.label}
                 </span>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{lifecyclePresentation.description}</p>
               </div>
               {removalRequested ? (
-                <span className="rounded-full bg-brand-soft-beige px-3 py-1 text-xs font-semibold text-brand-orange">
+                <span className="rounded-md bg-muted px-3 py-1 text-xs font-semibold text-foreground">
                   Removal requested
                 </span>
               ) : null}
             </div>
           </div>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-4 space-y-3">
             {lifecycleStatus === "active" ? (
               <>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <button
                       type="button"
-                      className="w-full rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4 text-left transition-colors hover:border-brand-deep-green/18"
+                      className="w-full rounded-lg border border-border bg-white px-4 py-4 text-left transition-colors hover:border-brand-deep-green/18"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                           <Clock3 className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
@@ -359,10 +352,10 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
                   <AlertDialogTrigger asChild>
                     <button
                       type="button"
-                      className="w-full rounded-[1rem] border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
+                      className="w-full rounded-lg border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger">
                           <ShieldAlert className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
@@ -406,10 +399,10 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
                     setLifecycleStatus("active")
                     setSettingsSaved(true)
                   }}
-                  className="w-full rounded-[1rem] border border-success/20 bg-success/5 px-4 py-4 text-left transition-colors hover:border-success/30 hover:bg-success/8"
+                  className="w-full rounded-lg border border-success/20 bg-success/5 px-4 py-4 text-left transition-colors hover:border-success/30 hover:bg-success/8"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10 text-success">
                       <Clock3 className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
@@ -425,10 +418,10 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
                   <AlertDialogTrigger asChild>
                     <button
                       type="button"
-                      className="w-full rounded-[1rem] border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
+                      className="w-full rounded-lg border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
                     >
                       <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger">
                           <ShieldAlert className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
@@ -465,9 +458,9 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
             ) : null}
 
             {lifecycleStatus === "permanently_closed" ? (
-              <div className="rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4">
+              <div className="rounded-lg border border-border bg-surface-business-inset px-4 py-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                     <CircleAlert className="h-4 w-4" />
                   </div>
                   <div>
@@ -480,16 +473,16 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
               </div>
             ) : null}
 
-            <div className="border-t border-brand-deep-green/10 pt-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-danger/75">Removal request</p>
+            <div className="border-t border-border pt-4">
+              <p className="text-xs font-semibold text-danger/75">Removal request</p>
               <Dialog open={isRemovalDialogOpen} onOpenChange={setIsRemovalDialogOpen}>
                 <button
                   type="button"
                   onClick={() => setIsRemovalDialogOpen(true)}
-                  className="mt-3 w-full rounded-[1rem] border border-danger/20 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/30 hover:bg-danger/8"
+                  className="mt-3 w-full rounded-lg border border-danger/20 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/30 hover:bg-danger/8"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger">
                       <Trash2 className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
@@ -509,11 +502,11 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
                   </DialogHeader>
                   <div className="space-y-4">
                     <label className="space-y-2">
-                      <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Reason</span>
+                      <span className="block text-xs font-semibold text-muted-foreground">Reason</span>
                       <select
                         value={removalReason}
                         onChange={(event) => setRemovalReason(event.target.value)}
-                        className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
+                        className="w-full rounded-lg border border-border bg-surface-business-inset px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                       >
                         <option value="duplicate">Duplicate listing</option>
                         <option value="incorrect">Incorrect or mistaken listing</option>
@@ -522,16 +515,16 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
                       </select>
                     </label>
                     <label className="space-y-2">
-                      <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Optional note</span>
+                      <span className="block text-xs font-semibold text-muted-foreground">Optional note</span>
                       <textarea
                         rows={4}
                         value={removalNote}
                         onChange={(event) => setRemovalNote(event.target.value)}
                         placeholder="Share any context that will help support or admin review the request."
-                        className="w-full rounded-[1rem] border border-brand-deep-green/12 bg-surface-business-inset px-4 py-3 text-sm leading-6 text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
+                        className="w-full rounded-lg border border-border bg-surface-business-inset px-4 py-3 text-sm leading-6 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                       />
                     </label>
-                    <div className="rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset px-4 py-4 text-sm leading-6 text-muted-foreground">
+                    <div className="rounded-lg border border-border bg-surface-business-inset px-4 py-4 text-sm leading-6 text-muted-foreground">
                       Removal requests are meant for safe review workflows. The public listing may stay visible until the request is reviewed and approved.
                     </div>
                   </div>

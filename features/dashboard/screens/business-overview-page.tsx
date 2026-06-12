@@ -33,16 +33,15 @@ export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) 
   const profileCompleteness = entry ? computeBusinessProfileCompleteness(entry) : 0
 
   return (
-    <div className="space-y-8 pb-12">
-
+    <div className="space-y-6 pb-12">
 
       <KeyMetrics />
 
-      <section className="grid gap-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         {/* Left Column: Recent review pulse */}
         <section>
-          <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               <MessageSquare className="h-5 w-5" />
             </div>
             <div>
@@ -50,12 +49,12 @@ export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) 
               <p className="type-meta mt-1">A quick read before you jump into full review management.</p>
             </div>
           </div>
-          
-          <div className="space-y-4">
+
+          <div className="space-y-3">
             {recentReviews.map((review) => (
               <div
                 key={`${review.author}-${review.date}`}
-                className="rounded-[1.2rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_6px_18px_rgba(10,70,53,0.04)]"
+                className="rounded-lg border border-border bg-white p-4 shadow-sm"
               >
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold text-foreground">{review.author}</p>
@@ -67,7 +66,7 @@ export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) 
             ))}
           </div>
 
-          <MithoButton variant="ghost" className="mt-5" asChild>
+          <MithoButton variant="ghost" className="mt-4" asChild>
             <Link href={`/dashboard/businesses/${businessId}/reviews`}>
               Open reviews
               <ArrowRight className="h-4 w-4" />
@@ -75,11 +74,11 @@ export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) 
           </MithoButton>
         </section>
 
-        <div className="space-y-10">
+        <div className="space-y-6">
           {/* Setup summary */}
           <section>
-            <div className="mb-5 flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
@@ -87,14 +86,14 @@ export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) 
                 <p className="type-meta mt-1">The short operational checklist for this listing.</p>
               </div>
             </div>
-            
-            <div className="space-y-3">
+
+            <div className="space-y-2">
               {[
                 "Photos are currently the quickest trust upgrade.",
                 "Location is live, but verify the pin and nearby cues.",
                 "Review replies are still the easiest retention signal to improve this week.",
               ].map((item) => (
-                <div key={item} className="rounded-[1rem] border border-brand-deep-green/10 bg-white px-4 py-4">
+                <div key={item} className="rounded-lg border border-border bg-white px-4 py-3">
                   <p className="text-sm leading-6 text-foreground">{item}</p>
                 </div>
               ))}
@@ -102,10 +101,10 @@ export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) 
           </section>
 
           {/* QR Code teaser */}
-          <MithoCard surface="business" interactive="subtle" className="bg-white">
-            <MithoCardHeader>
+          <MithoCard surface="business" interactive="none" className="rounded-lg bg-white shadow-sm">
+            <MithoCardHeader className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                   <QrCode className="h-5 w-5" />
                 </div>
                 <div>
@@ -114,7 +113,7 @@ export function BusinessOverviewPage({ businessId }: BusinessOverviewPageProps) 
                 </div>
               </div>
             </MithoCardHeader>
-            <MithoCardContent>
+            <MithoCardContent className="p-4 pt-0">
               <p className="text-sm leading-6 text-muted-foreground">
                 Download a high-res QR code that sends customers straight to your Mitho review page. Place it at your counter or entrance.
               </p>

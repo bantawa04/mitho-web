@@ -5,8 +5,6 @@ import { PopularNearYouSection } from "@/features/home/components/popular-near-y
 import { WhyMithoSection } from "@/features/home/components/why-mitho-section"
 import { AppPromotionSection } from "@/features/home/components/app-promotion-section"
 import { BusinessCtaSection } from "@/features/home/components/business-cta-section"
-import { SponsoredListingsSection } from "@/features/home/components/sponsored-listings-section"
-import { FinalCtaSection } from "@/features/home/components/final-cta-section"
 import { Footer } from "@/features/home/components/footer"
 import { HeroV2 } from "@/features/home/components/hero-v2"
 
@@ -18,21 +16,15 @@ export default function HomePage() {
       <main id="top" className="overflow-x-hidden">
         <HeroV2 />
 
-        <div className="bg-[linear-gradient(180deg,#fffdf8_0%,#fff9f0_100%)]">
-          <WhyMithoSection />
-        </div>
+        <TrendingSection />
+        <CategoriesSection />
+        <PopularNearYouSection />
 
-        <div className="border-y border-brand-deep-green/10 bg-[linear-gradient(180deg,#fffef9_0%,#fbf6eb_100%)]">
-          <TrendingSection />
-          <CategoriesSection />
-          <PopularNearYouSection />
-        </div>
+        <WhyMithoSection />
 
-        <div className="bg-[linear-gradient(180deg,#fffdf9_0%,#fbf5e9_100%)]">
+        <div className="bg-surface-soft border-y border-border">
           <BusinessCtaSection />
           <AppPromotionSection />
-          <SponsoredListingsSection />
-          <FinalCtaSection />
         </div>
       </main>
 

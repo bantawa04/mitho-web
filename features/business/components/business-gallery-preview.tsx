@@ -48,8 +48,8 @@ export function BusinessGalleryPreview({
       <div
         className={cn(
           compactEmpty
-            ? "flex min-h-[220px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-brand-deep-green/12 bg-[#fffdf8] px-6 py-8 text-center"
-            : "flex min-h-[280px] flex-col items-center justify-center rounded-[1.75rem] border border-brand-deep-green/12 bg-white px-6 py-10 text-center",
+            ? "flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-[#fffdf8] px-6 py-8 text-center"
+            : "flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-border bg-white px-6 py-10 text-center",
           className,
         )}
       >
@@ -80,13 +80,13 @@ export function BusinessGalleryPreview({
               type="button"
               onClick={() => setSelectedIndex(index)}
               className={cn(
-                "group relative aspect-[4/3] w-[75vw] sm:w-[280px] shrink-0 snap-start overflow-hidden rounded-[1.5rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",
+                "group relative aspect-[4/3] w-[75vw] sm:w-[280px] shrink-0 snap-start overflow-hidden rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",
               )}
             >
               <img
                 src={item.type === "video" ? item.thumbnail || item.src : item.src}
                 alt={item.alt}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="h-full w-full object-cover"
               />
               {item.type === "video" && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20">
@@ -96,7 +96,7 @@ export function BusinessGalleryPreview({
                 </div>
               )}
               {isOverlayTile && (
-                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-black/35 to-transparent p-4 text-left text-white">
+                <div className="absolute inset-0 flex items-end bg-black/40 p-4 text-left text-white">
                   <div>
                     <p className="text-lg font-semibold">+{moreCount} more</p>
                     <p className="text-sm text-white/80">See the full gallery</p>

@@ -94,9 +94,9 @@ export function ReviewsOverview() {
   }
 
   return (
-    <section className="py-8">
-      <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+    <section>
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
           <MessageSquare className="h-5 w-5" />
         </div>
         <div>
@@ -104,9 +104,9 @@ export function ReviewsOverview() {
           <p className="type-meta mt-1">Manage and respond to customer feedback</p>
         </div>
       </div>
-          <div className="flex flex-col gap-8 lg:flex-row">
+          <div className="flex flex-col gap-6 lg:flex-row">
             <div className="flex flex-col items-center justify-center gap-2 lg:min-w-[200px]">
-              <span className="text-5xl font-bold text-brand-orange">{averageRating.toFixed(1)}</span>
+              <span className="text-5xl font-bold text-foreground">{averageRating.toFixed(1)}</span>
               <StarRating rating={averageRating} size="lg" />
               <span className="text-sm text-muted-foreground">{totalReviews} reviews</span>
             </div>
@@ -120,7 +120,7 @@ export function ReviewsOverview() {
             </div>
           </div>
 
-          <div className="mt-6 border-t border-border pt-6">
+          <div className="mt-4 border-t border-border pt-4">
             <div className="mb-4 flex items-center justify-between gap-3">
               <h4 className="type-meta font-semibold text-foreground">Latest reviews</h4>
               <p className="text-xs text-muted-foreground">
@@ -128,7 +128,7 @@ export function ReviewsOverview() {
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {visibleReviews.map((review) => {
                 const isReplyOpen = activeReplyId === review.id
                 const isReplySubmitted = submittedReplyId === review.id
@@ -136,10 +136,10 @@ export function ReviewsOverview() {
                 return (
                   <div
                     key={review.id}
-                    className="rounded-[1.1rem] border border-brand-deep-green/10 bg-white p-4 shadow-[0_6px_18px_rgba(10,70,53,0.04)]"
+                    className="rounded-lg border border-border bg-white p-4 shadow-sm"
                   >
                     <div className="flex gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-soft-beige text-sm font-semibold text-brand-orange">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
                         {review.author[0]}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -150,11 +150,11 @@ export function ReviewsOverview() {
                         </div>
                         <p className="mt-2 text-sm leading-6 text-muted-foreground">{review.content}</p>
 
-                        <div className="mt-4 flex flex-wrap items-center gap-3">
+                        <div className="mt-3 flex flex-wrap items-center gap-3">
                           <button
                             type="button"
                             onClick={() => openReply(review.id)}
-                            className="text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+                            className="text-sm font-semibold text-brand-deep-green transition-colors hover:text-foreground"
                           >
                             Reply to review
                           </button>
@@ -164,7 +164,7 @@ export function ReviewsOverview() {
                         </div>
 
                         {isReplyOpen ? (
-                          <div className="mt-4 rounded-[1rem] border border-brand-deep-green/10 bg-surface-business-inset p-4">
+                          <div className="mt-3 rounded-lg border border-border bg-surface-business-inset p-4">
                             <label htmlFor={`reply-${review.id}`} className="mb-2 block text-sm font-semibold text-foreground">
                               Draft your reply
                             </label>
@@ -173,7 +173,7 @@ export function ReviewsOverview() {
                               value={replyDraft}
                               onChange={(event) => setReplyDraft(event.target.value)}
                               placeholder="Write a calm, helpful response for this customer."
-                              className="min-h-28 w-full rounded-[0.9rem] border border-brand-deep-green/12 bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20"
+                              className="min-h-28 w-full rounded-lg border border-border bg-white px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                             />
                             <div className="mt-3 flex flex-wrap items-center gap-3">
                               <MithoButton
@@ -197,7 +197,7 @@ export function ReviewsOverview() {
               })}
             </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5">
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
               <MithoButton variant="outline-secondary" size="sm" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1}>
                 <ChevronLeft className="h-4 w-4" />
                 Previous
@@ -216,8 +216,8 @@ export function ReviewsOverview() {
                       aria-current={isActive ? "page" : undefined}
                       className={
                         isActive
-                          ? "flex h-10 w-10 items-center justify-center rounded-full bg-brand-deep-green text-sm font-semibold text-white"
-                          : "flex h-10 w-10 items-center justify-center rounded-full border border-brand-deep-green/12 bg-white text-sm font-semibold text-brand-dark-green transition-colors hover:border-brand-deep-green/22"
+                          ? "flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground"
+                          : "flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-white text-sm font-semibold text-foreground transition-colors hover:border-brand-deep-green/22"
                       }
                     >
                       {pageNumber}

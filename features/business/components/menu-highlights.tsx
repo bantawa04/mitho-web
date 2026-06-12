@@ -29,12 +29,12 @@ export function MenuHighlights({ isEarlyListing = false, items, emptyMessage, me
           {items.map((item) => (
             <article
               key={item.name}
-              className="overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_28px_rgba(10,70,53,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(10,70,53,0.12)]"
+              className="overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
                 {item.isPopular && (
-                  <div className="absolute left-3 top-3 rounded-full bg-brand-orange px-3 py-1 text-xs font-semibold text-white">
+                  <div className="absolute left-3 top-3 rounded-md bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
                     Most mentioned
                   </div>
                 )}
@@ -45,7 +45,7 @@ export function MenuHighlights({ isEarlyListing = false, items, emptyMessage, me
                     <h3 className="text-base font-semibold text-brand-dark-green">{item.name}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.note}</p>
                   </div>
-                  <span className="shrink-0 whitespace-nowrap rounded-full bg-brand-soft-beige px-3 py-1 text-sm font-semibold text-brand-dark-green">
+                  <span className="shrink-0 whitespace-nowrap rounded-md bg-muted px-3 py-1 text-sm font-semibold tabular-nums text-brand-dark-green">
                     {item.price}
                   </span>
                 </div>
@@ -57,8 +57,8 @@ export function MenuHighlights({ isEarlyListing = false, items, emptyMessage, me
         <div
           className={
             isEarlyListing
-              ? "rounded-[1.45rem] border border-dashed border-brand-deep-green/12 bg-white/70 p-5"
-              : "rounded-[1.6rem] border border-brand-deep-green/10 bg-white/80 p-6 shadow-[0_10px_28px_rgba(10,70,53,0.06)]"
+              ? "rounded-xl border border-dashed border-border bg-white/70 p-5"
+              : "rounded-xl border border-border bg-white/80 p-6 shadow-sm"
           }
         >
           <p className="text-lg font-semibold text-brand-dark-green">

@@ -88,23 +88,23 @@ export function AdminBusinessesPage() {
       {
         id: "business",
         label: "Business",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
         cell: (business) => (
           <div className="flex items-start gap-3">
             {business.logo?.publicUrl ? (
               <img
                 src={business.logo.publicUrl}
                 alt={business.logo.altText ?? business.name}
-                className="h-11 w-11 rounded-xl border border-brand-deep-green/10 object-cover"
+                className="h-11 w-11 rounded-xl border border-border object-cover"
               />
             ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige text-brand-deep-green/40">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted text-muted-foreground">
                 <Building2 className="h-5 w-5" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="font-semibold text-brand-dark-green">{business.name}</p>
+              <p className="font-semibold text-foreground">{business.name}</p>
               {business.establishmentTypeId && (
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {establishmentTypeMap.get(business.establishmentTypeId) ?? "—"}
@@ -117,15 +117,15 @@ export function AdminBusinessesPage() {
       {
         id: "location",
         label: "Location",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (business) => formatAdminBusinessTableLocation(business),
       },
       {
         id: "status",
         label: "Status",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (business) => (
           <div className="flex flex-col items-start gap-2">
             <AdminStatusBadge {...getBusinessListingPresentation(business.listingStatus)} label={`Listing: ${getBusinessListingPresentation(business.listingStatus).label}`} />
@@ -136,15 +136,15 @@ export function AdminBusinessesPage() {
       {
         id: "updated",
         label: "Updated",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (business) => formatAdminDate(business.updatedAt),
       },
       {
         id: "action",
         label: "Action",
-        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-right",
+        className: "pr-6 text-right text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-right",
         cell: (business) => {
           const actions = [
             {
@@ -197,13 +197,13 @@ export function AdminBusinessesPage() {
       </section>
 
       {isError ? (
-        <div className="rounded-[1.8rem] border border-red-100 bg-red-50 px-6 py-10 text-center">
+        <div className="rounded-xl border border-red-100 bg-red-50 px-6 py-10 text-center">
           <p className="font-semibold text-red-700">Failed to load businesses</p>
           <p className="mt-1 text-sm text-red-600">Please refresh the page or try again later.</p>
         </div>
       ) : isLoading ? (
-        <div className="overflow-hidden rounded-[1.9rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]">
-          <div className="space-y-0 divide-y divide-brand-deep-green/10">
+        <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+          <div className="space-y-0 divide-y divide-border">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex items-center gap-4 px-6 py-5">
                 <Skeleton className="h-11 w-11 rounded-xl" />
@@ -229,7 +229,7 @@ export function AdminBusinessesPage() {
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-muted-foreground">Status</span>
               <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StatusFilterValue)}>
-                <SelectTrigger className="h-11 w-[160px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                <SelectTrigger className="h-11 w-[160px] rounded-xl border-border bg-white shadow-none">
                   <SelectValue placeholder="Listing status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -243,7 +243,7 @@ export function AdminBusinessesPage() {
 
               <span className="text-sm font-medium text-muted-foreground ml-2">Ownership</span>
               <Select value={ownershipFilter} onValueChange={(value) => setOwnershipFilter(value as OwnershipFilterValue)}>
-                <SelectTrigger className="h-11 w-[180px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                <SelectTrigger className="h-11 w-[180px] rounded-xl border-border bg-white shadow-none">
                   <SelectValue placeholder="Ownership status" />
                 </SelectTrigger>
                 <SelectContent>

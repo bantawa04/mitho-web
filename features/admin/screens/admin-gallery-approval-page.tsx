@@ -23,7 +23,7 @@ const mediaTypeFilters = ["all", "image", "video"] as const
 function getStatusTone(status: GalleryItemStatus) {
   switch (status) {
     case "pending":
-      return "bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
+      return "bg-muted text-foreground border-border"
     case "approved":
       return "bg-emerald-50 text-emerald-700 border-emerald-100"
     case "rejected":
@@ -96,21 +96,21 @@ export function AdminGalleryApprovalPage() {
       {
         id: "media",
         label: "Media",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
         cell: (item) => (
           <div className="flex items-center gap-3">
-            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30">
+            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-border bg-muted">
               {item.media.mediaType === "video" ? (
                 <div className="flex h-full w-full items-center justify-center">
-                  <Film className="h-5 w-5 text-brand-deep-green/40" />
+                  <Film className="h-5 w-5 text-muted-foreground" />
                 </div>
               ) : (
                 <img src={item.media.publicUrl} alt={displayTitle(item)} className="h-full w-full object-cover" />
               )}
             </div>
             <div className="min-w-0 space-y-1">
-              <p className="max-w-[16rem] truncate text-sm font-semibold text-brand-dark-green">{displayTitle(item)}</p>
+              <p className="max-w-[16rem] truncate text-sm font-semibold text-foreground">{displayTitle(item)}</p>
               <p className="text-xs capitalize text-muted-foreground">{item.media.mediaType}</p>
             </div>
           </div>
@@ -119,29 +119,29 @@ export function AdminGalleryApprovalPage() {
       {
         id: "business",
         label: "Business",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm font-medium text-brand-dark-green",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm font-medium text-foreground",
         cell: (item) => item.business.name || "Unknown business",
       },
       {
         id: "status",
         label: "Status",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (item) => <AdminStatusBadge label={formatStatus(item.status)} tone={getStatusTone(item.status)} />,
       },
       {
         id: "submitted",
         label: "Submitted",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (item) => formatAdminDate(item.createdAt),
       },
       {
         id: "action",
         label: "Action",
-        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-right",
+        className: "pr-6 text-right text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-right",
         cell: (item) => (
           <div className="flex justify-end">
             <AdminRowActions
@@ -275,35 +275,35 @@ export function AdminGalleryApprovalPage() {
       >
         {selectedItem ? (
           <>
-            <section className="space-y-4 border-b border-brand-deep-green/10 pb-5">
+            <section className="space-y-4 border-b border-border pb-5">
               <div className="flex flex-wrap items-center gap-2">
                 <AdminStatusBadge label={formatStatus(selectedItem.status)} tone={getStatusTone(selectedItem.status)} />
                 <AdminStatusBadge
                   label={selectedItem.media.mediaType === "video" ? "Video" : "Image"}
-                  tone="bg-brand-soft-beige/80 text-brand-dark-green border-brand-deep-green/10"
+                  tone="bg-muted text-foreground border-border"
                 />
               </div>
 
               <div className="grid gap-5 sm:grid-cols-3">
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Business</p>
-                  <p className="text-base font-semibold text-brand-dark-green">
+                  <p className="text-xs font-medium text-muted-foreground">Business</p>
+                  <p className="text-base font-semibold text-foreground">
                     {selectedItem.business.name || "Unknown business"}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Title</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{displayTitle(selectedItem)}</p>
+                  <p className="text-xs font-medium text-muted-foreground">Title</p>
+                  <p className="text-base font-semibold text-foreground">{displayTitle(selectedItem)}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Submitted</p>
-                  <p className="text-base font-semibold text-brand-dark-green">{formatAdminDate(selectedItem.createdAt)}</p>
+                  <p className="text-xs font-medium text-muted-foreground">Submitted</p>
+                  <p className="text-base font-semibold text-foreground">{formatAdminDate(selectedItem.createdAt)}</p>
                 </div>
               </div>
             </section>
 
-            <section className="space-y-3 border-b border-brand-deep-green/10 pb-5">
-              <div className="overflow-hidden rounded-[1.2rem] border border-brand-deep-green/10 bg-brand-soft-beige/10">
+            <section className="space-y-3 border-b border-border pb-5">
+              <div className="overflow-hidden rounded-xl border border-border bg-muted">
                 {selectedItem.media.mediaType === "video" ? (
                   <video src={selectedItem.media.publicUrl} className="max-h-96 w-full object-contain" controls playsInline />
                 ) : (
@@ -323,7 +323,7 @@ export function AdminGalleryApprovalPage() {
 
             <div className="space-y-3">
               <div>
-                <p className="text-sm font-semibold text-brand-dark-green">Moderation decision</p>
+                <p className="text-sm font-semibold text-foreground">Moderation decision</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {selectedItem.status === "pending"
                     ? "Choose whether this media should be visible to customers."
@@ -345,11 +345,11 @@ export function AdminGalleryApprovalPage() {
                 ].map((option) => (
                   <label
                     key={option.value}
-                    className="flex cursor-pointer items-start gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-4 transition-colors hover:bg-brand-soft-beige/18"
+                    className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-white px-4 py-4 transition-colors hover:bg-muted"
                   >
                     <RadioGroupItem value={option.value} className="mt-1" />
                     <span className="space-y-1">
-                      <span className="block text-sm font-semibold text-brand-dark-green">{option.title}</span>
+                      <span className="block text-sm font-semibold text-foreground">{option.title}</span>
                       <span className="block text-sm leading-6 text-muted-foreground">{option.description}</span>
                     </span>
                   </label>
@@ -358,7 +358,7 @@ export function AdminGalleryApprovalPage() {
 
               {selectedDecision === "rejected" ? (
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-brand-dark-green">Rejection reason *</p>
+                  <p className="text-sm font-semibold text-foreground">Rejection reason *</p>
                   <textarea
                     value={rejectionReason}
                     onChange={(event) => setRejectionReason(event.target.value)}

@@ -43,7 +43,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
 const sectionCardClass =
-  "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
+  "rounded-xl border border-brand-deep-green/10 bg-white shadow-sm"
 const PUBLIC_COLLECTION_PAGE_SIZE = 12
 const PUBLIC_COLLECTION_SEARCH_THRESHOLD = 6
 const PUBLIC_CREATOR_DIRECTORY_PER_PAGE = 12
@@ -247,7 +247,7 @@ export function ProfileHubPage() {
               <Link
                 key={collection.id}
                 href={`/collections/${collection.id}`}
-                className="group rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_8px_20px_rgba(10,70,53,0.06)]"
+                className="group rounded-xl border border-brand-deep-green/10 bg-muted p-4 transition-colors duration-200 hover:border-brand-deep-green/18"
               >
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="line-clamp-1 text-base font-semibold text-brand-dark-green">{collection.title}</h3>
@@ -322,7 +322,7 @@ export function ProfileReviewsPage() {
           {reviewsQuery.isLoading ? (
             <div className="space-y-4 py-5">
               {[0, 1, 2].map((item) => (
-                <div key={item} className="h-28 animate-pulse rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8]" />
+                <div key={item} className="h-28 animate-pulse rounded-xl border border-brand-deep-green/10 bg-muted" />
               ))}
             </div>
           ) : reviewsQuery.isError ? (
@@ -367,7 +367,7 @@ export function ProfileReviewsPage() {
                     </div>
                     <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{review.body}</p>
                     {review.status === "rejected" ? (
-                      <div className="mt-3 max-w-3xl rounded-[1rem] border border-danger/15 bg-danger/5 p-3 text-sm text-danger">
+                      <div className="mt-3 max-w-3xl rounded-lg border border-danger/15 bg-danger/5 p-3 text-sm text-danger">
                         {review.moderationNote ? <p>{review.moderationNote}</p> : <p>This review was not approved.</p>}
                         {href ? (
                           <Link href={`${href}#add-review`} className="mt-1 inline-block font-semibold underline-offset-2 hover:underline">
@@ -498,8 +498,8 @@ export function ProfileSettingsPage() {
           </div>
           <div className="grid gap-6 px-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)] sm:px-8">
             <div className="space-y-4">
-              <div className="rounded-[1.5rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
-                <div className="mx-auto w-fit rounded-full border border-brand-deep-green/10 bg-white p-2 shadow-[0_8px_20px_rgba(10,70,53,0.06)]">
+              <div className="rounded-xl border border-brand-deep-green/10 bg-muted p-5">
+                <div className="mx-auto w-fit rounded-full border border-brand-deep-green/10 bg-white p-2 shadow-sm">
                   <img src={form.avatarUrl} alt={form.name} className="h-28 w-28 rounded-full object-cover" />
                 </div>
                 <input
@@ -524,7 +524,7 @@ export function ProfileSettingsPage() {
                 <Input
                   value={form.name}
                   onChange={(event) => updateForm("name", event.target.value)}
-                  className="h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  className="h-12 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
                 />
               </label>
 
@@ -534,7 +534,7 @@ export function ProfileSettingsPage() {
                   value={form.bio}
                   onChange={(event) => updateForm("bio", event.target.value)}
                   rows={5}
-                  className="rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  className="rounded-lg border-brand-deep-green/12 bg-muted px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
                 />
               </label>
 
@@ -544,7 +544,7 @@ export function ProfileSettingsPage() {
                   <Input
                     value={form.mobileNumber}
                     onChange={(event) => updateForm("mobileNumber", event.target.value)}
-                    className="h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                    className="h-12 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
                   />
                 </label>
 
@@ -553,7 +553,7 @@ export function ProfileSettingsPage() {
                   <Input
                     value={form.address}
                     onChange={(event) => updateForm("address", event.target.value)}
-                    className="h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                    className="h-12 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
                   />
                 </label>
               </div>
@@ -581,21 +581,21 @@ export function ProfileSettingsPage() {
             <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Locked details tied to sign-in and account identity.</h2>
           </div>
           <div className="grid gap-4 px-6 py-6 md:grid-cols-2 sm:px-8">
-            <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+            <div className="rounded-xl border border-brand-deep-green/10 bg-muted p-5">
               <div className="flex items-center gap-2 text-sm font-semibold text-brand-dark-green">
                 <Mail className="h-4 w-4 text-brand-orange" />
                 Account email
               </div>
-              <Input value={mockCustomerProfile.email} disabled className="mt-4 h-12 rounded-[1rem] border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
+              <Input value={mockCustomerProfile.email} disabled className="mt-4 h-12 rounded-lg border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
               <p className="mt-3 text-sm leading-6 text-muted-foreground">This comes from Google sign-in and stays read-only here for trust and account recovery consistency.</p>
             </div>
 
-            <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+            <div className="rounded-xl border border-brand-deep-green/10 bg-muted p-5">
               <div className="flex items-center gap-2 text-sm font-semibold text-brand-dark-green">
                 <Lock className="h-4 w-4 text-brand-orange" />
                 Username
               </div>
-              <Input value={`@${mockCustomerProfile.username}`} disabled className="mt-4 h-12 rounded-[1rem] border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
+              <Input value={`@${mockCustomerProfile.username}`} disabled className="mt-4 h-12 rounded-lg border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
               <p className="mt-3 text-sm leading-6 text-muted-foreground">Username is fixed for now so public profile links and creator identity do not unexpectedly change.</p>
             </div>
           </div>
@@ -607,7 +607,7 @@ export function ProfileSettingsPage() {
             <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">Delete your account deliberately.</h2>
           </div>
           <div className="space-y-5 px-6 py-6 sm:px-8">
-            <div className="rounded-[1.35rem] border border-danger/15 bg-danger/5 p-5">
+            <div className="rounded-xl border border-danger/15 bg-danger/5 p-5">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger">
                   <Trash2 className="h-4 w-4" />
@@ -635,7 +635,7 @@ export function ProfileSettingsPage() {
                           </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
-                          <div className="rounded-[1rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+                          <div className="rounded-lg border border-brand-deep-green/10 bg-muted p-4">
                             <div className="flex items-start gap-3">
                               <ShieldAlert className="mt-0.5 h-4 w-4 text-brand-orange" />
                               <div className="text-sm leading-7 text-muted-foreground">
@@ -724,7 +724,7 @@ export function ProfileFollowingPage() {
                 {followingProfiles.map((profile) => (
                   <div
                     key={profile.userId}
-                    className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5 transition-all duration-200 hover:border-brand-deep-green/18 hover:shadow-[0_8px_20px_rgba(10,70,53,0.06)]"
+                    className="rounded-xl border border-brand-deep-green/10 bg-muted p-5 transition-colors duration-200 hover:border-brand-deep-green/18"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <Link href={`/users/${profile.username}`} className="flex min-w-0 items-start gap-3">
@@ -868,7 +868,7 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                className="h-11 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] pl-11 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                className="h-11 rounded-lg border-brand-deep-green/12 bg-muted pl-11 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
                 placeholder="Search public collections"
               />
             </div>
@@ -895,7 +895,7 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
             </div>
           </div>
         ) : isSearching ? (
-          <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+          <div className="rounded-xl border border-dashed border-brand-deep-green/18 bg-muted p-6">
             <p className="text-base font-semibold text-brand-dark-green">No public collections match this search.</p>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
               Try another collection title, place name, or clear the search to see everything again.
@@ -955,7 +955,7 @@ function PublicReviewsSection({ profile }: { profile: PublicUserProfileData }) {
             ))}
           </div>
         ) : (
-          <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+          <div className="rounded-xl border border-dashed border-brand-deep-green/18 bg-muted p-6">
             <p className="text-base font-semibold text-brand-dark-green">No public reviews yet.</p>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
               Once public reviews are posted, this page will turn into a stronger local discovery signal.
@@ -971,7 +971,7 @@ function CreatorDiscoveryCard({ creator }: { creator: PublicCreatorItem }) {
   return (
     <Link
       href={`/users/${creator.username}`}
-      className="group flex h-full flex-col rounded-[1.55rem] border border-brand-deep-green/10 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-deep-green/18 hover:shadow-[0_16px_34px_rgba(10,70,53,0.08)]"
+      className="group flex h-full flex-col rounded-xl border border-brand-deep-green/10 bg-white p-5 transition-colors duration-200 hover:border-brand-deep-green/18"
     >
       <div className="flex items-start gap-4">
         {creator.avatarUrl ? (
@@ -1067,7 +1067,7 @@ export function PublicUserDiscoveryPage() {
                   type="search"
                   value={inputQuery}
                   onChange={(event) => setInputQuery(event.target.value)}
-                  className="h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] pl-11 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  className="h-12 rounded-lg border-border bg-muted pl-11 shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
                   placeholder="Search creators by name or username"
                 />
               </div>
@@ -1075,8 +1075,8 @@ export function PublicUserDiscoveryPage() {
             </div>
 
             {!hasQuery ? (
-              <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
-                <p className="text-base font-semibold text-brand-dark-green">Search to find creators.</p>
+              <div className="rounded-xl border border-dashed border-border bg-muted p-6">
+                <p className="text-base font-semibold text-foreground">Search to find creators.</p>
                 <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
                   Type a name or username above to discover people who have built public food lists on Mitho.
                 </p>
@@ -1084,12 +1084,12 @@ export function PublicUserDiscoveryPage() {
             ) : isLoading ? (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="h-32 animate-pulse rounded-[1.55rem] bg-brand-deep-green/5" />
+                  <div key={i} className="h-32 animate-pulse rounded-xl bg-muted" />
                 ))}
               </div>
             ) : !allItems.length ? (
-              <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
-                <p className="text-base font-semibold text-brand-dark-green">No creators match this search.</p>
+              <div className="rounded-xl border border-dashed border-border bg-muted p-6">
+                <p className="text-base font-semibold text-foreground">No creators match this search.</p>
                 <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
                   Try another name or username to keep browsing public profiles.
                 </p>
@@ -1149,8 +1149,8 @@ export function PublicUserProfilePage({ username }: { username: string }) {
     return (
       <div className="container mx-auto px-4 py-10 md:py-12">
         <div className="space-y-6">
-          <div className="h-48 animate-pulse rounded-[1.75rem] border border-brand-deep-green/10 bg-white/70" />
-          <div className="h-24 animate-pulse rounded-[1.75rem] border border-brand-deep-green/10 bg-white/70" />
+          <div className="h-48 animate-pulse rounded-xl border border-brand-deep-green/10 bg-white/70" />
+          <div className="h-24 animate-pulse rounded-xl border border-brand-deep-green/10 bg-white/70" />
         </div>
       </div>
     )
@@ -1159,7 +1159,7 @@ export function PublicUserProfilePage({ username }: { username: string }) {
   if (!profileQuery.data) {
     return (
       <div className="container mx-auto px-4 py-12 md:py-16">
-        <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white px-6 py-8 shadow-[0_12px_30px_rgba(10,70,53,0.05)] sm:px-8">
+        <div className="rounded-xl border border-brand-deep-green/10 bg-white px-6 py-8 shadow-sm sm:px-8">
           <h1 className="type-page-title text-brand-dark-green">This public profile is not available.</h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
             The user may not have published anything yet, or the profile link may no longer point to an active public page.

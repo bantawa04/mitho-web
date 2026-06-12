@@ -25,13 +25,13 @@ export function SettingsManagement({ businessId }: SettingsManagementProps) {
   ]
 
   return (
-    <section className="py-8">
-      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Operations</p>
-      <h2 className="type-section-title mb-6 text-foreground">Settings & management</h2>
-      <MithoCard surface="business" interactive="subtle">
-        <MithoCardHeader>
+    <section>
+      <p className="mb-2 text-xs font-semibold text-muted-foreground">Operations</p>
+      <h2 className="type-section-title mb-4 text-foreground">Settings & management</h2>
+      <MithoCard surface="business" interactive="none" className="rounded-lg shadow-sm">
+        <MithoCardHeader className="p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               <Settings className="h-5 w-5" />
             </div>
             <div>
@@ -40,16 +40,16 @@ export function SettingsManagement({ businessId }: SettingsManagementProps) {
             </div>
           </div>
         </MithoCardHeader>
-        <MithoCardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <MithoCardContent className="p-4 pt-0">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {settingsLinks.map((setting, idx) => (
               <Link
                 key={idx}
                 href={setting.href}
-                className="group cursor-pointer rounded-[1rem] border border-brand-deep-green/10 bg-white p-4 transition-all duration-200 hover:border-brand-deep-green/18"
+                className="group cursor-pointer rounded-lg border border-border bg-white p-4 transition-colors hover:border-brand-deep-green/18"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange group-hover:bg-brand-orange group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                     {setting.icon}
                   </div>
                   <div className="flex-1 min-w-0">

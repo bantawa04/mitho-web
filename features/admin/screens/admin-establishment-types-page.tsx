@@ -113,11 +113,11 @@ export function AdminEstablishmentTypesPage() {
       {
         id: "name",
         label: "Name",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
         cell: (item) => (
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-brand-dark-green">{item.label}</p>
+            <p className="text-sm font-semibold text-foreground">{item.label}</p>
             <p className="text-xs text-muted-foreground">{item.slug}</p>
           </div>
         ),
@@ -125,8 +125,8 @@ export function AdminEstablishmentTypesPage() {
       {
         id: "status",
         label: "Status",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (item) => (
           <AdminStatusBadge {...getTaxonomyStatusPresentation(item.status)} />
         ),
@@ -134,8 +134,8 @@ export function AdminEstablishmentTypesPage() {
       {
         id: "actions",
         label: "Actions",
-        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-right",
+        className: "pr-6 text-right text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-right",
         cell: (item) => (
           <div className="flex justify-end">
             <AdminRowActions
@@ -292,24 +292,24 @@ export function AdminEstablishmentTypesPage() {
           <div className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Name</p>
-                <p className="text-sm font-semibold text-brand-dark-green">{selectedType.label}</p>
+                <p className="text-xs font-medium text-muted-foreground">Name</p>
+                <p className="text-sm font-semibold text-foreground">{selectedType.label}</p>
                 <p className="text-xs text-muted-foreground">{selectedType.slug}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Status</p>
+                <p className="text-xs font-medium text-muted-foreground">Status</p>
                 <AdminStatusBadge {...getTaxonomyStatusPresentation(selectedType.status)} />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Linked listings</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedType.listingsCount ?? 0}</p>
+              <div className="rounded-xl border border-border bg-muted px-4 py-4">
+                <p className="text-xs font-medium text-muted-foreground">Linked listings</p>
+                <p className="mt-2 text-sm font-semibold text-foreground">{selectedType.listingsCount ?? 0}</p>
               </div>
-              <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Last updated</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{formatAdminDateTime(selectedType.updatedAt)}</p>
+              <div className="rounded-xl border border-border bg-muted px-4 py-4">
+                <p className="text-xs font-medium text-muted-foreground">Last updated</p>
+                <p className="mt-2 text-sm font-semibold text-foreground">{formatAdminDateTime(selectedType.updatedAt)}</p>
               </div>
             </div>
           </div>

@@ -8,24 +8,19 @@ import { MithoBadge, OpenNowBadge, ClosedBadge, TopRatedBadge, TrendingBadge } f
 import { StarRating } from "./mitho-rating"
 
 const cardVariants = cva(
-  "overflow-hidden rounded-[1.5rem] text-card-foreground transition-all duration-300",
+  "overflow-hidden rounded-xl text-card-foreground transition-all duration-300",
   {
     variants: {
       surface: {
-        customer:
-          "bg-card border border-brand-deep-green/10 shadow-[0_10px_30px_rgba(10,70,53,0.08)]",
-        business:
-          "bg-surface-business border border-brand-deep-green/12 shadow-[0_8px_24px_rgba(10,70,53,0.06)]",
-        admin:
-          "bg-surface-admin border border-brand-deep-green/10 shadow-[0_8px_20px_rgba(10,70,53,0.05)]",
-        inset:
-          "bg-surface-inset border border-brand-deep-green/10 shadow-none",
-        spotlight:
-          "taste-spotlight border border-brand-orange/18 shadow-[0_16px_40px_rgba(239,138,0,0.12)]",
+        customer: "bg-card border border-border shadow-sm",
+        business: "bg-surface-business border border-border shadow-sm",
+        admin: "bg-surface-admin border border-border shadow-sm",
+        inset: "bg-surface-inset border border-brand-deep-green/10 shadow-none",
+        spotlight: "taste-spotlight border border-border shadow-sm",
       },
       interactive: {
-        lift: "hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(10,70,53,0.12)]",
-        subtle: "hover:border-brand-deep-green/18 hover:shadow-[0_12px_28px_rgba(10,70,53,0.08)]",
+        lift: "hover:shadow-md",
+        subtle: "hover:border-brand-deep-green/18 hover:shadow-md",
         none: "",
       },
     },
@@ -210,11 +205,10 @@ function RestaurantCard({
           }}
           className={cn(
             "absolute top-3 right-3 p-2 rounded-full",
-            "bg-white/90 backdrop-blur-sm shadow-sm",
-            "transition-all duration-200",
-            "hover:bg-white hover:scale-110",
+            "bg-white/90 shadow-sm",
+            "transition-colors duration-200",
+            "hover:bg-white",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",
-            "active:scale-95",
           )}
           aria-label={isSaved ? "Remove from saved" : "Save restaurant"}
         >
@@ -308,11 +302,10 @@ function FoodTruckCard({
           }}
           className={cn(
             "absolute top-3 right-3 p-2 rounded-full",
-            "bg-white/90 backdrop-blur-sm",
-            "transition-all duration-200",
-            "hover:bg-white hover:scale-110",
+            "bg-white/90",
+            "transition-colors duration-200",
+            "hover:bg-white",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2",
-            "active:scale-95",
           )}
           aria-label={isSaved ? "Remove from saved" : "Save food truck"}
         >

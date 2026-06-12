@@ -46,7 +46,7 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className={className ?? "inline-flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/88 px-3 py-2 text-sm font-semibold text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.06)] transition-colors hover:border-brand-deep-green/18 hover:bg-brand-soft-beige/45"}
+          className={className ?? "inline-flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white px-3 py-2 text-sm font-semibold text-brand-dark-green shadow-sm transition-colors hover:border-brand-deep-green/18 hover:bg-muted"}
           aria-label="Open account menu"
         >
           <img
@@ -59,7 +59,7 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-64 rounded-[1.25rem] border-brand-deep-green/10 bg-white p-2 shadow-[0_18px_40px_rgba(10,70,53,0.12)]"
+        className="w-64 rounded-xl border-brand-deep-green/10 bg-white p-2 shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
       >
         <DropdownMenuLabel className="px-3 py-2">
           <div className="flex items-center gap-3">

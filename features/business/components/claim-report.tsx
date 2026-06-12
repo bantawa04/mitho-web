@@ -13,7 +13,7 @@ export function ClaimReport({ subdued = false, claimHref = "/business/claim" }: 
       <MithoCard
         surface="customer"
         interactive="none"
-        className={subdued ? "border-brand-deep-green/8 shadow-[0_8px_22px_rgba(10,70,53,0.04)]" : "bg-[#fffdf8]"}
+        className={subdued ? "border-brand-deep-green/8 shadow-sm" : "bg-surface-soft"}
       >
         <MithoCardContent className="flex flex-col items-start justify-between gap-5 py-5 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
@@ -22,7 +22,7 @@ export function ClaimReport({ subdued = false, claimHref = "/business/claim" }: 
             </div>
             <div>
               <p className="font-medium text-brand-dark-green">Is this your business?</p>
-              <Link href={claimHref} className="text-brand-orange hover:underline text-sm font-medium">
+              <Link href={claimHref} className="text-[#b45a00] hover:underline text-sm font-medium">
                 {subdued ? "Claim and verify this listing" : "Claim this Business"}
               </Link>
             </div>

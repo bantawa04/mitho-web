@@ -59,13 +59,13 @@ interface AddBusinessFlowProps {
   shell: AddBusinessShell
 }
 
-const sectionCardClass = "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
+const sectionCardClass = "rounded-xl border border-border bg-white shadow-sm"
 const inputClassName =
-  "h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "h-12 rounded-lg border-border bg-white px-4 shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
 const textareaClassName =
-  "min-h-[118px] rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "min-h-[118px] rounded-lg border-border bg-white px-4 py-3 shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
 const selectTriggerClassName =
-  "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "h-12 w-full rounded-lg border-border bg-white px-4 text-sm shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
 
 function normalizeOptionalUrl(value: string | undefined) {
   const trimmed = value?.trim()
@@ -119,11 +119,11 @@ function AddBusinessSuccess({
 
         <div className="space-y-6 px-6 py-6 sm:px-8">
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+            <div className="rounded-lg border border-brand-deep-green/10 bg-white p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Business</p>
               <p className="mt-2 text-lg font-semibold text-brand-dark-green">{businessName}</p>
             </div>
-            <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+            <div className="rounded-lg border border-brand-deep-green/10 bg-white p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Municipality</p>
               <p className="mt-2 text-lg font-semibold text-brand-dark-green">{businessMunicipality}</p>
             </div>
@@ -137,7 +137,7 @@ function AddBusinessSuccess({
 
             <div className="grid gap-4 xl:grid-cols-2">
               {reviewSections.map((section) => (
-                <div key={section.title} className="rounded-[1.4rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                <div key={section.title} className="rounded-lg border border-brand-deep-green/10 bg-white p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">{section.title}</p>
                   <dl className="mt-4 space-y-3">
                     {section.fields.map((field) => (
@@ -157,7 +157,7 @@ function AddBusinessSuccess({
             </div>
           </div>
 
-          <div className="rounded-[1.4rem] border border-brand-deep-green/10 bg-white p-5">
+          <div className="rounded-lg border border-brand-deep-green/10 bg-white p-5">
             <p className="type-eyebrow text-brand-deep-green/68">What happens next</p>
             <ul className="mt-4 space-y-3">
               {[
@@ -191,7 +191,7 @@ function AddBusinessSuccess({
         </div>
       </section>
 
-      <aside className={cn(sectionCardClass, "h-fit bg-[#fffdf8]")}>
+      <aside className={cn(sectionCardClass, "h-fit bg-surface-soft")}>
         <div className="px-6 py-6">
           <p className="type-eyebrow text-brand-deep-green/68">
             {shell === "public" ? "Review queue" : "Admin review"}
@@ -583,7 +583,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     control={form.control}
                     name="cuisineIds"
                     required
-                    chipsClassName="min-h-[48px] rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] shadow-none focus-within:border-brand-orange focus-within:ring-brand-orange/15"
+                    chipsClassName="min-h-[48px] rounded-lg border-border bg-white shadow-none focus-within:border-primary focus-within:ring-primary/25"
                   />
 
                   <FormField
@@ -756,7 +756,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                         control={form.control}
                         name={name}
                         render={({ field }) => (
-                          <FormItem className="flex items-center gap-3 space-y-0">
+                          <FormItem className="flex min-h-11 items-center gap-3 space-y-0">
                             <FormControl>
                               <Checkbox
                                 checked={field.value === true}
@@ -784,7 +784,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                         control={form.control}
                         name={name}
                         render={({ field }) => (
-                          <FormItem className="flex items-center gap-3 space-y-0">
+                          <FormItem className="flex min-h-11 items-center gap-3 space-y-0">
                             <FormControl>
                               <Checkbox
                                 checked={field.value === true}
@@ -812,7 +812,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                         control={form.control}
                         name={name}
                         render={({ field }) => (
-                          <FormItem className="flex items-center gap-3 space-y-0">
+                          <FormItem className="flex min-h-11 items-center gap-3 space-y-0">
                             <FormControl>
                               <Checkbox
                                 checked={field.value === true}
@@ -840,7 +840,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                         control={form.control}
                         name={name}
                         render={({ field }) => (
-                          <FormItem className="flex items-center gap-3 space-y-0">
+                          <FormItem className="flex min-h-11 items-center gap-3 space-y-0">
                             <FormControl>
                               <Checkbox
                                 checked={field.value === true}
@@ -897,7 +897,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                     control={form.control}
                     name="authorizationConfirmed"
                     render={({ field }) => (
-                      <FormItem className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-4">
+                      <FormItem className="rounded-lg border border-brand-deep-green/10 bg-surface-soft px-4 py-4">
                         <div className="flex items-start gap-3">
                           <FormControl>
                             <Checkbox
@@ -927,7 +927,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                 <MithoCardTitle className="mt-2 text-2xl">Submit the listing for Mitho review.</MithoCardTitle>
               </MithoCardHeader>
               <MithoCardContent className="space-y-5">
-                <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+                <div className="rounded-lg border border-brand-deep-green/10 bg-surface-soft p-4">
                   <p className="text-sm leading-7 text-muted-foreground">
                     After you submit, Mitho will review the listing before it goes live. This step does not create
                     dashboard access; ownership is verified later through the separate claim flow.
@@ -935,7 +935,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
                 </div>
 
                 {submitError ? (
-                  <div className="rounded-[1.15rem] border border-danger/15 bg-danger/5 px-4 py-3 text-sm font-medium text-danger">
+                  <div className="rounded-lg border border-danger/15 bg-danger/5 px-4 py-3 text-sm font-medium text-danger">
                     {submitError}
                   </div>
                 ) : null}
@@ -957,7 +957,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
-        <MithoCard surface="customer" interactive="none" className={cn(sectionCardClass, "bg-[#fffdf8]")}>
+        <MithoCard surface="customer" interactive="none" className={cn(sectionCardClass, "bg-surface-soft")}>
           <MithoCardHeader>
             <p className="type-eyebrow text-brand-deep-green/68">Listing preview</p>
             <MithoCardTitle className="mt-2 text-2xl">
@@ -965,7 +965,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
             </MithoCardTitle>
           </MithoCardHeader>
           <MithoCardContent className="space-y-4">
-            <div className="rounded-[1.15rem] border border-brand-deep-green/10 bg-white p-4">
+            <div className="rounded-lg border border-brand-deep-green/10 bg-white p-4">
               <div className="flex items-center gap-3">
                 <Store className="h-5 w-5 text-brand-orange" />
                 <div>
@@ -977,7 +977,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
               </div>
             </div>
 
-            <div className="rounded-[1.15rem] border border-brand-deep-green/10 bg-white p-4">
+            <div className="rounded-lg border border-brand-deep-green/10 bg-white p-4">
               <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-brand-orange" />
                 <div>
@@ -1024,7 +1024,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
               ))}
             </ul>
 
-            <div className="rounded-[1.15rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+            <div className="rounded-lg border border-brand-deep-green/10 bg-surface-soft p-4">
               <div className="flex items-center gap-2">
                 <ClipboardList className="h-4 w-4 text-brand-orange" />
                 <p className="text-sm font-semibold text-brand-dark-green">Review happens after submission</p>
@@ -1037,7 +1037,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
               </div>
             </div>
 
-            <div className="rounded-[1.15rem] border border-brand-deep-green/10 bg-white p-4">
+            <div className="rounded-lg border border-brand-deep-green/10 bg-white p-4">
               <div className="flex items-center gap-2">
                 <ImagePlus className="h-4 w-4 text-brand-orange" />
                 <p className="text-sm font-semibold text-brand-dark-green">Not collected in this first step</p>
