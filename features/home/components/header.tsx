@@ -55,12 +55,12 @@ export function Header({ signedInUser }: HeaderProps = {}) {
     <>
       <header
         className={cn(
-          "sticky top-0 z-50 w-full border-b border-brand-deep-green/10 bg-background/88 backdrop-blur-md transition-all duration-200",
-          isScrolled ? "shadow-[0_8px_26px_rgba(10,70,53,0.08)]" : "shadow-none",
+          "sticky top-0 z-50 w-full border-b border-brand-deep-green/10 bg-background transition-all duration-200",
+          isScrolled ? "shadow-sm" : "shadow-none",
         )}
       >
         <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between gap-4 md:h-[72px]">
+          <div className="flex h-16 items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2 shrink-0">
               <BrandLogo kind="icon" tone="green" className="h-10 w-auto sm:hidden" alt="Mitho Cha! logo" priority />
               <BrandLogo
@@ -77,13 +77,13 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                 if (link.subLinks) {
                   return (
                     <DropdownMenu key={link.label}>
-                      <DropdownMenuTrigger className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-foreground/78 outline-none transition-colors hover:bg-brand-soft-beige/60 hover:text-brand-orange data-[state=open]:bg-brand-soft-beige/60 data-[state=open]:text-brand-orange">
+                      <DropdownMenuTrigger className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-foreground/80 outline-none transition-colors hover:text-foreground data-[state=open]:text-foreground">
                         {link.label}
                         <ChevronDown className="h-4 w-4 opacity-50" />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48 rounded-2xl border-brand-deep-green/10 p-2 shadow-[0_10px_24px_rgba(10,70,53,0.06)]">
+                      <DropdownMenuContent align="end" className="w-48 rounded-lg border-brand-deep-green/10 p-2 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
                         {link.subLinks.map((subLink) => (
-                          <DropdownMenuItem key={subLink.label} asChild className="cursor-pointer rounded-xl px-3 py-2.5 text-sm font-medium focus:bg-brand-soft-beige/50 focus:text-brand-orange">
+                          <DropdownMenuItem key={subLink.label} asChild className="cursor-pointer rounded-md px-3 py-2.5 text-sm font-medium focus:bg-muted focus:text-foreground">
                             <Link href={subLink.href}>{subLink.label}</Link>
                           </DropdownMenuItem>
                         ))}
@@ -92,11 +92,16 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                   )
                 }
 
+                const isActive = pathname === link.href
+
                 return (
                   <Link
                     key={link.label}
                     href={link.href!}
-                    className="rounded-full px-4 py-2 text-sm font-medium text-foreground/78 transition-colors hover:bg-brand-soft-beige/60 hover:text-brand-orange"
+                    className={cn(
+                      "px-3 py-2 text-sm font-medium text-foreground/80 hover:text-foreground hover:underline underline-offset-8 transition-colors",
+                      isActive && "text-foreground font-semibold underline underline-offset-8 decoration-2 decoration-primary",
+                    )}
                   >
                     {link.label}
                   </Link>
@@ -141,7 +146,7 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                             <Link
                               key={subLink.label}
                               href={subLink.href}
-                              className="block rounded-2xl px-4 py-2 pl-6 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                              className="block rounded-md px-4 py-3 pl-6 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                               onClick={() => setIsMenuOpen(false)}
                             >
                               {subLink.label}
@@ -156,7 +161,7 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                     <Link
                       key={link.label}
                       href={link.href!}
-                      className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {link.label}
@@ -169,7 +174,7 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                   <>
                     <Link
                       href={effectiveUser.href ?? "/profile"}
-                      className="flex items-center gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-3 text-sm font-semibold text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.05)]"
+                      className="flex items-center gap-3 rounded-lg border border-border bg-white px-4 py-3 text-sm font-semibold text-brand-dark-green"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <img
@@ -181,14 +186,14 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                     </Link>
                     <Link
                       href="/collections"
-                      className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Collections
                     </Link>
                     <Link
                       href="/profile/following"
-                      className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Following
@@ -196,7 +201,7 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                     {effectiveHasBusinessAccess ? (
                       <Link
                         href="/dashboard/businesses"
-                        className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                        className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Manage businesses
@@ -204,7 +209,7 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                     ) : null}
                     <Link
                       href="/profile/settings"
-                      className="block rounded-2xl px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Account settings

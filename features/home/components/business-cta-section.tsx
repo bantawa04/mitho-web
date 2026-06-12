@@ -13,7 +13,7 @@ export function BusinessCtaSection() {
   return (
     <MithoSection id="for-business" density="compact">
       <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <div className="rounded-[2rem] border border-brand-deep-green/10 bg-[#fcf7ea] p-7 shadow-[0_12px_28px_rgba(10,70,53,0.05)] sm:p-8">
+        <div className="rounded-xl border border-brand-deep-green/10 bg-[#fcf7ea] p-7 shadow-sm sm:p-8">
           <div className="inline-flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white px-4 py-2 text-sm font-semibold text-brand-dark-green">
             <Store className="h-4 w-4 text-brand-orange" />
             For neighborhood restaurants and local spots
@@ -37,7 +37,7 @@ export function BusinessCtaSection() {
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-brand-deep-green/10 bg-white p-7 sm:p-8">
+        <div className="rounded-xl border border-brand-deep-green/10 bg-white p-7 sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-deep-green/60">Why it works</p>
           <div className="mt-5 space-y-4">
             {benefits.map((benefit) => (
@@ -50,7 +50,7 @@ export function BusinessCtaSection() {
             ))}
           </div>
 
-          <div className="mt-6 rounded-[1.5rem] border border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5">
+          <div className="mt-6 rounded-xl border border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-deep-green/60">Early focus</p>
             <p className="mt-2 text-lg font-semibold text-brand-dark-green">Built for discovery, trust, and repeat visits.</p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">

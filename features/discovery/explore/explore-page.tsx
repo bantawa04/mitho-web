@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { Filter, Search } from "lucide-react"
+import { Filter, Search, X } from "lucide-react"
 import { Header } from "@/features/home/components/header"
 import { Footer } from "@/features/home/components/footer"
 import { EXPLORE_CATEGORY_OPTIONS, EXPLORE_CITY_OPTIONS, EXPLORE_RESULTS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
@@ -44,17 +44,17 @@ function RadioOption({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
+        "flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
         active ? "bg-brand-soft-beige/50 font-semibold text-brand-dark-green" : "font-medium text-muted-foreground hover:bg-surface-soft hover:text-foreground",
       )}
     >
       <div
         className={cn(
           "flex h-4 w-4 items-center justify-center rounded-full border border-brand-deep-green/30 transition-colors",
-          active && "border-brand-orange bg-white",
+          active && "border-primary bg-white",
         )}
       >
-        {active && <div className="h-2 w-2 rounded-full bg-brand-orange" />}
+        {active && <div className="h-2 w-2 rounded-full bg-primary" />}
       </div>
       {children}
     </button>
@@ -75,14 +75,14 @@ function CheckboxOption({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
+        "flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
         active ? "bg-brand-soft-beige/50 font-semibold text-brand-dark-green" : "font-medium text-muted-foreground hover:bg-surface-soft hover:text-foreground",
       )}
     >
       <div
         className={cn(
           "flex h-4 w-4 items-center justify-center rounded-[4px] border border-brand-deep-green/30 transition-colors",
-          active && "border-brand-orange bg-brand-orange text-white",
+          active && "border-primary bg-primary text-white",
         )}
       >
         {active && (
@@ -148,6 +148,11 @@ export function ExplorePage() {
     filters.category !== "all" ||
     filters.sort !== "recommended"
 
+  const categoryLabel =
+    EXPLORE_CATEGORY_OPTIONS.find((option) => option.value === filters.category)?.label ?? filters.category
+
+  const hasVisibleFilterChips = Boolean(filters.q) || filters.category !== "all" || filters.openNow
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyFilters({ q: queryDraft.trim() })
@@ -159,7 +164,7 @@ export function ExplorePage() {
   }
 
   const renderFiltersContent = () => (
-    <div className="space-y-6 rounded-[1.4rem] border border-brand-deep-green/10 bg-white px-5 py-6 shadow-[0_8px_20px_rgba(10,70,53,0.04)]">
+    <div className="space-y-6 rounded-xl border border-border bg-white px-5 py-6 shadow-sm">
       <div>
         <p className="mb-3 px-1 text-xs font-semibold uppercase tracking-[0.15em] text-brand-deep-green/60">Category</p>
         <div className="space-y-0.5">
@@ -194,7 +199,7 @@ export function ExplorePage() {
         <div className="pt-2">
           <button
             onClick={clearFilters}
-            className="w-full rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-brand-orange transition-colors hover:bg-brand-soft-beige/50"
+            className="min-h-11 w-full rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-[#b45a00] transition-colors hover:bg-brand-soft-beige/50"
           >
             Clear all filters
           </button>
@@ -207,7 +212,7 @@ export function ExplorePage() {
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf5e8_34%,#fffdf9_100%)] pb-20">
+      <main className="pb-20">
         <div className="container mx-auto px-4 py-6 md:py-8">
           <MithoBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Explore" }]} />
 
@@ -216,7 +221,7 @@ export function ExplorePage() {
             <p className="mt-3 max-w-xl text-base text-muted-foreground">
               Search by name, neighborhood, or what you&apos;re craving.
             </p>
-            
+
             <form onSubmit={handleSubmit} className="mt-8 w-full max-w-2xl relative flex items-center group">
               <div className="absolute left-6 text-brand-deep-green/50">
                 <Search className="h-5 w-5" />
@@ -226,11 +231,11 @@ export function ExplorePage() {
                 placeholder="Search restaurants, cafes, dishes..."
                 value={queryDraft}
                 onChange={(event) => setQueryDraft(event.target.value)}
-                className="h-[64px] w-full rounded-full border border-brand-deep-green/10 bg-white pl-14 pr-[76px] text-base text-foreground shadow-[0_8px_20px_rgba(10,70,53,0.04)] outline-none transition-all duration-200 placeholder:text-muted-foreground focus:border-brand-orange/50 focus:ring-4 focus:ring-brand-orange/10"
+                className="h-[64px] w-full rounded-full border border-border bg-white pl-14 pr-[76px] text-base text-foreground shadow-sm outline-none transition-all duration-200 placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
               />
-              <MithoButton 
-                type="submit" 
-                className="absolute right-2 h-[48px] w-[48px] p-0 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+              <MithoButton
+                type="submit"
+                className="absolute right-2 h-[48px] w-[48px] p-0 rounded-full flex items-center justify-center"
                 aria-label="Search"
               >
                 <Search className="h-4 w-4" />
@@ -245,7 +250,7 @@ export function ExplorePage() {
                     Filters
                   </MithoButton>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] border-brand-deep-green/10 bg-[#fffdf8]">
+                <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto rounded-t-xl border-border bg-background">
                   <SheetHeader className="text-left">
                     <SheetTitle>Filters</SheetTitle>
                     <SheetDescription>Refine your search results.</SheetDescription>
@@ -266,16 +271,62 @@ export function ExplorePage() {
             </aside>
 
             <div className="space-y-6">
+              {hasVisibleFilterChips && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {filters.q && (
+                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-2.5 py-1 text-xs">
+                      Search: {filters.q}
+                      <button
+                        type="button"
+                        onClick={() => applyFilters({ q: "" })}
+                        aria-label="Clear search filter"
+                        className="text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                  {filters.category !== "all" && (
+                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-2.5 py-1 text-xs">
+                      {categoryLabel}
+                      <button
+                        type="button"
+                        onClick={() => applyFilters({ category: "all" })}
+                        aria-label="Clear category filter"
+                        className="text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                  {filters.openNow && (
+                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-2.5 py-1 text-xs">
+                      Open now
+                      <button
+                        type="button"
+                        onClick={() => applyFilters({ openNow: false })}
+                        aria-label="Clear open now filter"
+                        className="text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                </div>
+              )}
+
               {filteredResults.length === 0 ? (
-                <div className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white px-6 py-10 text-center shadow-[0_10px_24px_rgba(10,70,53,0.03)]">
-                  <h2 className="text-2xl font-semibold text-brand-dark-green">
-                    No matching places found.
+                <div className="rounded-xl border border-border bg-white px-6 py-10 text-center shadow-sm">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                    <Search className="h-5 w-5" />
+                  </div>
+                  <h2 className="mt-4 text-2xl font-semibold text-brand-dark-green">
+                    No places match yet. Try a wider area or fewer filters.
                   </h2>
-                  <p className="mt-3 text-base text-muted-foreground">
-                    Try broadening your search or clearing some filters.
-                  </p>
                   <div className="mt-6 flex justify-center">
-                    <MithoButton onClick={clearFilters}>Clear all filters</MithoButton>
+                    <MithoButton variant="outline-secondary" onClick={clearFilters}>
+                      Clear filters
+                    </MithoButton>
                   </div>
                 </div>
               ) : (

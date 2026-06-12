@@ -183,7 +183,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fffaf3_30%,#ffffff_68%,#fffdf9_100%)] pb-20">
+      <main className="pb-20 lg:pb-0">
         <div className="container mx-auto px-4 py-5 md:py-6">
           <MithoBreadcrumb items={pageData.breadcrumbItems} />
         </div>
@@ -205,10 +205,10 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         />
 
         {/* Sticky Tab Navigation */}
-        <div className="sticky top-0 z-30 border-b border-brand-deep-green/10 bg-[#fffdf8]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fffdf8]/80">
+        <div className="sticky top-0 z-30 border-b border-border bg-background">
           <div className="container mx-auto px-4">
             <nav className="flex gap-6 overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              <a href="#overview" onClick={(e) => { e.preventDefault(); scrollToSection("overview") }} className="border-b-2 border-brand-orange py-4 text-sm font-semibold text-brand-dark-green transition-colors">Overview</a>
+              <a href="#overview" onClick={(e) => { e.preventDefault(); scrollToSection("overview") }} className="border-b-2 border-primary py-4 text-sm font-semibold text-brand-dark-green transition-colors">Overview</a>
               <a href="#reviews" onClick={(e) => { e.preventDefault(); scrollToSection("reviews") }} className="border-b-2 border-transparent py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-dark-green">Reviews</a>
             </nav>
           </div>
@@ -253,16 +253,14 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         </div>
       </main>
 
-      {/* Mobile Floating Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-brand-deep-green/10 bg-white p-4 pb-safe shadow-[0_-8px_24px_rgba(10,70,53,0.05)] md:hidden">
-        <div className="flex gap-3 max-w-md mx-auto">
-          <MithoButton size="lg" className="flex-1 justify-center shadow-sm" onClick={() => scrollToSection("add-review")}>
-            Write Review
-          </MithoButton>
-          <MithoButton size="lg" variant="outline-secondary" className="flex-1 justify-center bg-white shadow-sm" onClick={handleAddToCollectionPress}>
-            Add to collection
-          </MithoButton>
-        </div>
+      {/* Mobile Action Bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex gap-2 lg:hidden">
+        <MithoButton size="lg" className="flex-1 justify-center" onClick={() => scrollToSection("add-review")}>
+          Write a review
+        </MithoButton>
+        <MithoButton size="lg" variant="outline-secondary" className="flex-1 justify-center" onClick={handleAddToCollectionPress}>
+          Save
+        </MithoButton>
       </div>
 
       <Footer />

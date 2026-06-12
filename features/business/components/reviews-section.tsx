@@ -42,7 +42,7 @@ export function ReviewsSection({
       {isLoading ? (
         <div className="space-y-4">
           {[0, 1].map((item) => (
-            <div key={item} className="h-40 animate-pulse rounded-[1.6rem] border border-brand-deep-green/10 bg-white/70" />
+            <div key={item} className="h-40 animate-pulse rounded-xl border border-border bg-white/70" />
           ))}
         </div>
       ) : hasReviews ? (
@@ -68,13 +68,11 @@ export function ReviewsSection({
             </MithoSelect>
           </div>
 
-          <div className="space-y-5">
+          <div className="rounded-xl border border-border bg-white px-5">
             {reviews.map((review) => (
-              <MithoReviewCard
-                key={review.id}
-                {...review}
-                className="shadow-[0_12px_28px_rgba(10,70,53,0.06)]"
-              />
+              <div key={review.id} className="border-b border-border py-5 last:border-0">
+                <MithoReviewCard {...review} className="rounded-none border-0 bg-transparent p-0 shadow-none" />
+              </div>
             ))}
           </div>
 

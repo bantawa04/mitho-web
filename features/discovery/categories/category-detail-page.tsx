@@ -49,7 +49,7 @@ const RESULTS_PER_PAGE = 6
 
 function FeaturedCategoryPickCard({ result }: { result: ExploreResult }) {
   return (
-    <article className="overflow-hidden rounded-[1.6rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_24px_rgba(10,70,53,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(10,70,53,0.08)]">
+    <article className="overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
       <div className="relative aspect-[16/10]">
         <Image src={result.imageUrl} alt={result.name} fill sizes="(min-width: 1024px) 360px, 100vw" className="object-cover" />
       </div>
@@ -57,7 +57,7 @@ function FeaturedCategoryPickCard({ result }: { result: ExploreResult }) {
       <div className="p-5">
         <div className="flex flex-wrap items-center gap-2">
           {result.openNow ? <OpenNowBadge /> : <ClosedBadge />}
-          <span className="rounded-full bg-brand-soft-beige px-3 py-1 text-xs font-semibold text-brand-dark-green">
+          <span className="rounded-md bg-muted px-2.5 py-1 text-xs font-semibold text-foreground">
             {result.location}
           </span>
         </div>
@@ -65,8 +65,8 @@ function FeaturedCategoryPickCard({ result }: { result: ExploreResult }) {
         <h3 className="mt-4 text-xl font-semibold leading-tight text-brand-dark-green">{result.name}</h3>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">{result.editorialTakeaway ?? result.whyGo}</p>
 
-        <div className="mt-4 rounded-[1.25rem] bg-surface-soft px-4 py-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Start with</p>
+        <div className="mt-4 rounded-lg bg-surface-soft px-4 py-4">
+          <p className="text-xs font-semibold text-muted-foreground">Start with</p>
           <p className="mt-2 text-lg font-semibold text-brand-dark-green">{result.standoutDish}</p>
           <p className="mt-2 text-sm leading-6 text-foreground">{result.bestFor ?? result.trustNote}</p>
         </div>
@@ -74,12 +74,12 @@ function FeaturedCategoryPickCard({ result }: { result: ExploreResult }) {
         <div className="mt-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <StarRating rating={result.rating} size="sm" />
-            <span className="text-sm font-semibold text-brand-dark-green">{result.rating.toFixed(1)}</span>
+            <span className="text-sm font-semibold tabular-nums text-brand-dark-green">{result.rating.toFixed(1)}</span>
           </div>
 
           <Link
             href={`/business/${result.slug}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-primary"
           >
             View place
             <ArrowUpRight className="h-4 w-4" />
@@ -186,11 +186,11 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf7ee_34%,#fffdfa_100%)] pb-16">
+      <main className="pb-16">
         <div className="container mx-auto px-4 py-5 md:py-6">
           <MithoBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Categories", href: "/#categories" }, { label: category.label }]} />
 
-          <section className="mt-5 overflow-hidden rounded-[2rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_28px_rgba(10,70,53,0.05)]">
+          <section className="mt-5 overflow-hidden rounded-xl border border-border bg-white shadow-sm">
             <div className="grid gap-0 lg:grid-cols-[minmax(0,1.25fr)_360px]">
               <div className="p-5 md:p-7">
                 <div className="inline-flex items-center gap-2 rounded-full bg-brand-soft-beige px-4 py-2 text-sm font-semibold text-brand-dark-green">
@@ -204,8 +204,8 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
                 <h1 className="type-page-title mt-3 max-w-3xl text-brand-dark-green">{category.heroTitle}</h1>
                 <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">{category.heroDescription}</p>
 
-                <div className="mt-5 rounded-[1.4rem] border border-brand-deep-green/10 bg-surface-soft px-5 py-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Local read on this category</p>
+                <div className="mt-5 rounded-lg border border-border bg-surface-soft px-5 py-4">
+                  <p className="text-xs font-semibold text-muted-foreground">Local read on this category</p>
                   <p className="mt-3 text-sm leading-7 text-foreground">{category.editorialNote}</p>
                 </div>
 
@@ -247,7 +247,7 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
                         setQueryDraft(term)
                         applyFilters({ q: term })
                       }}
-                      className="inline-flex items-center rounded-full border border-brand-deep-green/12 bg-white px-4 py-2 text-sm font-medium text-brand-dark-green transition-colors hover:border-brand-orange/30 hover:bg-brand-soft-beige/55"
+                      className="inline-flex items-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-medium text-brand-dark-green transition-colors hover:bg-brand-soft-beige/55"
                     >
                       {term}
                     </button>
@@ -255,7 +255,7 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
                 </div>
               </div>
 
-              <div className="relative min-h-[280px] border-t border-brand-deep-green/10 bg-[#f6efde] lg:min-h-full lg:border-l lg:border-t-0">
+              <div className="relative min-h-[280px] border-t border-border bg-[#f6efde] lg:min-h-full lg:border-l lg:border-t-0">
                 <Image
                   src={category.accentImage}
                   alt={category.label}
@@ -264,9 +264,9 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
                   sizes="(min-width: 1024px) 360px, 100vw"
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,70,53,0.04),rgba(10,70,53,0.44))]" />
-                <div className="absolute inset-x-5 bottom-5 rounded-[1.4rem] bg-white/92 px-5 py-4 shadow-[0_10px_24px_rgba(10,70,53,0.12)] backdrop-blur-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Useful in {filters.city}</p>
+                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute inset-x-5 bottom-5 rounded-lg bg-white px-5 py-4 shadow-sm">
+                  <p className="text-xs font-semibold text-muted-foreground">Useful in {filters.city}</p>
                   <p className="mt-2 text-base font-semibold leading-7 text-brand-dark-green">
                     {cityScopedResults.length > 0
                       ? `${cityScopedResults.length} places currently fit this category in ${filters.city}.`
@@ -277,10 +277,10 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
             </div>
           </section>
 
-          <section className="mt-5 rounded-[1.7rem] border border-brand-deep-green/10 bg-white px-5 py-4 shadow-[0_8px_22px_rgba(10,70,53,0.04)]">
+          <section className="mt-5 rounded-xl border border-border bg-white px-5 py-4 shadow-sm">
             <div className="grid gap-3 md:grid-cols-3">
               {category.trustCues.map((cue) => (
-                <div key={cue} className="rounded-[1.2rem] bg-[#fff8eb] px-4 py-4">
+                <div key={cue} className="rounded-lg bg-[#fff8eb] px-4 py-4">
                   <p className="text-sm font-semibold leading-6 text-brand-dark-green">{cue}</p>
                 </div>
               ))}
@@ -307,10 +307,10 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
             </div>
           </section>
 
-          <section className="mt-6 rounded-[1.8rem] border border-brand-deep-green/10 bg-white px-5 py-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+          <section className="mt-6 rounded-xl border border-border bg-white px-5 py-5 shadow-sm">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="type-eyebrow text-brand-deep-green/70">Browse the full shortlist</p>
+                <p className="text-xs font-semibold text-muted-foreground">Browse the full shortlist</p>
                 <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-dark-green">
                   {category.label} in {filters.city}
                 </h2>
@@ -325,7 +325,7 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
                       Filters
                     </MithoButton>
                   </SheetTrigger>
-                  <SheetContent side="bottom" className="rounded-t-[1.75rem] border-brand-deep-green/10 bg-[#fffdf8]">
+                  <SheetContent side="bottom" className="rounded-t-xl border-border bg-background">
                     <SheetHeader>
                       <SheetTitle>Refine this category</SheetTitle>
                       <SheetDescription>Adjust city and ranking without leaving this category guide.</SheetDescription>
@@ -416,7 +416,7 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
               </MithoSelect>
             </div>
 
-            <div className="mt-5 flex flex-col gap-3 rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-5 flex flex-col gap-3 rounded-lg border border-border bg-surface-soft px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-semibold text-brand-dark-green">
                   {filteredResults.length} {filteredResults.length === 1 ? "place" : "places"} in {filters.city}
@@ -435,8 +435,8 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
             </div>
 
             {filteredResults.length === 0 ? (
-              <div className="mt-5 rounded-[1.6rem] border border-brand-deep-green/10 bg-white px-6 py-8 shadow-[0_10px_24px_rgba(10,70,53,0.04)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-deep-green/60">No strong match yet</p>
+              <div className="mt-5 rounded-xl border border-border bg-white px-6 py-8 shadow-sm">
+                <p className="text-xs font-semibold text-muted-foreground">No strong match yet</p>
                 <h3 className="mt-3 text-3xl font-semibold leading-tight text-brand-dark-green">
                   Nothing in this category feels like a confident recommendation yet.
                 </h3>
@@ -468,10 +468,10 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
             )}
           </section>
 
-          <section className="mt-6 rounded-[1.75rem] border border-brand-deep-green/10 bg-white px-5 py-5 shadow-[0_8px_24px_rgba(10,70,53,0.04)]">
+          <section className="mt-6 rounded-xl border border-border bg-white px-5 py-5 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="type-eyebrow text-brand-deep-green/70">Related categories</p>
+                <p className="text-xs font-semibold text-muted-foreground">Related categories</p>
                 <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-dark-green">
                   Keep the food mood, change the angle.
                 </h2>
@@ -489,14 +489,14 @@ export function CategoryDetailPage({ slug }: CategoryDetailPageProps) {
                 <Link
                   key={relatedCategory.slug}
                   href={`/categories/${relatedCategory.slug}`}
-                  className="group rounded-[1.45rem] border border-brand-deep-green/10 bg-[#fffdf8] px-5 py-5 transition-colors hover:border-brand-orange/28 hover:bg-[#fff7ea]"
+                  className="group rounded-lg border border-border bg-surface-soft px-5 py-5 transition-colors hover:bg-brand-soft-beige/55"
                 >
                   <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft-beige text-brand-deep-green transition-colors group-hover:bg-brand-deep-green group-hover:text-white">
                     {getCategoryIcon(relatedCategory.iconKey, "h-5 w-5")}
                   </div>
                   <h3 className="mt-4 text-xl font-semibold text-brand-dark-green">{relatedCategory.label}</h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">{relatedCategory.heroDescription}</p>
-                  <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors group-hover:text-brand-orange">
+                  <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors group-hover:text-primary">
                     Open guide
                     <ArrowUpRight className="h-4 w-4" />
                   </div>
