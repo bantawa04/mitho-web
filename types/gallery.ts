@@ -8,8 +8,8 @@ export interface BusinessGalleryItem {
   title?: string
   sortOrder: number
   status: GalleryItemStatus
-  approvedBy?: string
-  approvedAt?: string
+  moderatedBy?: string
+  moderatedAt?: string
   rejectionReason?: string
   createdAt: string
   updatedAt: string
