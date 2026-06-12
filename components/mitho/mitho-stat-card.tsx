@@ -32,7 +32,7 @@ export function StatCard({ icon, label, value, subtext, trend, isLocked = false,
       )}
       <MithoCardHeader className="pb-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft-beige text-brand-orange">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
             {icon}
           </div>
           <div className="flex-1">

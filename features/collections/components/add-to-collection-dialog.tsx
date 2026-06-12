@@ -24,9 +24,9 @@ import { cn } from "@/lib/utils"
 
 const initialCollectionCount = 3
 const inputClassName =
-  "h-11 rounded-[0.95rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "h-11 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 const selectTriggerClassName =
-  "h-11 w-full rounded-[0.95rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "h-11 w-full rounded-lg border-brand-deep-green/12 bg-muted px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
 const quickCreateCollectionSchema = z.object({
   title: z
@@ -125,7 +125,7 @@ export function AddToCollectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bottom-0 top-auto translate-y-0 gap-0 rounded-t-[1.85rem] rounded-b-none border-brand-deep-green/10 bg-white p-0 shadow-[0_-12px_40px_rgba(10,70,53,0.14)] sm:bottom-auto sm:top-1/2 sm:max-w-[560px] sm:-translate-y-1/2 sm:rounded-[1.5rem] sm:shadow-[0_24px_60px_rgba(10,70,53,0.16)]">
+      <DialogContent className="bottom-0 top-auto translate-y-0 gap-0 rounded-t-xl rounded-b-none border-brand-deep-green/10 bg-white p-0 shadow-sm sm:bottom-auto sm:top-1/2 sm:max-w-[560px] sm:-translate-y-1/2 sm:rounded-xl sm:shadow-sm">
         <div className="flex justify-center px-6 pt-3 sm:hidden">
           <div className="h-1.5 w-14 rounded-full bg-brand-deep-green/20" />
         </div>
@@ -144,7 +144,7 @@ export function AddToCollectionDialog({
             <img
               src={candidate.imageUrl}
               alt={candidate.businessName}
-              className="h-14 w-14 shrink-0 rounded-[1rem] border border-brand-deep-green/10 object-cover"
+              className="h-14 w-14 shrink-0 rounded-lg border border-brand-deep-green/10 object-cover"
             />
             <div className="min-w-0 flex-1">
               <h3 className="line-clamp-1 text-base font-semibold text-brand-dark-green">{candidate.businessName}</h3>
@@ -177,12 +177,12 @@ export function AddToCollectionDialog({
                       return (
                         <div
                           key={collection.id}
-                          className="flex items-center gap-3 rounded-[1.15rem] border border-brand-deep-green/10 bg-white px-3 py-3"
+                          className="flex items-center gap-3 rounded-xl border border-brand-deep-green/10 bg-white px-3 py-3"
                         >
                           <img
                             src={coverImage}
                             alt=""
-                            className="h-12 w-12 shrink-0 rounded-[0.9rem] object-cover"
+                            className="h-12 w-12 shrink-0 rounded-lg object-cover"
                           />
 
                           <div className="min-w-0 flex-1">
@@ -211,7 +211,7 @@ export function AddToCollectionDialog({
                       )
                     })
                   ) : (
-                    <div className="rounded-[1.15rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] px-4 py-4">
+                    <div className="rounded-xl border border-dashed border-brand-deep-green/18 bg-muted px-4 py-4">
                       <p className="text-sm font-semibold text-brand-dark-green">No matching collections yet.</p>
                     </div>
                   )}
@@ -220,9 +220,9 @@ export function AddToCollectionDialog({
                     <button
                       type="button"
                       onClick={() => setShowAllCollections(true)}
-                      className="flex w-full items-center gap-3 rounded-[1.15rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] px-3 py-3 text-left transition-colors hover:border-brand-deep-green/28 hover:bg-brand-soft-beige/35"
+                      className="flex w-full items-center gap-3 rounded-xl border border-dashed border-brand-deep-green/18 bg-muted px-3 py-3 text-left transition-colors hover:border-brand-deep-green/28 hover:bg-accent"
                     >
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[0.9rem] border border-brand-deep-green/12 bg-white text-brand-deep-green">
+                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-brand-deep-green/12 bg-white text-brand-deep-green">
                         <Plus className="h-5 w-5" />
                       </span>
                       <div>
@@ -234,7 +234,7 @@ export function AddToCollectionDialog({
                 </div>
               </>
             ) : (
-              <div className="rounded-[1.15rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] px-4 py-4">
+              <div className="rounded-xl border border-dashed border-brand-deep-green/18 bg-muted px-4 py-4">
                 <p className="text-sm font-semibold text-brand-dark-green">Start your first collection here.</p>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
                   Create a collection first, then this place will land there immediately.
@@ -255,7 +255,7 @@ export function AddToCollectionDialog({
             </div>
 
             {isCreateOpen ? (
-              <div className="mt-4 rounded-[1.15rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+              <div className="mt-4 rounded-xl border border-brand-deep-green/10 bg-muted p-4">
                 <Form {...form}>
                   <form className="space-y-4" onSubmit={form.handleSubmit(handleCreate)}>
                     <FormField

@@ -69,11 +69,11 @@ export function AdminSettingsPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-[1.9rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]">
+      <section className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
         <div className="space-y-6 p-6 sm:p-7">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Name</span>
+              <span className="text-xs font-medium text-muted-foreground">Name</span>
               <Input
                 value={draftProfile.name}
                 onChange={(event) => {
@@ -84,7 +84,7 @@ export function AdminSettingsPage() {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Email</span>
+              <span className="text-xs font-medium text-muted-foreground">Email</span>
               <Input
                 value={draftProfile.email}
                 disabled
@@ -92,7 +92,7 @@ export function AdminSettingsPage() {
               />
             </label>
             <label className="space-y-2 sm:col-span-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Address line</span>
+              <span className="text-xs font-medium text-muted-foreground">Address line</span>
               <Input
                 value={draftProfile.address.addressLine}
                 onChange={(event) => updateAddressField("addressLine", event.target.value)}
@@ -100,7 +100,7 @@ export function AdminSettingsPage() {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Area / locality</span>
+              <span className="text-xs font-medium text-muted-foreground">Area / locality</span>
               <Input
                 value={draftProfile.address.area}
                 onChange={(event) => updateAddressField("area", event.target.value)}
@@ -108,7 +108,7 @@ export function AdminSettingsPage() {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">City</span>
+              <span className="text-xs font-medium text-muted-foreground">City</span>
               <Input
                 value={draftProfile.address.city}
                 onChange={(event) => updateAddressField("city", event.target.value)}
@@ -116,7 +116,7 @@ export function AdminSettingsPage() {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">State / province</span>
+              <span className="text-xs font-medium text-muted-foreground">State / province</span>
               <Input
                 value={draftProfile.address.state}
                 onChange={(event) => updateAddressField("state", event.target.value)}
@@ -124,7 +124,7 @@ export function AdminSettingsPage() {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Country</span>
+              <span className="text-xs font-medium text-muted-foreground">Country</span>
               <Input
                 value={draftProfile.address.country}
                 onChange={(event) => updateAddressField("country", event.target.value)}
@@ -132,7 +132,7 @@ export function AdminSettingsPage() {
               />
             </label>
             <label className="space-y-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Mobile number</span>
+              <span className="text-xs font-medium text-muted-foreground">Mobile number</span>
               <Input
                 value={draftProfile.mobileNumber}
                 onChange={(event) => {
@@ -144,13 +144,13 @@ export function AdminSettingsPage() {
             </label>
           </div>
 
-          <div className="space-y-4 border-t border-brand-deep-green/10 pt-6">
+          <div className="space-y-4 border-t border-border pt-6">
             <div className="space-y-1">
               <p className="text-sm font-semibold text-brand-dark-green">Notification settings</p>
               <p className="text-sm text-muted-foreground">Choose how internal moderation, business, and digest alerts should reach you.</p>
             </div>
 
-            <div className="divide-y divide-brand-deep-green/10 rounded-2xl border border-brand-deep-green/10 px-4">
+            <div className="divide-y divide-border rounded-2xl border border-border px-4">
               {(Object.keys(notificationFieldLabels) as Array<keyof AdminSettingsProfile["notifications"]>).map((field) => (
                 <label key={field} className="flex items-center justify-between gap-4 py-4">
                   <div>
@@ -175,7 +175,7 @@ export function AdminSettingsPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 border-t border-brand-deep-green/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-h-[1.25rem] text-sm text-muted-foreground">
               {hasSaved && !isDirty ? "Changes saved for this admin profile." : isDirty ? "Unsaved changes" : ""}
             </div>
@@ -183,7 +183,7 @@ export function AdminSettingsPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"
+                className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted"
                 onClick={handleDiscard}
                 disabled={!isDirty}
               >

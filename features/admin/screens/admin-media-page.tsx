@@ -17,8 +17,8 @@ function formatBytes(bytes: number) {
 
 function MediaCard({ item }: { item: Media }) {
   return (
-    <div className="overflow-hidden rounded-[1.4rem] border border-brand-deep-green/10 bg-white shadow-[0_4px_14px_rgba(10,70,53,0.04)]">
-      <div className="relative aspect-video w-full overflow-hidden bg-brand-soft-beige/30">
+    <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+      <div className="relative aspect-video w-full overflow-hidden bg-muted">
         {item.mediaType === "image" ? (
           <img
             src={item.publicUrl}
@@ -31,7 +31,7 @@ function MediaCard({ item }: { item: Media }) {
           </div>
         )}
         <div className="absolute left-2 top-2">
-          <span className="inline-flex items-center gap-1 rounded-full border border-brand-deep-green/10 bg-white/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-deep-green/60 backdrop-blur-sm">
+          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-white/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground backdrop-blur-sm">
             {item.mediaType === "image" ? (
               <ImageIcon className="h-3 w-3" />
             ) : (
@@ -42,7 +42,7 @@ function MediaCard({ item }: { item: Media }) {
         </div>
       </div>
       <div className="px-4 py-3">
-        <p className="truncate text-sm font-medium text-brand-dark-green">{item.filename}</p>
+        <p className="truncate text-sm font-medium text-foreground">{item.filename}</p>
         <div className="mt-1 flex items-center justify-between gap-2">
           <span className="text-xs text-muted-foreground">
             {item.sizeBytes ? formatBytes(item.sizeBytes) : "—"}
@@ -56,7 +56,7 @@ function MediaCard({ item }: { item: Media }) {
 
 function UploadingCard() {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-[1.4rem] border border-dashed border-brand-deep-green/20 bg-brand-soft-beige/10 p-8">
+    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-muted p-8">
       <Loader2 className="h-8 w-8 animate-spin text-brand-deep-green/40" />
       <p className="text-sm text-muted-foreground">Uploading…</p>
     </div>
@@ -128,14 +128,14 @@ export function AdminMediaPage() {
       </section>
 
       {isError ? (
-        <div className="rounded-[1.8rem] border border-red-100 bg-red-50 px-6 py-10 text-center">
+        <div className="rounded-xl border border-red-100 bg-red-50 px-6 py-10 text-center">
           <p className="font-semibold text-red-700">Failed to load media</p>
           <p className="mt-1 text-sm text-red-600">Please refresh the page or try again later.</p>
         </div>
       ) : isLoading ? (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="overflow-hidden rounded-[1.4rem] border border-brand-deep-green/10 bg-white">
+            <div key={i} className="overflow-hidden rounded-xl border border-border bg-white">
               <Skeleton className="aspect-video w-full" />
               <div className="space-y-2 px-4 py-3">
                 <Skeleton className="h-4 w-3/4" />
@@ -150,9 +150,9 @@ export function AdminMediaPage() {
           {mediaItems && mediaItems.length > 0 ? (
             mediaItems.map((item) => <MediaCard key={item.id} item={item} />)
           ) : !uploadMutation.isPending ? (
-            <div className="col-span-full rounded-[1.8rem] border border-dashed border-brand-deep-green/20 bg-white px-6 py-16 text-center">
+            <div className="col-span-full rounded-xl border border-dashed border-border bg-white px-6 py-16 text-center">
               <ImageIcon className="mx-auto h-12 w-12 text-brand-deep-green/20" />
-              <p className="mt-4 font-semibold text-brand-dark-green">No media yet</p>
+              <p className="mt-4 font-semibold text-foreground">No media yet</p>
               <p className="mt-1 text-sm text-muted-foreground">Upload your first image or video using the button above.</p>
             </div>
           ) : null}

@@ -296,7 +296,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
     return (
       <div className="space-y-6">
         <div className="h-8 w-64 animate-pulse rounded-lg bg-brand-deep-green/10" />
-        <div className="h-64 animate-pulse rounded-[1.8rem] bg-brand-deep-green/5" />
+        <div className="h-64 animate-pulse rounded-xl bg-muted" />
       </div>
     )
   }
@@ -337,9 +337,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
           {/* Left Column: Form Content */}
           <div className="space-y-6">
             {/* Core details */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <Building2 className="h-5 w-5" />
                 </div>
                 <div>
@@ -347,7 +347,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   <p className="text-sm text-muted-foreground">The public business identity and listing categorization.</p>
                 </div>
               </div>
-              <div className="mt-6 grid gap-4 border-t border-brand-deep-green/10 pt-6 grid-cols-1 md:grid-cols-2">
+              <div className="mt-6 grid gap-4 border-t border-border pt-6 grid-cols-1 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="name"
@@ -422,9 +422,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
             </section>
 
             {/* Location */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
@@ -432,7 +432,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   <p className="text-sm text-muted-foreground">Where the business is physically located.</p>
                 </div>
               </div>
-              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 space-y-4">
+              <div className="mt-6 border-t border-border pt-6 space-y-4">
                 <BusinessLocationFields
                   form={form}
                   inputClassName="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
@@ -466,9 +466,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
             </section>
 
             {/* Amenities */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <UtensilsCrossed className="h-5 w-5" />
                 </div>
                 <div>
@@ -476,7 +476,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   <p className="text-sm text-muted-foreground">Services, payment options, facilities, and dietary accommodations.</p>
                 </div>
               </div>
-              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
+              <div className="mt-6 border-t border-border pt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
                 {/* Services */}
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-brand-dark-green">Services</p>
@@ -526,7 +526,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 </div>
 
                 {/* Facilities */}
-                <div className="space-y-3 border-t border-brand-deep-green/10 pt-4 sm:border-t-0 sm:pt-0">
+                <div className="space-y-3 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
                   <p className="text-sm font-semibold text-brand-dark-green">Facilities</p>
                   <div className="space-y-2">
                     {facilityAmenityFields.map(({ name, label }) => (
@@ -550,7 +550,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 </div>
 
                 {/* Dietary */}
-                <div className="space-y-3 border-t border-brand-deep-green/10 pt-4 sm:border-t-0 sm:pt-0">
+                <div className="space-y-3 border-t border-border pt-4 sm:border-t-0 sm:pt-0">
                   <p className="text-sm font-semibold text-brand-dark-green">Dietary restrictions</p>
                   <div className="space-y-2">
                     {dietaryAmenityFields.map(({ name, label }) => (
@@ -576,9 +576,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
             </section>
 
             {/* Photos gallery */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+            <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <Image className="h-5 w-5" />
                 </div>
                 <div>
@@ -586,14 +586,14 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   <p className="text-sm text-muted-foreground">Gallery images shown on the business details page.</p>
                 </div>
               </div>
-              <div className="mt-6 border-t border-brand-deep-green/10 pt-6 space-y-4">
+              <div className="mt-6 border-t border-border pt-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Images</p>
+                  <p className="text-xs font-medium text-muted-foreground">Images</p>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 cursor-pointer"
+                    className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted cursor-pointer"
                     onClick={() => setPhotosPickerOpen(true)}
                   >
                     Add photo
@@ -621,7 +621,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 ) : existingPhotos.length > 0 ? (
                   <p className="text-xs text-muted-foreground">{existingPhotos.length} photo{existingPhotos.length > 1 ? "s" : ""} already set. Add new photos above.</p>
                 ) : (
-                  <div className="rounded-xl border border-dashed border-brand-deep-green/20 bg-brand-soft-beige/10 px-6 py-6 text-center">
+                  <div className="rounded-xl border border-dashed border-border bg-muted px-6 py-6 text-center">
                     <p className="text-sm text-muted-foreground">No photos added yet.</p>
                   </div>
                 )}
@@ -632,7 +632,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
           {/* Right Column: Sticky Sidebar Controls */}
           <div className="space-y-6 xl:sticky xl:top-6">
             {/* Publishing widget */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
+            <section className="rounded-xl border border-border bg-white p-5 shadow-sm space-y-4">
               <h3 className="text-lg font-semibold text-brand-dark-green">Publishing</h3>
               <FormField
                   control={form.control}
@@ -662,7 +662,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 )}
               />
 
-              <div className="flex flex-col gap-2 pt-2 border-t border-brand-deep-green/10">
+              <div className="flex flex-col gap-2 pt-2 border-t border-border">
                 <Button
                   type="submit"
                   className="w-full h-11 rounded-xl bg-brand-dark-green text-white hover:bg-brand-dark-green/92 font-medium cursor-pointer"
@@ -673,7 +673,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full h-11 rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 font-medium cursor-pointer"
+                  className="w-full h-11 rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted font-medium cursor-pointer"
                   onClick={() => router.push(mode === "edit" ? `/admin/businesses/${businessId}` : "/admin/businesses")}
                   disabled={isPending}
                 >
@@ -683,7 +683,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
             </section>
 
             {/* Media uploads */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
+            <section className="rounded-xl border border-border bg-white p-5 shadow-sm space-y-4">
               <h3 className="text-lg font-semibold text-brand-dark-green">Primary media</h3>
 
               {/* Logo */}
@@ -706,11 +706,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                       </button>
                     </div>
                   ) : existingLogoId ? (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30 text-xs text-muted-foreground shrink-0">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-muted text-xs text-muted-foreground shrink-0">
                       Set
                     </div>
                   ) : (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/10 text-brand-deep-green/40 shrink-0">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-border bg-muted text-muted-foreground shrink-0">
                       <Building2 className="h-5 w-5" />
                     </div>
                   )}
@@ -718,7 +718,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="w-full rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 text-xs h-9 cursor-pointer"
+                    className="w-full rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted text-xs h-9 cursor-pointer"
                     onClick={() => setLogoPickerOpen(true)}
                   >
                     {existingLogoId || logoMedia ? "Change logo" : "Choose logo"}
@@ -727,7 +727,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
               </div>
 
               {/* Banner */}
-              <div className="space-y-2 border-t border-brand-deep-green/10 pt-4">
+              <div className="space-y-2 border-t border-border pt-4">
                 <FormLabel>Cover Banner</FormLabel>
                 <div className="space-y-3">
                   {bannerMedia ? (
@@ -746,11 +746,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                       </button>
                     </div>
                   ) : existingBannerId ? (
-                    <div className="flex w-full h-20 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-brand-soft-beige/30 text-xs text-muted-foreground">
+                    <div className="flex w-full h-20 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-muted text-xs text-muted-foreground">
                       Cover configured
                     </div>
                   ) : (
-                    <div className="flex w-full h-20 items-center justify-center rounded-xl border border-dashed border-brand-deep-green/15 bg-brand-soft-beige/5 text-xs text-muted-foreground">
+                    <div className="flex w-full h-20 items-center justify-center rounded-xl border border-dashed border-border bg-muted text-xs text-muted-foreground">
                       No cover photo chosen
                     </div>
                   )}
@@ -758,7 +758,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="w-full rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 text-xs h-9 cursor-pointer"
+                    className="w-full rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted text-xs h-9 cursor-pointer"
                     onClick={() => setBannerPickerOpen(true)}
                   >
                     {existingBannerId || bannerMedia ? "Change banner" : "Choose banner"}
@@ -768,7 +768,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
             </section>
 
             {/* Contacts & Links */}
-            <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] space-y-4">
+            <section className="rounded-xl border border-border bg-white p-5 shadow-sm space-y-4">
               <h3 className="text-lg font-semibold text-brand-dark-green">Contact & Links</h3>
 
               {/* Basic Contacts */}
@@ -815,8 +815,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
               </div>
 
               {/* Web presence */}
-              <div className="space-y-3 border-t border-brand-deep-green/10 pt-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-deep-green/55">Web presence</p>
+              <div className="space-y-3 border-t border-border pt-4">
+                <p className="text-xs font-medium text-muted-foreground">Web presence</p>
                 <FormField
                   control={form.control}
                   name="websiteUrl"

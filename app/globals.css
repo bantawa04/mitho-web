@@ -86,49 +86,51 @@
 }
 
 .dark {
-  --background: #0a4635;
-  --foreground: #f4e0a6;
-  --card: #0d5a44;
-  --card-foreground: #f4e0a6;
-  --popover: #0d5a44;
-  --popover-foreground: #f4e0a6;
+  --background: #0f231c;
+  --foreground: #e8ece9;
+  --card: #16302a;
+  --card-foreground: #e8ece9;
+  --popover: #16302a;
+  --popover-foreground: #e8ece9;
+  /* --primary (#00853f) as TEXT on --background is ~3.47:1 (passes large/UI text,
+     fails 4.5:1 body text). For body copy use --brand-light-green instead. */
   --primary: #00853f;
   --primary-foreground: #ffffff;
   --secondary: #007936;
   --secondary-foreground: #ffffff;
-  --muted: #0d5a44;
-  --muted-foreground: #a3c4a8;
+  --muted: #16302a;
+  --muted-foreground: #9fb4ab;
   --accent: #f4e0a6;
   --accent-foreground: #1a1a1a;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #1a7350;
-  --input: #1a7350;
+  --border: #2a4a40;
+  --input: #2a4a40;
   --ring: #ef8a00;
-  --sidebar: #0a4635;
-  --sidebar-foreground: #f4e0a6;
+  --sidebar: #0f231c;
+  --sidebar-foreground: #e8ece9;
   --sidebar-primary: #ef8a00;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #0d5a44;
-  --sidebar-accent-foreground: #f4e0a6;
-  --sidebar-border: #1a7350;
+  --sidebar-accent: #16302a;
+  --sidebar-accent-foreground: #e8ece9;
+  --sidebar-border: #2a4a40;
   --sidebar-ring: #ef8a00;
-  --surface-warm: #144f3d;
-  --surface-soft: #0d5a44;
-  --surface-strong: #072d22;
+  --surface-warm: #16302a;
+  --surface-soft: #16302a;
+  --surface-strong: #0a1813;
   --surface-strong-foreground: #fff4da;
-  --surface-highlight: #1b5a45;
-  --page-customer: #0a4635;
-  --page-business: #082f24;
-  --page-admin: #062f24;
-  --surface-raised: #0d5a44;
-  --surface-inset: #114c3b;
-  --surface-business: #0f5642;
-  --surface-business-inset: #0c4836;
-  --surface-admin: #0b3d2f;
-  --surface-positive: #154735;
-  --surface-spotlight: #325841;
-  --border-strong: #326f5a;
+  --surface-highlight: #16302a;
+  --page-customer: #0f231c;
+  --page-business: #0f231c;
+  --page-admin: #0f231c;
+  --surface-raised: #16302a;
+  --surface-inset: #0c1f19;
+  --surface-business: #16302a;
+  --surface-business-inset: #0c1f19;
+  --surface-admin: #16302a;
+  --surface-positive: #16302a;
+  --surface-spotlight: #16302a;
+  --border-strong: #3a5e53;
 }
 
 @theme inline {

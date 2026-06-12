@@ -60,43 +60,43 @@ export function AdminCustomersPage() {
       {
         id: "name",
         label: "Name",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
-        cell: (customer) => <p className="text-sm font-semibold text-brand-dark-green">{customer.fullName || customer.email}</p>,
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
+        cell: (customer) => <p className="text-sm font-semibold text-foreground">{customer.fullName || customer.email}</p>,
       },
       {
         id: "email",
         label: "Email",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (customer) => customer.email,
       },
       {
         id: "oauth",
         label: "OAuth Type",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (customer) => <AdminStatusBadge {...getOauthProviderPresentation(customer.socialProvider)} />,
       },
       {
         id: "has-business",
         label: "Has Business",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-brand-dark-green",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-foreground",
         cell: (customer) => (customer.hasBusiness ? "Yes" : "No"),
       },
       {
         id: "joined",
         label: "Joined Date",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (customer) => formatAdminDate(customer.createdAt),
       },
       {
         id: "action",
         label: "Actions",
-        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-right",
+        className: "pr-6 text-right text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-right",
         cell: (customer) => (
           <div className="flex justify-end">
             <AdminRowActions
@@ -167,54 +167,54 @@ export function AdminCustomersPage() {
           <div className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Name</p>
-                <p className="text-sm font-semibold text-brand-dark-green">{selectedCustomer.fullName || selectedCustomer.email}</p>
+                <p className="text-xs font-medium text-muted-foreground">Name</p>
+                <p className="text-sm font-semibold text-foreground">{selectedCustomer.fullName || selectedCustomer.email}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Email</p>
+                <p className="text-xs font-medium text-muted-foreground">Email</p>
                 <p className="text-sm text-muted-foreground">{selectedCustomer.email}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">OAuth Type</p>
+                <p className="text-xs font-medium text-muted-foreground">OAuth Type</p>
                 <AdminStatusBadge {...getOauthProviderPresentation(selectedCustomer.socialProvider)} />
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Joined</p>
+                <p className="text-xs font-medium text-muted-foreground">Joined</p>
                 <p className="text-sm text-muted-foreground">{formatAdminDateTime(selectedCustomer.createdAt)}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Last sign in</p>
+                <p className="text-xs font-medium text-muted-foreground">Last sign in</p>
                 <p className="text-sm text-muted-foreground">{selectedCustomer.lastSignInAt ? formatAdminDateTime(selectedCustomer.lastSignInAt) : "Not signed in yet"}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Status</p>
+                <p className="text-xs font-medium text-muted-foreground">Status</p>
                 <AdminStatusBadge {...getUserStatusPresentation(selectedCustomer.status)} />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Has Business</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedCustomer.hasBusiness ? "Yes" : "No"}</p>
+              <div className="rounded-xl border border-border bg-muted px-4 py-4">
+                <p className="text-xs font-medium text-muted-foreground">Has Business</p>
+                <p className="mt-2 text-sm font-semibold text-foreground">{selectedCustomer.hasBusiness ? "Yes" : "No"}</p>
               </div>
-              <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Reviews</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedCustomer.reviewsCount}</p>
+              <div className="rounded-xl border border-border bg-muted px-4 py-4">
+                <p className="text-xs font-medium text-muted-foreground">Reviews</p>
+                <p className="mt-2 text-sm font-semibold text-foreground">{selectedCustomer.reviewsCount}</p>
               </div>
-              <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Profile complete</p>
-                <p className="mt-2 text-sm font-semibold text-brand-dark-green">{selectedCustomer.profileComplete ? "Yes" : "No"}</p>
+              <div className="rounded-xl border border-border bg-muted px-4 py-4">
+                <p className="text-xs font-medium text-muted-foreground">Profile complete</p>
+                <p className="mt-2 text-sm font-semibold text-foreground">{selectedCustomer.profileComplete ? "Yes" : "No"}</p>
               </div>
             </div>
 
-            <div className="space-y-2 border-t border-brand-deep-green/10 pt-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Connected businesses</p>
+            <div className="space-y-2 border-t border-border pt-5">
+              <p className="text-xs font-medium text-muted-foreground">Connected businesses</p>
               {selectedCustomer.businessNames.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {selectedCustomer.businessNames.map((businessName) => (
                     <span
                       key={businessName}
-                      className="inline-flex rounded-full border border-brand-deep-green/10 bg-white px-3 py-1.5 text-sm text-brand-dark-green"
+                      className="inline-flex rounded-full border border-border bg-white px-3 py-1.5 text-sm text-foreground"
                     >
                       {businessName}
                     </span>

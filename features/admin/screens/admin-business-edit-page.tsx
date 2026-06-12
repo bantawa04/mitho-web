@@ -89,9 +89,9 @@ export function AdminBusinessEditPage({ business }: { business: AdminBusinessDet
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+        <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
               <Building2 className="h-5 w-5" />
             </div>
             <div>
@@ -100,7 +100,7 @@ export function AdminBusinessEditPage({ business }: { business: AdminBusinessDet
             </div>
           </div>
 
-          <div className="mt-6 space-y-8 border-t border-brand-deep-green/10 pt-6">
+          <div className="mt-6 space-y-8 border-t border-border pt-6">
             <section className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2 md:col-span-2">
@@ -158,7 +158,7 @@ export function AdminBusinessEditPage({ business }: { business: AdminBusinessDet
               </div>
             </section>
 
-            <section className="space-y-4 border-t border-brand-deep-green/10 pt-6">
+            <section className="space-y-4 border-t border-border pt-6">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Neighborhood</Label>
@@ -211,7 +211,7 @@ export function AdminBusinessEditPage({ business }: { business: AdminBusinessDet
               </div>
             </section>
 
-            <div className="flex flex-col gap-3 border-t border-brand-deep-green/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-h-[1.25rem] text-sm text-muted-foreground">
                 {hasSaved && !isDirty ? "Business details updated in this mock admin flow." : isDirty ? "Unsaved changes" : ""}
               </div>
@@ -219,7 +219,7 @@ export function AdminBusinessEditPage({ business }: { business: AdminBusinessDet
                 <Button
                   type="button"
                   variant="outline"
-                  className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"
+                  className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted"
                   onClick={handleDiscard}
                   disabled={!isDirty}
                 >
@@ -239,9 +239,9 @@ export function AdminBusinessEditPage({ business }: { business: AdminBusinessDet
         </section>
 
         <div className="space-y-6">
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+          <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div>
@@ -249,27 +249,27 @@ export function AdminBusinessEditPage({ business }: { business: AdminBusinessDet
                 <p className="text-sm text-muted-foreground">Reference data that helps explain why the listing is in its current state.</p>
               </div>
             </div>
-            <div className="mt-6 space-y-5 border-t border-brand-deep-green/10 pt-6">
+            <div className="mt-6 space-y-5 border-t border-border pt-6">
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Claim state</p>
+                <p className="text-xs font-medium text-muted-foreground">Claim state</p>
                 <p className="text-sm leading-6 text-brand-dark-green">{business.claimStateNote}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Owner</p>
+                <p className="text-xs font-medium text-muted-foreground">Owner</p>
                 <p className="text-sm text-brand-dark-green">{business.ownerName}</p>
                 <p className="text-sm text-muted-foreground">{business.ownerEmail}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Current lifecycle</p>
+                <p className="text-xs font-medium text-muted-foreground">Current lifecycle</p>
                 <p className="text-sm text-brand-dark-green">{business.lifecycleStatus}</p>
               </div>
             </div>
           </section>
 
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+          <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
@@ -277,7 +277,7 @@ export function AdminBusinessEditPage({ business }: { business: AdminBusinessDet
                   <p className="text-sm text-muted-foreground">A quick summary of how the listing currently reads to customers.</p>
                 </div>
               </div>
-              <div className="space-y-3 border-t border-brand-deep-green/10 pt-5 text-sm text-muted-foreground">
+              <div className="space-y-3 border-t border-border pt-5 text-sm text-muted-foreground">
                 <div className="flex items-start gap-3">
                   <MapPin className="mt-0.5 h-4 w-4 text-brand-orange" />
                   <span>{form.fullAddress}</span>

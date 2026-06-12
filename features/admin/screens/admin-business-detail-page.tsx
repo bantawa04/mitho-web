@@ -38,8 +38,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 function MetricCard({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <div className="rounded-[1.5rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)] dark:bg-surface-admin dark:border-brand-deep-green/15">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55 dark:text-brand-light-green/70">{label}</p>
+    <div className="rounded-xl border border-border bg-white p-5 shadow-sm dark:bg-surface-admin dark:border-brand-deep-green/15">
+      <p className="text-xs font-medium text-muted-foreground dark:text-brand-light-green/70">{label}</p>
       <p className="mt-3 text-3xl font-semibold leading-none text-brand-dark-green dark:text-brand-soft-beige">{value}</p>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">{helper}</p>
     </div>
@@ -55,7 +55,7 @@ function DetailList({
     <div className="grid gap-4 sm:grid-cols-2">
       {items.map((item) => (
         <div key={item.label} className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55 dark:text-brand-light-green/70">{item.label}</p>
+          <p className="text-xs font-medium text-muted-foreground dark:text-brand-light-green/70">{item.label}</p>
           <div className="text-sm font-medium text-brand-dark-green dark:text-brand-soft-beige">{item.value}</div>
         </div>
       ))}
@@ -85,7 +85,7 @@ function AmenitySection({
         {activeFlags.map((flag) => (
           <span
             key={flag.label}
-            className="inline-flex items-center gap-1 rounded-full border border-brand-deep-green/10 bg-brand-soft-beige/10 px-3 py-1 text-xs font-medium text-brand-dark-green dark:text-brand-soft-beige dark:bg-brand-soft-beige/5"
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-brand-dark-green dark:text-brand-soft-beige"
           >
             <Check className="h-3 w-3 text-brand-deep-green dark:text-brand-light-green" />
             {flag.label}
@@ -110,7 +110,7 @@ function DetailSkeleton() {
         </div>
 
         {/* Hero Banner Skeleton */}
-        <Skeleton className="h-48 w-full rounded-[2rem] sm:h-64" />
+        <Skeleton className="h-48 w-full rounded-lg sm:h-64" />
 
         {/* Title, status chips and buttons skeletons */}
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between mt-4">
@@ -121,7 +121,7 @@ function DetailSkeleton() {
               <Skeleton className="h-6 w-28 rounded-full" />
             </div>
             <div className="flex items-start gap-4">
-              <Skeleton className="h-16 w-16 rounded-[1.2rem]" />
+              <Skeleton className="h-16 w-16 rounded-lg" />
               <div className="space-y-2 flex-1">
                 <Skeleton className="h-8 w-64 animate-pulse" />
                 <Skeleton className="h-4 w-48" />
@@ -139,18 +139,18 @@ function DetailSkeleton() {
       {/* Metric Cards Skeletons */}
       <section className="grid gap-4 md:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-32 rounded-[1.5rem]" />
+          <Skeleton key={i} className="h-32 rounded-xl" />
         ))}
       </section>
 
       {/* Content Grid Skeletons */}
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         <div className="space-y-6">
-          <Skeleton className="h-64 rounded-[1.8rem]" />
-          <Skeleton className="h-48 rounded-[1.8rem]" />
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-48 rounded-xl" />
         </div>
         <div className="space-y-6">
-          <Skeleton className="h-80 rounded-[1.8rem]" />
+          <Skeleton className="h-80 rounded-xl" />
         </div>
       </div>
     </div>
@@ -262,7 +262,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
         </div>
 
         {/* Premium Banner image header */}
-        <div className="relative overflow-hidden rounded-[2rem] border-slate-500/20 bg-brand-dark-green h-48 sm:h-64 shadow-[0_12px_36px_rgba(10,70,53,0.08)]">
+        <div className="relative overflow-hidden rounded-lg border-slate-500/20 bg-brand-dark-green h-48 sm:h-64 shadow-sm">
           <img
             src={business.banner?.publicUrl || "/placeholder.svg?height=600&width=1200"}
             alt={`${business.name} Banner`}
@@ -283,11 +283,11 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 size="md"
                 label={`Ownership: ${getBusinessOwnershipPresentation(business.ownershipStatus, { dark: true }).label}`}
               />
-              <span className="inline-flex rounded-full border border-brand-deep-green/10 bg-white px-3 py-1 text-xs font-semibold text-brand-dark-green dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15">
+              <span className="inline-flex rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-brand-dark-green dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15">
                 {establishmentTypeLabel}
               </span>
               {business.isFeatured && (
-                <span className="inline-flex rounded-full border border-brand-orange/20 bg-brand-orange/10 px-3 py-1 text-xs font-semibold text-brand-orange">
+                <span className="inline-flex rounded-full border border-warning/20 bg-warning/10 px-3 py-1 text-xs font-semibold text-warning-foreground">
                   ★ Featured
                 </span>
               )}
@@ -297,10 +297,10 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 <img
                   src={business.logo.publicUrl}
                   alt={business.name}
-                  className="h-16 w-16 rounded-[1.2rem] border border-brand-deep-green/10 object-cover bg-white"
+                  className="h-16 w-16 rounded-lg border border-border object-cover bg-white"
                 />
               ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-[1.2rem] border border-brand-deep-green/10 bg-brand-soft-beige text-brand-deep-green/45 dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15">
+                <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15">
                   <Building2 className="h-7 w-7" />
                 </div>
               )}
@@ -327,7 +327,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 Review Request
               </Button>
             ) : null}
-            <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40 dark:text-brand-soft-beige dark:border-brand-deep-green/20">
+            <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted dark:text-brand-soft-beige dark:border-brand-deep-green/20">
               <Link href={publicBusinessHref} target="_blank">
                 <Eye className="h-4 w-4" />
                 Open public page
@@ -349,7 +349,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
         {/* Left Column */}
         <div className="space-y-6">
           {business.ownershipStatus === "claim_under_review" && business.pendingClaim ? (
-            <section className="rounded-[1.8rem] border border-amber-100 bg-amber-50/70 p-6 shadow-[0_10px_24px_rgba(120,53,15,0.05)]">
+            <section className="rounded-xl border border-amber-100 bg-amber-50/70 p-6 shadow-sm">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700/75">Ownership review</p>
@@ -367,9 +367,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
           ) : null}
 
           {/* Listing Details */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)] dark:bg-surface-admin dark:border-brand-deep-green/15">
+          <section className="rounded-xl border border-border bg-white p-6 shadow-sm dark:bg-surface-admin dark:border-brand-deep-green/15">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange dark:bg-brand-soft-beige/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                 <MapPin className="h-5 w-5" />
               </div>
               <div>
@@ -377,7 +377,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 <p className="text-sm text-muted-foreground">Core details and location parameters of the business listing.</p>
               </div>
             </div>
-            <div className="mt-6 space-y-6 border-t border-brand-deep-green/10 pt-6">
+            <div className="mt-6 space-y-6 border-t border-border pt-6">
               <DetailList
                 items={[
                   { label: "Establishment type", value: establishmentTypeLabel },
@@ -401,9 +401,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
           </section>
 
           {/* Contact Details */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)] dark:bg-surface-admin dark:border-brand-deep-green/15">
+          <section className="rounded-xl border border-border bg-white p-6 shadow-sm dark:bg-surface-admin dark:border-brand-deep-green/15">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange dark:bg-brand-soft-beige/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                 <Phone className="h-5 w-5" />
               </div>
               <div>
@@ -411,7 +411,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 <p className="text-sm text-muted-foreground">How this business is reachable through public directory entries.</p>
               </div>
             </div>
-            <div className="mt-6 border-t border-brand-deep-green/10 pt-6 grid gap-6 md:grid-cols-2">
+            <div className="mt-6 border-t border-border pt-6 grid gap-6 md:grid-cols-2">
               <div className="space-y-4 text-sm text-brand-dark-green dark:text-brand-soft-beige">
                 <div className="flex items-start gap-3">
                   <Phone className="mt-0.5 h-4 w-4 text-brand-orange shrink-0" />
@@ -430,7 +430,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
 
               {/* Social and Web Links */}
               <div className="space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55 dark:text-brand-light-green/70">Links</p>
+                <p className="text-xs font-medium text-muted-foreground dark:text-brand-light-green/70">Links</p>
                 {socialLinks.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {socialLinks.map((link) => (
@@ -439,7 +439,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                         href={link.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-xl border border-brand-deep-green/10 bg-white px-3 py-2 text-xs font-semibold text-brand-dark-green hover:bg-brand-soft-beige/10 dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15"
+                        className="inline-flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-xs font-semibold text-brand-dark-green hover:bg-muted dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15"
                       >
                         {link.icon}
                         <span>{link.label}</span>
@@ -454,9 +454,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
           </section>
 
           {/* Amenities & Offerings */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)] dark:bg-surface-admin dark:border-brand-deep-green/15">
+          <section className="rounded-xl border border-border bg-white p-6 shadow-sm dark:bg-surface-admin dark:border-brand-deep-green/15">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange dark:bg-brand-soft-beige/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                 <UtensilsCrossed className="h-5 w-5" />
               </div>
               <div>
@@ -464,7 +464,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 <p className="text-sm text-muted-foreground">Accommodations, payment options, and service features available.</p>
               </div>
             </div>
-            <div className="mt-6 border-t border-brand-deep-green/10 pt-6 space-y-6">
+            <div className="mt-6 border-t border-border pt-6 space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 {/* Services */}
                 <AmenitySection
@@ -530,9 +530,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
         {/* Right Column */}
         <div className="space-y-6">
           {/* Admin Context metadata */}
-          <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)] dark:bg-surface-admin dark:border-brand-deep-green/15">
+          <section className="rounded-xl border border-border bg-white p-6 shadow-sm dark:bg-surface-admin dark:border-brand-deep-green/15">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange dark:bg-brand-soft-beige/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div>
@@ -540,7 +540,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 <p className="text-sm text-muted-foreground">Internal context, identifiers, and audit lifecycle metadata.</p>
               </div>
             </div>
-            <div className="mt-6 space-y-6 border-t border-brand-deep-green/10 pt-6">
+            <div className="mt-6 space-y-6 border-t border-border pt-6">
               <DetailList
                 items={[
                   { label: "Business ID", value: <span className="font-mono text-xs select-all">{business.id}</span> },
@@ -556,9 +556,9 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
 
       {/* Photo Gallery Row */}
       {business.photos && business.photos.length > 0 && (
-        <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)] dark:bg-surface-admin dark:border-brand-deep-green/15">
+        <section className="rounded-xl border border-border bg-white p-6 shadow-sm dark:bg-surface-admin dark:border-brand-deep-green/15">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange dark:bg-brand-soft-beige/10">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
               <Image className="h-5 w-5" />
             </div>
             <div>
@@ -566,14 +566,14 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               <p className="text-sm text-muted-foreground">Uploaded storefront, interior, food, and directory assets.</p>
             </div>
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-4 border-t border-brand-deep-green/10 pt-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <div className="mt-6 grid grid-cols-2 gap-4 border-t border-border pt-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {business.photos.map((photo) => (
               <a
                 key={photo.id}
                 href={photo.publicUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative aspect-square overflow-hidden rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/5 hover:border-brand-orange/40 transition-colors"
+                className="group relative aspect-square overflow-hidden rounded-2xl border border-border bg-muted/30 hover:border-brand-orange/40 transition-colors"
               >
                 <img
                   src={photo.publicUrl}
