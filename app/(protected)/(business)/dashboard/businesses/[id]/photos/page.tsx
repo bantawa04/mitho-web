@@ -1,5 +1,10 @@
 import { PhotosRoutePage } from "@/features/dashboard/screens/business-route-pages"
 
-export default function DashboardBusinessPhotosPage() {
-  return <PhotosRoutePage />
+interface DashboardBusinessPhotosPageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function DashboardBusinessPhotosPage({ params }: DashboardBusinessPhotosPageProps) {
+  const { id } = await params
+  return <PhotosRoutePage businessId={id.trim()} />
 }

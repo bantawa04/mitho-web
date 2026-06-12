@@ -231,7 +231,9 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       cuisineIds: values.cuisineIds,
       logoId: values.logoId,
       bannerId: values.bannerId,
-      photos: values.photos ?? [],
+      // Gallery photos are only attached at creation; afterwards they are
+      // managed through the gallery approval flow, not business updates.
+      photos: mode === "create" ? values.photos ?? [] : undefined,
       phone: values.phone,
       phoneSecondary: values.phoneSecondary || undefined,
       email: values.email || undefined,
@@ -575,7 +577,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
               </div>
             </section>
 
-            {/* Photos gallery */}
+            {/* Photos gallery — creation only; existing galleries are managed via Gallery Approval */}
+            {mode === "create" ? (
             <section className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
@@ -627,6 +630,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 )}
               </div>
             </section>
+            ) : null}
           </div>
 
           {/* Right Column: Sticky Sidebar Controls */}
