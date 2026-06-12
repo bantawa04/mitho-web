@@ -72,7 +72,7 @@ export function BusinessCuisineField<TFieldValues extends FieldValues>({
                 <ComboboxChips
                   ref={anchorRef}
                   className={cn(
-                    "min-h-[44px] rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-3 py-2 shadow-none focus-within:border-brand-orange focus-within:ring-brand-orange/15",
+                    "min-h-[44px] rounded-lg border-border bg-white px-3 py-2 shadow-none focus-within:border-primary focus-within:ring-primary/25",
                     chipsClassName,
                   )}
                 >

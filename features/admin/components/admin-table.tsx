@@ -68,7 +68,7 @@ export function AdminTable<TData>({
               value={searchValue}
               onChange={(event) => onSearchChange(event.target.value)}
               placeholder={searchPlaceholder}
-              className="h-11 rounded-xl border-brand-deep-green/10 bg-white pl-10 shadow-none"
+              className="h-10 rounded-lg border-border bg-white pl-10 shadow-none"
             />
           </div>
           {leftToolbarContent ? <div className="flex shrink-0 items-center gap-3">{leftToolbarContent}</div> : null}
@@ -76,14 +76,14 @@ export function AdminTable<TData>({
         {rightToolbarContent ? <div className="flex shrink-0 items-center gap-3">{rightToolbarContent}</div> : null}
       </div>
 
-      <section className="overflow-hidden rounded-[1.9rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]">
+      <section className="overflow-hidden rounded-lg border border-border bg-white shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow className="border-brand-deep-green/10 hover:bg-transparent">
+            <TableRow className="border-border bg-muted/50 hover:bg-muted/50">
               {columns.map((column) => (
                 <TableHead
                   key={column.id}
-                  className={column.className ?? "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55"}
+                  className={column.className ?? "text-xs font-medium text-muted-foreground"}
                 >
                   {column.label}
                 </TableHead>
@@ -92,14 +92,14 @@ export function AdminTable<TData>({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow className="border-brand-deep-green/10 hover:bg-transparent">
+              <TableRow className="border-border hover:bg-transparent">
                 <TableCell colSpan={columns.length} className="px-6 py-12 text-center text-sm text-muted-foreground">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : data.length > 0 ? (
               data.map((item) => (
-                <TableRow key={rowKey(item)} className="border-brand-deep-green/10 hover:bg-brand-soft-beige/14">
+                <TableRow key={rowKey(item)} className="border-border text-sm hover:bg-muted/60">
                   {columns.map((column) => (
                     <TableCell key={column.id} className={column.cellClassName}>
                       {column.cell(item)}
@@ -108,9 +108,9 @@ export function AdminTable<TData>({
                 </TableRow>
               ))
             ) : (
-              <TableRow className="border-brand-deep-green/10 hover:bg-transparent">
+              <TableRow className="border-border hover:bg-transparent">
                 <TableCell colSpan={columns.length} className="px-6 py-12 text-center">
-                  <p className="font-semibold text-brand-dark-green">{emptyTitle}</p>
+                  <p className="font-medium text-foreground">{emptyTitle}</p>
                   <p className="mt-2 text-sm text-muted-foreground">{emptyDescription}</p>
                 </TableCell>
               </TableRow>
@@ -118,7 +118,7 @@ export function AdminTable<TData>({
           </TableBody>
         </Table>
 
-        <div className="flex flex-col gap-4 border-t border-brand-deep-green/10 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-t border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-muted-foreground">{resultSummary}</p>
 
           {totalPages > 1 ? (

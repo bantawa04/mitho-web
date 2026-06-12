@@ -16,9 +16,9 @@ interface SectionProps {
 }
 
 const densityClasses = {
-  compact: "py-12",
-  default: "py-16 md:py-20",
-  feature: "py-20 md:py-24",
+  compact: "py-10",
+  default: "py-12 md:py-16",
+  feature: "py-16 md:py-20",
 }
 
 const toneClasses = {

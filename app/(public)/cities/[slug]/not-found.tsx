@@ -8,9 +8,9 @@ export default function CityNotFound() {
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf7ee_34%,#fffdfa_100%)] pb-16">
+      <main className="bg-background pb-16">
         <div className="container mx-auto px-4 py-16">
-          <section className="mx-auto max-w-3xl rounded-[2rem] border border-brand-deep-green/10 bg-white px-6 py-10 text-center shadow-[0_10px_28px_rgba(10,70,53,0.05)]">
+          <section className="mx-auto max-w-3xl rounded-xl border border-border bg-white px-6 py-10 text-center shadow-sm">
             <p className="type-eyebrow text-brand-deep-green/68">City not found</p>
             <h1 className="mt-4 text-4xl font-semibold leading-tight text-brand-dark-green">
               This city guide is not ready yet.

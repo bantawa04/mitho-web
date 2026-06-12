@@ -40,7 +40,7 @@ export function MithoReviewCard({
   const authorHref = authorUsername ? `/users/${authorUsername}` : null
 
   return (
-    <div className={cn("rounded-[1.6rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_24px_rgba(10,70,53,0.05)]", className)}>
+    <div className={cn("rounded-xl border border-brand-deep-green/10 bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.05)]", className)}>
       <div className="mb-4 flex items-start gap-3">
         {authorHref ? (
           <Link href={authorHref} className="shrink-0">
@@ -82,7 +82,7 @@ export function MithoReviewCard({
               <img
                 src={item.type === "video" ? item.thumbnail || item.src : item.src}
                 alt={`Review media ${index + 1}`}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                className="w-full h-full object-cover"
               />
               {item.type === "video" && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -95,7 +95,7 @@ export function MithoReviewCard({
       )}
 
       {ownerResponse && (
-        <div className="mt-4 rounded-[1.2rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+        <div className="mt-4 rounded-xl border border-brand-deep-green/10 bg-[#fffdf8] p-4">
           <div className="mb-2 flex items-center gap-2">
             <span className="text-sm font-semibold text-brand-deep-green">Response from Owner</span>
             <span className="text-xs text-muted-foreground">{ownerResponse.date}</span>

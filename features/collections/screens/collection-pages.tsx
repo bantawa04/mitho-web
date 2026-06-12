@@ -50,11 +50,11 @@ import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 
 const sectionCardClass =
-  "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
+  "rounded-xl border border-brand-deep-green/10 bg-white shadow-sm"
 const inputClassName =
-  "h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "h-12 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 const selectTriggerClassName =
-  "w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none data-[size=default]:h-12 data-[size=sm]:h-12 focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "w-full rounded-lg border-brand-deep-green/12 bg-muted px-4 text-sm shadow-none data-[size=default]:h-12 data-[size=sm]:h-12 focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 
 function ProfileTabsPanel() {
   return (
@@ -87,8 +87,8 @@ function CollectionItemRow({
 }) {
   const image = item.business?.image?.publicUrl
   return (
-    <div className="flex gap-4 rounded-[1.35rem] border border-brand-deep-green/10 bg-white p-4">
-      <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[1rem] bg-[#fff7eb]">
+    <div className="flex gap-4 rounded-xl border border-brand-deep-green/10 bg-white p-4">
+      <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
         {image ? <img src={image} alt={item.business?.name ?? "Collection item"} className="h-full w-full object-cover" /> : <Bookmark className="h-6 w-6 text-brand-deep-green/35" />}
       </div>
       <div className="min-w-0 flex-1">
@@ -134,7 +134,7 @@ function CollectionItemRow({
             value={item.note ?? ""}
             onChange={(event) => onNoteChange?.(event.target.value)}
             placeholder="Add note for why this place belongs here."
-            className="mt-3 min-h-24 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+            className="mt-3 min-h-24 rounded-lg border-brand-deep-green/12 bg-muted px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
           />
         ) : (
           <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.note ?? "No note yet."}</p>
@@ -164,7 +164,7 @@ function CreateCollectionModal({ open, onOpenChange }: { open: boolean; onOpenCh
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl rounded-[1.75rem] border-brand-deep-green/10 p-0 shadow-[0_24px_60px_rgba(10,70,53,0.16)]">
+      <DialogContent className="max-w-2xl rounded-xl border-brand-deep-green/10 p-0 shadow-sm">
         <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold text-brand-dark-green">Create a new collection</DialogTitle>
@@ -196,7 +196,7 @@ function CreateCollectionModal({ open, onOpenChange }: { open: boolean; onOpenCh
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea {...field} className="min-h-28 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15" />
+                      <Textarea {...field} className="min-h-28 rounded-lg border-brand-deep-green/12 bg-muted px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -290,7 +290,7 @@ export function CollectionsIndexPage() {
               <span className="text-sm text-muted-foreground">{collectionsQuery.data?.meta.total ?? collections.length} showing</span>
             </div>
             {collectionsQuery.isLoading ? (
-              <div className="rounded-[1.5rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6 text-sm text-muted-foreground">Loading collections...</div>
+              <div className="rounded-xl border border-dashed border-brand-deep-green/18 bg-muted p-6 text-sm text-muted-foreground">Loading collections...</div>
             ) : collections.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {collections.map((collection) => (
@@ -298,7 +298,7 @@ export function CollectionsIndexPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-[1.5rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+              <div className="rounded-xl border border-dashed border-brand-deep-green/18 bg-muted p-6">
                 <p className="text-base font-semibold text-brand-dark-green">{query ? "No collections match this search." : "Start your first collection here."}</p>
               </div>
             )}
@@ -346,7 +346,7 @@ function CollectionDetailBody({
                   Edit collection
                 </Link>
               </MithoButton>
-              <div className="flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-2">
+              <div className="flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-muted px-4 py-2">
                 <div>
                   <p className="text-sm font-semibold text-brand-dark-green">Public</p>
                 </div>
@@ -373,7 +373,7 @@ function CollectionDetailBody({
           {collection.items.length > 0 ? (
             collection.items.map((item) => <CollectionItemRow key={item.id} item={item} />)
           ) : (
-            <div className="rounded-[1.35rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-6">
+            <div className="rounded-xl border border-dashed border-brand-deep-green/18 bg-muted p-6">
               <p className="text-base font-semibold text-brand-dark-green">No places here yet.</p>
             </div>
           )}
@@ -446,7 +446,7 @@ export function PublicCollectionDetailPage({ username, id }: { username: string;
     <>
       <div className="container mx-auto px-4 py-10 md:py-12">
         <div className="space-y-6">
-          <section className={cn(sectionCardClass, "overflow-hidden bg-[linear-gradient(180deg,#fffdf8_0%,#fff8ee_100%)]")}>
+          <section className={cn(sectionCardClass, "overflow-hidden bg-muted")}>
             <div className="grid gap-8 px-6 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
               <div className="space-y-5">
                 <Link href="/users" className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange">
@@ -466,17 +466,17 @@ export function PublicCollectionDetailPage({ username, id }: { username: string;
                   {copyMutation.isPending ? "Copying..." : "Copy collection"}
                 </MithoButton>
               </div>
-              <div className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white/78 px-5 py-6 shadow-[0_16px_36px_rgba(10,70,53,0.06)]">
+              <div className="rounded-xl border border-brand-deep-green/10 bg-white/78 px-5 py-6 shadow-sm">
                 <div className="mx-auto flex justify-center gap-2">
                   {getCollectionCoverImages(collection).slice(0, 3).map((image, index) => (
-                    <img key={`${collection.id}-${index}`} src={image} alt="" className="h-24 w-24 rounded-[1rem] object-cover" />
+                    <img key={`${collection.id}-${index}`} src={image} alt="" className="h-24 w-24 rounded-lg object-cover" />
                   ))}
                 </div>
               </div>
             </div>
           </section>
           {copyMutation.isSuccess ? (
-            <section className="rounded-[1.75rem] border border-success/18 bg-success/8 shadow-[0_12px_30px_rgba(10,70,53,0.05)] px-6 py-6 sm:px-8">
+            <section className="rounded-xl border border-success/18 bg-success/8 shadow-sm px-6 py-6 sm:px-8">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
                 <p className="text-sm leading-7 text-muted-foreground">Collection copied to your account.</p>
@@ -600,7 +600,7 @@ export function CollectionEditPage({ id }: { id: string }) {
                 <FormField control={form.control} name="description" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
-                    <FormControl><Textarea {...field} className="min-h-28 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15" /></FormControl>
+                    <FormControl><Textarea {...field} className="min-h-28 rounded-lg border-brand-deep-green/12 bg-muted px-4 py-3 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15" /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />

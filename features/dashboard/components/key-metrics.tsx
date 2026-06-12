@@ -5,10 +5,10 @@ import { StatCard } from "@/components/mitho/mitho-stat-card"
 
 export function KeyMetrics() {
   return (
-    <section className="py-8">
-      <p className="type-eyebrow mb-3 text-brand-deep-green/70">Overview</p>
-      <h2 className="type-section-title mb-6 text-foreground">Key metrics</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <section>
+      <p className="mb-2 text-xs font-semibold text-muted-foreground">Overview</p>
+      <h2 className="type-section-title mb-4 text-foreground">Key metrics</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           icon={<Eye className="h-6 w-6" />}
           label="Total Profile Views"

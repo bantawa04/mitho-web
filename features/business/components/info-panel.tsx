@@ -115,7 +115,7 @@ export function InfoPanel({
                 ))}
               </div>
 
-              <div className="pt-6 border-t border-brand-deep-green/10">
+              <div className="pt-6 border-t border-border">
                 <p className="text-sm font-semibold text-brand-dark-green">Amenities people often look for</p>
                 <AmenityList amenities={[...visitInfo.amenities]} className="mt-3" />
               </div>
@@ -131,7 +131,7 @@ export function InfoPanel({
                 ) : null}
               </MithoCardHeader>
               <MithoCardContent>
-                <div className="overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10">
+                <div className="overflow-hidden rounded-xl border border-border">
                   {staticMapUrl ? (
                     <StaticMap url={staticMapUrl} className="aspect-[4/3] w-full object-cover" />
                   ) : (

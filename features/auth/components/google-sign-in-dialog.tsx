@@ -41,9 +41,9 @@ export function GoogleSignInDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[calc(100%-2rem)] rounded-[1.75rem] border-brand-deep-green/10 bg-white p-0 shadow-[0_22px_60px_rgba(10,70,53,0.14)] sm:max-w-[520px]">
+      <DialogContent className="max-w-[calc(100%-2rem)] rounded-xl border-border bg-white p-0 shadow-sm sm:max-w-[520px]">
         <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-7">
-          <div className="inline-flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-2 text-sm font-semibold text-brand-dark-green">
+          <div className="flex items-center gap-3 text-sm font-semibold text-brand-dark-green">
             <BrandLogo kind="icon" tone="green" className="h-6 w-auto" alt="Mitho Cha! icon" />
             Google sign-in
           </div>
@@ -98,7 +98,7 @@ export function GoogleSignInDialog({
               />
             </div>
           ) : (
-            <div className="rounded-[1.25rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-4">
+            <div className="rounded-lg border border-border bg-surface-soft p-4">
               <p className="text-sm leading-7 text-muted-foreground">
                 Google sign-in is not configured yet. Add <code className="font-semibold text-brand-dark-green">NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> to the web env before testing login.
               </p>

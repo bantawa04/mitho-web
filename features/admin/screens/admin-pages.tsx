@@ -13,8 +13,8 @@ function SummaryCard({
   helper: string
 }) {
   return (
-    <div className="rounded-[1.5rem] surface-admin-panel p-5">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/55">{label}</p>
+    <div className="rounded-xl surface-admin-panel p-5">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <p className="mt-3 text-4xl font-semibold leading-none text-brand-dark-green">{value}</p>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">{helper}</p>
     </div>
@@ -61,20 +61,20 @@ export function AdminPlaceholderPage({
 
   return (
     <div className="space-y-6 pb-12">
-      <section className="rounded-[2rem] surface-admin-panel p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/55">{eyebrow}</p>
+      <section className="rounded-xl surface-admin-panel p-6">
+        <p className="text-xs font-medium text-muted-foreground">{eyebrow}</p>
         <div className="mt-4 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">
             <h1 className="type-page-title text-brand-dark-green">{title}</h1>
             <p className="mt-4 text-base leading-7 text-muted-foreground">{description}</p>
           </div>
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white text-brand-dark-green shadow-sm">
             <Icon className="h-6 w-6" />
           </div>
         </div>
       </section>
 
-      <section className="rounded-[1.8rem] surface-admin-panel p-6">
+      <section className="rounded-xl surface-admin-panel p-6">
         <div className="max-w-2xl">
           <h2 className="text-xl font-semibold text-brand-dark-green">This is the next admin surface to flesh out.</h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground">

@@ -156,11 +156,11 @@ export function AdminBusinessClaimsPage() {
       {
         id: "business",
         label: "Business",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
         cell: (claim) => (
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-brand-dark-green">{claim.business?.name ?? claim.businessId}</p>
+            <p className="text-sm font-semibold text-foreground">{claim.business?.name ?? claim.businessId}</p>
             <p className="text-xs text-muted-foreground">{formatAdminBusinessLocation(claim.business)}</p>
           </div>
         ),
@@ -168,11 +168,11 @@ export function AdminBusinessClaimsPage() {
       {
         id: "claimant",
         label: "Claimant",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (claim) => (
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-brand-dark-green">{claim.claimantName || claim.user?.name || "Unknown"}</p>
+            <p className="text-sm font-semibold text-foreground">{claim.claimantName || claim.user?.name || "Unknown"}</p>
             <p className="text-xs text-muted-foreground">{claim.user?.email ?? claim.businessEmail}</p>
           </div>
         ),
@@ -180,8 +180,8 @@ export function AdminBusinessClaimsPage() {
       {
         id: "status",
         label: "Status",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (claim) => (
           <AdminStatusBadge label={statusLabel(claim.status)} tone={statusTone(claim.status)} />
         ),
@@ -189,15 +189,15 @@ export function AdminBusinessClaimsPage() {
       {
         id: "submitted",
         label: "Submitted",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (claim) => formatAdminDateTime(claim.createdAt),
       },
       {
         id: "actions",
         label: "Actions",
-        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-right",
+        className: "pr-6 text-right text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-right",
         cell: (claim) => {
           const items: ComponentProps<typeof AdminRowActions>["items"] = [
             {
@@ -275,7 +275,7 @@ export function AdminBusinessClaimsPage() {
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-muted-foreground">Status</span>
               <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as BusinessClaimStatusFilter)}>
-                <SelectTrigger className="h-11 w-[180px] rounded-xl border-brand-deep-green/10 bg-white shadow-none">
+                <SelectTrigger className="h-11 w-[180px] rounded-xl border-border bg-white shadow-none">
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -319,14 +319,14 @@ export function AdminBusinessClaimsPage() {
             </div>
 
             {selectedClaim.note ? (
-              <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Claimant note</p>
+              <div className="rounded-2xl border border-border bg-muted px-4 py-4">
+                <p className="text-xs font-medium text-muted-foreground">Claimant note</p>
                 <p className="mt-2 text-sm leading-6 text-brand-dark-green">{selectedClaim.note}</p>
               </div>
             ) : null}
 
-            <div className="rounded-2xl border border-brand-deep-green/10 bg-white px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">Documents</p>
+            <div className="rounded-2xl border border-border bg-white px-4 py-4">
+              <p className="text-xs font-medium text-muted-foreground">Documents</p>
               <div className="mt-3 flex flex-wrap gap-3">
                 {selectedClaim.status !== "pending" && selectedClaim.documentsDeletedAt ? (
                   <p className="text-sm text-muted-foreground">
@@ -422,8 +422,8 @@ export function AdminBusinessClaimsPage() {
 
 function ReviewBlock({ label, value, helper }: { label: string; value?: string; helper?: string }) {
   return (
-    <div className="rounded-2xl border border-brand-deep-green/10 bg-brand-soft-beige/18 px-4 py-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55">{label}</p>
+    <div className="rounded-2xl border border-border bg-muted px-4 py-4">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <p className="mt-2 text-sm font-semibold capitalize text-brand-dark-green">{value || "Not provided"}</p>
       {helper ? <p className="mt-1 text-xs text-muted-foreground">{helper}</p> : null}
     </div>

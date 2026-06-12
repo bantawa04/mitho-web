@@ -177,17 +177,16 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
   }, [])
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-6 pb-12">
       {/* Page header */}
 
-
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* Left: actions + info */}
         <div className="space-y-6">
           {/* URL section */}
           <section>
-            <div className="mb-5 flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 <ExternalLink className="h-5 w-5" />
               </div>
               <div>
@@ -195,8 +194,8 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
                 <p className="type-meta mt-1">This is the public listing URL encoded in your QR code.</p>
               </div>
             </div>
-            
-            <div className="flex items-center gap-3 rounded-[1.2rem] border border-brand-deep-green/10 bg-white px-4 py-3 shadow-[0_6px_18px_rgba(10,70,53,0.04)]">
+
+            <div className="flex items-center gap-3 rounded-lg border border-border bg-white px-4 py-3 shadow-sm">
               <p className="flex-1 truncate text-sm font-mono text-foreground">
                 {isLoading ? "Loading…" : (publicUrl ?? "—")}
               </p>
@@ -223,8 +222,8 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
 
           {/* Download & print section */}
           <section className="pt-2">
-            <div className="mb-5 flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft-beige text-brand-orange">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                 <Download className="h-5 w-5" />
               </div>
               <div>
@@ -232,7 +231,7 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
                 <p className="type-meta mt-1">Get a high-resolution PNG ready for print.</p>
               </div>
             </div>
-            
+
             <div className="flex flex-wrap gap-3">
               <MithoButton onClick={handleDownload} disabled={!ready}>
                 <Download className="h-4 w-4" />
@@ -244,7 +243,7 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
               </MithoButton>
             </div>
 
-            <div className="mt-5 space-y-3">
+            <div className="mt-4 space-y-2">
               {[
                 "Place at your counter, front entrance, or on menus.",
                 "The PNG is 1024×1024 — high-res enough for A4 prints.",
@@ -252,9 +251,9 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
               ].map((tip) => (
                 <div
                   key={tip}
-                  className="flex items-start gap-3 rounded-[0.9rem] border border-brand-deep-green/8 bg-surface-business-inset px-4 py-3"
+                  className="flex items-start gap-3 rounded-lg border border-border bg-surface-business-inset px-4 py-3"
                 >
-                  <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-orange" />
+                  <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
                   <p className="text-sm leading-6 text-muted-foreground">{tip}</p>
                 </div>
               ))}
@@ -266,7 +265,7 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
         <div className="flex flex-col items-center">
           <div
             id="qr-print-area"
-            className="w-full max-w-[360px] rounded-[2rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_28px_rgba(10,70,53,0.07)] print:shadow-none"
+            className="w-full max-w-[360px] rounded-lg border border-border bg-white p-4 shadow-sm print:shadow-none"
           >
             {/* Mitho logo */}
             <div className="mb-4 flex flex-col items-center justify-center">
@@ -277,16 +276,16 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
               />
             </div>
 
-            <div className="relative overflow-hidden rounded-[1.25rem] bg-white">
+            <div className="relative overflow-hidden rounded-lg bg-white">
               {/* Skeleton shown while QR is generating */}
               {!ready && (
                 <div className="flex h-[360px] w-full items-center justify-center">
-                  <div className="h-[320px] w-[320px] animate-pulse rounded-xl bg-brand-soft-beige/60" />
+                  <div className="h-[320px] w-[320px] animate-pulse rounded-lg bg-muted" />
                 </div>
               )}
               <canvas
                 ref={canvasRef}
-                className={ready ? "block rounded-[1rem]" : "hidden"}
+                className={ready ? "block rounded-lg" : "hidden"}
                 aria-label={`QR code linking to ${businessName}'s Mitho Cha page`}
               />
             </div>

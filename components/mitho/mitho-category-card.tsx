@@ -17,8 +17,8 @@ export function CategoryCard({ icon, label, href = "#", className }: CategoryCar
     <Link
       href={href}
       className={cn(
-        "group flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/90 px-4 py-3 shadow-[0_8px_24px_rgba(10,70,53,0.06)]",
-        "transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-orange/25 hover:shadow-[0_14px_28px_rgba(10,70,53,0.1)]",
+        "group flex items-center gap-3 rounded-lg border border-brand-deep-green/10 bg-white/90 px-4 py-3 shadow-sm",
+        "transition-all duration-200 hover:border-brand-deep-green/25 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "cursor-pointer",
         className,

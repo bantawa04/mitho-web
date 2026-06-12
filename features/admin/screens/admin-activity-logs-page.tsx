@@ -26,7 +26,7 @@ function getScopeTone(scope: AdminActivityLogScope) {
     case "Roles":
       return "bg-sky-50 text-sky-700 border-sky-100"
     case "Establishment Types":
-      return "bg-brand-soft-beige text-brand-orange border-brand-orange/10"
+      return "bg-muted text-muted-foreground border-border"
     case "Settings":
       return "bg-stone-100 text-stone-700 border-stone-200"
   }
@@ -80,11 +80,11 @@ export function AdminActivityLogsPage() {
       {
         id: "actor",
         label: "Actor",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
         cell: (log) => (
           <div className="space-y-1">
-            <p className="text-sm font-semibold text-brand-dark-green">{log.actorName}</p>
+            <p className="text-sm font-semibold text-foreground">{log.actorName}</p>
             <p className="text-sm text-muted-foreground">{log.actorRole}</p>
           </div>
         ),
@@ -92,11 +92,11 @@ export function AdminActivityLogsPage() {
       {
         id: "action",
         label: "Action",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (log) => (
           <div className="space-y-2">
-            <p className="text-sm font-semibold text-brand-dark-green">{log.actionLabel}</p>
+            <p className="text-sm font-semibold text-foreground">{log.actionLabel}</p>
             <p className="text-sm leading-6 text-muted-foreground">{log.summary}</p>
           </div>
         ),
@@ -104,11 +104,11 @@ export function AdminActivityLogsPage() {
       {
         id: "target",
         label: "Target",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (log) => (
           <div className="space-y-2">
-            <p className="text-sm font-medium text-brand-dark-green">{log.targetLabel}</p>
+            <p className="text-sm font-medium text-foreground">{log.targetLabel}</p>
             <AdminStatusBadge label={log.scope} tone={getScopeTone(log.scope)} />
           </div>
         ),
@@ -116,8 +116,8 @@ export function AdminActivityLogsPage() {
       {
         id: "occurred-at",
         label: "Logged at",
-        className: "py-4 pr-6 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-sm text-muted-foreground",
+        className: "pr-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-sm text-muted-foreground",
         cell: (log) => log.occurredAt,
       },
     ],

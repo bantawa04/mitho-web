@@ -60,7 +60,7 @@ export function SponsoredListingsSection() {
           <Link
             href={listing.href}
             key={listing.name}
-            className="group block w-[292px] flex-shrink-0 overflow-hidden rounded-[1.6rem] border border-brand-deep-green/10 bg-white shadow-[0_8px_22px_rgba(10,70,53,0.05)] transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(10,70,53,0.08)]"
+            className="group block w-[292px] flex-shrink-0 overflow-hidden rounded-xl border border-brand-deep-green/10 bg-white shadow-sm transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
           >
             <div className="relative aspect-[4/3]">
               <Image
@@ -70,7 +70,7 @@ export function SponsoredListingsSection() {
                 sizes="292px"
                 className="object-cover"
               />
-              <div className="absolute left-3 top-3 rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-deep-green">
+              <div className="absolute left-3 top-3 rounded-full bg-white/92 px-2.5 py-1 text-xs font-medium text-muted-foreground">
                 Sponsored
               </div>
             </div>

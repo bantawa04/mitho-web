@@ -62,7 +62,7 @@ export function getBusinessLifecyclePresentation(status: BusinessLifecycleStatus
     case "temporarily_closed":
       return {
         label: "Temporarily closed",
-        tone: "bg-brand-soft-beige text-brand-orange",
+        tone: "bg-warning/10 text-warning-foreground",
         description:
           "The listing remains on Mitho but will clearly show that the business is temporarily closed until you reopen it.",
       }

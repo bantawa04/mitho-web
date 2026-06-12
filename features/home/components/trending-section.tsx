@@ -71,7 +71,7 @@ export function TrendingSection() {
           <Link
             href={place.href}
             key={place.name}
-            className="group block w-[316px] flex-shrink-0 overflow-hidden rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_30px_rgba(10,70,53,0.06)] transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(10,70,53,0.1)]"
+            className="group block w-[316px] flex-shrink-0 overflow-hidden rounded-xl border border-brand-deep-green/10 bg-white shadow-sm transition-colors"
           >
             <div className="relative aspect-[4/3]">
               <Image
