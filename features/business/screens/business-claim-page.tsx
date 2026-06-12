@@ -32,11 +32,11 @@ import { uploadFileToR2 } from "@/lib/api/media"
 import type { ClaimableBusiness } from "@/types/business-claims"
 
 const sectionCardClass =
-  "rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_30px_rgba(10,70,53,0.05)]"
+  "rounded-xl border border-border bg-white shadow-sm"
 const inputClassName =
-  "h-12 rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "h-12 rounded-lg border-border bg-white px-4 shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
 const selectTriggerClassName =
-  "h-12 w-full rounded-[1rem] border-brand-deep-green/12 bg-[#fffdf8] px-4 text-sm shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+  "h-12 w-full rounded-lg border-border bg-white px-4 text-sm shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
 
 function claimableLocation(business: ClaimableBusiness) {
   return [
@@ -119,10 +119,8 @@ function SearchResultCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "w-full rounded-[1.35rem] border p-5 text-left transition-all duration-200",
-        selected
-          ? "border-brand-orange/30 bg-brand-soft-beige/45 shadow-[0_14px_32px_rgba(239,138,0,0.10)]"
-          : "border-brand-deep-green/10 bg-white hover:border-brand-deep-green/18 hover:shadow-[0_12px_26px_rgba(10,70,53,0.06)]",
+        "w-full border-b border-border last:border-0 text-left hover:bg-muted px-4 py-3",
+        selected ? "border-l-2 border-l-primary bg-primary/5" : null,
       )}
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -159,7 +157,7 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
         </div>
 
         <div className="space-y-5 px-6 py-6 sm:px-8">
-          <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+          <div className="rounded-lg border border-info/25 bg-info/5 px-4 py-3">
             <p className="type-eyebrow text-brand-deep-green/68">Verification note</p>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
               Your PAN/VAT document is used only for ownership verification. It is not part of the public business profile and will not be treated like normal business media.
@@ -182,7 +180,7 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
         </div>
       </section>
 
-      <aside className={cn(sectionCardClass, "h-fit bg-[#fffdf8]")}>
+      <aside className={cn(sectionCardClass, "h-fit bg-surface-soft")}>
         <div className="px-6 py-6">
           <p className="type-eyebrow text-brand-deep-green/68">What happens next</p>
           <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-dark-green">Admin verifies ownership before dashboard access is unlocked.</h2>
@@ -318,7 +316,7 @@ export function BusinessClaimPage() {
     return (
       <div className="page-shell-customer min-h-screen">
         <Header />
-        <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf7ee_34%,#fffdfa_100%)] pb-16">
+        <main className="pb-16">
           <div className="container mx-auto px-4 py-12 md:py-16">
             <ClaimSubmittedState business={submittedBusiness} />
           </div>
@@ -332,7 +330,7 @@ export function BusinessClaimPage() {
     <div className="page-shell-customer min-h-screen">
       <Header />
 
-      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf7ee_34%,#fffdfa_100%)] pb-16">
+      <main className="pb-16">
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="space-y-6">
@@ -375,12 +373,12 @@ export function BusinessClaimPage() {
 
                     <div className="mt-6 grid gap-4">
                       {query.trim().length >= 2 && (claimableBusinesses.isLoading || debouncedQuery !== query) ? (
-                        <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                        <div className="rounded-lg border border-brand-deep-green/10 bg-surface-soft p-5">
                           <p className="text-base font-semibold text-brand-dark-green">Searching listings...</p>
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">Checking claimable businesses by name.</p>
                         </div>
                       ) : query.trim().length >= 2 && claimableBusinesses.isError ? (
-                        <div className="rounded-[1.35rem] border border-destructive/20 bg-destructive/5 p-5">
+                        <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-5">
                           <p className="text-base font-semibold text-destructive">Could not search listings.</p>
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">Please try again in a moment.</p>
                         </div>
@@ -394,7 +392,7 @@ export function BusinessClaimPage() {
                           />
                         ))
                       ) : query.trim().length >= 2 ? (
-                        <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                        <div className="rounded-lg border border-brand-deep-green/10 bg-surface-soft p-5">
                           <p className="text-base font-semibold text-brand-dark-green">No matching listings yet.</p>
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">
                             Try another name or area. If the business is not on Mitho yet, the add-business flow is the better path.
@@ -415,7 +413,7 @@ export function BusinessClaimPage() {
                         <button
                           type="button"
                           onClick={handleChangeBusiness}
-                          className="mb-6 inline-flex items-center text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+                          className="mb-6 inline-flex items-center text-sm font-semibold text-brand-deep-green transition-colors hover:text-primary"
                         >
                           <ArrowLeft className="mr-2 h-4 w-4" />
                           Back to search
@@ -431,7 +429,7 @@ export function BusinessClaimPage() {
 
                   <div className="px-6 py-6 sm:px-8">
                     {!selectedBusiness ? (
-                      <div className="rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8] p-5">
+                      <div className="rounded-lg border border-brand-deep-green/10 bg-surface-soft p-5">
                         <p className="text-base font-semibold text-brand-dark-green">
                           {selectedBusinessQuery.isLoading ? "Loading selected listing..." : "This listing is not available to claim."}
                         </p>
@@ -547,13 +545,13 @@ export function BusinessClaimPage() {
                                     {...field}
                                     type="file"
                                     accept=".pdf,image/*"
-                                    className={cn(inputClassName, "pt-2")}
+                                    className={cn(inputClassName, "rounded-lg border-dashed border-border bg-white pt-2")}
                                     onChange={(event) => onChange(event.target.files?.[0] ?? null)}
                                   />
                                 </FormControl>
                                 <FormDescription>Upload a PDF or image used only for admin verification.</FormDescription>
                                 {value instanceof File ? (
-                                  <p className="text-sm font-medium text-brand-dark-green">Selected: {value.name}</p>
+                                  <p aria-live="polite" className="text-sm font-medium text-[#15803d]">Selected: {value.name}</p>
                                 ) : null}
                                 <FormMessage />
                               </FormItem>
@@ -593,7 +591,7 @@ export function BusinessClaimPage() {
                           </MithoButton>
                         </div>
                         {submissionError ? (
-                          <p className="rounded-[1rem] border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm font-medium text-destructive">
+                          <p className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm font-medium text-destructive">
                             {submissionError}
                           </p>
                         ) : null}
@@ -606,7 +604,7 @@ export function BusinessClaimPage() {
             </div>
 
             <aside className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
-              <section className={cn(sectionCardClass, "bg-[#fffdf8]")}>
+              <section className={cn(sectionCardClass, "bg-surface-soft")}>
                 <div className="px-6 py-6">
                   <p className="type-eyebrow text-brand-deep-green/68">Why this step exists</p>
                   <h2 className="mt-3 text-2xl font-semibold leading-tight text-brand-dark-green">Claiming is how management access is unlocked.</h2>

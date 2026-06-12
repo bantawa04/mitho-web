@@ -36,7 +36,7 @@ export function GoogleMapPicker({
     return (
       <div
         className={cn(
-          "flex min-h-[320px] items-center justify-center rounded-[1.4rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] px-6 py-8 text-center",
+          "flex min-h-[320px] items-center justify-center rounded-xl border border-dashed border-border bg-[#fffdf8] px-6 py-8 text-center",
           className,
         )}
       >
@@ -55,7 +55,7 @@ export function GoogleMapPicker({
   }
 
   return (
-    <div className={cn("overflow-hidden rounded-[1.4rem] border border-brand-deep-green/10", className)}>
+    <div className={cn("overflow-hidden rounded-xl border border-border", className)}>
       <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
         <Map
           key={`${defaultCenter.lat}-${defaultCenter.lng}`}

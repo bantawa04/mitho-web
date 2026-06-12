@@ -44,7 +44,7 @@ export function HeroV2() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-24 flex flex-col items-center text-center">
+      <div className="relative z-10 container mx-auto px-4 py-12 sm:py-16 flex flex-col items-center text-center">
         <p className="type-eyebrow text-brand-soft-beige/90 drop-shadow-md">Nepal&apos;s neighborhood food guide</p>
         <h1 className="type-display mt-4 max-w-[15ch] text-white drop-shadow-lg">
           Find the local spots people actually recommend.
@@ -66,7 +66,7 @@ export function HeroV2() {
             placeholder="Search for buff momo, cozy cafes, thakali..."
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            className="h-14 w-full rounded-xl bg-white pl-14 pr-[64px] text-base text-foreground outline-none transition-all duration-300 placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40"
+            className="h-14 w-full rounded-xl bg-white pl-14 pr-14 sm:pr-32 text-base text-foreground outline-none transition-all duration-300 placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40"
           />
           <MithoButton
             type="submit"
@@ -83,7 +83,7 @@ export function HeroV2() {
             <Link
               key={chip.label}
               href={chip.href}
-              className="rounded-lg bg-white/90 px-3 py-2 text-sm font-medium text-brand-dark-green hover:bg-white transition-colors"
+              className="rounded-lg bg-white/90 min-h-11 px-3 py-2.5 inline-flex items-center text-sm font-medium text-brand-dark-green hover:bg-white transition-colors"
             >
               {chip.label}
             </Link>
