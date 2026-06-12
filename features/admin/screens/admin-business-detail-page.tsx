@@ -266,7 +266,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
           <img
             src={business.banner?.publicUrl || "/placeholder.svg?height=600&width=1200"}
             alt={`${business.name} Banner`}
-            className="h-full w-full object-cover transition duration-500 hover:scale-102"
+            className="h-full w-full object-cover"
           />
         </div>
 
@@ -414,7 +414,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
             <div className="mt-6 border-t border-border pt-6 grid gap-6 md:grid-cols-2">
               <div className="space-y-4 text-sm text-brand-dark-green dark:text-brand-soft-beige">
                 <div className="flex items-start gap-3">
-                  <Phone className="mt-0.5 h-4 w-4 text-brand-orange shrink-0" />
+                  <Phone className="mt-0.5 h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="space-y-1">
                     <p className="font-medium">{business.phone}</p>
                     {business.phoneSecondary && (
@@ -423,7 +423,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Mail className="mt-0.5 h-4 w-4 text-brand-orange shrink-0" />
+                  <Mail className="mt-0.5 h-4 w-4 text-muted-foreground shrink-0" />
                   <span className="break-all">{business.email || "No email listed"}</span>
                 </div>
               </div>
@@ -469,7 +469,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 {/* Services */}
                 <AmenitySection
                   title="Services"
-                  icon={<UtensilsCrossed className="h-4 w-4 text-brand-orange" />}
+                  icon={<UtensilsCrossed className="h-4 w-4 text-muted-foreground" />}
                   flags={[
                     { label: "Dine-In", checked: !!business.amenities?.services?.dine_in },
                     { label: "Takeaway", checked: !!business.amenities?.services?.takeaway },
@@ -480,7 +480,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 {/* Payments */}
                 <AmenitySection
                   title="Payment methods"
-                  icon={<CreditCard className="h-4 w-4 text-brand-orange" />}
+                  icon={<CreditCard className="h-4 w-4 text-muted-foreground" />}
                   flags={[
                     { label: "Cash", checked: !!business.amenities?.payment?.cash },
                     { label: "Card Payment", checked: !!business.amenities?.payment?.card },
@@ -493,7 +493,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 {/* Facilities */}
                 <AmenitySection
                   title="Facilities"
-                  icon={<Coffee className="h-4 w-4 text-brand-orange" />}
+                  icon={<Coffee className="h-4 w-4 text-muted-foreground" />}
                   flags={[
                     { label: "Parking Available", checked: !!business.amenities?.facilities?.parking },
                     { label: "WiFi Access", checked: !!business.amenities?.facilities?.wifi },
@@ -506,7 +506,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 {/* Dietary */}
                 <AmenitySection
                   title="Dietary restrictions"
-                  icon={<UtensilsCrossed className="h-4 w-4 text-brand-orange" />}
+                  icon={<UtensilsCrossed className="h-4 w-4 text-muted-foreground" />}
                   flags={[
                     { label: "Vegetarian Options", checked: !!business.amenities?.dietary?.vegetarian },
                     { label: "Vegan Friendly", checked: !!business.amenities?.dietary?.vegan },
@@ -573,12 +573,12 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 href={photo.publicUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative aspect-square overflow-hidden rounded-2xl border border-border bg-muted/30 hover:border-brand-orange/40 transition-colors"
+                className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-brand-deep-green/30 transition-colors"
               >
                 <img
                   src={photo.publicUrl}
                   alt={photo.altText ?? "Gallery Photo"}
-                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="h-full w-full object-cover"
                 />
               </a>
             ))}
