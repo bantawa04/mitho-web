@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Building2, History, LayoutDashboard, MessageSquareWarning, Settings, Shapes, Soup, UserRound, Users } from "lucide-react"
+import { Building2, History, Images, LayoutDashboard, MessageSquareWarning, Settings, Shapes, Soup, UserRound, Users } from "lucide-react"
 import { BrandLogo } from "@/components/mitho/brand-logo"
 import {
   Sidebar,
@@ -21,6 +21,7 @@ export const adminNavSections = [
   { href: "/admin/cuisines", label: "Cuisines", icon: Soup },
   { href: "/admin/establishment-types", label: "Establishment Types", icon: Shapes },
   { href: "/admin/reviews/moderation", label: "Review Moderation", icon: MessageSquareWarning, permissions: ["reviews.read", "reviews.update", "reviews.delete"] },
+  { href: "/admin/gallery", label: "Gallery Approval", icon: Images, permissions: ["media.review"] },
   { href: "/admin/customers", label: "Customers", icon: UserRound },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/activity-logs", label: "Activity Logs", icon: History },
