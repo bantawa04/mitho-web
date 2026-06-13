@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { fetchCurrentSession, loginWithGoogle, logoutSession } from "@/lib/api/auth"
+import { fetchCurrentSession, loginWithGoogle, logoutSession, updateMyProfile } from "@/lib/api/auth"
 import { authStoreSelectors, useAuthStore } from "@/store/authStore"
 import type { AuthUser } from "@/types/auth"
 
@@ -47,6 +47,19 @@ export function useGoogleLogin() {
     onSuccess: (user: AuthUser) => {
       queryClient.setQueryData(authQueryKeys.session, user)
       setAuthenticatedUser(user)
+    },
+  })
+}
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient()
+  const setAuthenticatedUser = useAuthStore((state) => state.setAuthenticatedUser)
+
+  return useMutation({
+    mutationFn: updateMyProfile,
+    onSuccess: (authUser: AuthUser) => {
+      setAuthenticatedUser(authUser)
+      queryClient.invalidateQueries({ queryKey: authQueryKeys.session })
     },
   })
 }

@@ -3,6 +3,7 @@
 import * as React from "react"
 import { useFeed } from "@/hooks/use-feed"
 import { MithoButton } from "@/components/mitho/mitho-button"
+import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import { FeedItemCard } from "@/features/feed/components/feed-item-card"
 import { FeedEmptyState } from "@/features/feed/components/feed-empty-state"
 import { FeedSkeleton } from "@/features/feed/components/feed-skeleton"
@@ -35,6 +36,9 @@ export function FeedPage() {
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
       <section className={sectionCardClass}>
+        <div className="border-b border-brand-deep-green/10 px-6 py-4 sm:px-8">
+          <ProfileNavigation />
+        </div>
         <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
           <p className="type-eyebrow text-brand-deep-green/68">Following</p>
           <h1 className="mt-2 text-2xl font-semibold text-brand-dark-green">Your feed</h1>

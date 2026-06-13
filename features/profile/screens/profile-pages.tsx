@@ -5,9 +5,13 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Bookmark, Building2, Camera, ChevronRight, Clock3, Copy, Globe, Lock, Mail, MapPin, MessageSquare, Search, Settings, ShieldAlert, Star, Trash2, UserCheck, UserPlus, Users } from "lucide-react"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
-import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
+import { useAuthSnapshot, useLogout, useUpdateProfile } from "@/hooks/use-auth-session"
 import { useCollections, usePublicCollections } from "@/hooks/use-collections"
 import { useMyReviews } from "@/hooks/use-reviews"
+import { useUploadMedia } from "@/hooks/use-media"
+import { useToast } from "@/hooks/use-toast"
+import { extractApiErrorMessage } from "@/lib/api-error-utils"
+import type { UpdateProfilePayload } from "@/lib/api/auth"
 import { MithoPagination } from "@/components/mitho/mitho-pagination"
 import type { ReviewItem, ReviewStatus } from "@/types/reviews"
 import { getCollectionCoverImages, getCollectionPlaceCount } from "@/features/collections/utils/collection-helpers"
@@ -55,8 +59,11 @@ function ProfileTabsPanel() {
 }
 
 function BusinessBanner() {
+  const { hasBusinessAccess, isHydrated } = useAuthSnapshot()
   const businessContext = mockCustomerProfile.businessContext
 
+  // Hide the whole business banner for customers with no business access.
+  if (!isHydrated || !hasBusinessAccess) return null
   if (businessContext.status === "none") return null
 
   return (
@@ -425,20 +432,24 @@ export function ProfileReviewsPage() {
 
 export function ProfileSettingsPage() {
   const router = useRouter()
-  const { currentUser } = useAuthSnapshot()
+  const { authUser } = useAuthSnapshot()
   const logout = useLogout()
+  const updateProfile = useUpdateProfile()
+  const uploadMedia = useUploadMedia()
+  const { toast } = useToast()
+  const sessionUser = authUser?.user
   const initialForm = React.useMemo(
     () => ({
-      name: currentUser?.name ?? mockCustomerProfile.name,
-      avatarUrl: currentUser?.avatarUrl ?? mockCustomerProfile.avatarUrl,
-      bio: mockCustomerProfile.bio,
-      mobileNumber: mockCustomerProfile.mobileNumber,
-      address: mockCustomerProfile.address,
+      firstName: sessionUser?.firstName ?? "",
+      lastName: sessionUser?.lastName ?? "",
+      avatarUrl: sessionUser?.avatarUrl ?? "",
+      bio: sessionUser?.bio ?? "",
+      phone: sessionUser?.phone ?? "",
+      address: sessionUser?.address ?? "",
     }),
-    [currentUser],
+    [sessionUser],
   )
   const [form, setForm] = React.useState(initialForm)
-  const [saved, setSaved] = React.useState(false)
   const [isDeleteBlockedOpen, setIsDeleteBlockedOpen] = React.useState(false)
   const [accountDeletionComplete, setAccountDeletionComplete] = React.useState(false)
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
@@ -450,25 +461,60 @@ export function ProfileSettingsPage() {
   }, [initialForm])
 
   const updateForm = (field: keyof typeof form, value: string) => {
-    setSaved(false)
     setForm((current) => ({ ...current, [field]: value }))
   }
 
-  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const displayName = [form.firstName, form.lastName].filter(Boolean).join(" ").trim() || sessionUser?.email || "Profile photo"
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
+    event.target.value = ""
 
     if (!file) {
       return
     }
 
-    const reader = new FileReader()
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        updateForm("avatarUrl", reader.result)
-      }
+    try {
+      const media = await uploadMedia.mutateAsync({
+        file,
+        title: "Profile photo",
+        altText: displayName,
+      })
+      updateForm("avatarUrl", media.publicUrl)
+    } catch (error) {
+      toast({
+        title: "Could not upload image",
+        description: extractApiErrorMessage(error),
+        variant: "destructive",
+      })
     }
-    reader.readAsDataURL(file)
-    event.target.value = ""
+  }
+
+  const handleSave = () => {
+    const payload: UpdateProfilePayload = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      phone: form.phone,
+      address: form.address,
+      bio: form.bio,
+      avatarUrl: form.avatarUrl,
+    }
+
+    updateProfile.mutate(payload, {
+      onSuccess: () => {
+        toast({
+          title: "Profile updated",
+          description: "Your profile details have been saved.",
+        })
+      },
+      onError: (error) => {
+        toast({
+          title: "Could not save changes",
+          description: extractApiErrorMessage(error),
+          variant: "destructive",
+        })
+      },
+    })
   }
 
   if (accountDeletionComplete) {
@@ -520,7 +566,13 @@ export function ProfileSettingsPage() {
             <div className="space-y-4">
               <div className="rounded-xl border border-brand-deep-green/10 bg-muted p-5">
                 <div className="mx-auto w-fit rounded-full border border-brand-deep-green/10 bg-white p-2 shadow-sm">
-                  <img src={form.avatarUrl} alt={form.name} className="h-28 w-28 rounded-full object-cover" />
+                  {form.avatarUrl ? (
+                    <img src={form.avatarUrl} alt={displayName} className="h-28 w-28 rounded-full object-cover" />
+                  ) : (
+                    <div className="flex h-28 w-28 items-center justify-center rounded-full bg-brand-deep-green/10 text-3xl font-semibold text-brand-deep-green">
+                      {displayName ? displayName[0]?.toUpperCase() : "?"}
+                    </div>
+                  )}
                 </div>
                 <input
                   ref={fileInputRef}
@@ -530,8 +582,15 @@ export function ProfileSettingsPage() {
                   onChange={handleAvatarUpload}
                 />
                 <div className="mt-4 space-y-3 flex flex-col items-center">
-                  <MithoButton type="button" variant="outline-secondary" onClick={() => fileInputRef.current?.click()} leftIcon={<Camera className="h-4 w-4" />}>
-                    Upload image
+                  <MithoButton
+                    type="button"
+                    variant="outline-secondary"
+                    onClick={() => fileInputRef.current?.click()}
+                    leftIcon={<Camera className="h-4 w-4" />}
+                    loading={uploadMedia.isPending}
+                    disabled={uploadMedia.isPending}
+                  >
+                    {uploadMedia.isPending ? "Uploading..." : "Upload image"}
                   </MithoButton>
                   <p className="text-xs leading-6 text-muted-foreground">Use a clear square photo that still looks good at small sizes.</p>
                 </div>
@@ -539,14 +598,25 @@ export function ProfileSettingsPage() {
             </div>
 
             <div className="space-y-5">
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Display name</span>
-                <Input
-                  value={form.name}
-                  onChange={(event) => updateForm("name", event.target.value)}
-                  className="h-12 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
-                />
-              </label>
+              <div className="grid gap-5 md:grid-cols-2">
+                <label className="block space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">First name</span>
+                  <Input
+                    value={form.firstName}
+                    onChange={(event) => updateForm("firstName", event.target.value)}
+                    className="h-12 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Last name</span>
+                  <Input
+                    value={form.lastName}
+                    onChange={(event) => updateForm("lastName", event.target.value)}
+                    className="h-12 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
+                  />
+                </label>
+              </div>
 
               <label className="block space-y-2">
                 <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Short bio</span>
@@ -562,8 +632,8 @@ export function ProfileSettingsPage() {
                 <label className="block space-y-2">
                   <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/58">Mobile number</span>
                   <Input
-                    value={form.mobileNumber}
-                    onChange={(event) => updateForm("mobileNumber", event.target.value)}
+                    value={form.phone}
+                    onChange={(event) => updateForm("phone", event.target.value)}
                     className="h-12 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
                   />
                 </label>
@@ -579,17 +649,16 @@ export function ProfileSettingsPage() {
               </div>
 
               <div className="flex flex-col gap-3 border-t border-brand-deep-green/10 pt-5 sm:flex-row sm:items-center sm:justify-end">
-                {saved ? <span className="text-sm font-medium text-success">Profile details updated in this mock flow.</span> : null}
                 <MithoButton
                   variant="outline-secondary"
-                  onClick={() => {
-                    setForm(initialForm)
-                    setSaved(false)
-                  }}
+                  onClick={() => setForm(initialForm)}
+                  disabled={updateProfile.isPending}
                 >
                   Discard changes
                 </MithoButton>
-                <MithoButton onClick={() => setSaved(true)}>Save changes</MithoButton>
+                <MithoButton onClick={handleSave} loading={updateProfile.isPending} disabled={updateProfile.isPending}>
+                  Save changes
+                </MithoButton>
               </div>
             </div>
           </div>
@@ -606,8 +675,8 @@ export function ProfileSettingsPage() {
                 <Mail className="h-4 w-4 text-brand-orange" />
                 Account email
               </div>
-              <Input value={mockCustomerProfile.email} disabled className="mt-4 h-12 rounded-lg border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">This comes from Google sign-in and stays read-only here for trust and account recovery consistency.</p>
+              <Input value={sessionUser?.email ?? ""} disabled className="mt-4 h-12 rounded-lg border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">Your email comes from Google sign-in. It&apos;s how you log in and recover your account, so it can&apos;t be changed here.</p>
             </div>
 
             <div className="rounded-xl border border-brand-deep-green/10 bg-muted p-5">
@@ -615,8 +684,8 @@ export function ProfileSettingsPage() {
                 <Lock className="h-4 w-4 text-brand-orange" />
                 Username
               </div>
-              <Input value={`@${mockCustomerProfile.username}`} disabled className="mt-4 h-12 rounded-lg border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">Username is fixed for now so public profile links and creator identity do not unexpectedly change.</p>
+              <Input value={sessionUser?.username ? `@${sessionUser.username}` : ""} disabled className="mt-4 h-12 rounded-lg border-brand-deep-green/12 bg-white px-4 text-muted-foreground disabled:opacity-100" />
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">Your @username is your public profile link and how others mention you. It&apos;s locked so your existing links and reviews keep working.</p>
             </div>
           </div>
         </section>
