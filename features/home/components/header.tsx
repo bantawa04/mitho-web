@@ -198,6 +198,13 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                     ) : (
                       <>
                         <Link
+                          href="/feed"
+                          className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Feed
+                        </Link>
+                        <Link
                           href="/collections"
                           className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                           onClick={() => setIsMenuOpen(false)}

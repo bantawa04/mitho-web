@@ -98,3 +98,15 @@ export async function listPublicCreators(params: ListPublicCreatorsParams = {}):
   const { data } = await API.get<ISuccessResponse<PublicCreatorDirectoryResponse>>("/users/directory", { params })
   return data.data
 }
+
+export interface ListFollowingParams {
+  page?: number
+  perPage?: number
+}
+
+export async function listFollowing(params: ListFollowingParams = {}): Promise<PublicCreatorDirectoryResponse> {
+  const { data } = await API.get<ISuccessResponse<PublicCreatorDirectoryResponse>>("/following", {
+    params: { page: params.page, per_page: params.perPage },
+  })
+  return data.data
+}
