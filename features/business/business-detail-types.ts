@@ -23,9 +23,11 @@ export interface BusinessReview {
   author: string
   authorUsername?: string | null
   authorImage: string
+  title?: string
   rating: number
   date: string
   content: string
+  tips?: string | null
   media?: Array<{
     type: "image" | "video"
     src: string

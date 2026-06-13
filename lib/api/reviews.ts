@@ -39,8 +39,10 @@ function mapAdminParams(params?: ListAdminReviewsParams) {
 
 function toSnakeCase(payload: CreateReviewPayload | ResubmitReviewPayload) {
   return {
+    title: payload.title,
     rating: payload.rating,
     body: payload.body,
+    tips: payload.tips,
     media_ids: payload.mediaIds ?? [],
   }
 }

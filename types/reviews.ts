@@ -32,8 +32,10 @@ export interface ReviewItem {
   businessName?: string
   businessSlug?: string
   userId: string
+  title: string
   rating: number
   body: string
+  tips?: string | null
   status: ReviewStatus
   rejectionFlag?: ReviewRejectionFlag | null
   moderationNote?: string | null
@@ -72,8 +74,10 @@ export interface BusinessReviewsResponse {
 }
 
 export interface CreateReviewPayload {
+  title: string
   rating: number
   body: string
+  tips?: string
   mediaIds?: string[]
 }
 

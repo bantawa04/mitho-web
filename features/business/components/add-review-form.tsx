@@ -26,8 +26,10 @@ interface AddReviewFormProps {
 }
 
 interface StoredReviewDraft {
+  title: string
   rating: number
   body: string
+  tips: string
   needsMediaReselect?: boolean
 }
 
@@ -53,8 +55,10 @@ export function AddReviewForm({
   const form = useForm<AddReviewFormValues>({
     resolver: zodResolver(addReviewSchema),
     defaultValues: {
+      title: "",
       rating: 0,
       body: "",
+      tips: "",
     },
   })
 
@@ -63,8 +67,6 @@ export function AddReviewForm({
   const updateReview = useUpdateReview()
   const resubmitReview = useResubmitReview()
   const uploadMedia = useUploadMedia()
-  const watchedRating = form.watch("rating")
-  const watchedBody = form.watch("body")
   const review = reviewQuery.data?.review ?? null
   const canReview = reviewQuery.data?.canReview ?? true
   const canReviewAgainAt = reviewQuery.data?.canReviewAgainAt ?? null
@@ -85,47 +87,17 @@ export function AddReviewForm({
   )
 
   React.useEffect(() => {
-    if (typeof window === "undefined") return
-
-    const raw = window.sessionStorage.getItem(draftKey(businessId))
-    if (!raw) return
-
-    try {
-      const stored = JSON.parse(raw) as StoredReviewDraft
-      form.reset({
-        rating: stored.rating || 0,
-        body: stored.body || "",
-      })
-      setNeedsMediaReselect(Boolean(stored.needsMediaReselect))
-    } catch {
-      window.sessionStorage.removeItem(draftKey(businessId))
-    }
-  }, [businessId, form])
-
-  React.useEffect(() => {
     if (!review || hasInitializedServerDraft) return
     if (review.status !== "rejected" && review.status !== "pending") return
     form.reset({
+      title: review.title,
       rating: review.rating,
       body: review.body,
+      tips: review.tips ?? "",
     })
     setRetainedMedia(review.media ?? [])
     setHasInitializedServerDraft(true)
   }, [form, hasInitializedServerDraft, review])
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") return
-    const payload: StoredReviewDraft = {
-      rating: watchedRating,
-      body: watchedBody,
-      needsMediaReselect,
-    }
-    if (!payload.body.trim() && !payload.rating) {
-      window.sessionStorage.removeItem(draftKey(businessId))
-      return
-    }
-    window.sessionStorage.setItem(draftKey(businessId), JSON.stringify(payload))
-  }, [businessId, needsMediaReselect, watchedBody, watchedRating])
 
   const isEditingPending = review?.status === "pending"
   const isCooldownLocked = review?.status === "approved" && !canReview
@@ -141,8 +113,10 @@ export function AddReviewForm({
     if (!isAuthenticated) {
       if (typeof window !== "undefined") {
         const payload: StoredReviewDraft = {
+          title: values.title,
           rating: values.rating,
           body: values.body,
+          tips: values.tips ?? "",
           needsMediaReselect: selectedFiles.length > 0,
         }
         window.sessionStorage.setItem(draftKey(businessId), JSON.stringify(payload))
@@ -163,8 +137,10 @@ export function AddReviewForm({
       }
 
       const payload = {
+        title: values.title,
         rating: values.rating,
         body: values.body,
+        tips: values.tips,
         mediaIds: [...retainedMedia.map((media) => media.id), ...uploadedMediaIds],
       }
 
@@ -173,7 +149,7 @@ export function AddReviewForm({
         if (typeof window !== "undefined") {
           window.sessionStorage.removeItem(draftKey(businessId))
         }
-        form.reset({ rating: updated.rating, body: updated.body })
+        form.reset({ title: updated.title, rating: updated.rating, body: updated.body, tips: updated.tips ?? "" })
         setRetainedMedia(updated.media ?? [])
         setSelectedFiles([])
         setNeedsMediaReselect(false)
@@ -193,7 +169,7 @@ export function AddReviewForm({
       if (typeof window !== "undefined") {
         window.sessionStorage.removeItem(draftKey(businessId))
       }
-      form.reset({ rating: 0, body: "" })
+      form.reset({ title: "", rating: 0, body: "", tips: "" })
       setSelectedFiles([])
       setRetainedMedia([])
       setNeedsMediaReselect(false)
@@ -293,6 +269,26 @@ export function AddReviewForm({
             <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title *</FormLabel>
+                    <FormControl>
+                      <input
+                        {...field}
+                        type="text"
+                        disabled={isLocked || isBusy}
+                        placeholder="Sum up your visit in a few words"
+                        className="w-full rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="rating"
                 render={({ field }) => (
                   <FormItem>
@@ -320,6 +316,29 @@ export function AddReviewForm({
                         className="w-full resize-none rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tips"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tips for others (optional)</FormLabel>
+                    <FormControl>
+                      <textarea
+                        {...field}
+                        rows={3}
+                        disabled={isLocked || isBusy}
+                        placeholder="Quick hints for other customers — what to order, best time to go, parking, etc."
+                        className="w-full resize-none rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
+                      />
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">
+                      Quick hints for other customers — what to order, best time to go, parking, etc. (max 500 characters)
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
