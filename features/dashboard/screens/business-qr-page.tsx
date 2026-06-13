@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
-import { Check, Copy, Download, ExternalLink, Printer } from "lucide-react"
+import { Camera, Check, Copy, Download, ExternalLink, Printer } from "lucide-react"
 import QRCode from "qrcode"
 import Link from "next/link"
 import { MithoButton } from "@/components/mitho/mitho-button"
@@ -49,8 +49,10 @@ function useQrCanvas(url: string | null) {
 }
 
 const MITHO_LOGO_PATH = "/brand/logo-primary-green.svg"
-const LOGO_WIDTH = 158
-const LOGO_HEIGHT = 64
+// Download poster logo — full wordmark aspect ~1820x720. Bigger so it stays crisp in print.
+const DL_LOGO_HEIGHT = 132
+const DL_LOGO_WIDTH = Math.round((DL_LOGO_HEIGHT * 1820) / 720) // ~334
+const REVIEW_CTA = "Enjoyed your visit? Leave us a review!"
 
 function downloadQr(url: string, businessName: string, address: string) {
   QRCode.toDataURL(url, {
@@ -59,88 +61,91 @@ function downloadQr(url: string, businessName: string, address: string) {
     color: { dark: "#0A4635", light: "#FFFFFF" },
     errorCorrectionLevel: "H",
   }).then((qrDataUrl) => {
-    const padding = 48
-    const topSection = LOGO_HEIGHT + 32 // logo + gap
-    const bottomSection = address ? 148 : 100 // business name + (address) + tagline
     const size = QR_DOWNLOAD_SIZE
+    const sidePad = 64
+    const topPad = 56
+    const botPad = 56
 
     const canvas = document.createElement("canvas")
-    canvas.width = size + padding * 2
-    canvas.height = padding + topSection + size + bottomSection + padding
-
     const ctx = canvas.getContext("2d")!
-    ctx.fillStyle = "#FFFFFF"
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Border
-    ctx.strokeStyle = "#E8E0D4"
-    ctx.lineWidth = 2
-    roundRect(ctx, 8, 8, canvas.width - 16, canvas.height - 16, 24)
-    ctx.stroke()
-
-    const drawBottomText = (qrY: number) => {
-      // Business name — larger and bolder
-      ctx.fillStyle = "#0A4635"
-      ctx.font = `bold 36px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
-      ctx.textAlign = "center"
-      ctx.fillText(businessName, canvas.width / 2, qrY + size + 44, size)
-
-      // Address (optional)
-      let taglineY = qrY + size + 76
-      if (address) {
-        ctx.fillStyle = "#6B7280"
-        ctx.font = `22px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
-        ctx.fillText(address, canvas.width / 2, qrY + size + 78, size)
-        taglineY = qrY + size + 116
-      }
-
-      // Tagline
-      ctx.fillStyle = "#6B7280"
-      ctx.font = `20px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
-      ctx.fillText("Please leave us a review on Mitho Cha!", canvas.width / 2, taglineY, size)
-    }
-
-    // Load Mitho logo
+    const qrImg = new Image()
     const logoImg = new Image()
     logoImg.crossOrigin = "anonymous"
-    logoImg.onload = () => {
-      // Draw logo centered at top
-      const logoX = (canvas.width - LOGO_WIDTH) / 2
-      const logoY = padding
-      ctx.drawImage(logoImg, logoX, logoY, LOGO_WIDTH, LOGO_HEIGHT)
 
-      // Draw QR image below logo
-      const qrImg = new Image()
-      qrImg.onload = () => {
-        const qrY = padding + topSection
-        ctx.drawImage(qrImg, padding, qrY, size, size)
+    // Layout (top → bottom): logo, business name, review CTA, QR, scan hint, address.
+    const render = (logoReady: boolean) => {
+      const logoBlock = logoReady ? DL_LOGO_HEIGHT + 32 : 0
+      const nameBlock = 64
+      const ctaBlock = 58
+      const scanBlock = 72
+      const addrBlock = address ? 40 : 0
 
-        drawBottomText(qrY)
+      const width = size + sidePad * 2
+      const height = topPad + logoBlock + nameBlock + ctaBlock + size + scanBlock + addrBlock + botPad
+      canvas.width = width
+      canvas.height = height
+      const cx = width / 2
 
-        const link = document.createElement("a")
-        link.download = `${businessName.toLowerCase().replace(/\s+/g, "-")}-mitho-qr.png`
-        link.href = canvas.toDataURL("image/png")
-        link.click()
+      // Background + border
+      ctx.fillStyle = "#FFFFFF"
+      ctx.fillRect(0, 0, width, height)
+      ctx.strokeStyle = "#E8E0D4"
+      ctx.lineWidth = 2
+      roundRect(ctx, 8, 8, width - 16, height - 16, 28)
+      ctx.stroke()
+
+      ctx.textAlign = "center"
+      let y = topPad
+
+      // Logo (top)
+      if (logoReady) {
+        ctx.drawImage(logoImg, (width - DL_LOGO_WIDTH) / 2, y, DL_LOGO_WIDTH, DL_LOGO_HEIGHT)
+        y += DL_LOGO_HEIGHT + 32
       }
-      qrImg.src = qrDataUrl
-    }
-    // Fallback: if logo fails to load, proceed without it
-    logoImg.onerror = () => {
-      const qrImg = new Image()
-      qrImg.onload = () => {
-        const qrY = padding
-        ctx.drawImage(qrImg, padding, qrY, size, size)
 
-        drawBottomText(qrY)
+      // Business name
+      ctx.fillStyle = "#0A4635"
+      ctx.font = "bold 44px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+      ctx.fillText(businessName, cx, y + 42, size)
+      y += nameBlock
 
-        const link = document.createElement("a")
-        link.download = `${businessName.toLowerCase().replace(/\s+/g, "-")}-mitho-qr.png`
-        link.href = canvas.toDataURL("image/png")
-        link.click()
+      // Review CTA — above the QR (the hook)
+      ctx.fillStyle = "#B45A00"
+      ctx.font = "bold 32px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+      ctx.fillText(REVIEW_CTA, cx, y + 36, size)
+      y += ctaBlock
+
+      // QR (center)
+      const qrY = y
+      ctx.drawImage(qrImg, (width - size) / 2, qrY, size, size)
+      y = qrY + size
+
+      // Scan hint — just below the QR
+      ctx.fillStyle = "#6B7280"
+      ctx.font = "500 26px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+      ctx.fillText("Scan with your phone camera", cx, y + 46, size)
+      y += scanBlock
+
+      // Address — bottom, muted reference info
+      if (address) {
+        ctx.fillStyle = "#9AA0A6"
+        ctx.font = "22px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+        ctx.fillText(address, cx, y + 26, size)
       }
-      qrImg.src = qrDataUrl
+
+      const link = document.createElement("a")
+      link.download = `${businessName.toLowerCase().replace(/\s+/g, "-")}-mitho-qr.png`
+      link.href = canvas.toDataURL("image/png")
+      link.click()
     }
-    logoImg.src = MITHO_LOGO_PATH
+
+    qrImg.onload = () => {
+      logoImg.onload = () => render(true)
+      logoImg.onerror = () => render(false) // proceed without logo
+      logoImg.src = MITHO_LOGO_PATH
+    }
+    qrImg.src = qrDataUrl
   })
 }
 
@@ -275,16 +280,21 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
             id="qr-print-area"
             className="w-full max-w-[360px] rounded-lg border border-border bg-white p-4 shadow-sm print:shadow-none"
           >
-            {/* Mitho logo */}
-            <div className="mb-4 flex flex-col items-center justify-center">
-              <img
-                src={MITHO_LOGO_PATH}
-                alt="Mitho Cha"
-                className="h-8 w-auto"
-              />
+            {/* Logo (top) */}
+            <div className="mb-3 flex items-center justify-center">
+              <img src={MITHO_LOGO_PATH} alt="Mitho Cha" className="h-9 w-auto" />
             </div>
 
-            <div className="relative rounded-lg bg-white">
+            {/* Business name */}
+            <p className="text-center text-lg font-bold text-brand-dark-green">
+              {businessName || "Your business"}
+            </p>
+
+            {/* Review CTA — above the QR (the hook) */}
+            <p className="mt-1 text-center text-base font-semibold text-[#b45a00]">{REVIEW_CTA}</p>
+
+            {/* QR (center) */}
+            <div className="relative mt-4 rounded-lg bg-white">
               {/* Skeleton shown while QR is generating */}
               {!ready && (
                 <div className="aspect-square w-full animate-pulse rounded-lg bg-muted" />
@@ -296,11 +306,14 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
               />
             </div>
 
-            <div className="mt-5 text-center">
-              <p className="text-lg font-bold text-brand-dark-green">{businessName || "Your business"}</p>
-              {address && <p className="mt-1 text-sm text-muted-foreground">{address}</p>}
-              <p className="mt-1.5 text-sm text-muted-foreground">Please leave us a review on Mitho Cha!</p>
-            </div>
+            {/* Scan hint — just below the QR */}
+            <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-sm font-medium text-muted-foreground">
+              <Camera className="h-4 w-4" />
+              Scan with your phone camera
+            </p>
+
+            {/* Address — bottom, muted reference info */}
+            {address && <p className="mt-1 text-center text-xs text-muted-foreground">{address}</p>}
           </div>
         </div>
       </div>
