@@ -6,3 +6,9 @@ export const addReviewSchema = z.object({
 })
 
 export type AddReviewFormValues = z.infer<typeof addReviewSchema>
+
+export const reviewReplySchema = z.object({
+  body: z.string().trim().min(1, "Reply is required.").max(5000, "Reply should stay under 5000 characters."),
+})
+
+export type ReviewReplyFormValues = z.infer<typeof reviewReplySchema>
