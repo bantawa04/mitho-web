@@ -80,15 +80,6 @@ export function ContactPage() {
                 </MithoCardContent>
               </MithoCard>
 
-              {/* Map placeholder */}
-              <div
-                className="flex h-56 flex-col items-center justify-center gap-2 rounded-xl border border-border bg-muted text-muted-foreground"
-                aria-label="Map placeholder"
-              >
-                <MapPin className="h-8 w-8" />
-                <span className="text-sm font-medium">Map</span>
-              </div>
-
               {/* Social */}
               <div className="flex items-center gap-3">
                 {socialLinks.map((social) => (
