@@ -3,13 +3,14 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { ChevronDown, Menu, X } from "lucide-react"
+import { ChevronDown, Menu } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { AccountMenu } from "@/features/auth/components/account-menu"
 import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import { cn } from "@/lib/utils"
@@ -122,17 +123,19 @@ export function Header({ signedInUser }: HeaderProps = {}) {
 
               <button
                 className="rounded-full p-2 transition-colors hover:bg-brand-soft-beige/50 lg:hidden"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Toggle menu"
+                onClick={() => setIsMenuOpen(true)}
+                aria-label="Open menu"
               >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <Menu className="h-6 w-6" />
               </button>
             </div>
           </div>
 
           {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="border-t border-brand-deep-green/10 bg-background/98 py-4 lg:hidden">
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetContent side="left" className="w-[300px] overflow-y-auto p-0 sm:w-[340px] lg:hidden">
+              <SheetTitle className="sr-only">Menu</SheetTitle>
+              <div className="flex flex-col px-2 pb-6 pt-10">
               <nav className="space-y-1">
                 {headerNavLinks.map((link) => {
                   if (link.subLinks) {
@@ -249,8 +252,9 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                   </Link>
                 </MithoButton>
               </div>
-            </div>
-          )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
 
