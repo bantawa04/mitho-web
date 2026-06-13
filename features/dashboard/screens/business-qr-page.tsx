@@ -5,6 +5,7 @@ import { Check, Copy, Download, ExternalLink, Printer } from "lucide-react"
 import QRCode from "qrcode"
 import Link from "next/link"
 import { MithoButton } from "@/components/mitho/mitho-button"
+import { formatBusinessEntryLocation } from "@/features/dashboard/utils/dashboard-business-utils"
 import { useMyBusiness } from "@/hooks/use-businesses"
 import { getPublicBusinessHref } from "@/lib/business-public-href"
 
@@ -51,7 +52,7 @@ const MITHO_LOGO_PATH = "/brand/logo-primary-green.svg"
 const LOGO_WIDTH = 158
 const LOGO_HEIGHT = 64
 
-function downloadQr(url: string, businessName: string) {
+function downloadQr(url: string, businessName: string, address: string) {
   QRCode.toDataURL(url, {
     width: QR_DOWNLOAD_SIZE,
     margin: 2,
@@ -60,7 +61,7 @@ function downloadQr(url: string, businessName: string) {
   }).then((qrDataUrl) => {
     const padding = 48
     const topSection = LOGO_HEIGHT + 32 // logo + gap
-    const bottomSection = 100 // business name + tagline
+    const bottomSection = address ? 148 : 100 // business name + (address) + tagline
     const size = QR_DOWNLOAD_SIZE
 
     const canvas = document.createElement("canvas")
@@ -77,6 +78,28 @@ function downloadQr(url: string, businessName: string) {
     roundRect(ctx, 8, 8, canvas.width - 16, canvas.height - 16, 24)
     ctx.stroke()
 
+    const drawBottomText = (qrY: number) => {
+      // Business name — larger and bolder
+      ctx.fillStyle = "#0A4635"
+      ctx.font = `bold 36px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
+      ctx.textAlign = "center"
+      ctx.fillText(businessName, canvas.width / 2, qrY + size + 44, size)
+
+      // Address (optional)
+      let taglineY = qrY + size + 76
+      if (address) {
+        ctx.fillStyle = "#6B7280"
+        ctx.font = `22px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
+        ctx.fillText(address, canvas.width / 2, qrY + size + 78, size)
+        taglineY = qrY + size + 116
+      }
+
+      // Tagline
+      ctx.fillStyle = "#6B7280"
+      ctx.font = `20px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
+      ctx.fillText("Please leave us a review on Mitho Cha!", canvas.width / 2, taglineY, size)
+    }
+
     // Load Mitho logo
     const logoImg = new Image()
     logoImg.crossOrigin = "anonymous"
@@ -92,16 +115,7 @@ function downloadQr(url: string, businessName: string) {
         const qrY = padding + topSection
         ctx.drawImage(qrImg, padding, qrY, size, size)
 
-        // Business name — larger and bolder
-        ctx.fillStyle = "#0A4635"
-        ctx.font = `bold 36px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
-        ctx.textAlign = "center"
-        ctx.fillText(businessName, canvas.width / 2, qrY + size + 44, size)
-
-        // Tagline
-        ctx.fillStyle = "#6B7280"
-        ctx.font = `20px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
-        ctx.fillText("Please leave us a review on Mitho Cha!", canvas.width / 2, qrY + size + 76, size)
+        drawBottomText(qrY)
 
         const link = document.createElement("a")
         link.download = `${businessName.toLowerCase().replace(/\s+/g, "-")}-mitho-qr.png`
@@ -117,14 +131,7 @@ function downloadQr(url: string, businessName: string) {
         const qrY = padding
         ctx.drawImage(qrImg, padding, qrY, size, size)
 
-        ctx.fillStyle = "#0A4635"
-        ctx.font = `bold 36px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
-        ctx.textAlign = "center"
-        ctx.fillText(businessName, canvas.width / 2, qrY + size + 44, size)
-
-        ctx.fillStyle = "#6B7280"
-        ctx.font = `20px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif`
-        ctx.fillText("Please leave us a review on Mitho Cha!", canvas.width / 2, qrY + size + 76, size)
+        drawBottomText(qrY)
 
         const link = document.createElement("a")
         link.download = `${businessName.toLowerCase().replace(/\s+/g, "-")}-mitho-qr.png`
@@ -159,6 +166,7 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
   const [copied, setCopied] = useState(false)
 
   const businessName = entry?.business.name ?? ""
+  const address = entry ? formatBusinessEntryLocation(entry, "") : ""
 
   const handleCopy = useCallback(async () => {
     if (!publicUrl) return
@@ -169,8 +177,8 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
 
   const handleDownload = useCallback(() => {
     if (!publicUrl || !businessName) return
-    downloadQr(publicUrl, businessName)
-  }, [publicUrl, businessName])
+    downloadQr(publicUrl, businessName, address)
+  }, [publicUrl, businessName, address])
 
   const handlePrint = useCallback(() => {
     window.print()
@@ -276,22 +284,21 @@ export function BusinessQrPage({ businessId }: BusinessQrPageProps) {
               />
             </div>
 
-            <div className="relative overflow-hidden rounded-lg bg-white">
+            <div className="relative rounded-lg bg-white">
               {/* Skeleton shown while QR is generating */}
               {!ready && (
-                <div className="flex h-[360px] w-full items-center justify-center">
-                  <div className="h-[320px] w-[320px] animate-pulse rounded-lg bg-muted" />
-                </div>
+                <div className="aspect-square w-full animate-pulse rounded-lg bg-muted" />
               )}
               <canvas
                 ref={canvasRef}
-                className={ready ? "block rounded-lg" : "hidden"}
+                className={ready ? "block h-auto w-full max-w-full rounded-lg" : "hidden"}
                 aria-label={`QR code linking to ${businessName}'s Mitho Cha page`}
               />
             </div>
 
             <div className="mt-5 text-center">
               <p className="text-lg font-bold text-brand-dark-green">{businessName || "Your business"}</p>
+              {address && <p className="mt-1 text-sm text-muted-foreground">{address}</p>}
               <p className="mt-1.5 text-sm text-muted-foreground">Please leave us a review on Mitho Cha!</p>
             </div>
           </div>
