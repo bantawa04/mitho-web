@@ -13,16 +13,12 @@ import type { ReviewItem, ReviewStatus } from "@/types/reviews"
 import { getCollectionCoverImages, getCollectionPlaceCount } from "@/features/collections/utils/collection-helpers"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
 import {
-  followPublicProfile,
-  getFollowingProfiles,
   mockCustomerProfile,
-  unfollowPublicProfile,
-  type FollowingProfileListItem,
   type PublicUserProfileData,
 } from "@/features/profile/data/profile-data"
 import type { PublicCreatorItem } from "@/lib/api/profile"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { useFollowUser, usePublicCreatorDirectory, usePublicProfile, useUnfollowUser } from "@/hooks/use-profile"
+import { useFollowUser, useMyFollowing, usePublicCreatorDirectory, usePublicProfile, useUnfollowUser } from "@/hooks/use-profile"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import {
   AlertDialog,
@@ -716,13 +712,54 @@ export function ProfileSettingsPage() {
   )
 }
 
-export function ProfileFollowingPage() {
-  const [followingProfiles, setFollowingProfiles] = React.useState<FollowingProfileListItem[]>(() => getFollowingProfiles())
+function FollowingListCard({ profile }: { profile: PublicCreatorItem }) {
+  const unfollow = useUnfollowUser(profile.username)
 
-  const handleUnfollow = (username: string) => {
-    unfollowPublicProfile(username)
-    setFollowingProfiles(getFollowingProfiles())
-  }
+  return (
+    <div className="rounded-xl border border-brand-deep-green/10 bg-muted p-5 transition-colors duration-200 hover:border-brand-deep-green/18">
+      <div className="flex items-start justify-between gap-4">
+        <Link href={`/users/${profile.username}`} className="flex min-w-0 items-start gap-3">
+          {profile.avatarUrl ? (
+            <img
+              src={profile.avatarUrl}
+              alt={profile.name}
+              className="h-12 w-12 rounded-full border-2 border-brand-soft-beige object-cover"
+            />
+          ) : (
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-brand-soft-beige bg-brand-deep-green/10 text-base font-semibold text-brand-deep-green">
+              {profile.name ? profile.name[0].toUpperCase() : "?"}
+            </div>
+          )}
+          <div className="min-w-0">
+            <h3 className="truncate text-base font-semibold text-brand-dark-green">{profile.name}</h3>
+            <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
+              @{profile.username}
+            </p>
+          </div>
+        </Link>
+        <MithoButton
+          type="button"
+          variant="outline-secondary"
+          size="sm"
+          disabled={unfollow.isPending}
+          onClick={() => unfollow.mutate()}
+        >
+          <UserCheck className="h-4 w-4" />
+          Following
+        </MithoButton>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <MithoBadge variant="muted">{profile.followerCount} followers</MithoBadge>
+        <MithoBadge variant="neutral">{profile.collectionCount} collections</MithoBadge>
+        <MithoBadge variant="muted">{profile.reviewCount} reviews</MithoBadge>
+      </div>
+    </div>
+  )
+}
+
+export function ProfileFollowingPage() {
+  const followingQuery = useMyFollowing()
+  const followingProfiles = followingQuery.data?.items ?? []
 
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
@@ -735,49 +772,26 @@ export function ProfileFollowingPage() {
         {/* Page header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
           <h1 className="text-2xl font-semibold text-brand-dark-green">Following</h1>
-          <MithoBadge variant="neutral">{followingProfiles.length} following</MithoBadge>
+          <MithoBadge variant="neutral">{followingQuery.data?.meta.totalItems ?? followingProfiles.length} following</MithoBadge>
         </div>
 
         {/* Following list */}
         <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
-          {followingProfiles.length > 0 ? (
+          {followingQuery.isLoading ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {[0, 1, 2, 3].map((item) => (
+                <div key={item} className="h-28 animate-pulse rounded-xl border border-brand-deep-green/10 bg-muted" />
+              ))}
+            </div>
+          ) : followingQuery.isError ? (
+            <div className="py-10 text-center">
+              <p className="text-sm leading-7 text-muted-foreground">Could not load your following list right now. Please try again shortly.</p>
+            </div>
+          ) : followingProfiles.length > 0 ? (
             <div className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2">
                 {followingProfiles.map((profile) => (
-                  <div
-                    key={profile.userId}
-                    className="rounded-xl border border-brand-deep-green/10 bg-muted p-5 transition-colors duration-200 hover:border-brand-deep-green/18"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <Link href={`/users/${profile.username}`} className="flex min-w-0 items-start gap-3">
-                        <img
-                          src={profile.avatarUrl}
-                          alt={profile.name}
-                          className="h-12 w-12 rounded-full border-2 border-brand-soft-beige object-cover"
-                        />
-                        <div className="min-w-0">
-                          <h3 className="truncate text-base font-semibold text-brand-dark-green">{profile.name}</h3>
-                          <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
-                            @{profile.username}
-                          </p>
-                        </div>
-                      </Link>
-                      <MithoButton
-                        type="button"
-                        variant="outline-secondary"
-                        size="sm"
-                        onClick={() => handleUnfollow(profile.username)}
-                      >
-                        <UserCheck className="h-4 w-4" />
-                        Following
-                      </MithoButton>
-                    </div>
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <MithoBadge variant="muted">{profile.followerCount} followers</MithoBadge>
-                      <MithoBadge variant="neutral">{profile.publicCollectionCount} collections</MithoBadge>
-                      <MithoBadge variant="muted">{profile.reviewCount} reviews</MithoBadge>
-                    </div>
-                  </div>
+                  <FollowingListCard key={profile.userId} profile={profile} />
                 ))}
               </div>
 
