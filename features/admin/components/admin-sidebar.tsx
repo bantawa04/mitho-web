@@ -126,7 +126,7 @@ export function AdminSidebarFrame({ pathname }: { pathname: string }) {
       <SidebarContent className="px-3 py-5 group-data-[collapsible=icon]:px-2">
         <AdminSidebarNav pathname={pathname} />
       </SidebarContent>
-      <SidebarRail className="after:bg-border hover:after:bg-border" />
+      <SidebarRail />
     </Sidebar>
   )
 }

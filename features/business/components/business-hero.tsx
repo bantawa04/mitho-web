@@ -104,7 +104,7 @@ export function BusinessHero({
                     {establishments.length > 0 && (
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs font-semibold uppercase tracking-widest text-brand-deep-green/65 shrink-0">
-                          Type
+                          Establishment Type
                         </span>
                         {establishments.map((category) => (
                           <span
@@ -119,7 +119,7 @@ export function BusinessHero({
                     {cuisines.length > 0 && (
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-xs font-semibold uppercase tracking-widest text-brand-deep-green/65 shrink-0">
-                          Cuisines
+                          Cuisines Served
                         </span>
                         {cuisines.map((category) => (
                           <span

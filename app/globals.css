@@ -244,10 +244,14 @@
 
   .page-shell-business {
     background: #fafbfa;
+    /* Dashboard cards use a neutral grey border instead of the warm beige --border. */
+    --border: #e5e5e5;
   }
 
   .page-shell-admin {
     background: #fafaf8;
+    /* Admin cards use a neutral grey border instead of the warm beige --border. */
+    --border: #e5e5e5;
   }
 
   .surface-raised {

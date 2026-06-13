@@ -29,7 +29,7 @@ type MediaFilter = "all" | "image" | "video"
 const filters: Array<{ key: MediaFilter; label: string }> = [
   { key: "all", label: "All" },
   { key: "image", label: "Image" },
-  { key: "video", label: "Videos" },
+  // { key: "video", label: "Videos" },
 ]
 
 function statusPresentation(status: GalleryItemStatus) {
