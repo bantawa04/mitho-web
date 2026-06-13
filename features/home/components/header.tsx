@@ -3,13 +3,14 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { ChevronDown, Menu, X } from "lucide-react"
+import { ChevronDown, Menu } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { AccountMenu } from "@/features/auth/components/account-menu"
 import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import { cn } from "@/lib/utils"
@@ -32,11 +33,12 @@ export function Header({ signedInUser }: HeaderProps = {}) {
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const { currentUser, isAuthenticated, isHydrated, hasBusinessAccess } = useAuthSnapshot()
+  const { currentUser, isAuthenticated, isHydrated, hasBusinessAccess, isAdmin } = useAuthSnapshot()
   const logout = useLogout()
 
   const effectiveUser = isHydrated ? (isAuthenticated ? currentUser : null) : signedInUser
   const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : false
+  const isInternalUser = isHydrated && isAdmin
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -62,11 +64,10 @@ export function Header({ signedInUser }: HeaderProps = {}) {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <BrandLogo kind="icon" tone="green" className="h-10 w-auto sm:hidden" alt="Mitho Cha! logo" priority />
               <BrandLogo
                 kind="full"
                 tone="green"
-                className="hidden h-11 w-auto sm:block"
+                className="h-9 w-auto sm:h-11"
                 alt="Mitho Cha! wordmark"
                 priority
               />
@@ -122,17 +123,19 @@ export function Header({ signedInUser }: HeaderProps = {}) {
 
               <button
                 className="rounded-full p-2 transition-colors hover:bg-brand-soft-beige/50 lg:hidden"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Toggle menu"
+                onClick={() => setIsMenuOpen(true)}
+                aria-label="Open menu"
               >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <Menu className="h-6 w-6" />
               </button>
             </div>
           </div>
 
           {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="border-t border-brand-deep-green/10 bg-background/98 py-4 lg:hidden">
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetContent side="left" className="w-[300px] overflow-y-auto p-0 sm:w-[340px] lg:hidden">
+              <SheetTitle className="sr-only">Menu</SheetTitle>
+              <div className="flex flex-col px-2 pb-6 pt-10">
               <nav className="space-y-1">
                 {headerNavLinks.map((link) => {
                   if (link.subLinks) {
@@ -184,38 +187,50 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                       />
                       <span className="truncate">{effectiveUser.name}</span>
                     </Link>
-                    <Link
-                      href="/feed"
-                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Feed
-                    </Link>
-                    <Link
-                      href="/collections"
-                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Collections
-                    </Link>
-                    <Link
-                      href="/profile/following"
-                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Following
-                    </Link>
-                    {effectiveHasBusinessAccess ? (
+                    {isInternalUser ? (
                       <Link
-                        href="/dashboard/businesses"
+                        href="/admin"
                         className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Manage businesses
+                        Dashboard
                       </Link>
-                    ) : null}
+                    ) : (
+                      <>
+                        <Link
+                          href="/feed"
+                          className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Feed
+                        </Link>
+                        <Link
+                          href="/collections"
+                          className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Collections
+                        </Link>
+                        <Link
+                          href="/profile/following"
+                          className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Following
+                        </Link>
+                        {effectiveHasBusinessAccess ? (
+                          <Link
+                            href="/dashboard/businesses"
+                            className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Manage businesses
+                          </Link>
+                        ) : null}
+                      </>
+                    )}
                     <Link
-                      href="/profile/settings"
+                      href={isInternalUser ? "/admin/settings" : "/profile/settings"}
                       className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -244,8 +259,9 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                   </Link>
                 </MithoButton>
               </div>
-            </div>
-          )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
 
