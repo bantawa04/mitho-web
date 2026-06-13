@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   followUser,
   getPublicProfile,
+  listFollowing,
   listPublicCreators,
   unfollowUser,
   type ListPublicCreatorsParams,
@@ -34,6 +35,14 @@ export function usePublicCreatorDirectory({ enabled = true, ...params }: UsePubl
   })
 }
 
+export function useMyFollowing() {
+  return useQuery({
+    queryKey: queryKeys.profiles.following(),
+    queryFn: () => listFollowing({ perPage: 50 }),
+    staleTime: 1000 * 60,
+  })
+}
+
 export function useFollowUser(username: string) {
   const queryClient = useQueryClient()
   const key = queryKeys.profiles.public(username)
@@ -51,7 +60,11 @@ export function useFollowUser(username: string) {
     onError: (_err, _vars, context) => {
       if (context?.previous) queryClient.setQueryData(key, context.previous)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: key })
+      queryClient.invalidateQueries({ queryKey: queryKeys.feed.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.following() })
+    },
   })
 }
 
@@ -72,6 +85,10 @@ export function useUnfollowUser(username: string) {
     onError: (_err, _vars, context) => {
       if (context?.previous) queryClient.setQueryData(key, context.previous)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: key })
+      queryClient.invalidateQueries({ queryKey: queryKeys.feed.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.following() })
+    },
   })
 }
