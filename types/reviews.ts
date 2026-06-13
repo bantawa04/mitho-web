@@ -18,6 +18,14 @@ export interface ReviewAuthor {
   avatarUrl?: string | null
 }
 
+export interface ReviewReplyItem {
+  id: string
+  authorUserId: string
+  body: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface ReviewItem {
   id: string
   businessId: string
@@ -35,6 +43,7 @@ export interface ReviewItem {
   updatedAt: string
   author: ReviewAuthor
   media: Media[]
+  reply?: ReviewReplyItem | null
 }
 
 export interface ReviewRatingsSummary {
@@ -71,6 +80,10 @@ export interface CreateReviewPayload {
 export interface ResubmitReviewPayload extends CreateReviewPayload {}
 
 export interface UpdateReviewPayload extends CreateReviewPayload {}
+
+export interface UpsertReviewReplyPayload {
+  body: string
+}
 
 export interface MyBusinessReviewStatus {
   review: ReviewItem | null

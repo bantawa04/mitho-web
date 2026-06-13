@@ -1,8 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import * as React from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Bell, CircleAlert, Clock3, Mail, Settings, ShieldAlert, Trash2 } from "lucide-react"
+import { useForm } from "react-hook-form"
 import { useBusinessHours, useReplaceBusinessHours } from "@/hooks/use-businesses"
+import { useBusinessReviews, useUpsertBusinessReviewReply } from "@/hooks/use-reviews"
 import type { BusinessHour, ReplaceHoursPayload } from "@/types/business"
 import { BusinessEditForm } from "@/features/dashboard/screens/business-edit-form"
 import {
@@ -19,7 +22,6 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { BusinessGallery } from "@/features/dashboard/components/business-gallery"
 import { KeyMetrics } from "@/features/dashboard/components/key-metrics"
-import { ReviewsOverview } from "@/features/dashboard/components/reviews-overview"
 import { TrafficAnalytics } from "@/features/dashboard/components/traffic-analytics"
 import type { BusinessLifecycleStatus } from "@/features/dashboard/data/dashboard-business-data"
 import {
@@ -29,12 +31,281 @@ import {
 import { useBusinessDetail, useMyBusiness } from "@/hooks/use-businesses"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/mitho/mitho-card"
+import { ReviewProgress, StarRating } from "@/components/mitho/mitho-rating"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { ToggleSwitch } from "@/components/mitho/mitho-toggle-switch"
+import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/hooks/use-toast"
+import { extractApiErrorMessage } from "@/lib/api-error-utils"
+import { reviewReplySchema, type ReviewReplyFormValues } from "@/lib/validators/reviews"
+import type { ReviewItem } from "@/types/reviews"
 
-export function ReviewsRoutePage() {
+function formatReviewDate(value: string) {
+  return new Date(value).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+}
+
+function canManageReply(role?: string, status?: string) {
+  return status === "active" && (role === "owner" || role === "manager")
+}
+
+function ReviewReplyEditor({
+  businessId,
+  review,
+  disabled,
+  onCancel,
+  onSaved,
+}: {
+  businessId: string
+  review: ReviewItem
+  disabled: boolean
+  onCancel: () => void
+  onSaved: () => void
+}) {
+  const { toast } = useToast()
+  const mutation = useUpsertBusinessReviewReply(businessId)
+  const form = useForm<ReviewReplyFormValues>({
+    resolver: zodResolver(reviewReplySchema),
+    defaultValues: {
+      body: review.reply?.body ?? "",
+    },
+  })
+
+  React.useEffect(() => {
+    form.reset({ body: review.reply?.body ?? "" })
+  }, [form, review.id, review.reply?.body])
+
+  async function onSubmit(values: ReviewReplyFormValues) {
+    try {
+      await mutation.mutateAsync({
+        reviewId: review.id,
+        payload: {
+          body: values.body,
+        },
+      })
+      toast({
+        title: review.reply ? "Reply updated" : "Reply posted",
+        description: review.reply ? "Your updated response is now visible." : "Your response is now visible on the review.",
+      })
+      onSaved()
+    } catch (error) {
+      toast({
+        title: "Could not save reply",
+        description: extractApiErrorMessage(error),
+        variant: "destructive",
+      })
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-3 rounded-lg border border-border bg-surface-business-inset p-4">
+        <FormField
+          control={form.control}
+          name="body"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  rows={5}
+                  placeholder="Write a calm, helpful response for this customer."
+                  disabled={mutation.isPending || disabled}
+                  className="bg-white"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <MithoButton size="sm" type="submit" disabled={mutation.isPending || disabled}>
+            {mutation.isPending ? "Saving..." : review.reply ? "Update reply" : "Send reply"}
+          </MithoButton>
+          <MithoButton variant="ghost" size="sm" type="button" onClick={onCancel} disabled={mutation.isPending}>
+            Cancel
+          </MithoButton>
+        </div>
+      </form>
+    </Form>
+  )
+}
+
+function ReviewsOverview({ businessId }: { businessId: string }) {
+  const [page, setPage] = React.useState(1)
+  const [activeReplyId, setActiveReplyId] = React.useState<string | null>(null)
+  const { data: business, isLoading: businessLoading } = useBusinessDetail(businessId)
+  const { entry, isLoading: membershipLoading } = useMyBusiness(businessId)
+  const canReply = canManageReply(entry?.membershipRole, entry?.membershipStatus)
+  const isReplyEligibleBusiness = business?.listingStatus === "published" && business?.ownershipStatus === "claimed"
+  const reviewsQuery = useBusinessReviews(
+    businessId,
+    { page, perPage: 5, sort: "latest" },
+    isReplyEligibleBusiness,
+  )
+  const summary = reviewsQuery.data?.summary
+
+  React.useEffect(() => {
+    setPage(1)
+  }, [businessId])
+
+  if (businessLoading || membershipLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-deep-green/20 border-t-brand-deep-green/60" />
+      </div>
+    )
+  }
+
+  if (!business) {
+    return (
+      <MithoCard>
+        <MithoCardContent className="p-6">
+          <p className="text-sm text-muted-foreground">Unable to load business reviews right now.</p>
+        </MithoCardContent>
+      </MithoCard>
+    )
+  }
+
+  if (!isReplyEligibleBusiness) {
+    return (
+      <MithoCard>
+        <MithoCardHeader>
+          <h2 className="type-section-title text-foreground">Customer reviews</h2>
+        </MithoCardHeader>
+        <MithoCardContent className="space-y-2 p-6 pt-0">
+          <p className="text-sm font-semibold text-foreground">Replies unlock after claim and publish.</p>
+          <p className="text-sm leading-6 text-muted-foreground">
+            This workspace can reply only when business is claimed and listing is published.
+          </p>
+        </MithoCardContent>
+      </MithoCard>
+    )
+  }
+
   return (
     <div className="space-y-6 pb-12">
-      <ReviewsOverview />
+      <section>
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+            <Mail className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="type-section-title text-foreground">Customer reviews</h2>
+            <p className="type-meta mt-1">Read public feedback and respond as owner or manager.</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-6 lg:flex-row">
+          <div className="flex flex-col items-center justify-center gap-2 lg:min-w-[200px]">
+            <span className="text-5xl font-bold text-foreground">{(summary?.averageRating ?? business.ratingAvg ?? 0).toFixed(1)}</span>
+            <StarRating rating={summary?.averageRating ?? business.ratingAvg ?? 0} size="lg" />
+            <span className="text-sm text-muted-foreground">{summary?.totalReviews ?? business.ratingCount} reviews</span>
+          </div>
+
+          {summary ? (
+            <div className="flex-1 space-y-2">
+              <ReviewProgress stars={5} count={summary.ratings[5]} total={summary.totalReviews} />
+              <ReviewProgress stars={4} count={summary.ratings[4]} total={summary.totalReviews} />
+              <ReviewProgress stars={3} count={summary.ratings[3]} total={summary.totalReviews} />
+              <ReviewProgress stars={2} count={summary.ratings[2]} total={summary.totalReviews} />
+              <ReviewProgress stars={1} count={summary.ratings[1]} total={summary.totalReviews} />
+            </div>
+          ) : (
+            <div className="flex-1 rounded-lg border border-border bg-white p-4 text-sm text-muted-foreground">
+              Rating breakdown appears once published reviews are available.
+            </div>
+          )}
+        </div>
+
+        <div className="mt-4 rounded-lg border border-border bg-white p-4 shadow-sm">
+          {!canReply ? (
+            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              Only active owners and managers can publish public replies.
+            </div>
+          ) : null}
+
+          {reviewsQuery.isLoading ? (
+            <div className="space-y-3">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="h-32 animate-pulse rounded-lg border border-border bg-muted/40" />
+              ))}
+            </div>
+          ) : reviewsQuery.isError ? (
+            <div className="rounded-lg border border-danger/15 bg-danger/5 p-4 text-sm text-danger">
+              Could not load reviews right now.
+            </div>
+          ) : (reviewsQuery.data?.items.length ?? 0) > 0 ? (
+            <div className="space-y-3">
+              {reviewsQuery.data?.items.map((review) => {
+                const isEditing = activeReplyId === review.id
+                return (
+                  <div key={review.id} className="rounded-lg border border-border bg-white p-4 shadow-sm">
+                    <div className="flex gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">
+                        {review.author.name[0]}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-semibold text-foreground">{review.author.name}</span>
+                          <StarRating rating={review.rating} size="sm" />
+                          <span className="ml-auto text-xs text-muted-foreground">{formatReviewDate(review.createdAt)}</span>
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">{review.body}</p>
+
+                        {review.reply ? (
+                          <div className="mt-3 rounded-lg border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-sm font-semibold text-brand-deep-green">Current reply</span>
+                              <span className="text-xs text-muted-foreground">{formatReviewDate(review.reply.updatedAt)}</span>
+                            </div>
+                            <p className="mt-2 text-sm leading-6 text-foreground">{review.reply.body}</p>
+                          </div>
+                        ) : null}
+
+                        {canReply ? (
+                          <div className="mt-3 flex flex-wrap items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setActiveReplyId((current) => (current === review.id ? null : review.id))}
+                              className="text-sm font-semibold text-brand-deep-green transition-colors hover:text-foreground"
+                            >
+                              {review.reply ? "Edit reply" : "Reply to review"}
+                            </button>
+                          </div>
+                        ) : null}
+
+                        {isEditing ? (
+                          <ReviewReplyEditor
+                            businessId={businessId}
+                            review={review}
+                            disabled={!canReply}
+                            onCancel={() => setActiveReplyId(null)}
+                            onSaved={() => {
+                              setActiveReplyId(null)
+                            }}
+                          />
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+              No published reviews yet.
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+export function ReviewsRoutePage({ businessId }: { businessId: string }) {
+  return (
+    <div className="space-y-6 pb-12">
+      <ReviewsOverview businessId={businessId} />
     </div>
   )
 }
@@ -106,7 +377,7 @@ function buildFormRows(apiData: BusinessHour[]): HoursFormRow[] {
 }
 
 function HoursForm({ businessId, initialHours }: { businessId: string; initialHours: BusinessHour[] }) {
-  const [rows, setRows] = useState<HoursFormRow[]>(() => buildFormRows(initialHours))
+  const [rows, setRows] = React.useState<HoursFormRow[]>(() => buildFormRows(initialHours))
   const { mutate: replaceHours, isPending, isError, isSuccess, reset } = useReplaceBusinessHours(businessId)
 
   function updateRow(index: number, update: Partial<HoursFormRow>) {
@@ -205,7 +476,7 @@ export function HoursRoutePage({ businessId }: { businessId: string }) {
 }
 
 function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: BusinessLifecycleStatus }) {
-  const [notificationPreferences, setNotificationPreferences] = useState([
+  const [notificationPreferences, setNotificationPreferences] = React.useState([
     {
       id: "new-reviews",
       title: "New reviews",
@@ -219,12 +490,12 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
       enabled: true,
     },
   ])
-  const [settingsSaved, setSettingsSaved] = useState(false)
-  const [lifecycleStatus, setLifecycleStatus] = useState<BusinessLifecycleStatus>(initialLifecycleStatus)
-  const [isRemovalDialogOpen, setIsRemovalDialogOpen] = useState(false)
-  const [removalReason, setRemovalReason] = useState("duplicate")
-  const [removalNote, setRemovalNote] = useState("")
-  const [removalRequested, setRemovalRequested] = useState(false)
+  const [settingsSaved, setSettingsSaved] = React.useState(false)
+  const [lifecycleStatus, setLifecycleStatus] = React.useState<BusinessLifecycleStatus>(initialLifecycleStatus)
+  const [isRemovalDialogOpen, setIsRemovalDialogOpen] = React.useState(false)
+  const [removalReason, setRemovalReason] = React.useState("duplicate")
+  const [removalNote, setRemovalNote] = React.useState("")
+  const [removalRequested, setRemovalRequested] = React.useState(false)
   const lifecyclePresentation = getBusinessLifecyclePresentation(lifecycleStatus)
 
   const updateNotificationPreference = (id: string, enabled: boolean) => {
