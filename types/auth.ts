@@ -26,6 +26,7 @@ export interface AuthUser {
   staffRoles: string[]
   staffPermissions: string[]
   businessMemberships: SessionBusinessMembership[]
+  pendingInvitationCount?: number
 }
 
 export interface LoginWithGooglePayload {

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Building2, CirclePlus, FileCheck2, LayoutDashboard, Loader2, MoveRight, ShieldCheck } from "lucide-react"
+import { Building2, CirclePlus, FileCheck2, LayoutDashboard, Loader2, Mail, MoveRight, ShieldCheck } from "lucide-react"
 import type { MyBusinessEntry } from "@/types/business"
 import { DashboardFooter } from "@/features/dashboard/components/dashboard-footer"
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header"
@@ -9,6 +9,9 @@ import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { useMyBusinesses } from "@/hooks/use-businesses"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
+import { useMyInvitations, useAcceptInvitation, useDeclineInvitation } from "@/hooks/use-business-invitations"
+import { useToast } from "@/hooks/use-toast"
+import { extractApiErrorMessage } from "@/lib/api-error-utils"
 import type { ManagedBusiness } from "@/features/dashboard/data/dashboard-business-data"
 import {
   computeBusinessProfileCompleteness,
@@ -26,7 +29,7 @@ function entryToManagedBusiness(entry: MyBusinessEntry): ManagedBusiness {
     location: formatBusinessEntryLocation(entry),
     status: deriveManagedBusinessStatus(entry),
     lifecycleStatus: deriveBusinessLifecycleStatus(entry),
-    role: role === "owner" || role === "manager" ? role : undefined,
+    role: role === "owner" || role === "staff" ? role : undefined,
     claimStatus: entry.claimStatus === "pending" ? "pending-review" : undefined,
     profileCompleteness: computeBusinessProfileCompleteness(entry),
     reviewCount: entry.business.ratingCount,
@@ -67,7 +70,7 @@ function BusinessCard({ business, publicHref }: { business: ManagedBusiness; pub
           <div className="flex flex-wrap items-center gap-2">
             {statusBadge(business.status)}
             {lifecycleBadge(business.lifecycleStatus)}
-            {business.role ? <MithoBadge variant="neutral">{business.role === "owner" ? "Owner access" : "Manager access"}</MithoBadge> : null}
+            {business.role ? <MithoBadge variant="neutral">{business.role === "owner" ? "Owner access" : "Staff access"}</MithoBadge> : null}
           </div>
 
           <h2 className="mt-4 text-2xl font-semibold leading-tight text-foreground">{business.name}</h2>
@@ -126,6 +129,77 @@ function BusinessCard({ business, publicHref }: { business: ManagedBusiness; pub
   )
 }
 
+function PendingInvitationsCard() {
+  const { data: invitations, isLoading } = useMyInvitations()
+  const acceptMutation = useAcceptInvitation()
+  const declineMutation = useDeclineInvitation()
+  const { toast } = useToast()
+
+  if (isLoading || !invitations?.length) return null
+
+  async function handleAccept(id: string, businessName: string) {
+    try {
+      await acceptMutation.mutateAsync(id)
+      toast({ title: "Invitation accepted", description: `You now have access to ${businessName}.` })
+    } catch (error) {
+      toast({ title: "Could not accept invitation", description: extractApiErrorMessage(error), variant: "destructive" })
+    }
+  }
+
+  async function handleDecline(id: string) {
+    try {
+      await declineMutation.mutateAsync(id)
+      toast({ title: "Invitation declined" })
+    } catch (error) {
+      toast({ title: "Could not decline invitation", description: extractApiErrorMessage(error), variant: "destructive" })
+    }
+  }
+
+  return (
+    <section className="mb-6 rounded-lg border border-border bg-white p-5 shadow-sm">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <Mail className="h-5 w-5" />
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">Pending invitations</p>
+          <h2 className="text-lg font-semibold text-foreground">You have been invited to join a business workspace.</h2>
+        </div>
+      </div>
+
+      <ul className="space-y-3">
+        {invitations.map((inv) => (
+          <li key={inv.id} className="flex flex-col gap-3 rounded-lg border border-border bg-surface-business-inset px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-foreground">{inv.businessName}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Role: {inv.role} · expires {new Date(inv.expiresAt).toLocaleDateString()}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <MithoButton
+                size="sm"
+                onClick={() => handleAccept(inv.id, inv.businessName)}
+                disabled={acceptMutation.isPending || declineMutation.isPending}
+              >
+                Accept
+              </MithoButton>
+              <MithoButton
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => handleDecline(inv.id)}
+                disabled={acceptMutation.isPending || declineMutation.isPending}
+              >
+                Decline
+              </MithoButton>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 export function BusinessSwitcherPage() {
   const { data: entries, isLoading, isError } = useMyBusinesses()
   const { currentUser } = useAuthSnapshot()
@@ -142,6 +216,8 @@ export function BusinessSwitcherPage() {
       />
 
       <main className="container mx-auto px-4 pb-12 pt-8">
+        <PendingInvitationsCard />
+
         <section className="mb-6 rounded-lg border border-border bg-surface-business p-6 shadow-sm">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
