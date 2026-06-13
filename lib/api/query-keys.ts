@@ -65,6 +65,15 @@ export const queryKeys = {
     all: ["feed"] as const,
     list: (filters?: { types?: string }) => ["feed", "list", filters ?? {}] as const,
   },
+  businessMemberships: {
+    all: ["business-memberships"] as const,
+    list: (businessId: string) => ["business-memberships", businessId] as const,
+  },
+  businessInvitations: {
+    all: ["business-invitations"] as const,
+    list: (businessId: string) => ["business-invitations", businessId] as const,
+    mine: ["business-invitations", "mine"] as const,
+  },
   reviews: {
     all: ["reviews"] as const,
     list: (businessId: string, params?: ListBusinessReviewsParams) => ["reviews", "business", businessId, params] as const,
