@@ -177,3 +177,62 @@ export interface ListBusinessesParams {
   page?: number
   pageSize?: number
 }
+
+export type BusinessSearchSort = "recommended" | "top_rated" | "most_reviewed"
+
+/**
+ * Frontend-facing params for the public business search endpoint.
+ * Mapped to snake_case query params inside `searchBusinesses`.
+ */
+export interface SearchBusinessesParams {
+  q?: string
+  establishmentTypeId?: string
+  cuisineId?: string
+  provinceId?: number
+  districtId?: number
+  municipalityId?: number
+  openNow?: boolean
+  sort?: BusinessSearchSort
+  page?: number
+  perPage?: number
+}
+
+/**
+ * A single result row from `GET /api/businesses/search`.
+ * Mirrors the pinned API contract (all camelCase).
+ */
+export interface BusinessSearchItem {
+  id: string
+  name: string
+  slug: string
+  publicPath: string
+  coverImage: string | null
+  establishmentType?: EstablishmentType | null
+  cuisines?: Cuisine[]
+  area?: string | null
+  wardNo?: number | null
+  province?: Pick<Province, "id" | "name" | "slug"> | null
+  district?: Pick<District, "id" | "name" | "slug"> | null
+  municipality?:
+    | (Pick<Municipality, "id" | "name" | "slug" | "wards"> & {
+        category: Municipality["category"]
+      })
+    | null
+  priceRange?: number | null
+  ratingAvg?: number | null
+  ratingCount: number
+  isFeatured: boolean
+  isOpenNow: boolean
+}
+
+export interface BusinessSearchMeta {
+  page: number
+  perPage: number
+  total: number
+  totalPages: number
+}
+
+export interface BusinessSearchResponse {
+  items: BusinessSearchItem[]
+  meta: BusinessSearchMeta
+}

@@ -47,7 +47,7 @@ export function HeroV2() {
           className="mt-12 w-full max-w-2xl relative flex items-center group"
         >
           <label htmlFor="hero-search" className="sr-only">
-            Search for dishes or restaurants
+            Search businesses, cuisines, establishment types, and locations
           </label>
           <div className="absolute left-6 text-brand-deep-green/50">
             <Search className="h-5 w-5" />
@@ -55,7 +55,7 @@ export function HeroV2() {
           <input
             id="hero-search"
             type="text"
-            placeholder="Search for buff momo, cozy cafes, thakali..."
+            placeholder="Search restaurants, cuisines, or a neighborhood..."
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             className="h-[64px] w-full rounded-full border border-border bg-white pl-14 pr-[76px] text-base text-foreground shadow-sm outline-none transition-all duration-200 placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
