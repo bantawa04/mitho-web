@@ -7,7 +7,7 @@ export type BusinessLifecycleStatus =
   | "archived"
   | "draft"
   | "suspended"
-export type ManagedBusinessRole = "owner" | "manager"
+export type ManagedBusinessRole = "owner" | "staff"
 export type DashboardScenario = "empty" | "single" | "multi"
 
 export interface ManagedBusiness {
@@ -105,7 +105,7 @@ export const DASHBOARD_MOCK_BUSINESSES: Record<DashboardScenario, ManagedBusines
       location: "New Road, Kathmandu",
       status: "claim-pending",
       lifecycleStatus: "unclaimed",
-      role: "manager",
+      role: "staff",
       claimStatus: "pending-review",
       profileCompleteness: 0,
       lastActivity: "Claim submitted 3 days ago",

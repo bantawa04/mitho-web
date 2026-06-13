@@ -45,7 +45,7 @@ function formatReviewDate(value: string) {
 }
 
 function canManageReply(role?: string, status?: string) {
-  return status === "active" && (role === "owner" || role === "manager")
+  return status === "active" && (role === "owner" || role === "staff")
 }
 
 function ReviewReplyEditor({
@@ -191,7 +191,7 @@ function ReviewsOverview({ businessId }: { businessId: string }) {
           </div>
           <div>
             <h2 className="type-section-title text-foreground">Customer reviews</h2>
-            <p className="type-meta mt-1">Read public feedback and respond as owner or manager.</p>
+            <p className="type-meta mt-1">Read public feedback and respond as owner or staff.</p>
           </div>
         </div>
 
@@ -220,7 +220,7 @@ function ReviewsOverview({ businessId }: { businessId: string }) {
         <div className="mt-4 rounded-lg border border-border bg-white p-4 shadow-sm">
           {!canReply ? (
             <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              Only active owners and managers can publish public replies.
+              Only active owners and staff can publish public replies.
             </div>
           ) : null}
 
@@ -515,7 +515,7 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
             </div>
             <div>
               <h2 className="type-section-title text-foreground">Notification preferences</h2>
-              <p className="type-meta mt-1">Choose which updates should reach the owner or manager.</p>
+              <p className="type-meta mt-1">Choose which updates should reach the owner or staff.</p>
             </div>
           </div>
 

@@ -15,6 +15,7 @@ import {
   MessageSquare,
   QrCode,
   Settings,
+  Users,
 } from "lucide-react"
 import { DashboardFooter } from "@/features/dashboard/components/dashboard-footer"
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header"
@@ -38,6 +39,7 @@ const navItems = [
   { key: "edit", label: "Business Info", icon: Building2, segment: "edit" },
   { key: "hours", label: "Hours", icon: Clock3, segment: "hours" },
   { key: "analytics", label: "Analytics", icon: BarChart3, segment: "analytics" },
+  { key: "team", label: "Team", icon: Users, segment: "team" },
   { key: "settings", label: "Settings", icon: Settings, segment: "settings" },
 ]
 
