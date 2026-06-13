@@ -4,8 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   followUser,
   getPublicProfile,
+  listMyFollowing,
   listPublicCreators,
   unfollowUser,
+  type ListMyFollowingParams,
   type ListPublicCreatorsParams,
   type PublicProfileData,
 } from "@/lib/api/profile"
@@ -34,6 +36,26 @@ export function usePublicCreatorDirectory({ enabled = true, ...params }: UsePubl
   })
 }
 
+export function useMyFollowing(params: ListMyFollowingParams = {}) {
+  return useQuery({
+    queryKey: queryKeys.profiles.myFollowing(params),
+    queryFn: () => listMyFollowing(params),
+    staleTime: 1000 * 60 * 2,
+  })
+}
+
+export function useUnfollowFromList() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (username: string) => unfollowUser(username),
+    onSettled: (_data, _error, username) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.myFollowingAll })
+      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.public(username) })
+    },
+  })
+}
+
 export function useFollowUser(username: string) {
   const queryClient = useQueryClient()
   const key = queryKeys.profiles.public(username)
@@ -51,7 +73,10 @@ export function useFollowUser(username: string) {
     onError: (_err, _vars, context) => {
       if (context?.previous) queryClient.setQueryData(key, context.previous)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: key })
+      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.myFollowingAll })
+    },
   })
 }
 
@@ -72,6 +97,9 @@ export function useUnfollowUser(username: string) {
     onError: (_err, _vars, context) => {
       if (context?.previous) queryClient.setQueryData(key, context.previous)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: key })
+      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.myFollowingAll })
+    },
   })
 }

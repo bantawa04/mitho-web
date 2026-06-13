@@ -12,17 +12,17 @@ import { MithoPagination } from "@/components/mitho/mitho-pagination"
 import type { ReviewItem, ReviewStatus } from "@/types/reviews"
 import { getCollectionCoverImages, getCollectionPlaceCount } from "@/features/collections/utils/collection-helpers"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
-import {
-  followPublicProfile,
-  getFollowingProfiles,
-  mockCustomerProfile,
-  unfollowPublicProfile,
-  type FollowingProfileListItem,
-  type PublicUserProfileData,
-} from "@/features/profile/data/profile-data"
+import { mockCustomerProfile, type PublicUserProfileData } from "@/features/profile/data/profile-data"
 import type { PublicCreatorItem } from "@/lib/api/profile"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { useFollowUser, usePublicCreatorDirectory, usePublicProfile, useUnfollowUser } from "@/hooks/use-profile"
+import {
+  useFollowUser,
+  useMyFollowing,
+  usePublicCreatorDirectory,
+  usePublicProfile,
+  useUnfollowFromList,
+  useUnfollowUser,
+} from "@/hooks/use-profile"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
 import {
   AlertDialog,
@@ -59,9 +59,10 @@ function ProfileTabsPanel() {
 }
 
 function BusinessBanner() {
-  const businessContext = mockCustomerProfile.businessContext
+  const { authUser } = useAuthSnapshot()
+  const managedCount = authUser?.businessMemberships.length ?? 0
 
-  if (businessContext.status === "none") return null
+  if (managedCount === 0) return null
 
   return (
     <div className="border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
@@ -71,39 +72,22 @@ function BusinessBanner() {
             <Building2 className="h-4 w-4" />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {businessContext.status === "approved" ? (
-              <>
-                <MithoBadge variant="success">Business access live</MithoBadge>
-                <MithoBadge variant="muted">{businessContext.managedCount} workspace</MithoBadge>
-              </>
-            ) : (
-              <>
-                <MithoBadge variant="warning">Claim pending</MithoBadge>
-                <span className="text-sm text-muted-foreground">
-                  {businessContext.pendingLabel ?? "Ownership claim under review."}
-                </span>
-              </>
-            )}
+            <MithoBadge variant="success">Business access live</MithoBadge>
+            <MithoBadge variant="muted">
+              {managedCount} {managedCount === 1 ? "workspace" : "workspaces"}
+            </MithoBadge>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {businessContext.status === "approved" ? (
-            <>
-              <MithoButton variant="outline-secondary" size="sm" asChild>
-                <Link href="/dashboard/businesses">
-                  Manage businesses
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </MithoButton>
-              <MithoButton variant="ghost" size="sm" asChild>
-                <Link href="/business/claim">Claim another</Link>
-              </MithoButton>
-            </>
-          ) : (
-            <MithoButton variant="outline-secondary" size="sm" asChild>
-              <Link href="/business/claim">Review claim</Link>
-            </MithoButton>
-          )}
+          <MithoButton variant="outline-secondary" size="sm" asChild>
+            <Link href="/dashboard/businesses">
+              Manage businesses
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </MithoButton>
+          <MithoButton variant="ghost" size="sm" asChild>
+            <Link href="/business/claim">Claim another</Link>
+          </MithoButton>
         </div>
       </div>
     </div>
@@ -111,6 +95,12 @@ function BusinessBanner() {
 }
 
 export function ProfileHubPage() {
+  const { authUser, currentUser } = useAuthSnapshot()
+  const username = authUser?.user?.username ?? ""
+  const myProfileQuery = usePublicProfile(username)
+  const myProfile = myProfileQuery.data
+  const displayName = currentUser?.name ?? myProfile?.name ?? ""
+  const avatarUrl = currentUser?.avatarUrl ?? myProfile?.avatarUrl ?? "/placeholder.svg"
   const collectionsQuery = useCollections({ perPage: 3 })
   const recentReviewsQuery = useMyReviews({ perPage: 3 })
   const recentReviews = recentReviewsQuery.data?.items ?? []
@@ -136,16 +126,20 @@ export function ProfileHubPage() {
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
               <img
-                src={mockCustomerProfile.avatarUrl}
-                alt={mockCustomerProfile.name}
+                src={avatarUrl}
+                alt={displayName}
                 className="h-16 w-16 rounded-full border-4 border-brand-soft-beige object-cover sm:h-20 sm:w-20"
               />
               <div>
-                <h1 className="type-page-title text-brand-dark-green">{mockCustomerProfile.name}</h1>
-                <p className="mt-1.5 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
-                  {mockCustomerProfile.joinedLabel}
-                </p>
-                <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{mockCustomerProfile.bio}</p>
+                <h1 className="type-page-title text-brand-dark-green">{displayName}</h1>
+                {myProfile?.joinedLabel ? (
+                  <p className="mt-1.5 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
+                    {myProfile.joinedLabel}
+                  </p>
+                ) : null}
+                {myProfile?.bio ? (
+                  <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{myProfile.bio}</p>
+                ) : null}
               </div>
             </div>
             <MithoButton variant="outline-secondary" className="shrink-0 self-start" asChild>
@@ -695,12 +689,10 @@ export function ProfileSettingsPage() {
 }
 
 export function ProfileFollowingPage() {
-  const [followingProfiles, setFollowingProfiles] = React.useState<FollowingProfileListItem[]>(() => getFollowingProfiles())
-
-  const handleUnfollow = (username: string) => {
-    unfollowPublicProfile(username)
-    setFollowingProfiles(getFollowingProfiles())
-  }
+  const followingQuery = useMyFollowing({ perPage: 100 })
+  const followingProfiles = followingQuery.data?.items ?? []
+  const totalFollowing = followingQuery.data?.meta.totalItems ?? 0
+  const unfollowMutation = useUnfollowFromList()
 
   return (
     <div className="container mx-auto px-4 py-10 md:py-12">
@@ -713,12 +705,22 @@ export function ProfileFollowingPage() {
         {/* Page header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
           <h1 className="text-2xl font-semibold text-brand-dark-green">Following</h1>
-          <MithoBadge variant="neutral">{followingProfiles.length} following</MithoBadge>
+          <MithoBadge variant="neutral">{totalFollowing} following</MithoBadge>
         </div>
 
         {/* Following list */}
         <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
-          {followingProfiles.length > 0 ? (
+          {followingQuery.isLoading ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {[0, 1, 2, 3].map((item) => (
+                <div key={item} className="h-32 animate-pulse rounded-[1.35rem] border border-brand-deep-green/10 bg-[#fffdf8]" />
+              ))}
+            </div>
+          ) : followingQuery.isError ? (
+            <div className="py-10 text-center">
+              <p className="text-sm leading-7 text-muted-foreground">Could not load who you follow right now. Please try again shortly.</p>
+            </div>
+          ) : followingProfiles.length > 0 ? (
             <div className="space-y-6">
               <div className="grid gap-4 md:grid-cols-2">
                 {followingProfiles.map((profile) => (
@@ -728,11 +730,17 @@ export function ProfileFollowingPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <Link href={`/users/${profile.username}`} className="flex min-w-0 items-start gap-3">
-                        <img
-                          src={profile.avatarUrl}
-                          alt={profile.name}
-                          className="h-12 w-12 rounded-full border-2 border-brand-soft-beige object-cover"
-                        />
+                        {profile.avatarUrl ? (
+                          <img
+                            src={profile.avatarUrl}
+                            alt={profile.name}
+                            className="h-12 w-12 rounded-full border-2 border-brand-soft-beige object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-brand-soft-beige bg-brand-deep-green/10 text-base font-semibold text-brand-deep-green">
+                            {profile.name ? profile.name[0].toUpperCase() : "?"}
+                          </div>
+                        )}
                         <div className="min-w-0">
                           <h3 className="truncate text-base font-semibold text-brand-dark-green">{profile.name}</h3>
                           <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/58">
@@ -744,7 +752,8 @@ export function ProfileFollowingPage() {
                         type="button"
                         variant="outline-secondary"
                         size="sm"
-                        onClick={() => handleUnfollow(profile.username)}
+                        onClick={() => unfollowMutation.mutate(profile.username)}
+                        disabled={unfollowMutation.isPending}
                       >
                         <UserCheck className="h-4 w-4" />
                         Following
@@ -752,7 +761,7 @@ export function ProfileFollowingPage() {
                     </div>
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                       <MithoBadge variant="muted">{profile.followerCount} followers</MithoBadge>
-                      <MithoBadge variant="neutral">{profile.publicCollectionCount} collections</MithoBadge>
+                      <MithoBadge variant="neutral">{profile.collectionCount} collections</MithoBadge>
                       <MithoBadge variant="muted">{profile.reviewCount} reviews</MithoBadge>
                     </div>
                   </div>
