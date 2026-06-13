@@ -45,6 +45,7 @@ export interface PublicUserProfileData {
   reviewCount: number
   collectionCount: number
   followerCount: number
+  followingCount: number
   isFollowedByCurrentUser: boolean
   citiesExplored: number
   recentPublicReviews: ProfileReviewPreview[]
@@ -205,7 +206,7 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
 
 const publicProfileMetadata: Record<
   string,
-  Omit<PublicUserProfileData, "collectionCount" | "recentPublicReviews" | "followerCount" | "isFollowedByCurrentUser">
+  Omit<PublicUserProfileData, "collectionCount" | "recentPublicReviews" | "followerCount" | "followingCount" | "isFollowedByCurrentUser">
 > = {
   aaratieats: {
     userId: "user-aaratieats",
@@ -286,6 +287,15 @@ const followerCountByUsername: Record<string, number> = {
 
 const currentFollowingUsernames = new Set<string>(["nabin-eats", "samriddhi-bites"])
 
+const followingCountByUsername: Record<string, number> = {
+  aaratieats: 12,
+  "nabin-eats": 9,
+  "samriddhi-bites": 5,
+  "prerna-plates": 4,
+  "roshan-routes": 6,
+  "sushant-snacks": 3,
+}
+
 export function getPublicProfileByUsername(username: string): PublicUserProfileData | null {
   const metadata = publicProfileMetadata[username]
 
@@ -297,6 +307,7 @@ export function getPublicProfileByUsername(username: string): PublicUserProfileD
     ...metadata,
     collectionCount: collections.length,
     followerCount: followerCountByUsername[username] ?? 0,
+    followingCount: followingCountByUsername[username] ?? 0,
     isFollowedByCurrentUser: currentFollowingUsernames.has(username),
     recentPublicReviews: publicProfileReviews[username] ?? [],
   }

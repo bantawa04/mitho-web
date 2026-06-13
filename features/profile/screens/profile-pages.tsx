@@ -22,8 +22,18 @@ import {
 } from "@/features/profile/data/profile-data"
 import type { PublicCreatorItem } from "@/lib/api/profile"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
-import { useFollowUser, useMyFollowing, usePublicCreatorDirectory, usePublicProfile, useUnfollowUser } from "@/hooks/use-profile"
+import {
+  useFollowers,
+  useFollowUser,
+  useMyFollowing,
+  usePublicCreatorDirectory,
+  usePublicProfile,
+  useUnfollowUser,
+  useUserFollowing,
+} from "@/hooks/use-profile"
+import { CreatorFollowCard } from "@/features/profile/components/creator-follow-card"
 import { ProfileNavigation } from "@/features/profile/components/profile-navigation"
+import { MithoBreadcrumb } from "@/components/mitho/mitho-breadcrumb"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -114,16 +124,47 @@ function BusinessBanner() {
 }
 
 export function ProfileHubPage() {
+  const { authUser } = useAuthSnapshot()
+  const currentUsername = authUser?.user.username ?? ""
   const collectionsQuery = useCollections({ perPage: 3 })
   const recentReviewsQuery = useMyReviews({ perPage: 3 })
+  const publicProfileQuery = usePublicProfile(currentUsername)
   const recentReviews = recentReviewsQuery.data?.items ?? []
   const previewCollections = collectionsQuery.data?.items ?? []
   const collectionCount = collectionsQuery.data?.meta.total ?? 0
-  const placeCountAcrossCollections = previewCollections.reduce((total, collection) => total + collection.itemCount, 0)
   const stats = [
-    { label: "Reviews written", value: recentReviewsQuery.data?.meta.total ?? 0, icon: Star, accent: "text-brand-orange", bg: "bg-brand-orange/10" },
-    { label: "Collections", value: collectionCount, icon: Bookmark, accent: "text-brand-deep-green", bg: "bg-brand-deep-green/10" },
-    { label: "Places saved", value: placeCountAcrossCollections, icon: MapPin, accent: "text-brand-dark-green", bg: "bg-brand-dark-green/10" },
+    {
+      label: "Reviews written",
+      value: recentReviewsQuery.data?.meta.total ?? 0,
+      icon: Star,
+      accent: "text-brand-orange",
+      bg: "bg-brand-orange/10",
+      href: "/profile/reviews",
+    },
+    {
+      label: "Collections",
+      value: collectionCount,
+      icon: Bookmark,
+      accent: "text-brand-deep-green",
+      bg: "bg-brand-deep-green/10",
+      href: "/collections",
+    },
+    {
+      label: "Followers",
+      value: publicProfileQuery.data?.followerCount ?? 0,
+      icon: Users,
+      accent: "text-brand-dark-green",
+      bg: "bg-brand-dark-green/10",
+      href: "/profile/followers",
+    },
+    {
+      label: "Following",
+      value: publicProfileQuery.data?.followingCount ?? 0,
+      icon: UserPlus,
+      accent: "text-brand-orange",
+      bg: "bg-brand-orange/10",
+      href: "/profile/following",
+    },
   ]
 
   return (
@@ -162,9 +203,13 @@ export function ProfileHubPage() {
 
         {/* Stats row */}
         <div className="border-t border-brand-deep-green/10">
-          <div className="grid grid-cols-1 divide-y divide-brand-deep-green/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="grid grid-cols-2 divide-x divide-y divide-brand-deep-green/10 sm:grid-cols-4 sm:divide-y-0">
             {stats.map((stat) => (
-              <div key={stat.label} className="flex items-center gap-3 px-6 py-5 sm:px-8">
+              <Link
+                key={stat.label}
+                href={stat.href}
+                className="flex items-center gap-3 px-6 py-5 transition-colors duration-200 hover:bg-muted sm:px-8"
+              >
                 <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${stat.bg}`}>
                   <stat.icon className={`h-5 w-5 ${stat.accent}`} />
                 </span>
@@ -172,7 +217,7 @@ export function ProfileHubPage() {
                   <p className={`text-2xl font-bold leading-none ${stat.accent}`}>{stat.value}</p>
                   <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{stat.label}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -898,11 +943,86 @@ export function ProfileFollowingPage() {
   )
 }
 
+export function ProfileFollowersPage() {
+  const { authUser } = useAuthSnapshot()
+  const currentUsername = authUser?.user.username ?? ""
+  const followersQuery = useFollowers(currentUsername)
+  const followers = followersQuery.data?.items ?? []
+
+  return (
+    <div className="container mx-auto px-4 py-10 md:py-12">
+      <section className={sectionCardClass}>
+        {/* Navigation */}
+        <div className="px-6 py-4 sm:px-8">
+          <ProfileNavigation />
+        </div>
+
+        {/* Page header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
+          <h1 className="text-2xl font-semibold text-brand-dark-green">Followers</h1>
+          <MithoBadge variant="neutral">{followersQuery.data?.meta.totalItems ?? followers.length} followers</MithoBadge>
+        </div>
+
+        {/* Followers list */}
+        <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
+          {followersQuery.isLoading ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {[0, 1, 2, 3].map((item) => (
+                <div key={item} className="h-40 animate-pulse rounded-xl border border-brand-deep-green/10 bg-muted" />
+              ))}
+            </div>
+          ) : followersQuery.isError ? (
+            <div className="py-10 text-center">
+              <p className="text-sm leading-7 text-muted-foreground">Could not load your followers right now. Please try again shortly.</p>
+            </div>
+          ) : followers.length > 0 ? (
+            <div className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {followers.map((profile) => (
+                  <CreatorFollowCard key={profile.userId} item={profile} />
+                ))}
+              </div>
+
+              {/* Discover more */}
+              <div className="flex items-center justify-center border-t border-brand-deep-green/10 pt-5">
+                <MithoButton variant="outline-secondary" asChild>
+                  <Link href="/users">
+                    Discover more creators
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </MithoButton>
+              </div>
+            </div>
+          ) : (
+            <div className="py-10 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-deep-green/10">
+                <Users className="h-6 w-6 text-brand-deep-green" />
+              </div>
+              <h2 className="mt-4 text-lg font-semibold text-brand-dark-green">No followers yet</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-muted-foreground">
+                Share your public collections and reviews so other Mitho creators can discover and follow your taste.
+              </p>
+              <div className="mt-5">
+                <MithoButton variant="outline-secondary" asChild>
+                  <Link href="/users">Browse creators</Link>
+                </MithoButton>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
   return (
     <section className={sectionCardClass}>
-      <div className="grid divide-y divide-brand-deep-green/10 px-6 py-2 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-8">
-        <div className="flex items-center gap-4 py-5 sm:px-4">
+      <div className="grid grid-cols-2 divide-x divide-y divide-brand-deep-green/10 px-6 py-2 sm:grid-cols-4 sm:divide-y-0 sm:px-8">
+        <Link
+          href={`/users/${profile.username}/followers`}
+          className="flex items-center gap-4 py-5 transition-colors duration-200 hover:bg-muted sm:px-4"
+        >
             <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-dark-green/10">
               <Users className="h-5 w-5 text-brand-dark-green" />
             </span>
@@ -910,8 +1030,20 @@ function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
               <p className="text-2xl font-bold leading-none text-brand-dark-green">{profile.followerCount}</p>
               <p className="mt-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">Followers</p>
             </div>
-        </div>
-        <div className="flex items-center gap-4 py-5 sm:px-4 sm:justify-center">
+        </Link>
+        <Link
+          href={`/users/${profile.username}/following`}
+          className="flex items-center gap-4 py-5 transition-colors duration-200 hover:bg-muted sm:px-4"
+        >
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-orange/10">
+            <UserPlus className="h-5 w-5 text-brand-orange" />
+          </span>
+          <div>
+            <p className="text-2xl font-bold leading-none text-brand-orange">{profile.followingCount}</p>
+            <p className="mt-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">Following</p>
+          </div>
+        </Link>
+        <div className="flex items-center gap-4 py-5 sm:px-4">
           <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-orange/10">
             <Star className="h-5 w-5 text-brand-orange" />
           </span>
@@ -920,7 +1052,7 @@ function PublicStatsStrip({ profile }: { profile: PublicUserProfileData }) {
             <p className="mt-1 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:text-xs">Public reviews</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 py-5 sm:px-4 sm:justify-end">
+        <div className="flex items-center gap-4 py-5 sm:px-4">
           <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-deep-green/10">
             <Bookmark className="h-5 w-5 text-brand-deep-green" />
           </span>
@@ -1377,4 +1509,85 @@ export function PublicUserProfilePage({ username }: { username: string }) {
       />
     </>
   )
+}
+
+function PublicCreatorListPage({
+  username,
+  mode,
+}: {
+  username: string
+  mode: "followers" | "following"
+}) {
+  const followersQuery = useFollowers(mode === "followers" ? username : "")
+  const followingQuery = useUserFollowing(mode === "following" ? username : "")
+  const activeQuery = mode === "followers" ? followersQuery : followingQuery
+  const items = activeQuery.data?.items ?? []
+  const totalItems = activeQuery.data?.meta.totalItems ?? items.length
+
+  const heading = mode === "followers" ? `@${username}'s followers` : `@${username}'s following`
+  const countLabel = mode === "followers" ? "followers" : "following"
+  const emptyTitle = mode === "followers" ? "No followers yet" : "Not following anyone yet"
+  const emptyDescription =
+    mode === "followers"
+      ? "Once people follow this creator, they will show up here."
+      : "Once this creator follows other people, they will show up here."
+
+  return (
+    <div className="container mx-auto px-4 py-10 md:py-12">
+      <div className="space-y-6">
+        <MithoBreadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: `@${username}`, href: `/users/${username}` },
+            { label: mode === "followers" ? "Followers" : "Following" },
+          ]}
+        />
+
+        <section className={sectionCardClass}>
+          {/* Page header */}
+          <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-5 sm:px-8">
+            <h1 className="type-page-title text-brand-dark-green">{heading}</h1>
+            <MithoBadge variant="neutral">{totalItems} {countLabel}</MithoBadge>
+          </div>
+
+          {/* List */}
+          <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
+            {activeQuery.isLoading ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {[0, 1, 2, 3].map((item) => (
+                  <div key={item} className="h-40 animate-pulse rounded-xl border border-brand-deep-green/10 bg-muted" />
+                ))}
+              </div>
+            ) : activeQuery.isError ? (
+              <div className="py-10 text-center">
+                <p className="text-sm leading-7 text-muted-foreground">Could not load this list right now. Please try again shortly.</p>
+              </div>
+            ) : items.length > 0 ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {items.map((profile) => (
+                  <CreatorFollowCard key={profile.userId} item={profile} />
+                ))}
+              </div>
+            ) : (
+              <div className="py-10 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-deep-green/10">
+                  <Users className="h-6 w-6 text-brand-deep-green" />
+                </div>
+                <h2 className="mt-4 text-lg font-semibold text-brand-dark-green">{emptyTitle}</h2>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-muted-foreground">{emptyDescription}</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
+
+export function PublicFollowersPage({ username }: { username: string }) {
+  return <PublicCreatorListPage username={username} mode="followers" />
+}
+
+export function PublicFollowingPage({ username }: { username: string }) {
+  return <PublicCreatorListPage username={username} mode="following" />
 }
