@@ -8,6 +8,7 @@ const profileNavItems = [
   { href: "/profile", label: "Overview" },
   { href: "/feed", label: "Feed" },
   { href: "/profile/reviews", label: "My reviews" },
+  { href: "/profile/followers", label: "Followers" },
   { href: "/profile/following", label: "Following" },
   { href: "/collections", label: "Collections" },
   { href: "/profile/settings", label: "Account settings" },

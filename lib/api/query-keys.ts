@@ -60,6 +60,8 @@ export const queryKeys = {
     public: (username: string) => ["profiles", "public", username] as const,
     directory: (params: ListPublicCreatorsParams) => ["profiles", "directory", params] as const,
     following: () => ["profiles", "following"] as const,
+    followers: (username: string) => ["profiles", "followers", username] as const,
+    userFollowing: (username: string) => ["profiles", "user-following", username] as const,
   },
   feed: {
     all: ["feed"] as const,
