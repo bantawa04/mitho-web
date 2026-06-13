@@ -1,7 +1,9 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
 import { CATEGORY_OPTIONS } from "@/content/taxonomy/category-taxonomy"
 import { EXPLORE_CATEGORY_OPTIONS, EXPLORE_CITY_OPTIONS, EXPLORE_SORT_OPTIONS } from "@/features/discovery/explore/explore-data"
-import type { ExploreFilters, ExploreResult } from "@/features/discovery/explore/explore-types"
+import { LIVE_RESULTS_PER_PAGE, LIVE_SORT_DEFAULT, LIVE_SORT_VALUES } from "@/features/discovery/explore/explore-live-data"
+import type { ExploreFilters, ExploreResult, LiveExploreState } from "@/features/discovery/explore/explore-types"
+import type { BusinessSearchSort, SearchBusinessesParams } from "@/types/business"
 
 export interface CategoryPageFilters {
   q: string
@@ -144,4 +146,142 @@ export function rankExploreResults(
     const scoreB = b.rating * 10 + Math.min(b.reviewCount / 25, 10)
     return scoreB - scoreA
   })
+}
+
+/* -------------------------------------------------------------------------- */
+/* Live (database-backed) explore page URL <-> state layer                     */
+/* -------------------------------------------------------------------------- */
+
+export const LIVE_EXPLORE_DEFAULT_STATE: LiveExploreState = {
+  q: "",
+  type: "",
+  cuisine: "",
+  province: null,
+  district: null,
+  municipality: null,
+  openNow: false,
+  sort: LIVE_SORT_DEFAULT,
+  page: 1,
+}
+
+function readLiveSort(params: ReadonlyURLSearchParams): BusinessSearchSort {
+  const value = params.get("sort")
+  // Discard prototype-only sorts (e.g. "nearest") and normalize anything
+  // unknown back to the default.
+  return value && (LIVE_SORT_VALUES as readonly string[]).includes(value)
+    ? (value as BusinessSearchSort)
+    : LIVE_SORT_DEFAULT
+}
+
+function readLivePage(params: ReadonlyURLSearchParams): number {
+  const raw = params.get("page")
+  if (!raw) return 1
+  const parsed = Number.parseInt(raw, 10)
+  if (!Number.isFinite(parsed) || parsed < 1) return 1
+  return parsed
+}
+
+function readPositiveInt(params: ReadonlyURLSearchParams, key: string): number | null {
+  const raw = params.get(key)
+  if (!raw) return null
+  const parsed = Number.parseInt(raw, 10)
+  if (!Number.isFinite(parsed) || parsed <= 0) return null
+  return parsed
+}
+
+/**
+ * Parse URL search params into canonical live-explore state.
+ * Invalid params normalize to defaults. Cascading dependencies are enforced
+ * (a district without a province is dropped; a municipality without a district
+ * is dropped) so that hand-edited / stale URLs can never produce impossible
+ * combinations.
+ */
+export function parseLiveExploreState(params: ReadonlyURLSearchParams): LiveExploreState {
+  const province = readPositiveInt(params, "province")
+  let district = readPositiveInt(params, "district")
+  let municipality = readPositiveInt(params, "municipality")
+
+  if (province === null) district = null
+  if (district === null) municipality = null
+
+  return {
+    q: readTrimmedQuery(params),
+    type: params.get("type")?.trim() ?? "",
+    cuisine: params.get("cuisine")?.trim() ?? "",
+    province,
+    district,
+    municipality,
+    openNow: params.get("openNow") === "true",
+    sort: readLiveSort(params),
+    page: readLivePage(params),
+  }
+}
+
+/**
+ * Serialize canonical state to a query string, OMITTING every default
+ * (empty q, no filters, sort=recommended, page=1) so URLs stay clean and
+ * deep links remain stable.
+ */
+export function buildLiveExploreSearchString(state: LiveExploreState): string {
+  const params = new URLSearchParams()
+
+  if (state.q) params.set("q", state.q)
+  if (state.type) params.set("type", state.type)
+  if (state.cuisine) params.set("cuisine", state.cuisine)
+  if (state.province !== null) params.set("province", String(state.province))
+  if (state.district !== null) params.set("district", String(state.district))
+  if (state.municipality !== null) params.set("municipality", String(state.municipality))
+  if (state.openNow) params.set("openNow", "true")
+  if (state.sort !== LIVE_SORT_DEFAULT) params.set("sort", state.sort)
+  if (state.page > 1) params.set("page", String(state.page))
+
+  return params.toString()
+}
+
+/**
+ * Apply a partial change to the live-explore state with the correct
+ * cascading + page-reset semantics:
+ *  - Changing province clears district + municipality.
+ *  - Changing district clears municipality.
+ *  - Any change OTHER than a pure pagination change resets page to 1.
+ */
+export function applyLiveExploreChange(
+  current: LiveExploreState,
+  patch: Partial<LiveExploreState>,
+): LiveExploreState {
+  const next: LiveExploreState = { ...current, ...patch }
+
+  if (patch.province !== undefined && patch.province !== current.province) {
+    next.district = null
+    next.municipality = null
+  }
+
+  if (patch.district !== undefined && patch.district !== current.district) {
+    next.municipality = null
+  }
+
+  // A change is "pagination only" when the sole provided key is `page`.
+  const keys = Object.keys(patch)
+  const isPaginationOnly = keys.length === 1 && keys[0] === "page"
+  if (!isPaginationOnly && patch.page === undefined) {
+    next.page = 1
+  }
+
+  return next
+}
+
+/** Map canonical live-explore state to the snake_case-aware API params. */
+export function liveExploreStateToSearchParams(state: LiveExploreState): SearchBusinessesParams {
+  return {
+    q: state.q || undefined,
+    establishmentTypeId: state.type || undefined,
+    cuisineId: state.cuisine || undefined,
+    provinceId: state.province ?? undefined,
+    districtId: state.district ?? undefined,
+    municipalityId: state.municipality ?? undefined,
+    openNow: state.openNow || undefined,
+    sort: state.sort,
+    page: state.page,
+    perPage: LIVE_RESULTS_PER_PAGE,
+  }
 }

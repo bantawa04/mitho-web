@@ -10,10 +10,17 @@ import {
   listBusinesses,
   listMyBusinesses,
   replaceBusinessHours,
+  searchBusinesses,
   updateBusiness,
 } from "@/lib/api/businesses"
 import { queryKeys } from "@/lib/api/query-keys"
-import type { CreateBusinessPayload, ListBusinessesParams, ReplaceHoursPayload, UpdateBusinessPayload } from "@/types/business"
+import type {
+  CreateBusinessPayload,
+  ListBusinessesParams,
+  ReplaceHoursPayload,
+  SearchBusinessesParams,
+  UpdateBusinessPayload,
+} from "@/types/business"
 
 export function useMyBusinesses() {
   return useQuery({
@@ -33,6 +40,17 @@ export function useBusinesses(params?: ListBusinessesParams) {
   return useQuery({
     queryKey: queryKeys.businesses.list(params),
     queryFn: () => listBusinesses(params),
+  })
+}
+
+export function useBusinessSearch(params: SearchBusinessesParams) {
+  return useQuery({
+    queryKey: queryKeys.businesses.search(params),
+    queryFn: () => searchBusinesses(params),
+    // Keep previous page/result set on screen during background refetch
+    // so filter/pagination changes don't flash an empty list.
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 30,
   })
 }
 
