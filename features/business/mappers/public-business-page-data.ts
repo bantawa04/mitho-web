@@ -88,9 +88,11 @@ export function mapReviewItemToBusinessReview(item: ReviewItem): BusinessReview 
     author: item.author.name,
     authorUsername: item.author.username,
     authorImage: item.author.avatarUrl || "/placeholder.svg",
+    title: item.title,
     rating: item.rating,
     date: formatReviewDate(item.createdAt),
     content: item.body,
+    tips: item.tips,
     media: item.media
       .filter((mediaItem) => mediaItem.mediaType === "image" || mediaItem.mediaType === "video")
       .map((mediaItem) => ({
@@ -98,6 +100,12 @@ export function mapReviewItemToBusinessReview(item: ReviewItem): BusinessReview 
         src: mediaItem.publicUrl,
         thumbnail: mediaItem.mediaType === "video" ? mediaItem.publicUrl : undefined,
       })),
+    ownerResponse: item.reply
+      ? {
+          content: item.reply.body,
+          date: formatReviewDate(item.reply.updatedAt),
+        }
+      : undefined,
   }
 }
 

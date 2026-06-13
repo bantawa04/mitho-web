@@ -23,7 +23,7 @@ const MithoInput = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            "flex h-11 w-full rounded-2xl border px-4 py-2 text-sm transition-[border-color,box-shadow,background-color] duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus:border-brand-orange focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-orange/12 focus:shadow-[0_0_0_1px_rgba(239,138,0,0.12),0_12px_30px_rgba(239,138,0,0.08)] disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-11 w-full rounded-lg border px-4 py-2 text-sm transition-[border-color,box-shadow,background-color] duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-50",
             surfaceClass,
             error && "border-danger focus:border-danger focus:ring-danger/20",
             className,
@@ -50,7 +50,7 @@ const MithoSearchInput = React.forwardRef<HTMLInputElement, InputProps>(({ class
       <input
         type="search"
         className={cn(
-          "flex h-12 w-full rounded-2xl border border-brand-deep-green/12 bg-surface-raised pl-12 pr-4 py-2 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-brand-orange focus:outline-none focus:ring-4 focus:ring-brand-orange/12 focus:shadow-[0_0_0_1px_rgba(239,138,0,0.12),0_12px_30px_rgba(239,138,0,0.08)] disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-12 w-full rounded-lg border border-brand-deep-green/12 bg-surface-raised pl-12 pr-4 py-2 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         ref={ref}

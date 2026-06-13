@@ -1,5 +1,5 @@
 import type { ListAdminUsersParams } from "@/types/admin-users"
-import type { ListMyFollowingParams, ListPublicCreatorsParams } from "@/lib/api/profile"
+import type { ListPublicCreatorsParams } from "@/lib/api/profile"
 import type { ListAdminCustomersParams } from "@/types/admin-customers"
 import type { ListBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
@@ -59,8 +59,20 @@ export const queryKeys = {
   profiles: {
     public: (username: string) => ["profiles", "public", username] as const,
     directory: (params: ListPublicCreatorsParams) => ["profiles", "directory", params] as const,
-    myFollowingAll: ["profiles", "my-following"] as const,
-    myFollowing: (params?: ListMyFollowingParams) => ["profiles", "my-following", params] as const,
+    following: () => ["profiles", "following"] as const,
+  },
+  feed: {
+    all: ["feed"] as const,
+    list: (filters?: { types?: string }) => ["feed", "list", filters ?? {}] as const,
+  },
+  businessMemberships: {
+    all: ["business-memberships"] as const,
+    list: (businessId: string) => ["business-memberships", businessId] as const,
+  },
+  businessInvitations: {
+    all: ["business-invitations"] as const,
+    list: (businessId: string) => ["business-invitations", businessId] as const,
+    mine: ["business-invitations", "mine"] as const,
   },
   reviews: {
     all: ["reviews"] as const,

@@ -141,7 +141,7 @@ export function MediaPickerDialog({
         }
       }}
     >
-      <DialogContent className="flex max-h-[90vh] w-full max-w-3xl flex-col gap-0 overflow-hidden rounded-[1.8rem] border-brand-deep-green/10 p-0 shadow-[0_20px_60px_rgba(10,70,53,0.12)]">
+      <DialogContent className="flex max-h-[90vh] w-full max-w-3xl flex-col gap-0 overflow-hidden rounded-xl border-brand-deep-green/10 p-0 shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
         <DialogHeader className="border-b border-brand-deep-green/10 px-6 py-5">
           <DialogTitle className="text-lg font-semibold text-brand-dark-green">Select media</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
@@ -155,7 +155,7 @@ export function MediaPickerDialog({
           className="flex flex-1 flex-col overflow-hidden"
         >
           <div className="border-b border-brand-deep-green/10 px-6 pt-4 pb-3">
-            <TabsList className="h-10 rounded-xl bg-brand-soft-beige/40">
+            <TabsList className="h-10 rounded-xl bg-muted">
               <TabsTrigger value="library" className="rounded-lg px-4 text-sm">
                 Library
               </TabsTrigger>
@@ -177,7 +177,7 @@ export function MediaPickerDialog({
                     className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                       typeFilter === t
                         ? "border-brand-dark-green bg-brand-dark-green text-white"
-                        : "border-brand-deep-green/10 bg-white text-brand-dark-green hover:bg-brand-soft-beige/30"
+                        : "border-brand-deep-green/10 bg-white text-brand-dark-green hover:bg-muted"
                     }`}
                   >
                     {t === "all" ? "All" : t === "image" ? "Images" : "Videos"}
@@ -205,9 +205,9 @@ export function MediaPickerDialog({
                       key={item.id}
                       type="button"
                       onClick={() => toggleSelection(item.id)}
-                      className={`group relative aspect-square overflow-hidden rounded-xl border-2 transition-all ${
+                      className={`group relative aspect-square overflow-hidden rounded-xl border-2 transition-colors ${
                         isSelected
-                          ? "border-brand-dark-green shadow-[0_0_0_3px_rgba(10,70,53,0.12)]"
+                          ? "border-brand-dark-green shadow-[0_0_0_3px_rgba(0,0,0,0.08)]"
                           : "border-brand-deep-green/10 hover:border-brand-deep-green/30"
                       }`}
                     >
@@ -218,7 +218,7 @@ export function MediaPickerDialog({
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-brand-soft-beige/30">
+                        <div className="flex h-full w-full items-center justify-center bg-muted">
                           <Video className="h-8 w-8 text-brand-deep-green/30" />
                         </div>
                       )}
@@ -256,10 +256,10 @@ export function MediaPickerDialog({
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onClick={() => !uploadMutation.isPending && fileInputRef.current?.click()}
-              className={`flex min-h-64 cursor-pointer flex-col items-center justify-center gap-4 rounded-[1.2rem] border-2 border-dashed transition-colors ${
+              className={`flex min-h-64 cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed transition-colors ${
                 isDragging
-                  ? "border-brand-dark-green bg-brand-soft-beige/20"
-                  : "border-brand-deep-green/20 bg-brand-soft-beige/10 hover:border-brand-deep-green/40 hover:bg-brand-soft-beige/20"
+                  ? "border-brand-dark-green bg-muted"
+                  : "border-brand-deep-green/20 bg-muted/60 hover:border-brand-deep-green/40 hover:bg-muted"
               } ${uploadMutation.isPending ? "cursor-default opacity-70" : ""}`}
             >
               {uploadMutation.isPending ? (
@@ -295,7 +295,7 @@ export function MediaPickerDialog({
           <Button
             type="button"
             variant="outline"
-            className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-brand-soft-beige/40"
+            className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted"
             onClick={() => onOpenChange(false)}
           >
             Cancel

@@ -12,6 +12,7 @@ import type {
   RejectReviewPayload,
   ResubmitReviewPayload,
   ReviewItem,
+  UpsertReviewReplyPayload,
   UpdateReviewPayload,
 } from "@/types/reviews"
 
@@ -38,8 +39,10 @@ function mapAdminParams(params?: ListAdminReviewsParams) {
 
 function toSnakeCase(payload: CreateReviewPayload | ResubmitReviewPayload) {
   return {
+    title: payload.title,
     rating: payload.rating,
     body: payload.body,
+    tips: payload.tips,
     media_ids: payload.mediaIds ?? [],
   }
 }
@@ -81,6 +84,18 @@ export async function updateReview(reviewId: string, payload: UpdateReviewPayloa
 
 export async function resubmitReview(reviewId: string, payload: ResubmitReviewPayload): Promise<ReviewItem> {
   const { data } = await API.put<ISuccessResponse<ReviewItem>>(`/reviews/${reviewId.trim()}/resubmit`, toSnakeCase(payload))
+  return data.data
+}
+
+export async function upsertBusinessReviewReply(
+  businessId: string,
+  reviewId: string,
+  payload: UpsertReviewReplyPayload,
+): Promise<ReviewItem> {
+  const { data } = await API.put<ISuccessResponse<ReviewItem>>(
+    `/businesses/${businessId.trim()}/reviews/${reviewId.trim()}/reply`,
+    { body: payload.body },
+  )
   return data.data
 }
 

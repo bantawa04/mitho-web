@@ -9,7 +9,7 @@ export function SponsoredSection() {
       </div>
       <MithoCard className="overflow-hidden">
         <MithoCardContent className="p-0">
-          <div className="relative aspect-[3/1] sm:aspect-[4/1] bg-gradient-to-r from-brand-orange/10 to-brand-deep-green/10">
+          <div className="relative aspect-[3/1] sm:aspect-[4/1] bg-muted">
             <img
               src="/placeholder.svg?height=200&width=800"
               alt="Sponsored advertisement"

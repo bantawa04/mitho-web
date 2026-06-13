@@ -40,7 +40,7 @@ export function AppPromotionSection() {
             {appBenefits.map((benefit) => (
               <div
                 key={benefit.title}
-                className="rounded-[1.55rem] border border-[#f6d9ae]/30 bg-[#fff1d9]/12 px-5 py-5 shadow-[0_16px_38px_rgba(9,29,20,0.12)] backdrop-blur-sm"
+                className="rounded-xl border border-[#f6d9ae]/30 bg-[#fff1d9]/12 px-5 py-5 shadow-sm"
               >
                 <div className="flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-soft-beige text-brand-dark-green">
@@ -89,11 +89,11 @@ export function AppPromotionSection() {
 
             <div className="flex flex-row justify-between items-center">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-deep-green/70">Mitho picks</p>
-              <div className="rounded-full bg-brand-orange px-3 py-1 text-xs font-semibold text-white">4.8+</div>
+              <div className="rounded-lg bg-primary px-3 py-1 text-xs font-semibold text-white">4.8+</div>
             </div>
             <p className="mt-2 text-2xl font-semibold leading-tight">Near Kathmandu tonight</p>
 
-            <div className="relative z-10 mt-4 overflow-hidden rounded-[1.5rem] border border-brand-deep-green/10 bg-white shadow-[0_12px_26px_rgba(10,70,53,0.06)]">
+            <div className="relative z-10 mt-4 overflow-hidden rounded-xl border border-brand-deep-green/10 bg-white shadow-sm">
               <div className="relative aspect-[16/10]">
                 <Image
                   src="/nepali-momo-dish.jpg"

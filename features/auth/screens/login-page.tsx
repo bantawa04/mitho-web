@@ -27,11 +27,11 @@ export function LoginPage() {
   return (
     <div className="page-shell-customer min-h-screen">
       <Header />
-      <main className="bg-[linear-gradient(180deg,#fffdf8_0%,#fbf7ee_26%,#fffdfa_100%)] pb-20 pt-10">
+      <main className="pb-20 pt-10">
         <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-[560px] rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_22px_60px_rgba(10,70,53,0.14)]">
+          <div className="mx-auto max-w-[440px] rounded-xl border border-border bg-white shadow-sm">
             <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-7">
-              <div className="inline-flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-[#fffdf8] px-4 py-2 text-sm font-semibold text-brand-dark-green">
+              <div className="flex items-center gap-3 text-sm font-semibold text-brand-dark-green">
                 <BrandLogo kind="icon" tone="green" className="h-6 w-auto" alt="Mitho Cha! icon" />
                 Google sign-in
               </div>
@@ -42,7 +42,7 @@ export function LoginPage() {
             </div>
 
             <div className="space-y-5 px-6 py-6 sm:px-7">
-              <div className="rounded-[1.25rem] border border-brand-deep-green/10 bg-[#fffdf8] p-4">
+              <div className="rounded-lg border border-border bg-surface-soft p-4">
                 <p className="text-sm leading-7 text-muted-foreground">
                   Mitho uses Google sign-in only. Once you are in, we will return you to the page you were trying to open.
                 </p>
@@ -77,7 +77,7 @@ export function LoginPage() {
                   />
                 </div>
               ) : (
-                <div className="rounded-[1.25rem] border border-dashed border-brand-deep-green/18 bg-[#fffdf8] p-4">
+                <div className="rounded-lg border border-border bg-surface-soft p-4">
                   <p className="text-sm leading-7 text-muted-foreground">
                     Google sign-in is not configured yet. Add <code className="font-semibold text-brand-dark-green">NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> to the web env before testing login.
                   </p>
@@ -87,7 +87,7 @@ export function LoginPage() {
               {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
               <p className="text-sm leading-7 text-muted-foreground">
-                Just browsing instead? <Link href="/" className="font-semibold text-brand-deep-green hover:text-brand-orange">Go back home</Link>.
+                Just browsing instead? <Link href="/" className="font-semibold text-brand-deep-green hover:text-primary">Go back home</Link>.
               </p>
             </div>
           </div>

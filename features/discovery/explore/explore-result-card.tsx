@@ -11,7 +11,7 @@ interface ExploreResultCardProps {
 
 export function ExploreResultCard({ result }: ExploreResultCardProps) {
   return (
-    <article className="overflow-hidden rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_10px_28px_rgba(10,70,53,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(10,70,53,0.1)]">
+    <article className="overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
       <div className="grid gap-0 md:grid-cols-[240px_minmax(0,1fr)]">
         <div className="relative aspect-[4/3] md:aspect-auto md:h-full">
           <Image
@@ -23,7 +23,7 @@ export function ExploreResultCard({ result }: ExploreResultCardProps) {
           />
         </div>
 
-        <div className="flex min-w-0 flex-col p-5 sm:p-6">
+        <div className="flex min-w-0 flex-col p-4 sm:p-5">
           <div className="flex flex-wrap items-center gap-2">
             {result.openNow ? <OpenNowBadge /> : <ClosedBadge />}
             <MithoBadge variant="muted">{result.cuisine}</MithoBadge>
@@ -34,7 +34,7 @@ export function ExploreResultCard({ result }: ExploreResultCardProps) {
             <div className="min-w-0">
               <Link
                 href={`/business/${result.slug}`}
-                className="text-2xl font-semibold leading-tight text-brand-dark-green transition-colors hover:text-brand-orange"
+                className="text-2xl font-semibold leading-tight text-brand-dark-green transition-colors hover:text-primary"
               >
                 {result.name}
               </Link>
@@ -55,15 +55,15 @@ export function ExploreResultCard({ result }: ExploreResultCardProps) {
             <div className="flex flex-col items-end gap-1 text-right">
               <div className="flex items-center gap-2">
                 <StarRating rating={result.rating} size="sm" />
-                <span className="text-sm font-semibold text-brand-dark-green">{result.rating.toFixed(1)}</span>
+                <span className="text-sm font-semibold tabular-nums text-brand-dark-green">{result.rating.toFixed(1)}</span>
               </div>
-              <span className="text-xs text-muted-foreground">{result.reviewCount} local reviews</span>
+              <span className="text-xs tabular-nums text-muted-foreground">{result.reviewCount} local reviews</span>
             </div>
           </div>
 
           <div className="mt-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-deep-green/58">Known for</p>
+              <p className="text-xs font-semibold text-muted-foreground">Known for</p>
               <p className="mt-2 text-lg font-semibold text-brand-dark-green">{result.standoutDish}</p>
               <p className="mt-2 text-sm leading-6 text-foreground">{result.whyGo}</p>
             </div>
@@ -72,7 +72,7 @@ export function ExploreResultCard({ result }: ExploreResultCardProps) {
           <div className="mt-5">
             <Link
               href={`/business/${result.slug}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-brand-orange"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-primary"
             >
               Open full business page
               <ArrowUpRight className="h-4 w-4" />

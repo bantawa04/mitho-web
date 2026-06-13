@@ -116,7 +116,7 @@ export function CompleteProfilePage() {
   const showProblem = availability === "unavailable" || availability === "invalid"
 
   return (
-    <div className="page-shell-customer min-h-dvh bg-[linear-gradient(180deg,#fffdf8_0%,#fbf7ee_32%,#fffdfa_100%)]">
+    <div className="page-shell-customer min-h-dvh">
       <main className="container mx-auto flex min-h-dvh items-center px-4 py-10">
         <section className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(420px,1fr)] lg:items-center">
           <div className="space-y-6">
@@ -132,10 +132,10 @@ export function CompleteProfilePage() {
 
           <form
             onSubmit={handleSubmit}
-            className="rounded-[1.75rem] border border-brand-deep-green/10 bg-white shadow-[0_22px_60px_rgba(10,70,53,0.12)]"
+            className="mx-auto max-w-[440px] rounded-xl border border-border bg-white shadow-sm"
           >
             <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-7">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-deep-green/10 text-brand-deep-green">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-deep-green/10 text-brand-deep-green">
                 <UserRound className="h-5 w-5" />
               </div>
               <h2 className="mt-4 text-2xl font-semibold text-brand-dark-green">Complete your profile</h2>
@@ -145,7 +145,7 @@ export function CompleteProfilePage() {
             <div className="space-y-5 px-6 py-6 sm:px-7">
               <label className="block space-y-2">
                 <span className="text-sm font-semibold text-brand-dark-green">Username</span>
-                <div className="flex min-h-12 items-center rounded-[1rem] border border-brand-deep-green/12 bg-[#fffdf8] px-4 transition-colors focus-within:border-brand-orange focus-within:ring-2 focus-within:ring-brand-orange/15">
+                <div className="flex min-h-12 items-center rounded-lg border border-border bg-white px-4 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/25">
                   <span className="text-base font-semibold text-brand-deep-green">@</span>
                   <Input
                     value={username}

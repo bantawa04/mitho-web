@@ -18,14 +18,24 @@ export interface ReviewAuthor {
   avatarUrl?: string | null
 }
 
+export interface ReviewReplyItem {
+  id: string
+  authorUserId: string
+  body: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface ReviewItem {
   id: string
   businessId: string
   businessName?: string
   businessSlug?: string
   userId: string
+  title: string
   rating: number
   body: string
+  tips?: string | null
   status: ReviewStatus
   rejectionFlag?: ReviewRejectionFlag | null
   moderationNote?: string | null
@@ -35,6 +45,7 @@ export interface ReviewItem {
   updatedAt: string
   author: ReviewAuthor
   media: Media[]
+  reply?: ReviewReplyItem | null
 }
 
 export interface ReviewRatingsSummary {
@@ -63,14 +74,20 @@ export interface BusinessReviewsResponse {
 }
 
 export interface CreateReviewPayload {
+  title: string
   rating: number
   body: string
+  tips?: string
   mediaIds?: string[]
 }
 
 export interface ResubmitReviewPayload extends CreateReviewPayload {}
 
 export interface UpdateReviewPayload extends CreateReviewPayload {}
+
+export interface UpsertReviewReplyPayload {
+  body: string
+}
 
 export interface MyBusinessReviewStatus {
   review: ReviewItem | null

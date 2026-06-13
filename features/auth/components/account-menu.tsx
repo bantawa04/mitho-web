@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Bookmark, Building2, LogOut, Settings, User, Users } from "lucide-react"
+import { Bookmark, Building2, LayoutDashboard, LogOut, Settings, User, Users } from "lucide-react"
 import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import {
   DropdownMenu,
@@ -26,16 +26,19 @@ interface AccountMenuProps {
 
 export function AccountMenu({ fallbackUser, className, scope = "default" }: AccountMenuProps) {
   const router = useRouter()
-  const { currentUser, hasBusinessAccess, isAuthenticated, isHydrated } = useAuthSnapshot()
+  const { currentUser, hasBusinessAccess, isAuthenticated, isHydrated, isAdmin } = useAuthSnapshot()
   const logout = useLogout()
 
   const effectiveUser =
     isHydrated ? (isAuthenticated ? currentUser : null) : fallbackUser
 
   const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : false
-  const settingsHref = scope === "admin" ? "/admin/settings" : "/profile/settings"
+  // Internal users (admin / superadmin / custom staff role) get a stripped menu
+  // even on public pages: just Dashboard + Account settings.
+  const isInternal = isHydrated && isAdmin
+  const settingsHref = scope === "admin" || isInternal ? "/admin/settings" : "/profile/settings"
   const menuSubtitle =
-    scope === "admin"
+    scope === "admin" || isInternal
       ? "Internal Mitho admin access"
       : "Same Mitho account across customer and business tools"
 
@@ -46,7 +49,7 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className={className ?? "inline-flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white/88 px-3 py-2 text-sm font-semibold text-brand-dark-green shadow-[0_10px_24px_rgba(10,70,53,0.06)] transition-colors hover:border-brand-deep-green/18 hover:bg-brand-soft-beige/45"}
+          className={className ?? "inline-flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white px-3 py-2 text-sm font-semibold text-brand-dark-green shadow-sm transition-colors hover:border-brand-deep-green/18 hover:bg-muted"}
           aria-label="Open account menu"
         >
           <img
@@ -59,7 +62,7 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-64 rounded-[1.25rem] border-brand-deep-green/10 bg-white p-2 shadow-[0_18px_40px_rgba(10,70,53,0.12)]"
+        className="w-64 rounded-xl border-brand-deep-green/10 bg-white p-2 shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
       >
         <DropdownMenuLabel className="px-3 py-2">
           <div className="flex items-center gap-3">
@@ -78,16 +81,21 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          {scope === "default" ? (
+          {isInternal ? (
             <DropdownMenuItem asChild>
-              <Link href="/profile">
-                <User className="h-4 w-4" />
-                Profile
+              <Link href="/admin">
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
               </Link>
             </DropdownMenuItem>
-          ) : null}
-          {scope === "default" ? (
+          ) : scope === "default" ? (
             <>
+              <DropdownMenuItem asChild>
+                <Link href="/profile">
+                  <User className="h-4 w-4" />
+                  Profile
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/collections">
                   <Bookmark className="h-4 w-4" />

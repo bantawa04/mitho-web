@@ -4,10 +4,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   followUser,
   getPublicProfile,
-  listMyFollowing,
+  listFollowing,
   listPublicCreators,
   unfollowUser,
-  type ListMyFollowingParams,
   type ListPublicCreatorsParams,
   type PublicProfileData,
 } from "@/lib/api/profile"
@@ -36,23 +35,11 @@ export function usePublicCreatorDirectory({ enabled = true, ...params }: UsePubl
   })
 }
 
-export function useMyFollowing(params: ListMyFollowingParams = {}) {
+export function useMyFollowing() {
   return useQuery({
-    queryKey: queryKeys.profiles.myFollowing(params),
-    queryFn: () => listMyFollowing(params),
-    staleTime: 1000 * 60 * 2,
-  })
-}
-
-export function useUnfollowFromList() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (username: string) => unfollowUser(username),
-    onSettled: (_data, _error, username) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.myFollowingAll })
-      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.public(username) })
-    },
+    queryKey: queryKeys.profiles.following(),
+    queryFn: () => listFollowing({ perPage: 50 }),
+    staleTime: 1000 * 60,
   })
 }
 
@@ -75,7 +62,8 @@ export function useFollowUser(username: string) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key })
-      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.myFollowingAll })
+      queryClient.invalidateQueries({ queryKey: queryKeys.feed.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.following() })
     },
   })
 }
@@ -99,7 +87,8 @@ export function useUnfollowUser(username: string) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key })
-      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.myFollowingAll })
+      queryClient.invalidateQueries({ queryKey: queryKeys.feed.all })
+      queryClient.invalidateQueries({ queryKey: queryKeys.profiles.following() })
     },
   })
 }

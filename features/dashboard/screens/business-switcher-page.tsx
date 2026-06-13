@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Building2, CirclePlus, FileCheck2, LayoutDashboard, Loader2, MoveRight, ShieldCheck } from "lucide-react"
+import { Building2, CirclePlus, FileCheck2, LayoutDashboard, Loader2, Mail, MoveRight, ShieldCheck } from "lucide-react"
 import type { MyBusinessEntry } from "@/types/business"
 import { DashboardFooter } from "@/features/dashboard/components/dashboard-footer"
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header"
@@ -9,6 +9,9 @@ import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { useMyBusinesses } from "@/hooks/use-businesses"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
+import { useMyInvitations, useAcceptInvitation, useDeclineInvitation } from "@/hooks/use-business-invitations"
+import { useToast } from "@/hooks/use-toast"
+import { extractApiErrorMessage } from "@/lib/api-error-utils"
 import type { ManagedBusiness } from "@/features/dashboard/data/dashboard-business-data"
 import {
   computeBusinessProfileCompleteness,
@@ -26,7 +29,7 @@ function entryToManagedBusiness(entry: MyBusinessEntry): ManagedBusiness {
     location: formatBusinessEntryLocation(entry),
     status: deriveManagedBusinessStatus(entry),
     lifecycleStatus: deriveBusinessLifecycleStatus(entry),
-    role: role === "owner" || role === "manager" ? role : undefined,
+    role: role === "owner" || role === "staff" ? role : undefined,
     claimStatus: entry.claimStatus === "pending" ? "pending-review" : undefined,
     profileCompleteness: computeBusinessProfileCompleteness(entry),
     reviewCount: entry.business.ratingCount,
@@ -61,28 +64,28 @@ function BusinessCard({ business, publicHref }: { business: ManagedBusiness; pub
   const manageHref = `/dashboard/businesses/${business.id}/overview`
 
   return (
-    <article className="rounded-[1.65rem] border border-brand-deep-green/10 bg-white p-5 shadow-[0_10px_28px_rgba(10,70,53,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(10,70,53,0.08)]">
+    <article className="rounded-lg border border-border bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             {statusBadge(business.status)}
             {lifecycleBadge(business.lifecycleStatus)}
-            {business.role ? <MithoBadge variant="neutral">{business.role === "owner" ? "Owner access" : "Manager access"}</MithoBadge> : null}
+            {business.role ? <MithoBadge variant="neutral">{business.role === "owner" ? "Owner access" : "Staff access"}</MithoBadge> : null}
           </div>
 
           <h2 className="mt-4 text-2xl font-semibold leading-tight text-foreground">{business.name}</h2>
           <p className="mt-2 text-sm text-muted-foreground">{business.location}</p>
         </div>
 
-        <div className="rounded-[1.1rem] bg-surface-business-inset px-4 py-3 text-right">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Profile health</p>
+        <div className="rounded-lg bg-surface-business-inset px-4 py-3 text-right">
+          <p className="text-xs font-semibold text-muted-foreground">Profile health</p>
           <p className="mt-2 text-lg font-semibold text-foreground">{business.profileCompleteness ?? 0}% complete</p>
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 md:grid-cols-2">
-        <div className="rounded-[1.15rem] bg-surface-business-inset px-4 py-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Current status</p>
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="rounded-lg bg-surface-business-inset px-4 py-4">
+          <p className="text-xs font-semibold text-muted-foreground">Current status</p>
           <p className="mt-2 text-sm leading-6 text-foreground">
             {business.status === "active"
               ? "This business is ready for day-to-day management."
@@ -92,8 +95,8 @@ function BusinessCard({ business, publicHref }: { business: ManagedBusiness; pub
           </p>
         </div>
 
-        <div className="rounded-[1.15rem] bg-surface-business-inset px-4 py-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-deep-green/58">Useful next step</p>
+        <div className="rounded-lg bg-surface-business-inset px-4 py-4">
+          <p className="text-xs font-semibold text-muted-foreground">Useful next step</p>
           <p className="mt-2 text-sm leading-6 text-foreground">
             {business.status === "active"
               ? `${business.reviewCount ?? 0} customer reviews are currently tied to this listing.`
@@ -104,7 +107,7 @@ function BusinessCard({ business, publicHref }: { business: ManagedBusiness; pub
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-4 flex flex-wrap gap-3">
         {business.status === "claim-pending" ? (
           <MithoButton variant="outline-secondary" disabled>
             Pending verification
@@ -126,6 +129,77 @@ function BusinessCard({ business, publicHref }: { business: ManagedBusiness; pub
   )
 }
 
+function PendingInvitationsCard() {
+  const { data: invitations, isLoading } = useMyInvitations()
+  const acceptMutation = useAcceptInvitation()
+  const declineMutation = useDeclineInvitation()
+  const { toast } = useToast()
+
+  if (isLoading || !invitations?.length) return null
+
+  async function handleAccept(id: string, businessName: string) {
+    try {
+      await acceptMutation.mutateAsync(id)
+      toast({ title: "Invitation accepted", description: `You now have access to ${businessName}.` })
+    } catch (error) {
+      toast({ title: "Could not accept invitation", description: extractApiErrorMessage(error), variant: "destructive" })
+    }
+  }
+
+  async function handleDecline(id: string) {
+    try {
+      await declineMutation.mutateAsync(id)
+      toast({ title: "Invitation declined" })
+    } catch (error) {
+      toast({ title: "Could not decline invitation", description: extractApiErrorMessage(error), variant: "destructive" })
+    }
+  }
+
+  return (
+    <section className="mb-6 rounded-lg border border-border bg-white p-5 shadow-sm">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <Mail className="h-5 w-5" />
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">Pending invitations</p>
+          <h2 className="text-lg font-semibold text-foreground">You have been invited to join a business workspace.</h2>
+        </div>
+      </div>
+
+      <ul className="space-y-3">
+        {invitations.map((inv) => (
+          <li key={inv.id} className="flex flex-col gap-3 rounded-lg border border-border bg-surface-business-inset px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-foreground">{inv.businessName}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Role: {inv.role} · expires {new Date(inv.expiresAt).toLocaleDateString()}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <MithoButton
+                size="sm"
+                onClick={() => handleAccept(inv.id, inv.businessName)}
+                disabled={acceptMutation.isPending || declineMutation.isPending}
+              >
+                Accept
+              </MithoButton>
+              <MithoButton
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => handleDecline(inv.id)}
+                disabled={acceptMutation.isPending || declineMutation.isPending}
+              >
+                Decline
+              </MithoButton>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 export function BusinessSwitcherPage() {
   const { data: entries, isLoading, isError } = useMyBusinesses()
   const { currentUser } = useAuthSnapshot()
@@ -142,10 +216,12 @@ export function BusinessSwitcherPage() {
       />
 
       <main className="container mx-auto px-4 pb-12 pt-8">
-        <section className="mb-8 rounded-[2rem] border border-brand-deep-green/10 bg-surface-business p-6 shadow-[0_12px_36px_rgba(10,70,53,0.06)]">
+        <PendingInvitationsCard />
+
+        <section className="mb-6 rounded-lg border border-border bg-surface-business p-6 shadow-sm">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="type-eyebrow mb-3 text-brand-deep-green/70">Business workspace</p>
+              <p className="mb-2 text-xs font-semibold text-muted-foreground">Business workspace</p>
               <h1 className="type-page-title text-brand-dark-green">Choose the business you want to act on.</h1>
               <p className="type-body mt-3 text-muted-foreground">
                 The same Mitho account can review places and manage one or more businesses. Business access happens through the listing you select here, not through a second login.
@@ -174,15 +250,15 @@ export function BusinessSwitcherPage() {
             <Loader2 className="h-6 w-6 animate-spin text-brand-deep-green/40" />
           </div>
         ) : isError ? (
-          <div className="rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-8 text-center shadow-[0_10px_24px_rgba(10,70,53,0.04)]">
+          <div className="rounded-lg border border-border bg-white p-8 text-center shadow-sm">
             <p className="text-sm text-muted-foreground">Could not load your businesses. Please refresh to try again.</p>
           </div>
         ) : hasBusinesses ? (
           <>
             <section>
-              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="type-eyebrow mb-3 text-brand-deep-green/70">Your businesses</p>
+                  <p className="mb-2 text-xs font-semibold text-muted-foreground">Your businesses</p>
                   <h2 className="type-section-title text-foreground">Pick a workspace and keep moving.</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -191,26 +267,26 @@ export function BusinessSwitcherPage() {
                 </div>
               </div>
 
-              <div className="grid gap-5">
+              <div className="grid gap-4">
                 {(entries ?? []).map((entry) => (
                   <BusinessCard key={entry.business.id} business={entryToManagedBusiness(entry)} publicHref={getPublicBusinessHref(entry.business)} />
                 ))}
               </div>
             </section>
 
-            <section className="mt-8 rounded-[1.8rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.04)]">
+            <section className="mt-6 rounded-lg border border-border bg-white p-4 shadow-sm">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
                 <div>
-                  <p className="type-eyebrow mb-3 text-brand-deep-green/70">How this works</p>
+                  <p className="mb-2 text-xs font-semibold text-muted-foreground">How this works</p>
                   <h2 className="type-section-title text-foreground">One identity, multiple business contexts.</h2>
                   <p className="mt-3 text-sm leading-7 text-muted-foreground">
                     Use this page whenever you need to switch from reviewing and browsing as a customer into managing a specific business presence. Each business can have its own setup status, claim state, and next steps.
                   </p>
                 </div>
 
-                <div className="rounded-[1.35rem] bg-surface-business-inset px-5 py-5">
+                <div className="rounded-lg bg-surface-business-inset px-5 py-5">
                   <div className="flex items-center gap-3 text-brand-dark-green">
-                    <ShieldCheck className="h-5 w-5 text-brand-orange" />
+                    <ShieldCheck className="h-5 w-5 text-muted-foreground" />
                     <p className="font-semibold">Helpful next moves</p>
                   </div>
                   <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
@@ -223,12 +299,12 @@ export function BusinessSwitcherPage() {
             </section>
           </>
         ) : (
-          <section className="rounded-[2rem] border border-brand-deep-green/10 bg-white p-6 shadow-[0_10px_24px_rgba(10,70,53,0.05)]">
+          <section className="rounded-lg border border-border bg-white p-4 shadow-sm">
             <div className="mx-auto max-w-4xl text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-soft-beige text-brand-deep-green">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
                 <Building2 className="h-8 w-8" />
               </div>
-              <p className="type-eyebrow mt-6 text-brand-deep-green/70">No businesses yet</p>
+              <p className="mt-6 text-xs font-medium text-muted-foreground">No businesses yet</p>
               <h2 className="mt-3 text-4xl font-semibold leading-tight text-foreground">
                 Start by adding a new listing or claiming one that already exists.
               </h2>
@@ -238,8 +314,8 @@ export function BusinessSwitcherPage() {
             </div>
 
             <div className="mt-8 grid gap-4 lg:grid-cols-2">
-              <div className="rounded-[1.6rem] border border-brand-deep-green/10 bg-surface-business px-6 py-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft-beige text-brand-deep-green">
+              <div className="rounded-lg border border-border bg-white p-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
                   <CirclePlus className="h-6 w-6" />
                 </div>
                 <h3 className="mt-4 text-2xl font-semibold text-foreground">Add a new business</h3>
@@ -254,8 +330,8 @@ export function BusinessSwitcherPage() {
                 </MithoButton>
               </div>
 
-              <div className="rounded-[1.6rem] border border-brand-deep-green/10 bg-surface-business px-6 py-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft-beige text-brand-deep-green">
+              <div className="rounded-lg border border-border bg-white p-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
                   <FileCheck2 className="h-6 w-6" />
                 </div>
                 <h3 className="mt-4 text-2xl font-semibold text-foreground">Claim an existing business</h3>
@@ -271,7 +347,7 @@ export function BusinessSwitcherPage() {
               </div>
             </div>
 
-            <div className="mt-8 rounded-[1.5rem] bg-surface-business-inset px-5 py-5">
+            <div className="mt-8 rounded-lg bg-surface-business-inset p-4">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-sm font-semibold text-foreground">Still reviewing places as a customer?</p>

@@ -115,29 +115,29 @@ export function AdminUsersPage() {
       {
         id: "name",
         label: "Name",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
-        cell: (user) => <p className="text-sm font-semibold text-brand-dark-green">{user.fullName || user.email}</p>,
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
+        cell: (user) => <p className="text-sm font-semibold text-foreground">{user.fullName || user.email}</p>,
       },
       {
         id: "email",
         label: "Email",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (user) => user.email,
       },
       {
         id: "role",
         label: "Role",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-brand-dark-green",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-foreground",
         cell: (user) => user.roles.map((r) => r.name).join(", ") || "Unassigned",
       },
       {
         id: "status",
         label: "Status",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top",
         cell: (user) => (
           <AdminStatusBadge {...getUserStatusPresentation(user.status)} />
         ),
@@ -145,15 +145,15 @@ export function AdminUsersPage() {
       {
         id: "joined",
         label: "Joined",
-        className: "py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 align-top text-sm text-muted-foreground",
+        className: "text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 align-top text-sm text-muted-foreground",
         cell: (user) => formatDate(user.createdAt),
       },
       {
         id: "actions",
         label: "Actions",
-        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-right",
+        className: "pr-6 text-right text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-right",
         cell: (user) => (
           <div className="flex justify-end">
             <AdminRowActions
@@ -175,11 +175,11 @@ export function AdminUsersPage() {
       {
         id: "name",
         label: "Name",
-        className: "px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "px-6 py-5 align-top",
+        className: "px-6 text-xs font-medium text-muted-foreground",
+        cellClassName: "px-6 py-2.5 align-top",
         cell: (role) => (
           <div className="space-y-2">
-            <p className="text-sm font-semibold text-brand-dark-green">{role.name}</p>
+            <p className="text-sm font-semibold text-foreground">{role.name}</p>
             <AdminStatusBadge {...getRoleTypePresentation(role.isSystem)} />
           </div>
         ),
@@ -187,8 +187,8 @@ export function AdminUsersPage() {
       {
         id: "actions",
         label: "Actions",
-        className: "py-4 pr-6 text-right text-xs font-semibold uppercase tracking-[0.16em] text-brand-deep-green/55",
-        cellClassName: "py-5 pr-6 align-top text-right",
+        className: "pr-6 text-right text-xs font-medium text-muted-foreground",
+        cellClassName: "py-2.5 pr-6 align-top text-right",
         cell: (role) => (
           <div className="flex justify-end">
             <AdminRowActions
@@ -276,11 +276,11 @@ export function AdminUsersPage() {
         </section>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as UsersTab)} className="space-y-5">
-          <TabsList className="h-11 rounded-xl bg-brand-soft-beige/55 p-1">
-            <TabsTrigger value="users" className="rounded-[0.8rem] px-5 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-brand-dark-green data-[state=active]:shadow-none">
+          <TabsList className="h-11 rounded-xl bg-muted p-1">
+            <TabsTrigger value="users" className="rounded-lg px-5 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-none">
               Users
             </TabsTrigger>
-            <TabsTrigger value="roles" className="rounded-[0.8rem] px-5 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-brand-dark-green data-[state=active]:shadow-none">
+            <TabsTrigger value="roles" className="rounded-lg px-5 text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-none">
               Roles
             </TabsTrigger>
           </TabsList>

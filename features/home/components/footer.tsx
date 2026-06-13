@@ -29,6 +29,18 @@ const footerLinks = {
       { id: "product-guidelines", label: "Community guidelines", href: "#" },
     ],
   },
+  helpLegal: {
+    title: "Help & Legal",
+    links: [
+      { id: "help-about", label: "About", href: "/about" },
+      { id: "help-contact", label: "Contact", href: "/contact" },
+      { id: "help-center", label: "Help Center", href: "/help" },
+      { id: "help-report", label: "Report Issue", href: "/report" },
+      { id: "help-privacy", label: "Privacy Policy", href: "/privacy" },
+      { id: "help-terms", label: "Terms of Service", href: "/terms" },
+      { id: "help-guidelines", label: "Guidelines", href: "/guidelines" },
+    ],
+  },
 }
 
 const socialLinks = [
@@ -45,7 +57,7 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr]">
           <div className="max-w-md">
             <Link href="/" className="inline-flex mb-4">
-              <BrandLogo kind="full" tone="orange" className="h-20 w-auto" alt="Mitho Cha! logo" />
+              <BrandLogo kind="full" tone="orange" className="h-14 w-auto" alt="Mitho Cha! logo" />
             </Link>
             <p className="mb-5 text-sm leading-7 text-white/72">
               Discover trusted local food picks across Nepal, from neighborhood momo stops to places worth a longer ride.
@@ -59,7 +71,7 @@ export function Footer() {
                 type="email"
                 placeholder="Your email"
                 aria-label="Email address"
-                className="flex-1 h-10 rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white placeholder:text-white/50 transition-[border-color,box-shadow,background-color] focus:border-brand-orange focus:bg-white/12 focus:outline-none focus:ring-4 focus:ring-brand-orange/15 focus:shadow-[0_0_24px_rgba(239,138,0,0.18)]"
+                className="flex-1 h-10 rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white placeholder:text-white/50 transition-[border-color,box-shadow,background-color] focus:border-white/60 focus:bg-white/12 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
               <button
                 type="button"
@@ -74,7 +86,7 @@ export function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-brand-orange"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-colors hover:bg-brand-orange"
                   aria-label={social.label}
                 >
                   <social.icon className="h-5 w-5" />
@@ -83,7 +95,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             {Object.values(footerLinks).map((section) => (
               <div key={section.title}>
                 <h3 className="mb-4 font-semibold">{section.title}</h3>
@@ -104,10 +116,10 @@ export function Footer() {
         <div className="flex flex-col gap-4 border-t border-white/10 pt-8 md:flex-row md:items-center md:justify-between">
           <p className="text-sm text-white/60">Serving food lovers across Nepal</p>
           <div className="flex items-center gap-4 text-sm text-white/60">
-            <Link href="#" className="transition-colors hover:text-white">
+            <Link href="/privacy" className="transition-colors hover:text-white">
               Privacy
             </Link>
-            <Link href="#" className="transition-colors hover:text-white">
+            <Link href="/terms" className="transition-colors hover:text-white">
               Terms
             </Link>
           </div>
