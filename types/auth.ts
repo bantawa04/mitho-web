@@ -27,6 +27,8 @@ export interface AuthUser {
   staffPermissions: string[]
   businessMemberships: SessionBusinessMembership[]
   pendingInvitationCount?: number
+  accountPendingDeletion?: boolean
+  deletionFinalizeAt?: string | null
 }
 
 export interface LoginWithGooglePayload {
