@@ -22,6 +22,7 @@ export interface PublicProfileData {
   reviewCount: number
   collectionCount: number
   followerCount: number
+  followingCount: number
   isFollowedByCurrentUser: boolean
   citiesExplored: number
   recentPublicReviews: PublicProfileReviewPreview[]
@@ -74,6 +75,7 @@ export interface PublicCreatorItem {
   reviewCount: number
   collectionCount: number
   followerCount: number
+  isFollowedByCurrentUser: boolean
 }
 
 export interface PublicCreatorDirectoryMeta {
@@ -106,6 +108,30 @@ export interface ListFollowingParams {
 
 export async function listFollowing(params: ListFollowingParams = {}): Promise<PublicCreatorDirectoryResponse> {
   const { data } = await API.get<ISuccessResponse<PublicCreatorDirectoryResponse>>("/following", {
+    params: { page: params.page, per_page: params.perPage },
+  })
+  return data.data
+}
+
+export interface ListFollowersParams {
+  page?: number
+  perPage?: number
+}
+
+export async function listFollowers(username: string, params: ListFollowersParams = {}): Promise<PublicCreatorDirectoryResponse> {
+  const { data } = await API.get<ISuccessResponse<PublicCreatorDirectoryResponse>>(`/users/${username}/followers`, {
+    params: { page: params.page, per_page: params.perPage },
+  })
+  return data.data
+}
+
+export interface ListUserFollowingParams {
+  page?: number
+  perPage?: number
+}
+
+export async function listUserFollowing(username: string, params: ListUserFollowingParams = {}): Promise<PublicCreatorDirectoryResponse> {
+  const { data } = await API.get<ISuccessResponse<PublicCreatorDirectoryResponse>>(`/users/${username}/following`, {
     params: { page: params.page, per_page: params.perPage },
   })
   return data.data

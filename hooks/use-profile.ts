@@ -4,10 +4,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   followUser,
   getPublicProfile,
+  listFollowers,
   listFollowing,
   listPublicCreators,
+  listUserFollowing,
   unfollowUser,
+  type ListFollowersParams,
   type ListPublicCreatorsParams,
+  type ListUserFollowingParams,
   type PublicProfileData,
 } from "@/lib/api/profile"
 
@@ -43,6 +47,24 @@ export function useMyFollowing() {
   })
 }
 
+export function useFollowers(username: string, params: ListFollowersParams = {}) {
+  return useQuery({
+    queryKey: queryKeys.profiles.followers(username),
+    queryFn: () => listFollowers(username, { perPage: 50, ...params }),
+    enabled: !!username,
+    staleTime: 1000 * 60,
+  })
+}
+
+export function useUserFollowing(username: string, params: ListUserFollowingParams = {}) {
+  return useQuery({
+    queryKey: queryKeys.profiles.userFollowing(username),
+    queryFn: () => listUserFollowing(username, { perPage: 50, ...params }),
+    enabled: !!username,
+    staleTime: 1000 * 60,
+  })
+}
+
 export function useFollowUser(username: string) {
   const queryClient = useQueryClient()
   const key = queryKeys.profiles.public(username)
@@ -64,6 +86,8 @@ export function useFollowUser(username: string) {
       queryClient.invalidateQueries({ queryKey: key })
       queryClient.invalidateQueries({ queryKey: queryKeys.feed.all })
       queryClient.invalidateQueries({ queryKey: queryKeys.profiles.following() })
+      queryClient.invalidateQueries({ queryKey: ["profiles", "followers"] })
+      queryClient.invalidateQueries({ queryKey: ["profiles", "user-following"] })
     },
   })
 }
@@ -89,6 +113,8 @@ export function useUnfollowUser(username: string) {
       queryClient.invalidateQueries({ queryKey: key })
       queryClient.invalidateQueries({ queryKey: queryKeys.feed.all })
       queryClient.invalidateQueries({ queryKey: queryKeys.profiles.following() })
+      queryClient.invalidateQueries({ queryKey: ["profiles", "followers"] })
+      queryClient.invalidateQueries({ queryKey: ["profiles", "user-following"] })
     },
   })
 }
