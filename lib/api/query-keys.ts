@@ -83,6 +83,9 @@ export const queryKeys = {
     mine: (businessId: string) => ["reviews", "business", businessId, "mine"] as const,
     myList: (params?: ListMyReviewsParams) => ["reviews", "my-list", params] as const,
   },
+  accountDeletion: {
+    preflight: ["account-deletion", "preflight"] as const,
+  },
   admin: {
     users: {
       all: ["admin", "users"] as const,

@@ -3,9 +3,9 @@
 import Link from "next/link"
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Bookmark, Building2, Camera, ChevronRight, Clock3, Copy, Globe, Lock, Mail, MapPin, MessageSquare, Search, Settings, ShieldAlert, Star, Trash2, UserCheck, UserPlus, Users } from "lucide-react"
+import { ArrowRight, Bookmark, Building2, Camera, ChevronRight, Clock3, Copy, Globe, Lock, Mail, MapPin, Search, Settings, Star, Trash2, UserCheck, UserPlus, Users } from "lucide-react"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
-import { useAuthSnapshot, useLogout, useUpdateProfile } from "@/hooks/use-auth-session"
+import { useAuthSnapshot, useUpdateProfile } from "@/hooks/use-auth-session"
 import { useCollections, usePublicCollections } from "@/hooks/use-collections"
 import { useMyReviews } from "@/hooks/use-reviews"
 import { useUploadMedia } from "@/hooks/use-media"
@@ -16,10 +16,9 @@ import { MithoPagination } from "@/components/mitho/mitho-pagination"
 import type { ReviewItem, ReviewStatus } from "@/types/reviews"
 import { getCollectionCoverImages, getCollectionPlaceCount } from "@/features/collections/utils/collection-helpers"
 import { CollectionShowcaseCard } from "@/features/collections/components/collection-showcase-card"
-import {
-  mockCustomerProfile,
-  type PublicUserProfileData,
-} from "@/features/profile/data/profile-data"
+import type { PublicUserProfileData } from "@/features/profile/data/profile-data"
+import { useDeletionPreflight, useReleaseBusinessOwnership, useRequestAccountDeletion } from "@/hooks/use-account-deletion"
+import type { DeletionBlocker } from "@/types/account-deletion"
 import type { PublicCreatorItem } from "@/lib/api/profile"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import {
@@ -69,12 +68,11 @@ function ProfileTabsPanel() {
 }
 
 function BusinessBanner() {
-  const { hasBusinessAccess, isHydrated } = useAuthSnapshot()
-  const businessContext = mockCustomerProfile.businessContext
+  const { hasBusinessAccess, isHydrated, authUser } = useAuthSnapshot()
+  const membershipCount = authUser?.businessMemberships.filter((m) => m.status === "active").length ?? 0
 
-  // Hide the whole business banner for customers with no business access.
   if (!isHydrated || !hasBusinessAccess) return null
-  if (businessContext.status === "none") return null
+  if (membershipCount === 0) return null
 
   return (
     <div className="border-t border-brand-deep-green/10 px-6 py-5 sm:px-8">
@@ -84,39 +82,20 @@ function BusinessBanner() {
             <Building2 className="h-4 w-4" />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {businessContext.status === "approved" ? (
-              <>
-                <MithoBadge variant="success">Business access live</MithoBadge>
-                <MithoBadge variant="muted">{businessContext.managedCount} workspace</MithoBadge>
-              </>
-            ) : (
-              <>
-                <MithoBadge variant="warning">Claim pending</MithoBadge>
-                <span className="text-sm text-muted-foreground">
-                  {businessContext.pendingLabel ?? "Ownership claim under review."}
-                </span>
-              </>
-            )}
+            <MithoBadge variant="success">Business access live</MithoBadge>
+            <MithoBadge variant="muted">{membershipCount} workspace</MithoBadge>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {businessContext.status === "approved" ? (
-            <>
-              <MithoButton variant="outline-secondary" size="sm" asChild>
-                <Link href="/dashboard/businesses">
-                  Manage businesses
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </MithoButton>
-              <MithoButton variant="ghost" size="sm" asChild>
-                <Link href="/business/claim">Claim another</Link>
-              </MithoButton>
-            </>
-          ) : (
-            <MithoButton variant="outline-secondary" size="sm" asChild>
-              <Link href="/business/claim">Review claim</Link>
-            </MithoButton>
-          )}
+          <MithoButton variant="outline-secondary" size="sm" asChild>
+            <Link href="/dashboard/businesses">
+              Manage businesses
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </MithoButton>
+          <MithoButton variant="ghost" size="sm" asChild>
+            <Link href="/business/claim">Claim another</Link>
+          </MithoButton>
         </div>
       </div>
     </div>
@@ -179,17 +158,23 @@ export function ProfileHubPage() {
         <div className="border-t border-brand-deep-green/10 px-6 py-6 sm:px-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-start gap-4">
-              <img
-                src={mockCustomerProfile.avatarUrl}
-                alt={mockCustomerProfile.name}
-                className="h-16 w-16 rounded-full border-4 border-brand-soft-beige object-cover sm:h-20 sm:w-20"
-              />
+              {publicProfileQuery.data?.avatarUrl ? (
+                <img
+                  src={publicProfileQuery.data.avatarUrl}
+                  alt={publicProfileQuery.data.name}
+                  className="h-16 w-16 rounded-full border-4 border-brand-soft-beige object-cover sm:h-20 sm:w-20"
+                />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-brand-soft-beige bg-brand-deep-green/10 text-xl font-semibold text-brand-deep-green sm:h-20 sm:w-20">
+                  {publicProfileQuery.data?.name?.[0]?.toUpperCase() ?? "?"}
+                </div>
+              )}
               <div>
-                <h1 className="type-page-title text-brand-dark-green">{mockCustomerProfile.name}</h1>
+                <h1 className="type-page-title text-brand-dark-green">{publicProfileQuery.data?.name ?? ""}</h1>
                 <p className="mt-1.5 text-sm font-medium uppercase tracking-[0.14em] text-brand-deep-green/58">
-                  {mockCustomerProfile.joinedLabel}
+                  {publicProfileQuery.data?.joinedLabel ?? ""}
                 </p>
-                <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{mockCustomerProfile.bio}</p>
+                <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">{publicProfileQuery.data?.bio ?? ""}</p>
               </div>
             </div>
             <MithoButton variant="outline-secondary" className="shrink-0 self-start" asChild>
@@ -475,10 +460,81 @@ export function ProfileReviewsPage() {
   )
 }
 
+function BlockerBusinessCard({
+  business,
+  onResolved,
+}: {
+  business: DeletionBlocker["businesses"][number]
+  onResolved: () => void
+}) {
+  const release = useReleaseBusinessOwnership(business.businessId)
+  const { toast } = useToast()
+  const [isReleaseOpen, setIsReleaseOpen] = React.useState(false)
+
+  const handleRelease = () => {
+    release.mutate(undefined, {
+      onSuccess: () => {
+        setIsReleaseOpen(false)
+        toast({ title: "Business released", description: `${business.businessName} is now unclaimed.` })
+        onResolved()
+      },
+      onError: (error) => {
+        toast({ title: "Could not release", description: extractApiErrorMessage(error), variant: "destructive" })
+      },
+    })
+  }
+
+  return (
+    <div className="rounded-lg border border-brand-deep-green/10 bg-muted p-4">
+      <div className="flex items-start gap-3">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-deep-green/10">
+          <Building2 className="h-4 w-4 text-brand-deep-green" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-brand-dark-green">{business.businessName}</p>
+          <p className="mt-1 text-xs text-muted-foreground">You are the sole owner. Transfer or release before deletion.</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {business.resolutions.includes("transfer") ? (
+              <MithoButton variant="outline-secondary" size="sm" asChild>
+                <Link href={`/dashboard/businesses/${business.businessId}/team`}>Transfer ownership</Link>
+              </MithoButton>
+            ) : null}
+            {business.resolutions.includes("release") ? (
+              <>
+                <MithoButton variant="outline-danger" size="sm" onClick={() => setIsReleaseOpen(true)}>
+                  Release to unclaimed
+                </MithoButton>
+                <AlertDialog open={isReleaseOpen} onOpenChange={setIsReleaseOpen}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Release {business.businessName}?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This removes you and all team members from the business. It becomes unclaimed and can be reclaimed by a new owner in the future.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-danger text-danger-foreground hover:bg-danger/90"
+                        onClick={handleRelease}
+                      >
+                        {release.isPending ? "Releasing…" : "Release business"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function ProfileSettingsPage() {
   const router = useRouter()
   const { authUser } = useAuthSnapshot()
-  const logout = useLogout()
   const updateProfile = useUpdateProfile()
   const uploadMedia = useUploadMedia()
   const { toast } = useToast()
@@ -495,11 +551,10 @@ export function ProfileSettingsPage() {
     [sessionUser],
   )
   const [form, setForm] = React.useState(initialForm)
-  const [isDeleteBlockedOpen, setIsDeleteBlockedOpen] = React.useState(false)
-  const [accountDeletionComplete, setAccountDeletionComplete] = React.useState(false)
+  const [isDeleteFlowOpen, setIsDeleteFlowOpen] = React.useState(false)
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
-  const hasManagedBusinesses =
-    mockCustomerProfile.businessContext.status === "approved" && (mockCustomerProfile.businessContext.managedCount ?? 0) > 0
+  const preflightQuery = useDeletionPreflight(isDeleteFlowOpen)
+  const requestDeletion = useRequestAccountDeletion()
 
   React.useEffect(() => {
     setForm(initialForm)
@@ -560,41 +615,6 @@ export function ProfileSettingsPage() {
         })
       },
     })
-  }
-
-  if (accountDeletionComplete) {
-    return (
-      <div className="container mx-auto px-4 py-10 md:py-12">
-        <div className="space-y-6">
-          <ProfileTabsPanel />
-
-          <section className={sectionCardClass}>
-            <div className="border-b border-brand-deep-green/10 px-6 py-6 sm:px-8">
-              <MithoBadge variant="warning">Deletion request staged</MithoBadge>
-              <h2 className="mt-4 text-2xl font-semibold text-brand-dark-green">This account would now move into the deletion flow.</h2>
-            </div>
-            <div className="space-y-4 px-6 py-6 sm:px-8">
-              <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
-                Personal profile access, collections, follows, and review identity would be handled here according to Mitho&apos;s future backend deletion rules.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <MithoButton
-                  onClick={async () => {
-                    await logout.mutateAsync()
-                    router.push("/")
-                  }}
-                >
-                  Return home
-                </MithoButton>
-                <MithoButton variant="outline-secondary" onClick={() => setAccountDeletionComplete(false)}>
-                  Back to settings
-                </MithoButton>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -749,80 +769,98 @@ export function ProfileSettingsPage() {
                 <div className="min-w-0">
                   <p className="text-base font-semibold text-brand-dark-green">Delete account</p>
                   <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                    Use this when you want Mitho to remove your account under a GDPR-style self-serve flow. This is separate from logging out.
+                    Use this when you want Mitho to remove your account under a GDPR-style self-serve flow. Approved reviews stay anonymized. You have 30 days to cancel by signing back in.
                   </p>
                 </div>
               </div>
 
               <div className="mt-5 flex flex-wrap gap-3">
-                {hasManagedBusinesses ? (
-                  <>
-                    <MithoButton variant="outline-danger" onClick={() => setIsDeleteBlockedOpen(true)}>
-                      Review deletion requirements
-                    </MithoButton>
-                    <Dialog open={isDeleteBlockedOpen} onOpenChange={setIsDeleteBlockedOpen}>
-                      <DialogContent className="sm:max-w-xl">
-                        <DialogHeader>
-                          <DialogTitle>Account deletion is blocked until business responsibility is resolved.</DialogTitle>
-                          <DialogDescription>
-                            This account currently manages {mockCustomerProfile.businessContext.managedCount} business workspace. Mitho should not delete the account until ownership or management responsibility has been handled safely.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div className="rounded-lg border border-brand-deep-green/10 bg-muted p-4">
-                            <div className="flex items-start gap-3">
-                              <ShieldAlert className="mt-0.5 h-4 w-4 text-brand-orange" />
-                              <div className="text-sm leading-7 text-muted-foreground">
-                                Before final deletion, the user should transfer ownership, remove themselves from managed businesses, or resolve sole-owner cases according to Mitho&apos;s business lifecycle policy.
-                              </div>
-                            </div>
-                          </div>
-                          <div className="space-y-2 text-sm leading-7 text-muted-foreground">
-                            <p>Required next steps:</p>
-                            <p>1. Transfer ownership if another eligible user should take over.</p>
-                            <p>2. Remove yourself from managed businesses if you are not the long-term operator.</p>
-                            <p>3. If you are the last owner, convert the business to an unclaimed state before account deletion.</p>
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <MithoButton variant="outline-secondary" onClick={() => setIsDeleteBlockedOpen(false)}>
-                            Back
-                          </MithoButton>
-                          <MithoButton asChild>
-                            <Link href="/dashboard/businesses">Manage businesses first</Link>
-                          </MithoButton>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </>
-                ) : (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <MithoButton variant="outline-danger">Delete account</MithoButton>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete this Mitho account?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This would begin the self-serve deletion flow for your profile, reviews, follows, and private account state. This action is more final than logging out.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Keep account</AlertDialogCancel>
-                        <AlertDialogAction
-                          className="bg-danger text-danger-foreground hover:bg-danger/90"
-                          onClick={() => setAccountDeletionComplete(true)}
-                        >
-                          Continue deletion
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
+                <MithoButton variant="outline-danger" onClick={() => setIsDeleteFlowOpen(true)}>
+                  Delete account
+                </MithoButton>
               </div>
             </div>
           </div>
         </section>
+
+        <Dialog open={isDeleteFlowOpen} onOpenChange={setIsDeleteFlowOpen}>
+          <DialogContent className="sm:max-w-xl">
+            {preflightQuery.isLoading ? (
+              <>
+                <DialogHeader>
+                  <DialogTitle>Checking account status…</DialogTitle>
+                  <DialogDescription>Please wait while we verify your account can be deleted.</DialogDescription>
+                </DialogHeader>
+                <div className="flex items-center justify-center py-8">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-deep-green border-t-transparent" />
+                </div>
+              </>
+            ) : preflightQuery.isError ? (
+              <>
+                <DialogHeader>
+                  <DialogTitle>Could not check deletion status</DialogTitle>
+                  <DialogDescription>Something went wrong. Please try again.</DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <MithoButton variant="outline-secondary" onClick={() => setIsDeleteFlowOpen(false)}>Close</MithoButton>
+                  <MithoButton onClick={() => preflightQuery.refetch()}>Retry</MithoButton>
+                </DialogFooter>
+              </>
+            ) : preflightQuery.data && !preflightQuery.data.allowed ? (
+              <>
+                <DialogHeader>
+                  <DialogTitle>Resolve business responsibilities first</DialogTitle>
+                  <DialogDescription>
+                    You are the sole owner of {preflightQuery.data.blockers.reduce((n, b) => n + b.businesses.length, 0)} business workspace. Transfer or release it before deleting your account.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3 max-h-80 overflow-y-auto">
+                  {preflightQuery.data.blockers.flatMap((blocker) =>
+                    blocker.businesses.map((biz) => (
+                      <BlockerBusinessCard key={biz.businessId} business={biz} onResolved={() => preflightQuery.refetch()} />
+                    )),
+                  )}
+                </div>
+                <DialogFooter>
+                  <MithoButton variant="outline-secondary" onClick={() => setIsDeleteFlowOpen(false)}>Cancel</MithoButton>
+                </DialogFooter>
+              </>
+            ) : (
+              <>
+                <DialogHeader>
+                  <DialogTitle>Delete this Mitho account?</DialogTitle>
+                  <DialogDescription>
+                    Your account will be hidden immediately and permanently deleted after a 30-day grace window. Approved reviews stay anonymized. You can cancel by signing back in within 30 days.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <MithoButton variant="outline-secondary" onClick={() => setIsDeleteFlowOpen(false)} disabled={requestDeletion.isPending}>
+                    Keep account
+                  </MithoButton>
+                  <MithoButton
+                    variant="outline-danger"
+                    loading={requestDeletion.isPending}
+                    disabled={requestDeletion.isPending}
+                    onClick={() => {
+                      requestDeletion.mutate({}, {
+                        onSuccess: () => {
+                          setIsDeleteFlowOpen(false)
+                          router.push("/")
+                          toast({ title: "Deletion scheduled", description: "Your account will be deleted in 30 days. Sign back in to cancel." })
+                        },
+                        onError: (error) => {
+                          toast({ title: "Could not schedule deletion", description: extractApiErrorMessage(error), variant: "destructive" })
+                        },
+                      })
+                    }}
+                  >
+                    Schedule deletion
+                  </MithoButton>
+                </DialogFooter>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
