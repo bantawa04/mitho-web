@@ -30,6 +30,20 @@ export async function fetchCurrentSession(): Promise<AuthUser | null> {
   }
 }
 
+export interface UpdateProfilePayload {
+  firstName?: string
+  lastName?: string
+  phone?: string
+  address?: string
+  bio?: string
+  avatarUrl?: string
+}
+
+export async function updateMyProfile(payload: UpdateProfilePayload): Promise<AuthUser> {
+  const { data } = await API.patch<ISuccessResponse<AuthUser>>("/auth/me", payload)
+  return data.data
+}
+
 export async function logoutSession(): Promise<void> {
   try {
     await API.post<ISuccessResponse<null>>("/auth/logout")
