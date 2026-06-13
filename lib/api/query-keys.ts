@@ -1,7 +1,7 @@
 import type { ListAdminUsersParams } from "@/types/admin-users"
 import type { ListPublicCreatorsParams } from "@/lib/api/profile"
 import type { ListAdminCustomersParams } from "@/types/admin-customers"
-import type { ListBusinessesParams } from "@/types/business"
+import type { ListBusinessesParams, SearchBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
 import type { ListCollectionsParams } from "@/types/collections"
 import type { ListAdminGalleryParams } from "@/types/gallery"
@@ -26,6 +26,7 @@ export const queryKeys = {
   businesses: {
     all: ["businesses"] as const,
     list: (params?: ListBusinessesParams) => ["businesses", "list", params] as const,
+    search: (params: SearchBusinessesParams) => ["businesses", "search", params] as const,
     detail: (id: string) => ["businesses", "detail", id] as const,
     mine: ["businesses", "mine"] as const,
     hours: (id: string) => ["businesses", id, "hours"] as const,

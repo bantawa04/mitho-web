@@ -3,11 +3,13 @@ import type { ISuccessResponse } from "@/types/response"
 import type {
   Business,
   BusinessHour,
+  BusinessSearchResponse,
   CreateBusinessPayload,
   ListBusinessesParams,
   MyBusinessEntry,
   PublicBusiness,
   ReplaceHoursPayload,
+  SearchBusinessesParams,
   UpdateBusinessPayload,
 } from "@/types/business"
 
@@ -65,6 +67,29 @@ export async function getBusiness(id: string): Promise<Business> {
 
 export async function getBusinessDetail(id: string): Promise<Business> {
   const { data } = await API.get<ISuccessResponse<Business>>(`/businesses/${id.trim()}`)
+  return data.data
+}
+
+function toSearchQueryParams(params: SearchBusinessesParams): Record<string, string | number | boolean> {
+  const out: Record<string, string | number | boolean> = {}
+  const q = params.q?.trim()
+  if (q) out.q = q
+  if (params.establishmentTypeId) out.establishment_type_id = params.establishmentTypeId
+  if (params.cuisineId) out.cuisine_id = params.cuisineId
+  if (params.provinceId !== undefined) out.province_id = params.provinceId
+  if (params.districtId !== undefined) out.district_id = params.districtId
+  if (params.municipalityId !== undefined) out.municipality_id = params.municipalityId
+  if (params.openNow) out.open_now = true
+  if (params.sort) out.sort = params.sort
+  if (params.page !== undefined) out.page = params.page
+  if (params.perPage !== undefined) out.per_page = params.perPage
+  return out
+}
+
+export async function searchBusinesses(params: SearchBusinessesParams = {}): Promise<BusinessSearchResponse> {
+  const { data } = await API.get<ISuccessResponse<BusinessSearchResponse>>("/businesses/search", {
+    params: toSearchQueryParams(params),
+  })
   return data.data
 }
 

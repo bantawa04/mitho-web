@@ -4,7 +4,7 @@ import { ExplorePage } from "@/features/discovery/explore/explore-page"
 export const metadata: Metadata = {
   title: "Explore Local Food Picks | Mitho Cha!",
   description:
-    "Search dishes, cafes, local cuisine, and neighborhood food picks across Nepal with real local trust signals.",
+    "Search restaurants, cafes, cuisines, and establishment types across Nepal by province, district, and neighborhood with real local trust signals.",
 }
 
 export default function ExploreRoute() {
