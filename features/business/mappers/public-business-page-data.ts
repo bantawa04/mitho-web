@@ -98,6 +98,12 @@ export function mapReviewItemToBusinessReview(item: ReviewItem): BusinessReview 
         src: mediaItem.publicUrl,
         thumbnail: mediaItem.mediaType === "video" ? mediaItem.publicUrl : undefined,
       })),
+    ownerResponse: item.reply
+      ? {
+          content: item.reply.body,
+          date: formatReviewDate(item.reply.updatedAt),
+        }
+      : undefined,
   }
 }
 

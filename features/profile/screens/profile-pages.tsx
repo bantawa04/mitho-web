@@ -220,6 +220,15 @@ export function ProfileHubPage() {
                       </div>
                     </div>
                     <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">{review.body}</p>
+                    {review.reply ? (
+                      <div className="mt-3 max-w-3xl rounded-lg border border-brand-deep-green/10 bg-[#fffdf8] p-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-semibold text-brand-deep-green">Response from Owner</span>
+                          <span className="text-xs text-muted-foreground">{formatReplyDate(review.reply.updatedAt)}</span>
+                        </div>
+                        <p className="mt-2 text-sm leading-7 text-foreground">{review.reply.body}</p>
+                      </div>
+                    ) : null}
                   </div>
                 )
               })
@@ -290,6 +299,10 @@ const reviewStatusBadge: Record<ReviewStatus, { variant: "warning" | "success" |
 }
 
 function formatReviewDate(value: string) {
+  return new Date(value).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+}
+
+function formatReplyDate(value: string) {
   return new Date(value).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
 }
 
@@ -366,6 +379,15 @@ export function ProfileReviewsPage() {
                       ) : null}
                     </div>
                     <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{review.body}</p>
+                    {review.reply ? (
+                      <div className="mt-3 max-w-3xl rounded-lg border border-brand-deep-green/10 bg-[#fffdf8] p-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-semibold text-brand-deep-green">Response from Owner</span>
+                          <span className="text-xs text-muted-foreground">{formatReplyDate(review.reply.updatedAt)}</span>
+                        </div>
+                        <p className="mt-2 text-sm leading-7 text-foreground">{review.reply.body}</p>
+                      </div>
+                    ) : null}
                     {review.status === "rejected" ? (
                       <div className="mt-3 max-w-3xl rounded-lg border border-danger/15 bg-danger/5 p-3 text-sm text-danger">
                         {review.moderationNote ? <p>{review.moderationNote}</p> : <p>This review was not approved.</p>}
