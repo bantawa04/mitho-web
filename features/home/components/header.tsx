@@ -32,11 +32,12 @@ export function Header({ signedInUser }: HeaderProps = {}) {
   const [isSignInOpen, setIsSignInOpen] = React.useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const { currentUser, isAuthenticated, isHydrated, hasBusinessAccess } = useAuthSnapshot()
+  const { currentUser, isAuthenticated, isHydrated, hasBusinessAccess, isAdmin } = useAuthSnapshot()
   const logout = useLogout()
 
   const effectiveUser = isHydrated ? (isAuthenticated ? currentUser : null) : signedInUser
   const effectiveHasBusinessAccess = isHydrated ? hasBusinessAccess : false
+  const isInternalUser = isHydrated && isAdmin
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -62,11 +63,10 @@ export function Header({ signedInUser }: HeaderProps = {}) {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <BrandLogo kind="icon" tone="green" className="h-10 w-auto sm:hidden" alt="Mitho Cha! logo" priority />
               <BrandLogo
                 kind="full"
                 tone="green"
-                className="hidden h-11 w-auto sm:block"
+                className="h-9 w-auto sm:h-11"
                 alt="Mitho Cha! wordmark"
                 priority
               />
@@ -184,31 +184,43 @@ export function Header({ signedInUser }: HeaderProps = {}) {
                       />
                       <span className="truncate">{effectiveUser.name}</span>
                     </Link>
-                    <Link
-                      href="/collections"
-                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Collections
-                    </Link>
-                    <Link
-                      href="/profile/following"
-                      className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Following
-                    </Link>
-                    {effectiveHasBusinessAccess ? (
+                    {isInternalUser ? (
                       <Link
-                        href="/dashboard/businesses"
+                        href="/admin"
                         className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        Manage businesses
+                        Dashboard
                       </Link>
-                    ) : null}
+                    ) : (
+                      <>
+                        <Link
+                          href="/collections"
+                          className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Collections
+                        </Link>
+                        <Link
+                          href="/profile/following"
+                          className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Following
+                        </Link>
+                        {effectiveHasBusinessAccess ? (
+                          <Link
+                            href="/dashboard/businesses"
+                            className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Manage businesses
+                          </Link>
+                        ) : null}
+                      </>
+                    )}
                     <Link
-                      href="/profile/settings"
+                      href={isInternalUser ? "/admin/settings" : "/profile/settings"}
                       className="block rounded-md px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-brand-soft-beige/50"
                       onClick={() => setIsMenuOpen(false)}
                     >
