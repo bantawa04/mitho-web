@@ -2,17 +2,9 @@
 
 import * as React from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Search } from "lucide-react"
 import { MithoButton } from "@/components/mitho/mitho-button"
-
-const quickChips = [
-  { label: "Momo", href: "/explore?category=restaurants&q=momo" },
-  { label: "Cafes", href: "/explore?category=cafes" },
-  { label: "Thakali", href: "/explore?q=thakali" },
-  { label: "Open now", href: "/explore?openNow=true" },
-]
 
 export function HeroV2() {
   const router = useRouter()
@@ -52,12 +44,12 @@ export function HeroV2() {
 
         <form
           onSubmit={handleSearchSubmit}
-          className="mt-12 w-full max-w-2xl relative flex items-center group shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+          className="mt-12 w-full max-w-2xl relative flex items-center group"
         >
           <label htmlFor="hero-search" className="sr-only">
             Search for dishes or restaurants
           </label>
-          <div className="absolute left-5 text-brand-deep-green/60">
+          <div className="absolute left-6 text-brand-deep-green/50">
             <Search className="h-5 w-5" />
           </div>
           <input
@@ -66,29 +58,16 @@ export function HeroV2() {
             placeholder="Search for buff momo, cozy cafes, thakali..."
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            className="h-14 w-full rounded-xl bg-white pl-14 pr-14 sm:pr-32 text-base text-foreground outline-none transition-all duration-300 placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/40"
+            className="h-[64px] w-full rounded-full border border-border bg-white pl-14 pr-[76px] text-base text-foreground shadow-sm outline-none transition-all duration-200 placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
           />
           <MithoButton
             type="submit"
-            className="absolute right-2 h-10 px-4"
+            className="absolute right-2 h-[48px] w-[48px] p-0 rounded-full flex items-center justify-center"
             aria-label="Search"
           >
             <Search className="h-4 w-4" />
-            <span className="hidden sm:inline">Search</span>
           </MithoButton>
         </form>
-
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-          {quickChips.map((chip) => (
-            <Link
-              key={chip.label}
-              href={chip.href}
-              className="rounded-lg bg-white/90 min-h-11 px-3 py-2.5 inline-flex items-center text-sm font-medium text-brand-dark-green hover:bg-white transition-colors"
-            >
-              {chip.label}
-            </Link>
-          ))}
-        </div>
       </div>
     </section>
   )

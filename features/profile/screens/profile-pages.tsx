@@ -219,6 +219,7 @@ export function ProfileHubPage() {
                         </div>
                       </div>
                     </div>
+                    {review.title ? <p className="mt-2 max-w-3xl text-sm font-semibold text-brand-dark-green">{review.title}</p> : null}
                     <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">{review.body}</p>
                     {review.reply ? (
                       <div className="mt-3 max-w-3xl rounded-lg border border-brand-deep-green/10 bg-[#fffdf8] p-3">
@@ -378,6 +379,7 @@ export function ProfileReviewsPage() {
                         </MithoButton>
                       ) : null}
                     </div>
+                    {review.title ? <p className="mt-3 max-w-3xl text-sm font-semibold text-brand-dark-green">{review.title}</p> : null}
                     <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{review.body}</p>
                     {review.reply ? (
                       <div className="mt-3 max-w-3xl rounded-lg border border-brand-deep-green/10 bg-[#fffdf8] p-3">

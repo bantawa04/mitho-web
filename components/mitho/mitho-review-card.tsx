@@ -15,9 +15,11 @@ interface ReviewCardProps {
   author: string
   authorUsername?: string | null
   authorImage: string
+  title?: string
   rating: number
   date: string
   content: string
+  tips?: string | null
   media?: ReviewMedia[]
   ownerResponse?: {
     content: string
@@ -30,9 +32,11 @@ export function MithoReviewCard({
   author,
   authorUsername,
   authorImage,
+  title,
   rating,
   date,
   content,
+  tips,
   media,
   ownerResponse,
   className,
@@ -70,7 +74,16 @@ export function MithoReviewCard({
         <StarRating rating={rating} size="sm" />
       </div>
 
+      {title ? <h5 className="mb-1.5 font-semibold text-brand-dark-green">{title}</h5> : null}
+
       <p className="mb-4 leading-relaxed text-foreground">{content}</p>
+
+      {tips ? (
+        <div className="mb-4 rounded-xl border border-brand-orange/15 bg-brand-orange/5 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-brand-orange">Tip</p>
+          <p className="mt-1 text-sm leading-relaxed text-foreground">{tips}</p>
+        </div>
+      ) : null}
 
       {media && media.length > 0 && (
         <div className="mb-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">

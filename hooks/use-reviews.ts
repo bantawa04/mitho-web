@@ -42,6 +42,9 @@ export function useMyBusinessReview(businessId: string | undefined, enabled = tr
     queryKey: queryKeys.reviews.mine(cleanBusinessId ?? ""),
     queryFn: () => getMyBusinessReview(cleanBusinessId!),
     enabled: Boolean(cleanBusinessId) && enabled,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   })
 }
 
