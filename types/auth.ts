@@ -9,6 +9,9 @@ export interface AuthUserProfile {
   fullName?: string
   socialProvider?: string | null
   profileComplete: boolean
+  phone?: string | null
+  address?: string | null
+  bio?: string | null
 }
 
 export interface SessionBusinessMembership {
