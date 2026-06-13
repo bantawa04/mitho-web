@@ -3,7 +3,7 @@
 import Link from "next/link"
 import type * as React from "react"
 import { cn } from "@/lib/utils"
-import { Utensils, Truck, Coffee, MapPin, Soup, Building2 } from "lucide-react"
+import { Utensils, Truck, Coffee, MapPin, Soup, Building2, Wine, Disc3, Mic2, Sandwich, UtensilsCrossed, Store, Building, Croissant, Candy, Beer } from "lucide-react"
 
 interface CategoryCardProps {
   icon: React.ReactNode
@@ -34,9 +34,19 @@ export function CategoryCard({ icon, label, href = "#", className }: CategoryCar
 
 export const categoryIcons = {
   restaurant: <Utensils className="h-6 w-6" />,
+  cafe: <Coffee className="h-6 w-6" />,
+  fast_food: <Sandwich className="h-6 w-6" />,
+  khaja_ghar: <UtensilsCrossed className="h-6 w-6" />,
+  club: <Wine className="h-6 w-6" />,
+  street_stall: <Store className="h-6 w-6" />,
+  food_court: <Building className="h-6 w-6" />,
+  bakery: <Croissant className="h-6 w-6" />,
+  sweet_shop: <Candy className="h-6 w-6" />,
+  bar_restaurant: <Beer className="h-6 w-6" />,
+  disco: <Disc3 className="h-6 w-6" />,
+  dohori: <Mic2 className="h-6 w-6" />,
   foodTruck: <Truck className="h-6 w-6" />,
   streetFood: <Soup className="h-6 w-6" />,
-  cafe: <Coffee className="h-6 w-6" />,
   local: <MapPin className="h-6 w-6" />,
   dineIn: <Building2 className="h-6 w-6" />,
 }
