@@ -6,39 +6,32 @@ const footerLinks = {
   discover: {
     title: "Discover",
     links: [
-      { id: "discover-trending", label: "Trending picks", href: "/explore" },
-      { id: "discover-reviews", label: "Local reviews", href: "/users/aaratieats" },
-      { id: "discover-nearby", label: "Nearby favorites", href: "/cities/kathmandu" },
-      { id: "discover-cravings", label: "Cravings", href: "/categories/restaurants" },
+      { id: "discover-trending", label: "Explore places", href: "/explore" },
       { id: "discover-creators", label: "Browse creators", href: "/users" },
     ],
   },
   forBusiness: {
     title: "For Business",
     links: [
+      { id: "business-add", label: "Add your business", href: "/add-business" },
       { id: "business-claim", label: "Claim your business", href: "/business/claim" },
-      { id: "business-placement", label: "Featured placement", href: "/business/claim" },
-      { id: "business-team", label: "Add your business", href: "/add-business" },
     ],
   },
   product: {
     title: "Product",
     links: [
       { id: "product-app", label: "Get the app", href: "/#app" },
-      { id: "product-waitlist", label: "Join the waitlist", href: "#" },
-      { id: "product-guidelines", label: "Community guidelines", href: "#" },
+      { id: "product-guidelines", label: "Community guidelines", href: "/guidelines" },
     ],
   },
   helpLegal: {
     title: "Help & Legal",
     links: [
       { id: "help-about", label: "About", href: "/about" },
-      { id: "help-contact", label: "Contact", href: "/contact" },
+      { id: "help-contact", label: "Contact us", href: "/contact" },
       { id: "help-center", label: "Help Center", href: "/help" },
-      { id: "help-report", label: "Report Issue", href: "/report" },
       { id: "help-privacy", label: "Privacy Policy", href: "/privacy" },
       { id: "help-terms", label: "Terms of Service", href: "/terms" },
-      { id: "help-guidelines", label: "Guidelines", href: "/guidelines" },
     ],
   },
 }
