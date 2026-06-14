@@ -2,12 +2,6 @@ import { NextResponse, type NextRequest } from "next/server"
 import { isInternalUser, isProfileComplete } from "@/lib/auth/access"
 import type { AuthUser } from "@/types/auth"
 import type { ISuccessResponse } from "@/types/response"
-import { LRUCache } from "lru-cache"
-
-const sessionCache = new LRUCache<string, AuthUser | { unauthenticated: true }>({
-  max: 500,
-  ttl: 30 * 1000, // 30 seconds
-})
 
 const ROBOTS_HEADER_VALUE = "noindex, nofollow, noarchive"
 const ASSET_FILE_PATTERN =
@@ -130,12 +124,6 @@ async function fetchAuthenticatedSession(request: NextRequest): Promise<AuthUser
   const sessionCookie = request.cookies.get(AUTH_SESSION_COOKIE_NAME)?.value?.trim()
   if (!sessionCookie) return null
 
-  if (sessionCache.has(sessionCookie)) {
-    const cached = sessionCache.get(sessionCookie)
-    if (cached && "unauthenticated" in cached) return null
-    return cached as AuthUser | null
-  }
-
   const response = await fetch(`${buildApiBaseUrl(request)}/auth/me`, {
     method: "GET",
     headers: {
@@ -147,7 +135,6 @@ async function fetchAuthenticatedSession(request: NextRequest): Promise<AuthUser
   })
 
   if (response.status === 401 || response.status === 429) {
-    sessionCache.set(sessionCookie, { unauthenticated: true })
     return null
   }
 
@@ -156,7 +143,6 @@ async function fetchAuthenticatedSession(request: NextRequest): Promise<AuthUser
   }
 
   const payload = (await response.json()) as ISuccessResponse<AuthUser>
-  sessionCache.set(sessionCookie, payload.data)
   return payload.data
 }
 

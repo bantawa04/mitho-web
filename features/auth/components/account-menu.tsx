@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Image from "next/image"
 
 interface AccountMenuProps {
   fallbackUser?: {
@@ -52,10 +53,12 @@ export function AccountMenu({ fallbackUser, className, scope = "default" }: Acco
           className={className ?? "inline-flex items-center gap-3 rounded-full border border-brand-deep-green/10 bg-white px-3 py-2 text-sm font-semibold text-brand-dark-green shadow-sm transition-colors hover:border-brand-deep-green/18 hover:bg-muted"}
           aria-label="Open account menu"
         >
-          <img
+          <Image
             src={effectiveUser.avatarUrl || "/placeholder.svg"}
             alt={effectiveUser.name}
             className="h-8 w-8 rounded-full border border-brand-soft-beige object-cover"
+            width={32}
+            height={32}
           />
           <span className="hidden max-w-[10rem] truncate sm:inline">{effectiveUser.name}</span>
         </button>
