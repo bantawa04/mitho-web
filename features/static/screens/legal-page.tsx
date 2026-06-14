@@ -59,6 +59,27 @@ export function LegalPage({ doc }: { doc: "privacy" | "terms" }) {
                         ))}
                       </ul>
                     )}
+                    {section.links && (
+                      <ul className="space-y-2" aria-label={`${section.heading} related links`}>
+                        {section.links.map((link) => {
+                          const isExternal = link.href.startsWith("http")
+
+                          return (
+                            <li key={link.href}>
+                              <a
+                                href={link.href}
+                                className="font-medium text-brand-deep-green underline decoration-brand-orange/50 underline-offset-4 transition-colors hover:text-brand-orange"
+                                target={isExternal ? "_blank" : undefined}
+                                rel={isExternal ? "noreferrer noopener" : undefined}
+                              >
+                                {link.label}
+                                {isExternal ? <span className="sr-only"> (opens in a new tab)</span> : null}
+                              </a>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    )}
                   </div>
                 </section>
               ))}
