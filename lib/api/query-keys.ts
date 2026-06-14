@@ -23,6 +23,13 @@ export const queryKeys = {
       list: (districtId: number | null) => ["nepal-admin", "municipalities", districtId] as const,
     },
   },
+  geography: {
+    province: (slug: string) => ["geography", "province", slug] as const,
+    district: (provinceSlug: string, districtSlug: string) =>
+      ["geography", "district", provinceSlug, districtSlug] as const,
+    municipality: (provinceSlug: string, districtSlug: string, municipalitySlug: string) =>
+      ["geography", "municipality", provinceSlug, districtSlug, municipalitySlug] as const,
+  },
   businesses: {
     all: ["businesses"] as const,
     list: (params?: ListBusinessesParams) => ["businesses", "list", params] as const,
