@@ -270,6 +270,71 @@ export function applyLiveExploreChange(
   return next
 }
 
+/* -------------------------------------------------------------------------- */
+/* Geo listing page URL <-> state layer                                        */
+/* -------------------------------------------------------------------------- */
+
+export interface LockedGeo {
+  province: number
+  district?: number
+  municipality?: number
+}
+
+/**
+ * Parse URL search params for a geo listing page. The locked geo IDs (from the
+ * route) always override any matching URL params. Non-locked geo levels (e.g.
+ * district on a province page) still read from the URL.
+ */
+export function parseGeoListingState(
+  params: ReadonlyURLSearchParams,
+  locked: LockedGeo,
+): LiveExploreState {
+  let district: number | null
+  if (locked.district !== undefined) {
+    district = locked.district
+  } else {
+    district = readPositiveInt(params, "district")
+  }
+
+  let municipality: number | null
+  if (locked.municipality !== undefined) {
+    municipality = locked.municipality
+  } else if (district === null) {
+    municipality = null
+  } else {
+    municipality = readPositiveInt(params, "municipality")
+  }
+
+  return {
+    q: readTrimmedQuery(params),
+    type: params.get("type")?.trim() ?? "",
+    cuisine: params.get("cuisine")?.trim() ?? "",
+    province: locked.province,
+    district,
+    municipality,
+    openNow: params.get("openNow") === "true",
+    sort: readLiveSort(params),
+    page: readLivePage(params),
+  }
+}
+
+/**
+ * Serialize geo listing state to a query string, omitting locked geo levels
+ * (those come from the route URL, not query params) and all defaults.
+ */
+export function buildGeoListingSearchString(state: LiveExploreState, locked: LockedGeo): string {
+  const params = new URLSearchParams()
+  if (state.q) params.set("q", state.q)
+  if (state.type) params.set("type", state.type)
+  if (state.cuisine) params.set("cuisine", state.cuisine)
+  if (locked.district === undefined && state.district !== null) params.set("district", String(state.district))
+  if (locked.municipality === undefined && state.municipality !== null) params.set("municipality", String(state.municipality))
+  if (state.openNow) params.set("openNow", "true")
+  if (state.sort !== LIVE_SORT_DEFAULT) params.set("sort", state.sort)
+  if (state.page > 1) params.set("page", String(state.page))
+  return params.toString()
+}
+
 /** Map canonical live-explore state to the snake_case-aware API params. */
 export function liveExploreStateToSearchParams(state: LiveExploreState): SearchBusinessesParams {
   return {
