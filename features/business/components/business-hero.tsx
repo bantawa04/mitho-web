@@ -3,6 +3,7 @@ import { BadgeCheck, Bookmark, MapPin, PenLine, Share2 } from "lucide-react"
 import { MithoBadge, OpenNowBadge, ClosedBadge } from "@/components/mitho/mitho-badge"
 import { StarRating } from "@/components/mitho/mitho-rating"
 import { MithoButton } from "@/components/mitho/mitho-button"
+import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 import type { BusinessHeroTag, BusinessSourceBadge } from "@/features/business/business-detail-types"
 
 interface BusinessHeroProps {
@@ -37,7 +38,7 @@ export function BusinessHero({
   onShare,
 }: BusinessHeroProps) {
   const hasReviews = reviewCount > 0 && rating !== null && rating !== undefined
-  const heroImage = coverImage ?? "/placeholder.svg?height=600&width=1200"
+  const heroImage = coverImage ?? DEFAULT_BUSINESS_FEATURED_IMAGE
   const sourceBadgeContent =
     sourceBadge === "verifiedOwner" ? (
       <MithoBadge variant="success" className="gap-1.5">

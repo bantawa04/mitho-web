@@ -718,15 +718,18 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                 </div>
               </div>
 
-              {/* Banner */}
+              {/* Featured image */}
               <div className="space-y-2 border-t border-border pt-4">
-                <FormLabel>Cover banner</FormLabel>
+                <FormLabel>Featured image</FormLabel>
+                <FormDescription>
+                  Shown prominently at the top of your public business page and in shared links.
+                </FormDescription>
                 <div className="space-y-3">
                   {bannerMedia ? (
                     <div className="relative w-full h-24 overflow-hidden rounded-lg border border-border">
                       <img
                         src={bannerMedia.publicUrl}
-                        alt="Banner"
+                        alt="Featured image"
                         className="h-full w-full object-cover"
                       />
                       <button
@@ -739,11 +742,11 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                     </div>
                   ) : existingBannerId ? (
                     <div className="flex w-full h-20 items-center justify-center rounded-lg border border-border bg-muted text-xs text-muted-foreground">
-                      Cover configured
+                      Featured image configured
                     </div>
                   ) : (
                     <div className="flex w-full h-20 items-center justify-center rounded-lg border border-dashed border-border bg-muted text-xs text-muted-foreground">
-                      No cover photo chosen
+                      No featured image chosen
                     </div>
                   )}
                   <button
@@ -751,7 +754,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                     onClick={() => setBannerPickerOpen(true)}
                     className="w-full rounded-lg border border-border py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
                   >
-                    {existingBannerId || bannerMedia ? "Change banner" : "Choose banner"}
+                    {existingBannerId || bannerMedia ? "Change featured image" : "Choose featured image"}
                   </button>
                 </div>
               </div>

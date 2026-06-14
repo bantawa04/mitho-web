@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
-import { Building2, ChevronRight, Eye, Pencil, Plus, ShieldCheck } from "lucide-react"
+import { ChevronRight, Eye, Pencil, Plus, ShieldCheck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { DEFAULT_BUSINESS_LOGO } from "@/features/business/constants/business-media"
 import { formatAdminBusinessTableLocation } from "@/features/admin/utils/admin-business-utils"
 import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { getBusinessListingPresentation, getBusinessOwnershipPresentation } from "@/features/admin/utils/admin-status-utils"
@@ -92,17 +93,11 @@ export function AdminBusinessesPage() {
         cellClassName: "px-6 py-2.5 align-top",
         cell: (business) => (
           <div className="flex items-start gap-3">
-            {business.logo?.publicUrl ? (
-              <img
-                src={business.logo.publicUrl}
-                alt={business.logo.altText ?? business.name}
-                className="h-11 w-11 rounded-xl border border-border object-cover"
-              />
-            ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted text-muted-foreground">
-                <Building2 className="h-5 w-5" />
-              </div>
-            )}
+            <img
+              src={business.logo?.publicUrl || DEFAULT_BUSINESS_LOGO}
+              alt={business.logo?.altText ?? `${business.name} logo`}
+              className="h-11 w-11 rounded-xl border border-border bg-white object-contain p-1"
+            />
             <div className="min-w-0">
               <p className="font-semibold text-foreground">{business.name}</p>
               {business.establishmentTypeId && (

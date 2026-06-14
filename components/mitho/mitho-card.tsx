@@ -6,6 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { MithoBadge, OpenNowBadge, ClosedBadge, TopRatedBadge, TrendingBadge } from "./mitho-badge"
 import { StarRating } from "./mitho-rating"
+import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 
 const cardVariants = cva(
   "overflow-hidden rounded-xl text-card-foreground transition-all duration-300",
@@ -188,7 +189,7 @@ function RestaurantCard({
     <MithoCard className="cursor-pointer hover:border-brand-orange/25">
       <div className="relative aspect-[4/3] overflow-hidden group/image">
         <img
-          src={imageUrl || "/placeholder.svg"}
+          src={imageUrl || DEFAULT_BUSINESS_FEATURED_IMAGE}
           alt={name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover/image:scale-105"
         />
@@ -282,7 +283,7 @@ function FoodTruckCard({
     <MithoCard className="cursor-pointer hover:border-brand-orange/30">
       <div className="relative aspect-[4/3] overflow-hidden group/image">
         <img
-          src={imageUrl || "/placeholder.svg"}
+          src={imageUrl || DEFAULT_BUSINESS_FEATURED_IMAGE}
           alt={name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover/image:scale-105"
         />

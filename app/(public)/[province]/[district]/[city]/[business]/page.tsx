@@ -4,6 +4,7 @@ import axios from "axios"
 import { BusinessDetailPage } from "@/features/business/screens/business-detail-page"
 import {
   buildPublicBusinessHref,
+  getPublicBusinessFeaturedImage,
   mapPublicBusinessToPageData,
 } from "@/features/business/mappers/public-business-page-data"
 import { getPublicBusinessByPath } from "@/lib/api/businesses"
@@ -36,6 +37,7 @@ export async function generateMetadata({ params }: PublicBusinessRouteProps): Pr
     business.specialityNote ??
     `Discover ${business.name}${location ? ` in ${location}` : ""} on Mitho Cha.`
   const canonicalPath = buildPublicBusinessHref(business)
+  const featuredImage = getPublicBusinessFeaturedImage(business)
 
   return {
     title: `${business.name}${location ? ` in ${location}` : ""} | Mitho Cha`,
@@ -47,7 +49,7 @@ export async function generateMetadata({ params }: PublicBusinessRouteProps): Pr
       title: business.name,
       description,
       url: canonicalPath,
-      images: business.banner?.publicUrl ? [{ url: business.banner.publicUrl, alt: business.name }] : undefined,
+      images: [{ url: featuredImage, alt: business.name }],
     },
   }
 }
