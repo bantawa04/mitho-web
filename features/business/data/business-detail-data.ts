@@ -1,4 +1,5 @@
 import type { BusinessPageData } from "@/features/business/business-detail-types"
+import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 
 const richReviews = [
   {
@@ -78,7 +79,7 @@ export const richBusinessPageData: BusinessPageData = {
   id: "business-rich-demo",
   name: "Himalayan Flavors",
   sourceBadge: "verifiedOwner",
-  coverImage: "/placeholder.svg?height=600&width=1200",
+  coverImage: DEFAULT_BUSINESS_FEATURED_IMAGE,
   rating: 4.3,
   reviewCount: 294,
   categories: [

@@ -3,8 +3,23 @@
 import * as React from "react"
 import { RestaurantCard } from "@/components/mitho/mitho-card"
 import { MithoCarousel } from "@/components/mitho/mitho-carousel"
+import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 
-const similarPlaces = [
+interface SimilarPlace {
+  name: string
+  cuisine: string
+  rating: number
+  reviewCount: number
+  priceRange: string
+  location: string
+  distance: string
+  featuredImageUrl?: string
+  galleryImageUrls: string[]
+  isOpen: boolean
+  isTopRated?: boolean
+}
+
+const similarPlaces: SimilarPlace[] = [
   {
     name: "Thamel House",
     cuisine: "Nepali, Tibetan",
@@ -13,7 +28,8 @@ const similarPlaces = [
     priceRange: "$$",
     location: "Thamel",
     distance: "0.3 km",
-    imageUrl: "/placeholder.svg?height=300&width=400",
+    featuredImageUrl: "/nepali-restaurant-traditional-interior.jpg",
+    galleryImageUrls: ["/steamed-momo-nepali-dumplings.jpg"],
     isOpen: true,
   },
   {
@@ -24,7 +40,7 @@ const similarPlaces = [
     priceRange: "$",
     location: "Durbar Marg",
     distance: "0.5 km",
-    imageUrl: "/placeholder.svg?height=300&width=400",
+    galleryImageUrls: ["/nepali-momo-dumplings-restaurant.jpg", "/momos-dumplings.jpg"],
     isOpen: true,
     isTopRated: true,
   },
@@ -36,7 +52,7 @@ const similarPlaces = [
     priceRange: "$$",
     location: "Lazimpat",
     distance: "0.8 km",
-    imageUrl: "/placeholder.svg?height=300&width=400",
+    galleryImageUrls: [],
     isOpen: false,
   },
   {
@@ -47,10 +63,15 @@ const similarPlaces = [
     priceRange: "$$$",
     location: "Durbar Marg",
     distance: "1.2 km",
-    imageUrl: "/placeholder.svg?height=300&width=400",
+    featuredImageUrl: "/restaurant-interior-cozy.jpg",
+    galleryImageUrls: ["/thukpa-tibetan-noodle-soup.jpg"],
     isOpen: true,
   },
 ]
+
+function getRecommendationImage(place: SimilarPlace) {
+  return place.featuredImageUrl ?? place.galleryImageUrls[0] ?? DEFAULT_BUSINESS_FEATURED_IMAGE
+}
 
 interface SimilarPlacesProps {
   subdued?: boolean
@@ -85,7 +106,20 @@ export function SimilarPlaces({ subdued = false }: SimilarPlacesProps) {
       <MithoCarousel>
         {similarPlaces.map((place) => (
           <div key={place.name} className="flex-shrink-0 w-[280px] sm:w-[320px]">
-            <RestaurantCard {...place} isSaved={savedItems.has(place.name)} onSave={() => toggleSave(place.name)} />
+            <RestaurantCard
+              name={place.name}
+              cuisine={place.cuisine}
+              rating={place.rating}
+              reviewCount={place.reviewCount}
+              priceRange={place.priceRange}
+              location={place.location}
+              distance={place.distance}
+              imageUrl={getRecommendationImage(place)}
+              isOpen={place.isOpen}
+              isTopRated={place.isTopRated}
+              isSaved={savedItems.has(place.name)}
+              onSave={() => toggleSave(place.name)}
+            />
           </div>
         ))}
       </MithoCarousel>

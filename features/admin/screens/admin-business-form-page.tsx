@@ -730,15 +730,18 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 </div>
               </div>
 
-              {/* Banner */}
+              {/* Featured image */}
               <div className="space-y-2 border-t border-border pt-4">
-                <FormLabel>Cover Banner</FormLabel>
+                <FormLabel>Featured image</FormLabel>
+                <FormDescription>
+                  Shown prominently at the top of the public business page and in shared links.
+                </FormDescription>
                 <div className="space-y-3">
                   {bannerMedia ? (
                     <div className="relative w-full h-24 overflow-hidden rounded-xl border border-brand-deep-green/10">
                       <img
                         src={bannerMedia.publicUrl}
-                        alt="Banner"
+                        alt="Featured image"
                         className="h-full w-full object-cover"
                       />
                       <button
@@ -751,11 +754,11 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                     </div>
                   ) : existingBannerId ? (
                     <div className="flex w-full h-20 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-muted text-xs text-muted-foreground">
-                      Cover configured
+                      Featured image configured
                     </div>
                   ) : (
                     <div className="flex w-full h-20 items-center justify-center rounded-xl border border-dashed border-border bg-muted text-xs text-muted-foreground">
-                      No cover photo chosen
+                      No featured image chosen
                     </div>
                   )}
                   <Button
@@ -765,7 +768,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                     className="w-full rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted text-xs h-9 cursor-pointer"
                     onClick={() => setBannerPickerOpen(true)}
                   >
-                    {existingBannerId || bannerMedia ? "Change banner" : "Choose banner"}
+                    {existingBannerId || bannerMedia ? "Change featured image" : "Choose featured image"}
                   </Button>
                 </div>
               </div>
