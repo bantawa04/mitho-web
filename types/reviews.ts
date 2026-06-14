@@ -130,3 +130,25 @@ export interface MyReviewsResponse {
   items: ReviewItem[]
   meta: PaginationMeta
 }
+
+export interface BusinessTip {
+  id: string
+  tips: string
+  rating: number
+  authorName: string | null
+  authorAvatar: string | null
+  createdAt: string
+}
+
+export type BusinessTipsMeta = PaginationMeta
+
+export interface BusinessTipsResponse {
+  items: BusinessTip[]
+  meta: BusinessTipsMeta
+}
+
+export interface ListBusinessTipsParams {
+  page?: number
+  perPage?: number
+  sort?: ReviewSort
+}

@@ -6,7 +6,7 @@ import type { ListBusinessClaimsParams } from "@/types/business-claims"
 import type { ListCollectionsParams } from "@/types/collections"
 import type { ListAdminGalleryParams } from "@/types/gallery"
 import type { ListMediaParams } from "@/types/media"
-import type { ListAdminReviewsParams, ListBusinessReviewsParams, ListMyReviewsParams } from "@/types/reviews"
+import type { ListAdminReviewsParams, ListBusinessReviewsParams, ListBusinessTipsParams, ListMyReviewsParams } from "@/types/reviews"
 
 export const queryKeys = {
   nepalAdmin: {
@@ -89,6 +89,7 @@ export const queryKeys = {
     list: (businessId: string, params?: ListBusinessReviewsParams) => ["reviews", "business", businessId, params] as const,
     mine: (businessId: string) => ["reviews", "business", businessId, "mine"] as const,
     myList: (params?: ListMyReviewsParams) => ["reviews", "my-list", params] as const,
+    tips: (businessId: string, params?: ListBusinessTipsParams) => ["reviews", "business", businessId, "tips", params] as const,
   },
   accountDeletion: {
     preflight: ["account-deletion", "preflight"] as const,

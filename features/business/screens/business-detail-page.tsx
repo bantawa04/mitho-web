@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query"
 import { addCollectionItem } from "@/lib/api/collections"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { useCollections, useCreateCollection } from "@/hooks/use-collections"
-import { useBusinessReviews } from "@/hooks/use-reviews"
+import { useBusinessReviews, useBusinessTips } from "@/hooks/use-reviews"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { Header } from "@/features/home/components/header"
 import { Footer } from "@/features/home/components/footer"
@@ -19,6 +19,7 @@ import { BusinessHero } from "@/features/business/components/business-hero"
 import { InfoPanel } from "@/features/business/components/info-panel"
 import { RatingsSection } from "@/features/business/components/ratings-section"
 import { ReviewsSection } from "@/features/business/components/reviews-section"
+import { TipsSection } from "@/features/business/components/tips-section"
 import { AddReviewForm } from "@/features/business/components/add-review-form"
 import { SimilarPlaces } from "@/features/business/components/similar-places"
 import { ClaimReport } from "@/features/business/components/claim-report"
@@ -36,6 +37,7 @@ interface BusinessDetailPageProps {
 export function BusinessDetailPage({ pageData, claimHref = "/business/claim", publicHref }: BusinessDetailPageProps) {
   const [sortOrder, setSortOrder] = React.useState<"latest" | "oldest" | "highest" | "lowest">("latest")
   const [reviewPage, setReviewPage] = React.useState(1)
+  const [tipsPage, setTipsPage] = React.useState(1)
   const { isAuthenticated } = useAuthSnapshot()
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = React.useState(false)
   const [signInIntent, setSignInIntent] = React.useState<"collection" | "review" | null>(null)
@@ -49,8 +51,13 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   const isEarlyListing = isBusinessEarlyListing(pageData)
   const reviewsQuery = useBusinessReviews(pageData.id, {
     page: reviewPage,
-    perPage: 3,
+    perPage: 5,
     sort: sortOrder,
+  })
+  const tipsQuery = useBusinessTips(pageData.id, {
+    page: tipsPage,
+    perPage: 5,
+    sort: "latest",
   })
   const reviewCards = React.useMemo(
     () => reviewsQuery.data?.items.map(mapReviewItemToBusinessReview) ?? pageData.reviews,
@@ -211,6 +218,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
             <nav className="flex gap-6 overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               <a href="#overview" onClick={(e) => { e.preventDefault(); scrollToSection("overview") }} className="border-b-2 border-primary py-4 text-sm font-semibold text-brand-dark-green transition-colors">Overview</a>
               <a href="#reviews" onClick={(e) => { e.preventDefault(); scrollToSection("reviews") }} className="border-b-2 border-transparent py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-dark-green">Reviews</a>
+              <a href="#tips" onClick={(e) => { e.preventDefault(); scrollToSection("tips") }} className="border-b-2 border-transparent py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-brand-dark-green">Tips</a>
             </nav>
           </div>
         </div>
@@ -246,6 +254,15 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
             prompt={pageData.addReviewPrompt}
             onRequireAuth={() => setSignInIntent("review")}
           />
+          <div id="tips">
+            <TipsSection
+              tips={tipsQuery.data?.items ?? []}
+              currentPage={tipsQuery.data?.meta.page ?? tipsPage}
+              totalPages={tipsQuery.data?.meta.totalPages ?? 1}
+              onPageChange={setTipsPage}
+              isLoading={tipsQuery.isLoading}
+            />
+          </div>
         </div>
 
         <div className="mt-4 bg-transparent">
