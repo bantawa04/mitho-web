@@ -28,7 +28,6 @@ describe("parseLiveExploreState", () => {
         province: "3",
         district: "4",
         municipality: "5",
-        openNow: "true",
         sort: "top_rated",
         page: "2",
       }),
@@ -40,7 +39,6 @@ describe("parseLiveExploreState", () => {
       province: 3,
       district: 4,
       municipality: 5,
-      openNow: true,
       sort: "top_rated",
       page: 2,
     })
@@ -99,7 +97,6 @@ describe("buildLiveExploreSearchString", () => {
       province: 3,
       district: 4,
       municipality: 5,
-      openNow: true,
       sort: "most_reviewed",
       page: 2,
     })
@@ -110,7 +107,6 @@ describe("buildLiveExploreSearchString", () => {
     expect(params.get("province")).toBe("3")
     expect(params.get("district")).toBe("4")
     expect(params.get("municipality")).toBe("5")
-    expect(params.get("openNow")).toBe("true")
     expect(params.get("sort")).toBe("most_reviewed")
     expect(params.get("page")).toBe("2")
   })
@@ -125,7 +121,6 @@ describe("round-trip parse <-> build", () => {
       province: 1,
       district: 2,
       municipality: 3,
-      openNow: true,
       sort: "top_rated",
       page: 4,
     }
@@ -192,7 +187,6 @@ describe("liveExploreStateToSearchParams", () => {
       provinceId: undefined,
       districtId: undefined,
       municipalityId: undefined,
-      openNow: undefined,
       sort: "recommended",
       page: 1,
       perPage: 6,
@@ -207,7 +201,6 @@ describe("liveExploreStateToSearchParams", () => {
       province: 3,
       district: 4,
       municipality: 5,
-      openNow: true,
       sort: "most_reviewed",
       page: 2,
     })
@@ -218,7 +211,6 @@ describe("liveExploreStateToSearchParams", () => {
       provinceId: 3,
       districtId: 4,
       municipalityId: 5,
-      openNow: true,
       sort: "most_reviewed",
       page: 2,
       perPage: 6,

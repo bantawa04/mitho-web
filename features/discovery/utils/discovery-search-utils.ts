@@ -159,7 +159,6 @@ export const LIVE_EXPLORE_DEFAULT_STATE: LiveExploreState = {
   province: null,
   district: null,
   municipality: null,
-  openNow: false,
   sort: LIVE_SORT_DEFAULT,
   page: 1,
 }
@@ -211,7 +210,6 @@ export function parseLiveExploreState(params: ReadonlyURLSearchParams): LiveExpl
     province,
     district,
     municipality,
-    openNow: params.get("openNow") === "true",
     sort: readLiveSort(params),
     page: readLivePage(params),
   }
@@ -231,7 +229,6 @@ export function buildLiveExploreSearchString(state: LiveExploreState): string {
   if (state.province !== null) params.set("province", String(state.province))
   if (state.district !== null) params.set("district", String(state.district))
   if (state.municipality !== null) params.set("municipality", String(state.municipality))
-  if (state.openNow) params.set("openNow", "true")
   if (state.sort !== LIVE_SORT_DEFAULT) params.set("sort", state.sort)
   if (state.page > 1) params.set("page", String(state.page))
 
@@ -312,7 +309,6 @@ export function parseGeoListingState(
     province: locked.province,
     district,
     municipality,
-    openNow: params.get("openNow") === "true",
     sort: readLiveSort(params),
     page: readLivePage(params),
   }
@@ -329,7 +325,6 @@ export function buildGeoListingSearchString(state: LiveExploreState, locked: Loc
   if (state.cuisine) params.set("cuisine", state.cuisine)
   if (locked.district === undefined && state.district !== null) params.set("district", String(state.district))
   if (locked.municipality === undefined && state.municipality !== null) params.set("municipality", String(state.municipality))
-  if (state.openNow) params.set("openNow", "true")
   if (state.sort !== LIVE_SORT_DEFAULT) params.set("sort", state.sort)
   if (state.page > 1) params.set("page", String(state.page))
   return params.toString()
@@ -344,7 +339,6 @@ export function liveExploreStateToSearchParams(state: LiveExploreState): SearchB
     provinceId: state.province ?? undefined,
     districtId: state.district ?? undefined,
     municipalityId: state.municipality ?? undefined,
-    openNow: state.openNow || undefined,
     sort: state.sort,
     page: state.page,
     perPage: LIVE_RESULTS_PER_PAGE,

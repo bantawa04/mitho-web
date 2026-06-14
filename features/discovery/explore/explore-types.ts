@@ -48,7 +48,6 @@ export interface LiveExploreState {
   district: number | null
   /** municipality id, or null */
   municipality: number | null
-  openNow: boolean
   sort: BusinessSearchSort
   page: number
 }
