@@ -23,6 +23,7 @@ interface AddReviewFormProps {
   isFirstReview?: boolean
   prompt?: string
   onRequireAuth: () => void
+  flat?: boolean
 }
 
 interface StoredReviewDraft {
@@ -44,6 +45,7 @@ export function AddReviewForm({
   isFirstReview = false,
   prompt,
   onRequireAuth,
+  flat = false,
 }: AddReviewFormProps) {
   const { isAuthenticated } = useAuthSnapshot()
   const { toast } = useToast()
@@ -170,6 +172,216 @@ export function AddReviewForm({
     }
   }
 
+  const formBody = (
+    <div className="space-y-5">
+      {isPendingLocked ? (
+        <div className="rounded-xl border border-brand-orange/20 bg-brand-orange/5 p-4 text-sm text-brand-dark-green">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-orange" />
+            <div>
+              <p className="font-semibold">Your review is awaiting moderation.</p>
+              <p className="mt-1 text-muted-foreground">You can write another once it has been reviewed.</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isCooldownLocked ? (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="mt-0.5 h-4 w-4" />
+            <div>
+              <p className="font-semibold">Your review is live.</p>
+              <p className="mt-1">
+                {cooldownDateLabel
+                  ? `You can write a new review for this place on ${cooldownDateLabel}.`
+                  : "You can write a new review for this place after the cooldown period."}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {review?.status === "rejected" ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          <div className="flex items-start gap-3">
+            <CircleAlert className="mt-0.5 h-4 w-4" />
+            <div>
+              <p className="font-semibold">Your review needs changes before it can go live.</p>
+              {review.rejectionFlag ? <p className="mt-1 capitalize">{review.rejectionFlag.replaceAll("_", " ")}</p> : null}
+              {review.moderationNote ? <p className="mt-1 text-red-700/90">{review.moderationNote}</p> : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {needsMediaReselect ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="flex items-start gap-3">
+            <CircleAlert className="mt-0.5 h-4 w-4" />
+            <p>You’re back on the review form. Please reselect any images before submitting again.</p>
+          </div>
+        </div>
+      ) : null}
+
+      <Form {...form}>
+        <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title *</FormLabel>
+                <FormControl>
+                  <input
+                    {...field}
+                    type="text"
+                    disabled={isLocked || isBusy}
+                    placeholder="Sum up your visit in a few words"
+                    className="w-full rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="rating"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Your rating *</FormLabel>
+                <FormControl>
+                  <StarRating rating={field.value} onChange={field.onChange} interactive size="lg" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="body"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Your review *</FormLabel>
+                <FormControl>
+                  <textarea
+                    {...field}
+                    rows={5}
+                    disabled={isLocked || isBusy}
+                    placeholder="Tell people what stood out: dishes worth ordering, service, portions, wait time, and whether you’d come back."
+                    className="w-full resize-none rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="tips"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tips for others (optional)</FormLabel>
+                <FormControl>
+                  <textarea
+                    {...field}
+                    rows={3}
+                    disabled={isLocked || isBusy}
+                    placeholder="Quick hints for other customers — what to order, best time to go, parking, etc."
+                    className="w-full resize-none rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                </FormControl>
+                <p className="text-xs text-muted-foreground">
+                  Quick hints for other customers — what to order, best time to go, parking, etc. (max 500 characters)
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="space-y-3">
+            <div>
+              <label className="mb-2 block text-sm font-medium">Add images</label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(event) => {
+                  const files = Array.from(event.target.files ?? []).slice(0, 5)
+                  setSelectedFiles((current) => [...current, ...files].slice(0, 5))
+                  setNeedsMediaReselect(false)
+                  event.currentTarget.value = ""
+                }}
+              />
+              <MithoButton
+                type="button"
+                variant="outline-secondary"
+                disabled={isLocked || isBusy || retainedMedia.length + selectedFiles.length >= 5}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <ImagePlus className="h-4 w-4" />
+                Add images
+              </MithoButton>
+              <p className="mt-2 text-xs text-muted-foreground">Up to 5 images, 10MB each.</p>
+            </div>
+
+            {retainedMedia.length > 0 || selectedFiles.length > 0 ? (
+              <div className="flex flex-wrap gap-3">
+                {retainedMedia.map((media) => (
+                  <div key={media.id} className="relative">
+                    <img
+                      src={media.publicUrl}
+                      alt={media.altText || businessName}
+                      className="h-24 w-24 rounded-lg border border-border object-cover"
+                    />
+                    {!isLocked ? (
+                      <button
+                        type="button"
+                        className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-danger transition-colors hover:text-danger/80"
+                        onClick={() => setRetainedMedia((current) => current.filter((item) => item.id !== media.id))}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    ) : null}
+                  </div>
+                ))}
+                {selectedFilePreviews.map(({ file, url }, index) => (
+                  <div key={`${file.name}-${index}`} className="relative">
+                    <img src={url} alt={file.name} className="h-24 w-24 rounded-lg border border-border object-cover" />
+                    {!isLocked ? (
+                      <button
+                        type="button"
+                        className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-danger transition-colors hover:text-danger/80"
+                        onClick={() => setSelectedFiles((current) => current.filter((_, currentIndex) => currentIndex !== index))}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <MithoButton type="submit" variant="primary" size="lg" className="w-full sm:w-auto" disabled={isLocked || isBusy}>
+            {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {review?.status === "rejected" ? "Resubmit review" : "Submit review"}
+          </MithoButton>
+        </form>
+      </Form>
+    </div>
+  )
+
+  if (flat) {
+    return formBody
+  }
+
   return (
     <section className="container mx-auto px-4 pb-14 pt-6" id="add-review">
       <MithoCard surface="customer" interactive="none">
@@ -186,207 +398,7 @@ export function AddReviewForm({
           </p>
         </MithoCardHeader>
         <MithoCardContent className="space-y-5">
-          {isPendingLocked ? (
-            <div className="rounded-xl border border-brand-orange/20 bg-brand-orange/5 p-4 text-sm text-brand-dark-green">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-orange" />
-                <div>
-                  <p className="font-semibold">Your review is awaiting moderation.</p>
-                  <p className="mt-1 text-muted-foreground">You can write another once it has been reviewed.</p>
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {isCooldownLocked ? (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-4 w-4" />
-                <div>
-                  <p className="font-semibold">Your review is live.</p>
-                  <p className="mt-1">
-                    {cooldownDateLabel
-                      ? `You can write a new review for this place on ${cooldownDateLabel}.`
-                      : "You can write a new review for this place after the cooldown period."}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {review?.status === "rejected" ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-              <div className="flex items-start gap-3">
-                <CircleAlert className="mt-0.5 h-4 w-4" />
-                <div>
-                  <p className="font-semibold">Your review needs changes before it can go live.</p>
-                  {review.rejectionFlag ? <p className="mt-1 capitalize">{review.rejectionFlag.replaceAll("_", " ")}</p> : null}
-                  {review.moderationNote ? <p className="mt-1 text-red-700/90">{review.moderationNote}</p> : null}
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {needsMediaReselect ? (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-              <div className="flex items-start gap-3">
-                <CircleAlert className="mt-0.5 h-4 w-4" />
-                <p>You’re back on the review form. Please reselect any images before submitting again.</p>
-              </div>
-            </div>
-          ) : null}
-
-          <Form {...form}>
-            <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title *</FormLabel>
-                    <FormControl>
-                      <input
-                        {...field}
-                        type="text"
-                        disabled={isLocked || isBusy}
-                        placeholder="Sum up your visit in a few words"
-                        className="w-full rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="rating"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Your rating *</FormLabel>
-                    <FormControl>
-                      <StarRating rating={field.value} onChange={field.onChange} interactive size="lg" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="body"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Your review *</FormLabel>
-                    <FormControl>
-                      <textarea
-                        {...field}
-                        rows={5}
-                        disabled={isLocked || isBusy}
-                        placeholder="Tell people what stood out: dishes worth ordering, service, portions, wait time, and whether you'd come back."
-                        className="w-full resize-none rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="tips"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tips for others (optional)</FormLabel>
-                    <FormControl>
-                      <textarea
-                        {...field}
-                        rows={3}
-                        disabled={isLocked || isBusy}
-                        placeholder="Quick hints for other customers — what to order, best time to go, parking, etc."
-                        className="w-full resize-none rounded-xl border border-border bg-white/90 px-4 py-3 text-sm transition-[border-color,box-shadow,background-color] duration-200 placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
-                      />
-                    </FormControl>
-                    <p className="text-xs text-muted-foreground">
-                      Quick hints for other customers — what to order, best time to go, parking, etc. (max 500 characters)
-                    </p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-3">
-                <div>
-                  <label className="mb-2 block text-sm font-medium">Add images</label>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={(event) => {
-                      const files = Array.from(event.target.files ?? []).slice(0, 5)
-                      setSelectedFiles((current) => [...current, ...files].slice(0, 5))
-                      setNeedsMediaReselect(false)
-                      event.currentTarget.value = ""
-                    }}
-                  />
-                  <MithoButton
-                    type="button"
-                    variant="outline-secondary"
-                    disabled={isLocked || isBusy || retainedMedia.length + selectedFiles.length >= 5}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <ImagePlus className="h-4 w-4" />
-                    Add images
-                  </MithoButton>
-                  <p className="mt-2 text-xs text-muted-foreground">Up to 5 images, 10MB each.</p>
-                </div>
-
-                {retainedMedia.length > 0 || selectedFiles.length > 0 ? (
-                  <div className="flex flex-wrap gap-3">
-                    {retainedMedia.map((media) => (
-                      <div key={media.id} className="relative">
-                        <img
-                          src={media.publicUrl}
-                          alt={media.altText || businessName}
-                          className="h-24 w-24 rounded-lg border border-border object-cover"
-                        />
-                        {!isLocked ? (
-                          <button
-                            type="button"
-                            className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-danger transition-colors hover:text-danger/80"
-                            onClick={() => setRetainedMedia((current) => current.filter((item) => item.id !== media.id))}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        ) : null}
-                      </div>
-                    ))}
-                    {selectedFilePreviews.map(({ file, url }, index) => (
-                      <div key={`${file.name}-${index}`} className="relative">
-                        <img src={url} alt={file.name} className="h-24 w-24 rounded-lg border border-border object-cover" />
-                        {!isLocked ? (
-                          <button
-                            type="button"
-                            className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-danger transition-colors hover:text-danger/80"
-                            onClick={() => setSelectedFiles((current) => current.filter((_, currentIndex) => currentIndex !== index))}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
-              <MithoButton type="submit" variant="primary" size="lg" className="w-full sm:w-auto" disabled={isLocked || isBusy}>
-                {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {review?.status === "rejected" ? "Resubmit review" : "Submit review"}
-              </MithoButton>
-            </form>
-          </Form>
+          {formBody}
         </MithoCardContent>
       </MithoCard>
     </section>
