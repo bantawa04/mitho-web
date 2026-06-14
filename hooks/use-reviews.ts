@@ -9,6 +9,7 @@ import {
   getMyBusinessReview,
   listAdminReviews,
   listBusinessReviews,
+  listBusinessTips,
   listMyReviews,
   rejectAdminReview,
   resubmitReview,
@@ -20,6 +21,7 @@ import type {
   CreateReviewPayload,
   ListAdminReviewsParams,
   ListBusinessReviewsParams,
+  ListBusinessTipsParams,
   ListMyReviewsParams,
   RejectReviewPayload,
   ResubmitReviewPayload,
@@ -32,6 +34,15 @@ export function useBusinessReviews(businessId: string | undefined, params?: List
   return useQuery({
     queryKey: queryKeys.reviews.list(cleanBusinessId ?? "", params),
     queryFn: () => listBusinessReviews(cleanBusinessId!, params),
+    enabled: Boolean(cleanBusinessId) && enabled,
+  })
+}
+
+export function useBusinessTips(businessId: string | undefined, params?: ListBusinessTipsParams, enabled = true) {
+  const cleanBusinessId = businessId?.trim()
+  return useQuery({
+    queryKey: queryKeys.reviews.tips(cleanBusinessId ?? "", params),
+    queryFn: () => listBusinessTips(cleanBusinessId!, params),
     enabled: Boolean(cleanBusinessId) && enabled,
   })
 }

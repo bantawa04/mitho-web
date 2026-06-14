@@ -1,44 +1,51 @@
 import Link from "next/link"
-import { Compass, HeartHandshake, Sparkles } from "lucide-react"
+import { MapPin, Star, MessageSquare, ShieldCheck, Users, Compass } from "lucide-react"
 import { Header } from "@/features/home/components/header"
 import { Footer } from "@/features/home/components/footer"
 import { PageHero } from "@/features/static/components/page-hero"
 import { MithoCard, MithoCardContent } from "@/components/mitho/mitho-card"
 import { MithoButton } from "@/components/mitho/mitho-button"
 
-const stats = [
-  { value: "2K+", label: "Places listed" },
-  { value: "15K+", label: "Local reviews" },
-  { value: "75", label: "Cities covered" },
-  { value: "98%", label: "Happy foodies" },
+const steps = [
+  {
+    number: "01",
+    icon: MapPin,
+    title: "Find places near you",
+    description: "Search by city, neighbourhood, or cuisine. Browse restaurants, cafes, dine-in spots, and street food across Nepal.",
+  },
+  {
+    number: "02",
+    icon: Star,
+    title: "Read honest reviews",
+    description: "See what real visitors have to say. Every review comes from someone who actually went there — no paid placements.",
+  },
+  {
+    number: "03",
+    icon: MessageSquare,
+    title: "Share your experience",
+    description: "Found somewhere great? Leave a review and help the next person find it too. That's how the platform stays useful.",
+  },
 ]
 
 const values = [
   {
+    icon: ShieldCheck,
+    title: "Real visits only",
+    description:
+      "A review on Mitho Cha comes from someone who actually went. No incentivised ratings, no manufactured praise. What you read is what people genuinely experienced.",
+  },
+  {
+    icon: Users,
+    title: "Local knowledge is the best kind",
+    description:
+      "The most useful guide to food in Lalitpur is someone who eats there every week. We make that neighbourhood-level knowledge findable by everyone.",
+  },
+  {
     icon: Compass,
-    title: "Discovery first",
+    title: "Built for Nepal, not adapted for it",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
+      "We're not a global platform that happens to include Nepal. Mitho Cha is built around Nepal's cities, neighbourhoods, and food culture from the ground up.",
   },
-  {
-    icon: HeartHandshake,
-    title: "Community led",
-    description:
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
-  },
-  {
-    icon: Sparkles,
-    title: "Always honest",
-    description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-  },
-]
-
-const team = [
-  { initials: "AS", name: "Aarav Shrestha", role: "Founder" },
-  { initials: "PM", name: "Priya Maharjan", role: "Head of Product" },
-  { initials: "RT", name: "Rohan Thapa", role: "Engineering Lead" },
-  { initials: "SK", name: "Sneha Karki", role: "Community" },
 ]
 
 export function AboutPage() {
@@ -49,96 +56,109 @@ export function AboutPage() {
       <main>
         <PageHero
           eyebrow="About Mitho Cha"
-          title="Food worth sharing, picked by people who know"
-          subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+          title="Built for Nepal's food lovers"
+          subtitle="Mitho Cha started from a familiar problem — finding good food in Nepal meant asking around. Great spots stayed hidden. We built the platform we wished existed."
           breadcrumb={[{ label: "Home", href: "/" }, { label: "About" }]}
         />
 
-        <div className="container mx-auto px-4 py-12 md:py-16">
-          {/* Our story */}
-          <section className="grid items-center gap-10 lg:grid-cols-2">
-            <div>
-              <h2 className="type-section-title mb-4 text-brand-dark-green">Our story</h2>
-              <p className="mb-4 leading-7 text-muted-foreground">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat.
+        {/* Story */}
+        <section className="container mx-auto px-4 py-12 md:py-16">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="type-section-title mb-6 text-brand-dark-green">Our story</h2>
+            <div className="space-y-5 leading-7 text-muted-foreground">
+              <p>
+                Finding a reliable restaurant used to mean asking a friend who&apos;d been there, a family
+                recommendation, or a tip buried in a group chat. That knowledge is real and valuable — but it
+                doesn&apos;t travel far, and it doesn&apos;t reach people who are new to a city or just looking
+                beyond their usual spots.
               </p>
-              <p className="leading-7 text-muted-foreground">
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                laborum.
+              <p>
+                People exploring a new neighbourhood, visitors to Nepal, or locals wanting to try something
+                different had no single, trustworthy place to look. Reviews that did exist were scattered,
+                outdated, or written for a different audience entirely.
+              </p>
+              <p>
+                We built Mitho Cha to fix that. A Nepal-first platform where real experiences from real visitors
+                help everyone find food they&apos;ll actually enjoy — from the momo stall around the corner to
+                places worth a longer journey.
               </p>
             </div>
-            <div
-              className="aspect-[4/3] w-full rounded-xl border border-border bg-muted"
-              aria-label="Image placeholder"
-            />
-          </section>
+          </div>
+        </section>
 
-          {/* Mission */}
-          <section className="mt-16 max-w-3xl">
-            <h2 className="type-section-title mb-4 text-brand-dark-green">What we do</h2>
-            <p className="leading-7 text-muted-foreground">
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem
-              aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt
-              explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.
-            </p>
-          </section>
-
-          {/* Stats strip */}
-          <section className="mt-16">
-            <div className="grid grid-cols-2 divide-y divide-border rounded-xl border border-border bg-white sm:grid-cols-4 sm:divide-x sm:divide-y-0">
-              {stats.map((stat) => (
-                <div key={stat.label} className="px-6 py-8 text-center">
-                  <p className="text-3xl font-bold text-brand-orange">{stat.value}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
+        {/* How it works */}
+        <section className="border-y border-border bg-surface-soft">
+          <div className="container mx-auto px-4 py-12 md:py-16">
+            <div className="mx-auto max-w-3xl">
+              <h2 className="type-section-title mb-2 text-brand-dark-green">How it works</h2>
+              <p className="mb-10 leading-7 text-muted-foreground">
+                Mitho Cha connects people who are hungry with people who&apos;ve already eaten there.
+              </p>
+            </div>
+            <div className="mx-auto max-w-5xl grid gap-6 md:grid-cols-3">
+              {steps.map((step) => (
+                <div key={step.number} className="relative rounded-xl border border-border bg-white p-6">
+                  <div className="mb-5 flex items-center gap-3">
+                    <span className="text-xs font-bold tracking-widest text-brand-orange/70">{step.number}</span>
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-orange/10">
+                      <step.icon className="h-5 w-5 text-brand-orange" />
+                    </div>
+                  </div>
+                  <h3 className="type-card-title mb-2 text-brand-dark-green">{step.title}</h3>
+                  <p className="text-sm leading-6 text-muted-foreground">{step.description}</p>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Values */}
-          <section className="mt-16">
-            <h2 className="type-section-title mb-6 text-brand-dark-green">What we value</h2>
-            <div className="grid gap-6 md:grid-cols-3">
+        {/* What we do */}
+        <section className="container mx-auto px-4 py-12 md:py-16">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="type-section-title mb-6 text-brand-dark-green">What we do</h2>
+            <div className="space-y-5 leading-7 text-muted-foreground">
+              <p>
+                Mitho Cha is a food discovery and review platform for Nepal. We help people find
+                restaurants, cafes, dine-in spots, and local food — backed by reviews from people who
+                actually visited.
+              </p>
+              <p>
+                For businesses, we&apos;re a way to be found by the people already looking for what you offer.
+                Listing your business is free. Ownership can be claimed and verified to keep your details,
+                photos, and hours accurate.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Values */}
+        <section className="border-t border-border bg-surface-soft">
+          <div className="container mx-auto px-4 py-12 md:py-16">
+            <div className="mx-auto max-w-3xl mb-10">
+              <h2 className="type-section-title text-brand-dark-green">What we believe</h2>
+            </div>
+            <div className="mx-auto max-w-5xl grid gap-6 md:grid-cols-3">
               {values.map((value) => (
                 <MithoCard key={value.title}>
                   <MithoCardContent className="p-6">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-orange/10 text-brand-orange">
-                      <value.icon className="h-6 w-6" />
+                    <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-brand-dark-green/8 text-brand-dark-green">
+                      <value.icon className="h-5 w-5" />
                     </div>
                     <h3 className="type-card-title mb-2 text-brand-dark-green">{value.title}</h3>
-                    <p className="leading-7 text-muted-foreground">{value.description}</p>
+                    <p className="text-sm leading-6 text-muted-foreground">{value.description}</p>
                   </MithoCardContent>
                 </MithoCard>
               ))}
             </div>
-          </section>
-
-          {/* Team */}
-          <section className="mt-16">
-            <h2 className="type-section-title mb-6 text-brand-dark-green">Meet the team</h2>
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-              {team.map((member) => (
-                <div key={member.name} className="flex flex-col items-center text-center">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-soft-beige text-xl font-bold text-brand-dark-green">
-                    {member.initials}
-                  </div>
-                  <p className="mt-4 font-medium text-brand-dark-green">{member.name}</p>
-                  <p className="text-sm text-muted-foreground">{member.role}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
+          </div>
+        </section>
 
         {/* Closing CTA */}
-        <section className="border-t border-border bg-surface-soft">
+        <section className="border-t border-border">
           <div className="container mx-auto px-4 py-14 text-center">
             <h2 className="type-section-title text-brand-dark-green">Ready to find your next favorite spot?</h2>
             <p className="mx-auto mt-3 max-w-xl leading-7 text-muted-foreground">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.
+              Browse food across Nepal or put your business on the map for the people already looking for you.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <MithoButton asChild size="lg">

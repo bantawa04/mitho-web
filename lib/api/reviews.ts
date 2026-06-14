@@ -3,9 +3,11 @@ import type { ISuccessResponse } from "@/types/response"
 import type {
   AdminReviewsResponse,
   BusinessReviewsResponse,
+  BusinessTipsResponse,
   CreateReviewPayload,
   ListAdminReviewsParams,
   ListBusinessReviewsParams,
+  ListBusinessTipsParams,
   ListMyReviewsParams,
   MyBusinessReviewStatus,
   MyReviewsResponse,
@@ -16,7 +18,7 @@ import type {
   UpdateReviewPayload,
 } from "@/types/reviews"
 
-function mapListParams(params?: ListBusinessReviewsParams) {
+function mapListParams(params?: ListBusinessReviewsParams | ListBusinessTipsParams) {
   if (!params) return undefined
   return {
     page: params.page,
@@ -49,6 +51,13 @@ function toSnakeCase(payload: CreateReviewPayload | ResubmitReviewPayload) {
 
 export async function listBusinessReviews(businessId: string, params?: ListBusinessReviewsParams): Promise<BusinessReviewsResponse> {
   const { data } = await API.get<ISuccessResponse<BusinessReviewsResponse>>(`/businesses/${businessId.trim()}/reviews`, {
+    params: mapListParams(params),
+  })
+  return data.data
+}
+
+export async function listBusinessTips(businessId: string, params?: ListBusinessTipsParams): Promise<BusinessTipsResponse> {
+  const { data } = await API.get<ISuccessResponse<BusinessTipsResponse>>(`/businesses/${businessId.trim()}/tips`, {
     params: mapListParams(params),
   })
   return data.data

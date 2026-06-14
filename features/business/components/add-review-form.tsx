@@ -10,7 +10,7 @@ import { StarRating } from "@/components/mitho/mitho-rating"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
 import { useUploadMedia } from "@/hooks/use-media"
-import { useCreateBusinessReview, useMyBusinessReview, useResubmitReview, useUpdateReview } from "@/hooks/use-reviews"
+import { useCreateBusinessReview, useMyBusinessReview, useResubmitReview } from "@/hooks/use-reviews"
 import { useToast } from "@/hooks/use-toast"
 import { extractApiErrorMessage } from "@/lib/api-error-utils"
 import { addReviewSchema, type AddReviewFormValues } from "@/lib/validators/reviews"
@@ -64,7 +64,6 @@ export function AddReviewForm({
 
   const reviewQuery = useMyBusinessReview(businessId, isAuthenticated)
   const createReview = useCreateBusinessReview(businessId)
-  const updateReview = useUpdateReview()
   const resubmitReview = useResubmitReview()
   const uploadMedia = useUploadMedia()
   const review = reviewQuery.data?.review ?? null
@@ -88,7 +87,7 @@ export function AddReviewForm({
 
   React.useEffect(() => {
     if (!review || hasInitializedServerDraft) return
-    if (review.status !== "rejected" && review.status !== "pending") return
+    if (review.status !== "rejected") return
     form.reset({
       title: review.title,
       rating: review.rating,
@@ -99,10 +98,10 @@ export function AddReviewForm({
     setHasInitializedServerDraft(true)
   }, [form, hasInitializedServerDraft, review])
 
-  const isEditingPending = review?.status === "pending"
   const isCooldownLocked = review?.status === "approved" && !canReview
-  const isLocked = isCooldownLocked
-  const isBusy = createReview.isPending || updateReview.isPending || resubmitReview.isPending || uploadMedia.isPending
+  const isPendingLocked = review?.status === "pending"
+  const isLocked = isCooldownLocked || isPendingLocked
+  const isBusy = createReview.isPending || resubmitReview.isPending || uploadMedia.isPending
   const cooldownDateLabel = canReviewAgainAt
     ? new Date(canReviewAgainAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
     : null
@@ -142,22 +141,6 @@ export function AddReviewForm({
         body: values.body,
         tips: values.tips,
         mediaIds: [...retainedMedia.map((media) => media.id), ...uploadedMediaIds],
-      }
-
-      if (review?.status === "pending") {
-        const updated = await updateReview.mutateAsync({ id: review.id, payload })
-        if (typeof window !== "undefined") {
-          window.sessionStorage.removeItem(draftKey(businessId))
-        }
-        form.reset({ title: updated.title, rating: updated.rating, body: updated.body, tips: updated.tips ?? "" })
-        setRetainedMedia(updated.media ?? [])
-        setSelectedFiles([])
-        setNeedsMediaReselect(false)
-        toast({
-          title: "Review updated",
-          description: "Your changes are saved and still pending moderation.",
-        })
-        return
       }
 
       if (review?.status === "rejected") {
@@ -203,13 +186,13 @@ export function AddReviewForm({
           </p>
         </MithoCardHeader>
         <MithoCardContent className="space-y-5">
-          {review?.status === "pending" ? (
+          {isPendingLocked ? (
             <div className="rounded-xl border border-brand-orange/20 bg-brand-orange/5 p-4 text-sm text-brand-dark-green">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 text-brand-orange" />
                 <div>
-                  <p className="font-semibold">Review submitted for moderation</p>
-                  <p className="mt-1 text-muted-foreground">You can still edit it below until a moderator reviews it.</p>
+                  <p className="font-semibold">Your review is awaiting moderation.</p>
+                  <p className="mt-1 text-muted-foreground">You can write another once it has been reviewed.</p>
                 </div>
               </div>
             </div>
@@ -226,18 +209,6 @@ export function AddReviewForm({
                       ? `You can write a new review for this place on ${cooldownDateLabel}.`
                       : "You can write a new review for this place after the cooldown period."}
                   </p>
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          {review?.status === "approved" && canReview ? (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-4 w-4" />
-                <div>
-                  <p className="font-semibold">Your previous review stays published.</p>
-                  <p className="mt-1">Been back since? Write an update below.</p>
                 </div>
               </div>
             </div>
@@ -373,39 +344,37 @@ export function AddReviewForm({
                 </div>
 
                 {retainedMedia.length > 0 || selectedFiles.length > 0 ? (
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="flex flex-wrap gap-3">
                     {retainedMedia.map((media) => (
-                      <div key={media.id} className="overflow-hidden rounded-lg border border-border bg-white">
-                        <img src={media.publicUrl} alt={media.altText || businessName} className="h-28 w-full object-cover" />
-                        <div className="flex items-center justify-between px-3 py-2 text-xs">
-                          <span className="truncate text-muted-foreground">{media.filename}</span>
-                          {!isLocked ? (
-                            <button
-                              type="button"
-                              className="text-danger transition-colors hover:text-danger/80"
-                              onClick={() => setRetainedMedia((current) => current.filter((item) => item.id !== media.id))}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          ) : null}
-                        </div>
+                      <div key={media.id} className="relative">
+                        <img
+                          src={media.publicUrl}
+                          alt={media.altText || businessName}
+                          className="h-24 w-24 rounded-lg border border-border object-cover"
+                        />
+                        {!isLocked ? (
+                          <button
+                            type="button"
+                            className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-danger transition-colors hover:text-danger/80"
+                            onClick={() => setRetainedMedia((current) => current.filter((item) => item.id !== media.id))}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        ) : null}
                       </div>
                     ))}
                     {selectedFilePreviews.map(({ file, url }, index) => (
-                      <div key={`${file.name}-${index}`} className="overflow-hidden rounded-lg border border-border bg-white">
-                        <img src={url} alt={file.name} className="h-28 w-full object-cover" />
-                        <div className="flex items-center justify-between px-3 py-2 text-xs">
-                          <span className="truncate text-muted-foreground">{Math.round(file.size / 1024)} KB</span>
-                          {!isLocked ? (
-                            <button
-                              type="button"
-                              className="text-danger transition-colors hover:text-danger/80"
-                              onClick={() => setSelectedFiles((current) => current.filter((_, currentIndex) => currentIndex !== index))}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          ) : null}
-                        </div>
+                      <div key={`${file.name}-${index}`} className="relative">
+                        <img src={url} alt={file.name} className="h-24 w-24 rounded-lg border border-border object-cover" />
+                        {!isLocked ? (
+                          <button
+                            type="button"
+                            className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-danger transition-colors hover:text-danger/80"
+                            onClick={() => setSelectedFiles((current) => current.filter((_, currentIndex) => currentIndex !== index))}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        ) : null}
                       </div>
                     ))}
                   </div>
@@ -414,7 +383,7 @@ export function AddReviewForm({
 
               <MithoButton type="submit" variant="primary" size="lg" className="w-full sm:w-auto" disabled={isLocked || isBusy}>
                 {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {review?.status === "rejected" ? "Resubmit review" : isEditingPending ? "Save changes" : "Submit review"}
+                {review?.status === "rejected" ? "Resubmit review" : "Submit review"}
               </MithoButton>
             </form>
           </Form>
