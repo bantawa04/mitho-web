@@ -24,7 +24,6 @@ import { MithoBreadcrumb } from "@/components/mitho/mitho-breadcrumb"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoPagination } from "@/components/mitho/mitho-pagination"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Switch } from "@/components/ui/switch"
 import {
   Select,
   SelectContent,
@@ -191,7 +190,6 @@ export function GeoListingPage({ geoContext }: GeoListingPageProps) {
     Boolean(state.cuisine) ||
     (locked.district === undefined && state.district !== null) ||
     (locked.municipality === undefined && state.municipality !== null) ||
-    state.openNow ||
     state.sort !== "recommended"
 
   const clearFilters = () => {
@@ -315,17 +313,6 @@ export function GeoListingPage({ geoContext }: GeoListingPageProps) {
           </Select>
         </div>
       )}
-
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5">
-        <label htmlFor="geo-open-now-toggle" className="text-sm font-medium text-foreground">
-          Open now
-        </label>
-        <Switch
-          id="geo-open-now-toggle"
-          checked={state.openNow}
-          onCheckedChange={(checked) => applyFilter({ openNow: checked })}
-        />
-      </div>
 
       <div>
         <FilterLabel>Sort by</FilterLabel>
@@ -505,19 +492,6 @@ export function GeoListingPage({ geoContext }: GeoListingPageProps) {
                         applyFilter({ q: "" })
                       }}
                       aria-label="Clear search filter"
-                      className="text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                )}
-                {state.openNow && (
-                  <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-2.5 py-1 text-xs">
-                    Open now
-                    <button
-                      type="button"
-                      onClick={() => applyFilter({ openNow: false })}
-                      aria-label="Clear open now filter"
                       className="text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <X className="h-3 w-3" />

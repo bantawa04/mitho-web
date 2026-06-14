@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight, MapPin } from "lucide-react"
-import { ClosedBadge, MithoBadge, OpenNowBadge } from "@/components/mitho/mitho-badge"
+import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { StarRating } from "@/components/mitho/mitho-rating"
 import type { BusinessSearchItem } from "@/types/business"
 
@@ -51,7 +51,6 @@ export function BusinessSearchResultCard({ business }: BusinessSearchResultCardP
 
         <div className="flex min-w-0 flex-col p-4 sm:p-5">
           <div className="flex flex-wrap items-center gap-2">
-            {business.isOpenNow ? <OpenNowBadge /> : <ClosedBadge />}
             {typeLabel && <MithoBadge variant="muted">{typeLabel}</MithoBadge>}
             {business.isFeatured && <MithoBadge variant="default">Featured</MithoBadge>}
           </div>
