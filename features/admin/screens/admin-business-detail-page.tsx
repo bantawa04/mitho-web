@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import {
-  Building2,
   ChevronRight,
   Eye,
   Globe,
@@ -27,6 +26,8 @@ import {
   ExternalLink,
 } from "lucide-react"
 import { getPublicBusinessHref } from "@/lib/business-public-href"
+import { DEFAULT_BUSINESS_LOGO } from "@/features/business/constants/business-media"
+import { getPublicBusinessFeaturedImage } from "@/features/business/mappers/public-business-page-data"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { useBusiness } from "@/hooks/use-businesses"
 import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
@@ -264,8 +265,8 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
         {/* Premium Banner image header */}
         <div className="relative overflow-hidden rounded-lg border-slate-500/20 bg-brand-dark-green h-48 sm:h-64 shadow-sm">
           <img
-            src={business.banner?.publicUrl || "/placeholder.svg?height=600&width=1200"}
-            alt={`${business.name} Banner`}
+            src={getPublicBusinessFeaturedImage(business)}
+            alt={`${business.name} featured image`}
             className="h-full w-full object-cover"
           />
         </div>
@@ -293,17 +294,11 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               )}
             </div>
             <div className="flex items-start gap-4">
-              {business.logo?.publicUrl ? (
-                <img
-                  src={business.logo.publicUrl}
-                  alt={business.name}
-                  className="h-16 w-16 rounded-lg border border-border object-cover bg-white"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground dark:bg-surface-admin dark:text-brand-soft-beige dark:border-brand-deep-green/15">
-                  <Building2 className="h-7 w-7" />
-                </div>
-              )}
+              <img
+                src={business.logo?.publicUrl || DEFAULT_BUSINESS_LOGO}
+                alt={business.logo?.altText ?? `${business.name} logo`}
+                className="h-16 w-16 rounded-lg border border-border bg-white object-contain p-1"
+              />
               <div>
                 <h1 className="text-3xl font-semibold tracking-tight text-brand-dark-green dark:text-brand-soft-beige">{business.name}</h1>
                 <p className="mt-1 text-sm text-muted-foreground">{business.municipality.name}, {business.district.name}</p>

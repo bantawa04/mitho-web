@@ -3,13 +3,12 @@ import Link from "next/link"
 import { ArrowUpRight, MapPin } from "lucide-react"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { StarRating } from "@/components/mitho/mitho-rating"
+import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 import type { BusinessSearchItem } from "@/types/business"
 
 interface BusinessSearchResultCardProps {
   business: BusinessSearchItem
 }
-
-const PLACEHOLDER_IMAGE = "/placeholder.svg"
 
 function formatLocation(business: BusinessSearchItem): string {
   const parts = [
@@ -29,7 +28,10 @@ function formatCuisines(business: BusinessSearchItem): string | null {
 }
 
 export function BusinessSearchResultCard({ business }: BusinessSearchResultCardProps) {
-  const imageUrl = business.coverImage && business.coverImage.trim() ? business.coverImage : PLACEHOLDER_IMAGE
+  const imageUrl =
+    business.coverImage && business.coverImage.trim()
+      ? business.coverImage
+      : DEFAULT_BUSINESS_FEATURED_IMAGE
   const href = business.publicPath
   const typeLabel = business.establishmentType?.label?.trim()
   const cuisineLabel = formatCuisines(business)
