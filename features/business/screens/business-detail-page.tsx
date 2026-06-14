@@ -21,6 +21,7 @@ import { RatingsSection } from "@/features/business/components/ratings-section"
 import { ReviewsSection } from "@/features/business/components/reviews-section"
 import { TipsSection } from "@/features/business/components/tips-section"
 import { AddReviewForm } from "@/features/business/components/add-review-form"
+import { AddReviewModal } from "@/features/business/components/add-review-modal"
 import { SimilarPlaces } from "@/features/business/components/similar-places"
 import { ClaimReport } from "@/features/business/components/claim-report"
 import type { BusinessPageData } from "@/features/business/business-detail-types"
@@ -40,6 +41,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   const [tipsPage, setTipsPage] = React.useState(1)
   const { isAuthenticated } = useAuthSnapshot()
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = React.useState(false)
+  const [isReviewModalOpen, setIsReviewModalOpen] = React.useState(false)
   const [signInIntent, setSignInIntent] = React.useState<"collection" | "review" | null>(null)
   const [reopenCollectionDialogAfterAuth, setReopenCollectionDialogAfterAuth] = React.useState(false)
   const collectionsQuery = useCollections({ perPage: 100 })
@@ -208,7 +210,13 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
           isOpen={pageData.isOpen}
           heroNote={pageData.heroNote}
           onAddToCollection={handleAddToCollectionPress}
-          onWriteReview={() => scrollToSection("add-review")}
+          onWriteReview={() => {
+            if (typeof window !== "undefined" && window.innerWidth < 1024) {
+              setIsReviewModalOpen(true)
+            } else {
+              scrollToSection("add-review")
+            }
+          }}
           onShare={handleShare}
         />
 
@@ -246,14 +254,16 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
             onPageChange={setReviewPage}
             isLoading={reviewsQuery.isLoading}
           />
-          <AddReviewForm
-            businessId={pageData.id}
-            businessName={pageData.name}
-            isEarlyListing={isEarlyListing}
-            isFirstReview={(reviewsQuery.data?.summary.totalReviews ?? pageData.reviews.length) === 0}
-            prompt={pageData.addReviewPrompt}
-            onRequireAuth={() => setSignInIntent("review")}
-          />
+          <div className="hidden lg:block">
+            <AddReviewForm
+              businessId={pageData.id}
+              businessName={pageData.name}
+              isEarlyListing={isEarlyListing}
+              isFirstReview={(reviewsQuery.data?.summary.totalReviews ?? pageData.reviews.length) === 0}
+              prompt={pageData.addReviewPrompt}
+              onRequireAuth={() => setSignInIntent("review")}
+            />
+          </div>
           <div id="tips">
             <TipsSection
               tips={tipsQuery.data?.items ?? []}
@@ -273,7 +283,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
 
       {/* Mobile Action Bar */}
       <div className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex gap-2 lg:hidden">
-        <MithoButton size="lg" className="flex-1 justify-center" onClick={() => scrollToSection("add-review")}>
+        <MithoButton size="lg" className="flex-1 justify-center" onClick={() => setIsReviewModalOpen(true)}>
           Write a review
         </MithoButton>
         <MithoButton size="lg" variant="outline-secondary" className="flex-1 justify-center" onClick={handleAddToCollectionPress}>
@@ -282,6 +292,17 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
       </div>
 
       <Footer />
+
+      <AddReviewModal
+        open={isReviewModalOpen}
+        onOpenChange={setIsReviewModalOpen}
+        businessId={pageData.id}
+        businessName={pageData.name}
+        isEarlyListing={isEarlyListing}
+        isFirstReview={(reviewsQuery.data?.summary.totalReviews ?? pageData.reviews.length) === 0}
+        prompt={pageData.addReviewPrompt}
+        onRequireAuth={() => setSignInIntent("review")}
+      />
 
       <AddToCollectionDialog
         open={isCollectionDialogOpen}
