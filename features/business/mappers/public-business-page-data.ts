@@ -36,11 +36,16 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
     ...cuisineNames.map((name) => ({ label: name, kind: "cuisine" as const })),
   ].filter((category, index, all) => all.findIndex((item) => item.label === category.label) === index)
 
+  const coverImage =
+    business.banner?.publicUrl ||
+    business.photos?.find((photo) => photo.mediaType === "image" && photo.publicUrl)?.publicUrl ||
+    null
+
   return {
     id: business.id,
     name: business.name,
     sourceBadge: business.ownershipStatus === "claimed" ? "verifiedOwner" : "mitho",
-    coverImage: getPublicBusinessFeaturedImage(business),
+    coverImage,
     rating,
     reviewCount,
     categories,
