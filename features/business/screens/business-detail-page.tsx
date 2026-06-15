@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 import { useMutation } from "@tanstack/react-query"
 import { addCollectionItem } from "@/lib/api/collections"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
@@ -111,7 +110,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
     const previewImage =
       pageData.coverImage ??
       pageData.galleryItems.find((item) => item.type === "image")?.src ??
-      DEFAULT_BUSINESS_FEATURED_IMAGE
+      "/brand/logo-primary-green.svg"
 
     return {
       id: createCollectionId(pageData.name),

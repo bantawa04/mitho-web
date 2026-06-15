@@ -265,7 +265,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
         {/* Premium Banner image header */}
         <div className="relative overflow-hidden rounded-lg border-slate-500/20 bg-brand-dark-green h-48 sm:h-64 shadow-sm">
           <img
-            src={getPublicBusinessFeaturedImage(business)}
+            src={getPublicBusinessFeaturedImage(business) ?? undefined}
             alt={`${business.name} featured image`}
             className="h-full w-full object-cover"
           />

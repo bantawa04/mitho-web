@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: PublicBusinessRouteProps): Pr
       title: business.name,
       description,
       url: canonicalPath,
-      images: [{ url: featuredImage, alt: business.name }],
+      ...(featuredImage ? { images: [{ url: featuredImage, alt: business.name }] } : {}),
     },
   }
 }

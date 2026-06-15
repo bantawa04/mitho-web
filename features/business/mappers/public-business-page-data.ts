@@ -6,7 +6,6 @@ import type {
   BusinessHeroTag,
   BusinessVisitInfo,
 } from "@/features/business/business-detail-types"
-import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 import type { BusinessAmenities, BusinessHour, PublicBusiness } from "@/types/business"
 import type { Media } from "@/types/media"
 import type { ReviewItem, ReviewRatingsSummary } from "@/types/reviews"
@@ -15,11 +14,11 @@ const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frid
 
 export function getPublicBusinessFeaturedImage(
   business: Pick<PublicBusiness, "banner" | "photos">,
-): string {
+): string | null {
   return (
     business.banner?.publicUrl ||
     business.photos?.find((photo) => photo.mediaType === "image" && photo.publicUrl)?.publicUrl ||
-    DEFAULT_BUSINESS_FEATURED_IMAGE
+    null
   )
 }
 

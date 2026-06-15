@@ -2,9 +2,9 @@ import type { ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { MapPin, Navigation } from "lucide-react"
+import { BusinessCardImagePlaceholder } from "@/components/mitho/business-image-placeholder"
 import { StarRating } from "@/components/mitho/mitho-rating"
 import { Skeleton } from "@/components/ui/skeleton"
-import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 import { getPublicBusinessHref } from "@/lib/business-public-href"
 import { cn } from "@/lib/utils"
 import type { BusinessSearchItem } from "@/types/business"
@@ -51,11 +51,15 @@ function CardShell({
 }
 
 function BusinessCardImage({ business, sizes }: { business: BusinessSearchItem; sizes: string }) {
-  const imageUrl = business.coverImage?.trim() || DEFAULT_BUSINESS_FEATURED_IMAGE
+  const imageUrl = business.coverImage?.trim() || null
 
   return (
     <div className="relative aspect-[4/3]">
-      <Image src={imageUrl} alt={business.name} fill sizes={sizes} className="object-cover" />
+      {imageUrl ? (
+        <Image src={imageUrl} alt={business.name} fill sizes={sizes} className="object-cover" />
+      ) : (
+        <BusinessCardImagePlaceholder className="w-full h-full" />
+      )}
     </div>
   )
 }
