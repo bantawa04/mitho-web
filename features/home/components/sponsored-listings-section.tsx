@@ -17,7 +17,7 @@ const sponsoredListings = [
     location: "Thamel, Kathmandu",
     imageUrl: "/restaurant-interior-cozy.jpg",
     offer: "20% off on first visit",
-    href: "/business/everest-dine",
+    href: "/bagmati/kathmandu/kathmandu/everest-dine",
   },
   {
     name: "Himalayan Rooftop",
@@ -27,7 +27,7 @@ const sponsoredListings = [
     location: "Basantapur, Kathmandu",
     imageUrl: "/himalayan-java-coffee-cafe-nepal.jpg",
     offer: "Free dessert with meal",
-    href: "/business/himalayan-rooftop",
+    href: "/bagmati/kathmandu/kathmandu/himalayan-rooftop",
   },
   {
     name: "Spice Garden",
@@ -37,7 +37,7 @@ const sponsoredListings = [
     location: "Jhamsikhel, Lalitpur",
     imageUrl: "/chef-cooking-nepali-food.jpg",
     offer: "Happy hour 4-6 PM",
-    href: "/business/spice-garden",
+    href: "/bagmati/lalitpur/lalitpur/spice-garden",
   },
 ]
 

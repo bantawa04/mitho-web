@@ -31,6 +31,7 @@ export interface ReviewItem {
   businessId: string
   businessName?: string
   businessSlug?: string
+  publicHref?: string | null
   userId: string
   title: string
   rating: number

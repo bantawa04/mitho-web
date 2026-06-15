@@ -22,6 +22,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
   {
     id: "thakali-kitchen",
     slug: "thakali-kitchen",
+    publicHref: "/bagmati/kathmandu/kathmandu/thakali-kitchen",
     name: "Thakali Kitchen",
     imageUrl: "/nepali-restaurant-thakali-food.jpg",
     cuisine: "Nepali • Traditional",
@@ -45,6 +46,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
   {
     id: "momo-central",
     slug: "momo-central",
+    publicHref: "/bagmati/kathmandu/kathmandu/momo-central",
     name: "Momo Central",
     imageUrl: "/nepali-momo-dumplings-restaurant.jpg",
     cuisine: "Nepali • Dumplings",
@@ -68,6 +70,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
   {
     id: "newari-bhoj",
     slug: "newari-bhoj",
+    publicHref: "/bagmati/bhaktapur/bhaktapur/newari-bhoj",
     name: "Newari Bhoj",
     imageUrl: "/newari-traditional-food-nepal.jpg",
     cuisine: "Newari • Traditional",
@@ -91,6 +94,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
   {
     id: "lakeside-cafe",
     slug: "lakeside-cafe",
+    publicHref: "/gandaki/kaski/pokhara/lakeside-cafe",
     name: "Lakeside Cafe",
     imageUrl: "/lakeside-cafe-pokhara-nepal.jpg",
     cuisine: "Cafe • Continental",
@@ -114,6 +118,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
   {
     id: "sekuwa-corner",
     slug: "sekuwa-corner",
+    publicHref: "/bagmati/lalitpur/lalitpur/sekuwa-corner",
     name: "Sekuwa Corner",
     imageUrl: "/nepali-sekuwa-bbq-grilled-meat.jpg",
     cuisine: "Nepali • BBQ",
@@ -136,6 +141,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
   {
     id: "sel-roti-house",
     slug: "sel-roti-house",
+    publicHref: "/bagmati/lalitpur/lalitpur/sel-roti-house",
     name: "Sel Roti House",
     imageUrl: "/nepali-sel-roti-street-food.jpg",
     cuisine: "Street Food • Nepali",
@@ -159,6 +165,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
   {
     id: "himalayan-java-jhamsikhel",
     slug: "himalayan-java-jhamsikhel",
+    publicHref: "/bagmati/lalitpur/lalitpur/himalayan-java-jhamsikhel",
     name: "Himalayan Java",
     imageUrl: "/himalayan-java-coffee-cafe-nepal.jpg",
     cuisine: "Cafe • Coffee",
@@ -181,6 +188,7 @@ export const EXPLORE_RESULTS: ExploreResult[] = [
   {
     id: "bhojan-griha",
     slug: "bhojan-griha",
+    publicHref: "/bagmati/kathmandu/kathmandu/bhojan-griha",
     name: "Bhojan Griha",
     imageUrl: "/nepali-restaurant-traditional-interior.jpg",
     cuisine: "Nepali • Heritage Dining",

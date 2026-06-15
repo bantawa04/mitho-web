@@ -60,7 +60,7 @@ function lifecycleBadge(status: ManagedBusiness["lifecycleStatus"]) {
   }
 }
 
-function BusinessCard({ business, publicHref }: { business: ManagedBusiness; publicHref: string }) {
+function BusinessCard({ business, publicHref }: { business: ManagedBusiness; publicHref: string | null }) {
   const manageHref = `/dashboard/businesses/${business.id}/overview`
 
   return (
@@ -121,9 +121,15 @@ function BusinessCard({ business, publicHref }: { business: ManagedBusiness; pub
           </MithoButton>
         )}
 
-        <MithoButton variant="ghost" asChild>
-          <Link href={publicHref}>View public listing</Link>
-        </MithoButton>
+        {publicHref ? (
+          <MithoButton variant="ghost" asChild>
+            <Link href={publicHref}>View public listing</Link>
+          </MithoButton>
+        ) : (
+          <MithoButton variant="ghost" disabled>
+            Public link unavailable
+          </MithoButton>
+        )}
       </div>
     </article>
   )

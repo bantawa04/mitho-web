@@ -7,7 +7,7 @@ export function ReviewActivityCard({ item }: { item: FeedItem }) {
   const review = item.review
   if (!review) return null
 
-  const businessLink = review.publicHref || (review.businessSlug ? `/business/${review.businessSlug}` : null)
+  const businessLink = review.publicHref?.trim() || null
 
   return (
     <article className="rounded-xl border border-brand-deep-green/10 bg-white p-5 shadow-sm">
