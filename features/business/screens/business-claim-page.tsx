@@ -63,7 +63,7 @@ function claimableCue(business: ClaimableBusiness) {
 }
 
 function hasPublicBusinessPage(business: ClaimableBusiness) {
-  return Boolean(business.publicPath)
+  return Boolean(getPublicBusinessHref(business))
 }
 
 function StepPill({
@@ -140,6 +140,8 @@ function SearchResultCard({
 }
 
 function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
+  const publicHref = getPublicBusinessHref(business)
+
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <section className={sectionCardClass}>
@@ -171,9 +173,9 @@ function ClaimSubmittedState({ business }: { business: ClaimableBusiness }) {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </MithoButton>
-            {hasPublicBusinessPage(business) ? (
+            {publicHref ? (
               <MithoButton variant="outline-secondary" asChild>
-                <Link href={getPublicBusinessHref(business)}>View public listing</Link>
+                <Link href={publicHref}>View public listing</Link>
               </MithoButton>
             ) : null}
           </div>
@@ -640,9 +642,14 @@ export function BusinessClaimPage() {
                     <h2 className="mt-3 text-2xl font-semibold text-brand-dark-green">{selectedBusiness.name}</h2>
                     <p className="mt-2 text-sm text-muted-foreground">{claimableLocation(selectedBusiness)}</p>
                     <p className="mt-4 text-sm leading-7 text-muted-foreground">{claimableCue(selectedBusiness)}</p>
-                    <MithoButton variant="ghost" className="mt-4" asChild>
-                      <Link href={getPublicBusinessHref(selectedBusiness)}>View public listing</Link>
-                    </MithoButton>
+                    {(() => {
+                      const publicHref = getPublicBusinessHref(selectedBusiness)
+                      return publicHref ? (
+                        <MithoButton variant="ghost" className="mt-4" asChild>
+                          <Link href={publicHref}>View public listing</Link>
+                        </MithoButton>
+                      ) : null
+                    })()}
                   </div>
                 </section>
               ) : null}

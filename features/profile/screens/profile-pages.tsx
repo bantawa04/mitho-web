@@ -341,7 +341,7 @@ function formatReplyDate(value: string) {
 }
 
 function reviewBusinessHref(review: ReviewItem) {
-  return review.businessSlug ? `/business/${review.businessSlug}` : null
+  return review.publicHref?.trim() || null
 }
 
 export function ProfileReviewsPage() {

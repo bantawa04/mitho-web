@@ -1,4 +1,5 @@
 import { currentCustomer, ownedCollections, publicCollections, type CollectionRecord } from "@/features/collections/data/collection-data"
+import { mockBusinessPublicHref } from "@/features/business/utils/mock-business-public-href"
 
 export interface ProfileReviewPreview {
   id: string
@@ -109,7 +110,7 @@ export const mockCustomerProfile: CustomerProfileData = {
       rating: 5,
       date: "2 days ago",
       excerpt: "The steamed momo basket still feels like the safest first order here, and the owner reply was surprisingly thoughtful.",
-      publicHref: "/business/himalayan-flavors",
+      publicHref: mockBusinessPublicHref("himalayan-flavors"),
     },
     {
       id: "review-2",
@@ -118,7 +119,7 @@ export const mockCustomerProfile: CustomerProfileData = {
       rating: 4,
       date: "1 week ago",
       excerpt: "A good place for taking visiting friends when you want Newari notes without the room feeling too formal or too loud.",
-      publicHref: "/business/demo-empty",
+      publicHref: mockBusinessPublicHref("demo-empty"),
     },
     {
       id: "review-3",
@@ -127,7 +128,7 @@ export const mockCustomerProfile: CustomerProfileData = {
       rating: 4,
       date: "2 weeks ago",
       excerpt: "Best when you want a quick plate near the center and care more about the chutney than the room itself.",
-      publicHref: "/business/momo-central",
+      publicHref: mockBusinessPublicHref("momo-central"),
     },
   ],
   businessContext: {
@@ -146,7 +147,7 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
       rating: 5,
       date: "4 days ago",
       excerpt: "The chutney variety makes this an easy recommendation when you want a slower momo stop rather than a quick street-side plate.",
-      publicHref: "/business/courtyard-steam-house",
+      publicHref: mockBusinessPublicHref("courtyard-steam-house"),
     },
     {
       id: "nabin-review-2",
@@ -155,7 +156,7 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
       rating: 4,
       date: "2 weeks ago",
       excerpt: "Still one of the more reliable sit-down choices when a group wants Tibetan comfort food without overthinking the order.",
-      publicHref: "/business/himalayan-flavors",
+      publicHref: mockBusinessPublicHref("himalayan-flavors"),
     },
   ],
   "samriddhi-bites": [
@@ -166,7 +167,7 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
       rating: 5,
       date: "3 days ago",
       excerpt: "One of the easier cafes to recommend when people want a real sit-in stop rather than just caffeine and Wi-Fi.",
-      publicHref: "/business/lakeview-pour-house",
+      publicHref: mockBusinessPublicHref("lakeview-pour-house"),
     },
   ],
   "prerna-plates": [
@@ -177,7 +178,7 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
       rating: 4,
       date: "5 days ago",
       excerpt: "The room and pace both make it easier to recommend for dinner plans that need a softer landing.",
-      publicHref: "/business/courtyard-steam-house",
+      publicHref: mockBusinessPublicHref("courtyard-steam-house"),
     },
   ],
   "roshan-routes": [
@@ -188,7 +189,7 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
       rating: 4,
       date: "1 week ago",
       excerpt: "Still one of the safer budget lunch answers when you need something central and fast.",
-      publicHref: "/business/momo-central",
+      publicHref: mockBusinessPublicHref("momo-central"),
     },
   ],
   "sushant-snacks": [
@@ -199,7 +200,7 @@ const publicProfileReviews: Record<string, ProfileReviewPreview[]> = {
       rating: 4,
       date: "6 days ago",
       excerpt: "A good after-work fallback when the snack stop starts leaning toward a longer hangout.",
-      publicHref: "/business/brick-oven-social",
+      publicHref: mockBusinessPublicHref("brick-oven-social"),
     },
   ],
 }

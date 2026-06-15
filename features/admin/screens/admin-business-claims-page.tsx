@@ -352,11 +352,20 @@ export function AdminBusinessClaimsPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button variant="outline" className="rounded-xl border-brand-deep-green/14" asChild>
-                <Link href={getAdminBusinessPublicHref(selectedClaim.business ?? { slug: selectedClaim.businessId })} target="_blank">
-                  Open public page
-                </Link>
-              </Button>
+              {(() => {
+                const publicHref = getAdminBusinessPublicHref(selectedClaim.business ?? { slug: selectedClaim.businessId })
+                return publicHref ? (
+                  <Button variant="outline" className="rounded-xl border-brand-deep-green/14" asChild>
+                    <Link href={publicHref} target="_blank">
+                      Open public page
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button variant="outline" className="rounded-xl border-brand-deep-green/14" disabled>
+                    Public page unavailable
+                  </Button>
+                )
+              })()}
               {selectedClaim.status === "pending" ? (
                 <>
                   <Button

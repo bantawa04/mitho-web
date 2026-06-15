@@ -34,6 +34,7 @@ export interface BusinessClaimBusinessSummary {
   id: string
   name: string
   slug: string
+  publicPath?: string
   province?: { name: string; slug: string }
   district?: { name: string; slug: string }
   municipality?: { name: string; slug: string }

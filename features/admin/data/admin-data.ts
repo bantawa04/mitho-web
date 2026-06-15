@@ -1,3 +1,5 @@
+import { mockBusinessPublicHref } from "@/features/business/utils/mock-business-public-href"
+
 export interface AdminQueuePreviewItem {
   id: string
   title: string
@@ -752,7 +754,7 @@ export const mockAdminBusinessDetails: AdminBusinessDetailItem[] = mockAdminBusi
     fullAddress: `${business.location}, Nepal`,
     phone: "+977 9800000000",
     email: `${business.slug}@mithocha.example`,
-    website: `https://mithocha.example/business/${business.slug}`,
+    website: `https://mithocha.example${mockBusinessPublicHref(business.slug)}`,
     ownerName: ownerContext.ownerName,
     ownerEmail: ownerContext.ownerEmail,
     claimStateNote: ownerContext.claimStateNote,
@@ -763,7 +765,7 @@ export const mockAdminBusinessDetails: AdminBusinessDetailItem[] = mockAdminBusi
     profileViews30d: 820 + index * 91,
     recentReviews: buildRecentReviews(business.name),
     recentSignals: buildRecentSignals(business),
-    publicHref: `/business/${business.slug}`,
+    publicHref: mockBusinessPublicHref(business.slug),
     ownerWorkspaceHref: `/dashboard/businesses/${business.slug}/overview`,
   }
 })

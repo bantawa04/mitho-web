@@ -1,108 +1,174 @@
 "use client"
 
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowUpRight, MapPin, Navigation } from "lucide-react"
+import * as React from "react"
+import type { ReactNode } from "react"
+import { MapPin, Navigation } from "lucide-react"
+import { getCityBySlug } from "@/content/taxonomy/city-taxonomy"
 import { MithoSection } from "@/components/mitho/mitho-section"
 import { MithoCarousel } from "@/components/mitho/mitho-carousel"
-import { StarRating } from "@/components/mitho/mitho-rating"
 import { MithoButton } from "@/components/mitho/mitho-button"
+import { useNearbyBusinesses } from "@/hooks/use-businesses"
+import {
+  HomeBusinessCardSkeleton,
+  NearbyBusinessCard,
+} from "@/features/home/components/home-business-card"
 
-const nearbyPlaces = [
-  {
-    name: "Bhojan Griha",
-    type: "Restaurant",
-    rating: 4.7,
-    distance: "0.5 km",
-    imageUrl: "/nepali-restaurant-traditional-interior.jpg",
-    note: "A practical call when you want a full meal nearby and not another cafe stop.",
-    href: "/business/bhojan-griha",
-  },
-  {
-    name: "Chiya Pasal",
-    type: "Tea House",
-    rating: 4.4,
-    distance: "0.8 km",
-    imageUrl: "/nepali-tea-house-chiya.jpg",
-    note: "Good for a slower tea break and small plates when the crowd matters less than the mood.",
-    href: "/business/chiya-pasal",
-  },
-  {
-    name: "Sel Roti House",
-    type: "Street Food",
-    rating: 4.6,
-    distance: "1.2 km",
-    imageUrl: "/nepali-sel-roti-street-food.jpg",
-    note: "Worth the short detour if you want something local, filling, and easy on the budget.",
-    href: "/business/sel-roti-house",
-  },
-  {
-    name: "Himalayan Java",
-    type: "Cafe",
-    rating: 4.5,
-    distance: "1.5 km",
-    imageUrl: "/himalayan-java-coffee-cafe-nepal.jpg",
-    note: "Reliable when you need a familiar coffee stop without spending too much time choosing.",
-    href: "/business/himalayan-java",
-  },
-]
+const KATHMANDU_FALLBACK = getCityBySlug("kathmandu")?.center ?? { lat: 27.7172, lng: 85.324 }
+const NEARBY_RADIUS_KM = 5
+
+function nearbyLocationSourceLabel(source: "fallback" | "user") {
+  return source === "user" ? "Using your location" : "Using Kathmandu fallback"
+}
+
+function geolocationErrorMessage(error: GeolocationPositionError) {
+  switch (error.code) {
+    case error.PERMISSION_DENIED:
+      return "Location permission was denied. Showing places near Kathmandu instead."
+    case error.POSITION_UNAVAILABLE:
+      return "Your location could not be determined. Showing places near Kathmandu instead."
+    case error.TIMEOUT:
+      return "Location request timed out. Showing places near Kathmandu instead."
+    default:
+      return "We could not use your location just now. Showing places near Kathmandu instead."
+  }
+}
+
+function NearbyState({
+  title,
+  body,
+  action,
+}: {
+  title: string
+  body: string
+  action?: ReactNode
+}) {
+  return (
+    <div className="rounded-xl border border-brand-deep-green/10 bg-white px-6 py-8 text-center shadow-sm">
+      <h3 className="text-xl font-semibold text-brand-dark-green">{title}</h3>
+      <p className="mt-2 text-sm leading-7 text-muted-foreground">{body}</p>
+      {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
+    </div>
+  )
+}
 
 export function PopularNearYouSection() {
+  const [coords, setCoords] = React.useState({
+    latitude: KATHMANDU_FALLBACK.lat,
+    longitude: KATHMANDU_FALLBACK.lng,
+  })
+  const [locationSource, setLocationSource] = React.useState<"fallback" | "user">("fallback")
+  const [isLocating, setIsLocating] = React.useState(false)
+  const [geoError, setGeoError] = React.useState<string | null>(null)
+
+  const searchQuery = useNearbyBusinesses({
+    latitude: coords.latitude,
+    longitude: coords.longitude,
+    radiusKm: NEARBY_RADIUS_KM,
+    perPage: 8,
+  })
+
+  const items = searchQuery.data?.items ?? []
+  const isInitialLoading = searchQuery.isLoading && !searchQuery.data
+  const subtitle =
+    locationSource === "user"
+      ? "Places within 5 km of your current location, ranked by distance from the live public directory."
+      : "Places within 5 km of central Kathmandu, with your location used only when you choose it."
+
+  const handleUseMyLocation = React.useCallback(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setGeoError("Geolocation is not available in this browser. Showing places near Kathmandu instead.")
+      return
+    }
+
+    setIsLocating(true)
+    setGeoError(null)
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoords({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        })
+        setLocationSource("user")
+        setIsLocating(false)
+      },
+      (error) => {
+        setGeoError(geolocationErrorMessage(error))
+        setIsLocating(false)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 1000 * 60 * 5,
+      },
+    )
+  }, [])
+
   return (
     <MithoSection
       id="nearby"
       eyebrow="Nearby"
       title="Worth the short walk"
       titleIcon={<MapPin className="h-6 w-6 text-brand-deep-green" />}
-      subtitle="Close-by picks for when the decision needs to be easy and the meal still needs to be good."
+      subtitle={subtitle}
       density="compact"
       action={
-        <MithoButton variant="outline-secondary" size="sm" asChild>
-          <Link href="/cities/kathmandu">
-            <Navigation className="h-4 w-4" />
-            Update location
-          </Link>
-        </MithoButton>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="rounded-full bg-surface-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-brand-deep-green/70">
+            {nearbyLocationSourceLabel(locationSource)}
+          </div>
+          <MithoButton
+            variant="outline-secondary"
+            size="sm"
+            onClick={handleUseMyLocation}
+            loading={isLocating}
+            leftIcon={<Navigation className="h-4 w-4" />}
+          >
+            Use my location
+          </MithoButton>
+        </div>
       }
     >
-      <MithoCarousel className="px-1 sm:px-3">
-        {nearbyPlaces.map((place) => (
-          <Link
-            href={place.href}
-            key={place.name}
-            className="group block w-[276px] flex-shrink-0 overflow-hidden rounded-xl border border-brand-deep-green/10 bg-white shadow-sm transition-colors"
-          >
-            <div className="relative aspect-[4/3]">
-              <Image
-                src={place.imageUrl}
-                alt={place.name}
-                fill
-                sizes="276px"
-                className="object-cover"
-              />
-              <div className="absolute right-3 top-3 rounded-full bg-white/92 px-2.5 py-1 text-xs font-semibold text-brand-dark-green">
-                {place.distance}
-              </div>
-            </div>
+      <div className="space-y-4">
+        {geoError ? (
+          <div className="rounded-lg border border-brand-orange/20 bg-brand-orange/5 px-4 py-3 text-sm text-muted-foreground">
+            {geoError}
+          </div>
+        ) : null}
 
-            <div className="space-y-3 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-lg font-semibold text-brand-dark-green">{place.name}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{place.type}</p>
-                </div>
-                <div className="flex items-center gap-1 text-sm font-medium text-brand-dark-green">
-                  <StarRating rating={place.rating} size="sm" />
-                  <span>{place.rating}</span>
-                </div>
-              </div>
+        {searchQuery.isFetching && !isInitialLoading ? (
+          <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
+            Refreshing nearby places...
+          </p>
+        ) : null}
 
-              <p className="text-sm leading-6 text-foreground">{place.note}</p>
-
-            </div>
-          </Link>
-        ))}
-      </MithoCarousel>
+        {isInitialLoading ? (
+          <MithoCarousel className="px-1 sm:px-3">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <HomeBusinessCardSkeleton key={index} variant="nearby" />
+            ))}
+          </MithoCarousel>
+        ) : searchQuery.isError ? (
+          <NearbyState
+            title="Could not load nearby places"
+            body="The nearby feed is having trouble right now. Try again in a moment."
+            action={<MithoButton onClick={() => searchQuery.refetch()}>Retry</MithoButton>}
+          />
+        ) : items.length === 0 ? (
+          <NearbyState
+            title="No nearby places found"
+            body={`We could not find published places within ${NEARBY_RADIUS_KM} km right now.`}
+          />
+        ) : (
+          <div className={searchQuery.isFetching ? "opacity-60 transition-opacity" : undefined}>
+            <MithoCarousel className="px-1 sm:px-3">
+              {items.map((business) => (
+                <NearbyBusinessCard key={business.id} business={business} />
+              ))}
+            </MithoCarousel>
+          </div>
+        )}
+      </div>
     </MithoSection>
   )
 }

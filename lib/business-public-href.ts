@@ -4,16 +4,17 @@
  */
 export function getPublicBusinessHref(business: {
   slug: string
-  publicPath?: string
+  publicPath?: string | null
   provinceSlug?: string
   districtSlug?: string
   municipalitySlug?: string
-  province?: { slug?: string } | string
-  district?: { slug?: string } | string
-  municipality?: { slug?: string } | string
-}): string {
-  if (business.publicPath) {
-    return business.publicPath
+  province?: { slug?: string } | string | null
+  district?: { slug?: string } | string | null
+  municipality?: { slug?: string } | string | null
+}): string | null {
+  const publicPath = business.publicPath?.trim()
+  if (publicPath) {
+    return publicPath.startsWith("/") ? publicPath : `/${publicPath}`
   }
 
   const provinceSlug = typeof business.province === "object" ? business.province?.slug : undefined
@@ -24,8 +25,9 @@ export function getPublicBusinessHref(business: {
   const finalDistrictSlug = districtSlug ?? business.districtSlug
   const finalMunicipalitySlug = municipalitySlug ?? business.municipalitySlug
 
-  if (finalProvinceSlug && finalDistrictSlug && finalMunicipalitySlug) {
-    return `/${finalProvinceSlug}/${finalDistrictSlug}/${finalMunicipalitySlug}/${business.slug}`
+  const cleanSlug = business.slug.trim()
+  if (finalProvinceSlug && finalDistrictSlug && finalMunicipalitySlug && cleanSlug) {
+    return `/${finalProvinceSlug}/${finalDistrictSlug}/${finalMunicipalitySlug}/${cleanSlug}`
   }
-  return `/business/${business.slug}`
+  return null
 }
