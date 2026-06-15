@@ -134,6 +134,8 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       amenityVegan: false,
       amenityHalal: false,
       amenityNonVeg: false,
+      sendClaimInvitation: false,
+      claimInvitationEmail: "",
     },
   })
 
@@ -248,6 +250,13 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
       latitude: values.latitude ?? undefined,
       longitude: values.longitude ?? undefined,
       amenities,
+      // Claim invitation — create mode only
+      ...(mode === "create" && values.sendClaimInvitation
+        ? {
+            sendClaimInvitation: true,
+            claimInvitationEmail: values.claimInvitationEmail || null,
+          }
+        : {}),
     }
 
     if (mode === "create") {
@@ -280,6 +289,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
   const watchedLongitude = form.watch("longitude")
   const watchedDistrictId = form.watch("districtId")
   const watchedMunicipalityId = form.watch("municipalityId")
+  const sendClaimInvitation = form.watch("sendClaimInvitation")
 
   const { data: municipalities } = useMunicipalities(
     watchedDistrictId && /^\d+$/.test(watchedDistrictId) ? Number(watchedDistrictId) : null
@@ -576,6 +586,65 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 </div>
               </div>
             </section>
+
+            {/* Claim invitation — creation only */}
+            {mode === "create" ? (
+            <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-brand-dark-green">Claim invitation</h2>
+                  <p className="text-sm text-muted-foreground">Optionally notify a business owner so they can claim this listing.</p>
+                </div>
+              </div>
+              <div className="mt-6 border-t border-border pt-6 space-y-4">
+                <FormField
+                  control={form.control}
+                  name="sendClaimInvitation"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start gap-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value === true}
+                          onCheckedChange={(checked) => field.onChange(checked === true)}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="font-medium cursor-pointer text-sm text-brand-dark-green">
+                          Send claim invitation email
+                        </FormLabel>
+                        <FormDescription className="text-xs text-muted-foreground">
+                          Sends an email to the entered address with instructions to claim this listing.
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                {sendClaimInvitation ? (
+                  <FormField
+                    control={form.control}
+                    name="claimInvitationEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Invitation email</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="email"
+                            placeholder="owner@business.com"
+                            className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : null}
+              </div>
+            </section>
+            ) : null}
 
             {/* Photos gallery — creation only; existing galleries are managed via Gallery Approval */}
             {mode === "create" ? (

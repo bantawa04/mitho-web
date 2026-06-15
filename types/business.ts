@@ -117,6 +117,9 @@ export interface Business {
   ratingAvg?: number
   ratingCount: number
   isFeatured: boolean
+  claimInvitationRequested?: boolean
+  claimInvitationEmail?: string | null
+  claimInvitationSentAt?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -165,6 +168,8 @@ export interface CreateBusinessPayload {
   status?: BusinessStatus
   listingStatus?: BusinessListingStatus
   isFeatured?: boolean
+  sendClaimInvitation?: boolean
+  claimInvitationEmail?: string | null
 }
 
 export type UpdateBusinessPayload = Partial<CreateBusinessPayload>

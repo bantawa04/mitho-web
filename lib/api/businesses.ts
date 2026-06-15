@@ -47,6 +47,8 @@ function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
   if (p.amenities !== undefined) out.amenities = p.amenities
   if (p.links !== undefined) out.links = p.links
   if (p.isFeatured !== undefined) out.is_featured = p.isFeatured
+  if (p.sendClaimInvitation !== undefined) out.send_claim_invitation = p.sendClaimInvitation
+  if (p.claimInvitationEmail !== undefined) out.claim_invitation_email = p.claimInvitationEmail ?? null
   return out
 }
 

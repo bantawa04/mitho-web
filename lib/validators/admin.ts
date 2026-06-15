@@ -48,6 +48,28 @@ export const businessSchema = z.object({
   amenityVegan: z.boolean().optional(),
   amenityHalal: z.boolean().optional(),
   amenityNonVeg: z.boolean().optional(),
+  // Claim invitation (admin create-only; ignored on edit)
+  sendClaimInvitation: z.boolean().optional(),
+  claimInvitationEmail: z.string().trim().optional().or(z.literal("")),
+}).superRefine((data, ctx) => {
+  if (data.sendClaimInvitation) {
+    if (!data.claimInvitationEmail || data.claimInvitationEmail.trim() === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Email is required when sending a claim invitation.",
+        path: ["claimInvitationEmail"],
+      })
+    } else {
+      const emailResult = z.string().email().safeParse(data.claimInvitationEmail)
+      if (!emailResult.success) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Enter a valid email address.",
+          path: ["claimInvitationEmail"],
+        })
+      }
+    }
+  }
 })
 
 export type BusinessFormValues = z.infer<typeof businessSchema>
