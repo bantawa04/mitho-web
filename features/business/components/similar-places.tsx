@@ -3,7 +3,6 @@
 import * as React from "react"
 import { RestaurantCard } from "@/components/mitho/mitho-card"
 import { MithoCarousel } from "@/components/mitho/mitho-carousel"
-import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 
 interface SimilarPlace {
   name: string
@@ -69,8 +68,8 @@ const similarPlaces: SimilarPlace[] = [
   },
 ]
 
-function getRecommendationImage(place: SimilarPlace) {
-  return place.featuredImageUrl ?? place.galleryImageUrls[0] ?? DEFAULT_BUSINESS_FEATURED_IMAGE
+function getRecommendationImage(place: SimilarPlace): string | null {
+  return place.featuredImageUrl ?? place.galleryImageUrls[0] ?? null
 }
 
 interface SimilarPlacesProps {

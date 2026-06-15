@@ -3,7 +3,7 @@ import { BadgeCheck, Bookmark, MapPin, PenLine, Share2 } from "lucide-react"
 import { MithoBadge, OpenNowBadge, ClosedBadge } from "@/components/mitho/mitho-badge"
 import { StarRating } from "@/components/mitho/mitho-rating"
 import { MithoButton } from "@/components/mitho/mitho-button"
-import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
+import { BrandLogo } from "@/components/mitho/brand-logo"
 import type { BusinessHeroTag, BusinessSourceBadge } from "@/features/business/business-detail-types"
 
 interface BusinessHeroProps {
@@ -38,7 +38,6 @@ export function BusinessHero({
   onShare,
 }: BusinessHeroProps) {
   const hasReviews = reviewCount > 0 && rating !== null && rating !== undefined
-  const heroImage = coverImage ?? DEFAULT_BUSINESS_FEATURED_IMAGE
   const sourceBadgeContent =
     sourceBadge === "verifiedOwner" ? (
       <MithoBadge variant="success" className="gap-1.5">
@@ -59,9 +58,18 @@ export function BusinessHero({
 
   return (
     <section className="relative">
-      <div className="relative h-64 overflow-hidden sm:h-80 lg:h-[26rem]">
-        <img src={heroImage} alt={name} className="h-full w-full object-cover" />
-      </div>
+      {coverImage ? (
+        <div className="relative h-64 overflow-hidden sm:h-80 lg:h-[26rem]">
+          <img src={coverImage} alt={name} className="h-full w-full object-cover" />
+        </div>
+      ) : (
+        <div className="relative flex h-64 items-center justify-center overflow-hidden bg-brand-deep-green/10 sm:h-80 lg:h-[26rem]">
+          <div className="px-6 text-center">
+            <BrandLogo kind="full" tone="green" className="mx-auto mb-6 w-48 opacity-30" />
+            <p className="font-heading text-2xl font-bold tracking-tight text-brand-dark-green sm:text-3xl lg:text-4xl">{name}</p>
+          </div>
+        </div>
+      )}
 
       <div className="container mx-auto px-4 pt-6 pb-2">
         <div className="flex flex-col gap-8 md:grid md:grid-cols-[minmax(0,1fr)_240px] md:items-start md:gap-6 lg:grid-cols-[minmax(0,1fr)_224px] lg:gap-8">
