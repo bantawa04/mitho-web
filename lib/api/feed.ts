@@ -13,8 +13,8 @@ export interface FeedActor {
 export interface FeedReview {
   id: string
   businessName: string
-  businessSlug: string
-  publicHref: string
+  businessSlug?: string
+  publicHref?: string | null
   rating: number
   excerpt: string
 }
@@ -23,7 +23,7 @@ export interface FeedCollection {
   id: string
   title: string
   ownerUsername: string
-  publicHref: string
+  publicHref?: string | null
   coverImages: string[]
   placeCount: number
 }

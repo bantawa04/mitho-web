@@ -1,3 +1,5 @@
+import { mockBusinessPublicHref } from "@/features/business/utils/mock-business-public-href"
+
 export interface ClaimableBusiness {
   id: string
   name: string
@@ -13,7 +15,7 @@ export const CLAIMABLE_BUSINESSES: ClaimableBusiness[] = [
     name: "Himalayan Flavors",
     category: "Restaurant",
     location: "Thamel, Kathmandu",
-    publicHref: "/business/himalayan-flavors",
+    publicHref: mockBusinessPublicHref("himalayan-flavors"),
     cue: "Listing exists on Mitho and is eligible for ownership verification.",
   },
   {
@@ -21,7 +23,7 @@ export const CLAIMABLE_BUSINESSES: ClaimableBusiness[] = [
     name: "Patan Courtyard Kitchen",
     category: "Restaurant",
     location: "Patan, Lalitpur",
-    publicHref: "/business/demo-empty",
+    publicHref: mockBusinessPublicHref("demo-empty"),
     cue: "Newer listing with basic public info already in place.",
   },
   {
@@ -29,7 +31,7 @@ export const CLAIMABLE_BUSINESSES: ClaimableBusiness[] = [
     name: "Momo Central",
     category: "Street food",
     location: "New Road, Kathmandu",
-    publicHref: "/business/momo-central",
+    publicHref: mockBusinessPublicHref("momo-central"),
     cue: "Popular listing with review activity already tied to it.",
   },
   {
@@ -37,7 +39,7 @@ export const CLAIMABLE_BUSINESSES: ClaimableBusiness[] = [
     name: "Thakali Kitchen",
     category: "Local cuisine",
     location: "Jhamsikhel, Lalitpur",
-    publicHref: "/business/thakali-kitchen",
+    publicHref: mockBusinessPublicHref("thakali-kitchen"),
     cue: "Existing Mitho listing that can be claimed after verification.",
   },
 ]

@@ -1,4 +1,3 @@
-import { richBusinessPageData } from "@/features/business/data/business-detail-data"
 import type {
   BusinessGalleryItem,
   BusinessRatingsData,

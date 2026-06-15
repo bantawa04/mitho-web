@@ -20,6 +20,7 @@ function usePublicUrl(businessId: string) {
   const { entry } = useMyBusiness(businessId)
   if (!entry) return null
   const path = getPublicBusinessHref(entry.business)
+  if (!path) return null
   // Build absolute URL using current origin (works both server-rendered and client-side)
   const origin = typeof window !== "undefined" ? window.location.origin : ""
   return `${origin}${path}`

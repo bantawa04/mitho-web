@@ -33,7 +33,7 @@ export function ExploreResultCard({ result }: ExploreResultCardProps) {
           <div className="mt-4 flex items-start justify-between gap-4">
             <div className="min-w-0">
               <Link
-                href={`/business/${result.slug}`}
+                href={result.publicHref}
                 className="text-2xl font-semibold leading-tight text-brand-dark-green transition-colors hover:text-primary"
               >
                 {result.name}
@@ -71,7 +71,7 @@ export function ExploreResultCard({ result }: ExploreResultCardProps) {
 
           <div className="mt-5">
             <Link
-              href={`/business/${result.slug}`}
+              href={result.publicHref}
               className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-primary"
             >
               Open full business page

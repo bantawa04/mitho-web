@@ -322,12 +322,19 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 Review Request
               </Button>
             ) : null}
-            <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted dark:text-brand-soft-beige dark:border-brand-deep-green/20">
-              <Link href={publicBusinessHref} target="_blank">
+            {publicBusinessHref ? (
+              <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted dark:text-brand-soft-beige dark:border-brand-deep-green/20">
+                <Link href={publicBusinessHref} target="_blank">
+                  <Eye className="h-4 w-4" />
+                  Open public page
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green dark:text-brand-soft-beige dark:border-brand-deep-green/20" disabled>
                 <Eye className="h-4 w-4" />
-                Open public page
-              </Link>
-            </Button>
+                Public page unavailable
+              </Button>
+            )}
           </div>
         </div>
       </section>

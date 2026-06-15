@@ -1,64 +1,47 @@
 "use client"
 
-import Image from "next/image"
+import type { ReactNode } from "react"
 import Link from "next/link"
-import { ArrowUpRight, Flame, MapPin } from "lucide-react"
+import { Flame } from "lucide-react"
 import { MithoSection } from "@/components/mitho/mitho-section"
 import { MithoCarousel } from "@/components/mitho/mitho-carousel"
-import { StarRating } from "@/components/mitho/mitho-rating"
 import { MithoButton } from "@/components/mitho/mitho-button"
+import { useLatestBusinesses } from "@/hooks/use-businesses"
+import {
+  HomeBusinessCardSkeleton,
+  TrendingBusinessCard,
+} from "@/features/home/components/home-business-card"
 
-const trendingPlaces = [
-  {
-    name: "Thakali Kitchen",
-    cuisine: "Nepali • Traditional",
-    rating: 4.8,
-    reviewCount: 324,
-    location: "Thamel, Kathmandu",
-    imageUrl: "/nepali-restaurant-thakali-food.jpg",
-    note: "Come for the achar and generous plates, especially when you need a dependable group dinner.",
-    href: "/business/himalayan-flavors",
-  },
-  {
-    name: "Momo Central",
-    cuisine: "Nepali • Dumplings",
-    rating: 4.7,
-    reviewCount: 512,
-    location: "New Road, Kathmandu",
-    imageUrl: "/nepali-momo-dumplings-restaurant.jpg",
-    note: "Busy, fast-moving, and still one of the easiest late-evening momo calls in the city.",
-    href: "/business/momo-central",
-  },
-  {
-    name: "Lakeside Cafe",
-    cuisine: "Cafe • Continental",
-    rating: 4.6,
-    reviewCount: 189,
-    location: "Lakeside, Pokhara",
-    imageUrl: "/lakeside-cafe-pokhara-nepal.jpg",
-    note: "Good for a slower coffee stop when you want a view without sacrificing the food.",
-    href: "/business/lakeside-cafe",
-  },
-  {
-    name: "Newari Bhoj",
-    cuisine: "Newari • Traditional",
-    rating: 4.9,
-    reviewCount: 278,
-    location: "Bhaktapur",
-    imageUrl: "/newari-traditional-food-nepal.jpg",
-    note: "A strong pick when the goal is real smoke, spice, and a meal that feels rooted in place.",
-    href: "/business/newari-bhoj",
-  },
-]
+function TrendingState({
+  title,
+  body,
+  action,
+}: {
+  title: string
+  body: string
+  action?: ReactNode
+}) {
+  return (
+    <div className="rounded-xl border border-brand-deep-green/10 bg-white px-6 py-8 text-center shadow-sm">
+      <h3 className="text-xl font-semibold text-brand-dark-green">{title}</h3>
+      <p className="mt-2 text-sm leading-7 text-muted-foreground">{body}</p>
+      {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
+    </div>
+  )
+}
 
 export function TrendingSection() {
+  const searchQuery = useLatestBusinesses(8)
+  const items = searchQuery.data?.items ?? []
+  const isInitialLoading = searchQuery.isLoading && !searchQuery.data
+
   return (
     <MithoSection
       id="trending"
       eyebrow="Trending now"
       title="What locals are pulling up this week"
       titleIcon={<Flame className="h-7 w-7 text-brand-orange" />}
-      subtitle="A tighter shortlist of places getting shared, saved, and talked about right now."
+      subtitle="The newest published places on Mitho, refreshed from the live public directory."
       density="feature"
       action={
         <MithoButton variant="link" asChild>
@@ -66,53 +49,32 @@ export function TrendingSection() {
         </MithoButton>
       }
     >
-      <MithoCarousel className="px-1 sm:px-3">
-        {trendingPlaces.map((place) => (
-          <Link
-            href={place.href}
-            key={place.name}
-            className="group block w-[316px] flex-shrink-0 overflow-hidden rounded-xl border border-brand-deep-green/10 bg-white shadow-sm transition-colors"
-          >
-            <div className="relative aspect-[4/3]">
-              <Image
-                src={place.imageUrl}
-                alt={place.name}
-                fill
-                sizes="316px"
-                className="object-cover"
-              />
-            </div>
-
-            <div className="space-y-4 p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-lg font-semibold text-brand-dark-green">{place.name}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{place.cuisine}</p>
-                </div>
-                <div className="rounded-full bg-surface-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-deep-green/70">
-                  Trending
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <StarRating rating={place.rating} size="sm" />
-                  <span className="font-medium text-brand-dark-green">
-                    {place.rating.toFixed(1)} <span className="text-muted-foreground">({place.reviewCount})</span>
-                  </span>
-                </div>
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{place.location}</span>
-                </div>
-              </div>
-
-              <p className="text-sm leading-6 text-foreground">{place.note}</p>
-
-            </div>
-          </Link>
-        ))}
-      </MithoCarousel>
+      {isInitialLoading ? (
+        <MithoCarousel className="px-1 sm:px-3">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <HomeBusinessCardSkeleton key={index} variant="trending" />
+          ))}
+        </MithoCarousel>
+      ) : searchQuery.isError ? (
+        <TrendingState
+          title="Could not load trending places"
+          body="The live home feed is having trouble right now. Try again in a moment."
+          action={<MithoButton onClick={() => searchQuery.refetch()}>Retry</MithoButton>}
+        />
+      ) : items.length === 0 ? (
+        <TrendingState
+          title="No trending places yet"
+          body="New public listings will show up here as soon as they land."
+        />
+      ) : (
+        <div className={searchQuery.isFetching ? "opacity-60 transition-opacity" : undefined}>
+          <MithoCarousel className="px-1 sm:px-3">
+            {items.map((business) => (
+              <TrendingBusinessCard key={business.id} business={business} />
+            ))}
+          </MithoCarousel>
+        </div>
+      )}
     </MithoSection>
   )
 }

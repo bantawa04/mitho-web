@@ -80,6 +80,9 @@ function toSearchQueryParams(params: SearchBusinessesParams): Record<string, str
   if (params.districtId !== undefined) out.district_id = params.districtId
   if (params.municipalityId !== undefined) out.municipality_id = params.municipalityId
   if (params.openNow) out.open_now = true
+  if (params.latitude !== undefined) out.latitude = params.latitude
+  if (params.longitude !== undefined) out.longitude = params.longitude
+  if (params.radiusKm !== undefined) out.radius_km = params.radiusKm
   if (params.sort) out.sort = params.sort
   if (params.page !== undefined) out.page = params.page
   if (params.perPage !== undefined) out.per_page = params.perPage

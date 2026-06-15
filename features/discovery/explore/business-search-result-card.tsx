@@ -3,7 +3,7 @@ import Link from "next/link"
 import { ArrowUpRight, MapPin } from "lucide-react"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { StarRating } from "@/components/mitho/mitho-rating"
-import { BusinessCardImagePlaceholder } from "@/components/mitho/business-image-placeholder"
+import { DEFAULT_BUSINESS_FEATURED_IMAGE } from "@/features/business/constants/business-media"
 import type { BusinessSearchItem } from "@/types/business"
 
 interface BusinessSearchResultCardProps {
@@ -28,7 +28,7 @@ function formatCuisines(business: BusinessSearchItem): string | null {
 }
 
 export function BusinessSearchResultCard({ business }: BusinessSearchResultCardProps) {
-  const imageUrl = business.coverImage && business.coverImage.trim() ? business.coverImage : null
+  const imageUrl = business.coverImage?.trim() || DEFAULT_BUSINESS_FEATURED_IMAGE
   const href = business.publicPath
   const typeLabel = business.establishmentType?.label?.trim()
   const cuisineLabel = formatCuisines(business)
@@ -39,17 +39,13 @@ export function BusinessSearchResultCard({ business }: BusinessSearchResultCardP
     <article className="overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-shadow duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
       <div className="grid gap-0 md:grid-cols-[240px_minmax(0,1fr)]">
         <div className="relative aspect-[4/3] md:aspect-auto md:h-full">
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={business.name}
-              fill
-              sizes="(min-width: 768px) 240px, 100vw"
-              className="object-cover"
-            />
-          ) : (
-            <BusinessCardImagePlaceholder className="absolute inset-0" />
-          )}
+          <Image
+            src={imageUrl}
+            alt={business.name}
+            fill
+            sizes="(min-width: 768px) 240px, 100vw"
+            className="object-cover"
+          />
         </div>
 
         <div className="flex min-w-0 flex-col p-4 sm:p-5">
