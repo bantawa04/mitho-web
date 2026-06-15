@@ -1,13 +1,16 @@
-import { StaticMap } from "@vis.gl/react-google-maps"
+"use client"
+
+import * as React from "react"
 import { Clock, Globe, MapPin, Navigation, Phone, UtensilsCrossed } from "lucide-react"
 import { AmenityList } from "@/components/mitho/mitho-amenity"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader, MithoCardTitle, MithoCardDescription } from "@/components/mitho/mitho-card"
 import { BusinessGalleryPreview } from "@/features/business/components/business-gallery-preview"
-import { createBusinessStaticMapUrl, createGoogleDirectionsUrl } from "@/lib/google-maps"
+import { createBusinessStaticMapEndpoint, createGoogleDirectionsUrl } from "@/lib/google-maps"
 import type { BusinessGalleryItem, BusinessVisitInfo } from "@/features/business/business-detail-types"
 
 interface InfoPanelProps {
+  businessId: string
   isEarlyListing?: boolean
   galleryItems: BusinessGalleryItem[]
   galleryTotalCount?: number
@@ -16,12 +19,14 @@ interface InfoPanelProps {
 }
 
 export function InfoPanel({
+  businessId,
   isEarlyListing = false,
   galleryItems,
   galleryTotalCount,
   galleryEmptyMessage,
   visitInfo,
 }: InfoPanelProps) {
+  const [mapFailed, setMapFailed] = React.useState(false)
   const contactLine = [visitInfo.phone, visitInfo.email].filter(Boolean).join(" • ") || "Contact details not listed yet"
   const hoursLine =
     visitInfo.hours.length > 0
@@ -29,13 +34,14 @@ export function InfoPanel({
       : "Hours not listed yet"
   const cuisineLine = visitInfo.cuisines.length > 0 ? visitInfo.cuisines.join(", ") : "Cuisine details coming soon"
   const staticMapUrl = visitInfo.coordinates
-    ? createBusinessStaticMapUrl({
-        coordinates: visitInfo.coordinates,
-        zoom: visitInfo.mapZoom ?? 15,
-      })
+    ? createBusinessStaticMapEndpoint(businessId)
     : null
   const directionsUrl = visitInfo.coordinates ? createGoogleDirectionsUrl(visitInfo.coordinates) : null
   const websiteUrl = visitInfo.website ? normalizeExternalUrl(visitInfo.website) : null
+
+  React.useEffect(() => {
+    setMapFailed(false)
+  }, [staticMapUrl])
 
   const visitFacts = [
     {
@@ -132,22 +138,13 @@ export function InfoPanel({
               </MithoCardHeader>
               <MithoCardContent>
                 <div className="overflow-hidden rounded-xl border border-border">
-                  {staticMapUrl ? (
-                    <StaticMap url={staticMapUrl} className="aspect-[4/3] w-full object-cover" />
-                  ) : (
-                    <div className="flex aspect-[4/3] items-center justify-center bg-[#fffdf8] px-6 text-center">
-                      <div>
-                        <p className="text-sm font-semibold text-brand-dark-green">
-                          {visitInfo.coordinates ? "Map preview unavailable" : "Location coordinates not provided"}
-                        </p>
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                          {visitInfo.coordinates
-                            ? "Add the Google Maps API key to render the static location preview here."
-                            : "Map preview and directions will appear once latitude and longitude are added."}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  <StaticMapPreview
+                    staticMapUrl={staticMapUrl}
+                    hasCoordinates={Boolean(visitInfo.coordinates)}
+                    failed={mapFailed}
+                    address={visitInfo.address}
+                    onError={() => setMapFailed(true)}
+                  />
                 </div>
                 <div className="mt-4 flex flex-wrap gap-3">
                   {directionsUrl ? (
@@ -183,6 +180,46 @@ export function InfoPanel({
         </div>
       </div>
     </section>
+  )
+}
+
+export function StaticMapPreview({
+  staticMapUrl,
+  hasCoordinates,
+  failed,
+  address,
+  onError,
+}: {
+  staticMapUrl: string | null
+  hasCoordinates: boolean
+  failed: boolean
+  address: string
+  onError?: () => void
+}) {
+  if (staticMapUrl && !failed) {
+    return (
+      <img
+        src={staticMapUrl}
+        alt={`Map preview for ${address}`}
+        className="aspect-[4/3] w-full object-cover"
+        onError={onError}
+      />
+    )
+  }
+
+  return (
+    <div className="flex aspect-[4/3] items-center justify-center bg-[#fffdf8] px-6 text-center">
+      <div>
+        <p className="text-sm font-semibold text-brand-dark-green">
+          {hasCoordinates ? "Map preview unavailable" : "Location coordinates not provided"}
+        </p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          {hasCoordinates
+            ? "Location preview could not be loaded right now. You can still open directions below."
+            : "Map preview and directions will appear once latitude and longitude are added."}
+        </p>
+      </div>
+    </div>
   )
 }
 
