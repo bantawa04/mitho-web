@@ -250,7 +250,6 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
 
         <div className="mt-8" id="overview">
           <InfoPanel
-            businessId={pageData.id}
             isEarlyListing={isEarlyListing}
             galleryItems={infoPanelGalleryItems}
             galleryTotalCount={infoPanelGalleryItems.length}
