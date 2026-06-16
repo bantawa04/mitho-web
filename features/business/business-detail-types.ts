@@ -73,7 +73,10 @@ export interface BusinessVisitInfo {
   hours: Array<{
     day: string
     time: string
+    dayOfWeek: number
   }>
+  hoursStatus?: { label: string; tone: "open" | "closed" } | null
+  todayDayOfWeek?: number
   cuisines: string[]
   amenities: Array<"wifi" | "parking" | "takeaway" | "cards" | "accessible" | "dineIn" | "alcohol" | "liveMusic" | "petFriendly" | "vegan" | "nonVeg">
   mapDescription?: string

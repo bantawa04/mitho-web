@@ -9,8 +9,12 @@ import type {
 import type { BusinessAmenities, BusinessHour, PublicBusiness } from "@/types/business"
 import type { Media } from "@/types/media"
 import type { ReviewItem, ReviewRatingsSummary } from "@/types/reviews"
-
-const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+import {
+  DAY_NAMES,
+  computeBusinessHoursStatus,
+  formatBusinessTime,
+  getNepalNow,
+} from "@/features/business/utils/business-hours"
 
 export function getPublicBusinessFeaturedImage(
   business: Pick<PublicBusiness, "banner" | "photos">,
@@ -48,7 +52,7 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
     reviewCount,
     categories,
     location: location || business.province?.name || "Location not provided",
-    isOpen: getBusinessOpenState(business.hours),
+    isOpen: computeBusinessHoursStatus(business.hours).isOpen,
     heroNote:
       business.description ??
       business.specialityNote ??
@@ -141,6 +145,11 @@ function buildVisitInfo(business: PublicBusiness, cuisineNames: string[]): Busin
         : undefined,
     mapZoom: 15,
     hours: formatHours(business.hours),
+    hoursStatus: (() => {
+      const status = computeBusinessHoursStatus(business.hours)
+      return status.label ? { label: status.label, tone: status.tone } : null
+    })(),
+    todayDayOfWeek: getNepalNow().dayOfWeek,
     cuisines: cuisineNames,
     amenities: mapAmenities(business.amenities),
     mapLinkText: "Get directions",
@@ -187,36 +196,9 @@ function formatHours(hours: BusinessHour[]) {
     .sort((a, b) => a.dayOfWeek - b.dayOfWeek)
     .map((hour) => ({
       day: DAY_NAMES[hour.dayOfWeek] ?? `Day ${hour.dayOfWeek}`,
-      time: hour.isClosed ? "Closed" : `${formatTime(hour.openTime)} - ${formatTime(hour.closeTime)}`,
+      time: hour.isClosed ? "Closed" : `${formatBusinessTime(hour.openTime)} - ${formatBusinessTime(hour.closeTime)}`,
+      dayOfWeek: hour.dayOfWeek,
     }))
-}
-
-function formatTime(value?: string) {
-  if (!value) return "Not provided"
-  const [hourPart, minutePart = "00"] = value.split(":")
-  const hour = Number(hourPart)
-  if (Number.isNaN(hour)) return value
-  const period = hour >= 12 ? "PM" : "AM"
-  const normalizedHour = hour % 12 || 12
-  return `${normalizedHour}:${minutePart.padStart(2, "0")} ${period}`
-}
-
-function getBusinessOpenState(hours: BusinessHour[]) {
-  if (!hours?.length) return null
-
-  const now = new Date()
-  const today = hours.find((hour) => hour.dayOfWeek === now.getDay())
-  if (!today || today.isClosed || !today.openTime || !today.closeTime) return false
-
-  const currentMinutes = now.getHours() * 60 + now.getMinutes()
-  const openMinutes = parseMinutes(today.openTime)
-  const closeMinutes = parseMinutes(today.closeTime)
-  return currentMinutes >= openMinutes && currentMinutes < closeMinutes
-}
-
-function parseMinutes(value: string) {
-  const [hour = "0", minute = "0"] = value.split(":")
-  return Number(hour) * 60 + Number(minute)
 }
 
 function mapAmenities(amenities?: BusinessAmenities): BusinessVisitInfo["amenities"] {

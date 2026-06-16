@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { Clock, Globe, MapPin, Navigation, Phone, UtensilsCrossed } from "lucide-react"
+import { Globe, MapPin, Navigation, Phone, UtensilsCrossed } from "lucide-react"
 import { AmenityList } from "@/components/mitho/mitho-amenity"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader, MithoCardTitle, MithoCardDescription } from "@/components/mitho/mitho-card"
 import { BusinessGalleryPreview } from "@/features/business/components/business-gallery-preview"
+import { BusinessHoursCard } from "@/features/business/components/business-hours-card"
 import { createBusinessStaticMapEndpoint, createGoogleDirectionsUrl } from "@/lib/google-maps"
 import type { BusinessGalleryItem, BusinessVisitInfo } from "@/features/business/business-detail-types"
 
@@ -28,10 +29,6 @@ export function InfoPanel({
 }: InfoPanelProps) {
   const [mapFailed, setMapFailed] = React.useState(false)
   const contactLine = [visitInfo.phone, visitInfo.email].filter(Boolean).join(" • ") || "Contact details not listed yet"
-  const hoursLine =
-    visitInfo.hours.length > 0
-      ? visitInfo.hours.map((schedule) => `${schedule.day}: ${schedule.time}`).join(" • ")
-      : "Hours not listed yet"
   const cuisineLine = visitInfo.cuisines.length > 0 ? visitInfo.cuisines.join(", ") : "Cuisine details coming soon"
   const staticMapUrl = visitInfo.coordinates
     ? createBusinessStaticMapEndpoint(businessId)
@@ -48,11 +45,6 @@ export function InfoPanel({
       icon: <MapPin className="h-5 w-5 text-brand-orange" />,
       label: "Address",
       content: visitInfo.address,
-    },
-    {
-      icon: <Clock className="h-5 w-5 text-brand-orange" />,
-      label: "Hours",
-      content: hoursLine,
     },
     {
       icon: <Phone className="h-5 w-5 text-brand-orange" />,
@@ -122,13 +114,19 @@ export function InfoPanel({
               </div>
 
               <div className="pt-6 border-t border-border">
-                <p className="text-sm font-semibold text-brand-dark-green">Amenities people often look for</p>
+                <p className="text-sm font-semibold text-brand-dark-green">Amenities</p>
                 <AmenityList amenities={[...visitInfo.amenities]} className="mt-3" />
               </div>
             </MithoCardContent>
           </MithoCard>
 
           <div className="sticky top-24 space-y-6">
+            <BusinessHoursCard
+              hours={visitInfo.hours}
+              status={visitInfo.hoursStatus}
+              todayDayOfWeek={visitInfo.todayDayOfWeek}
+            />
+
             <MithoCard surface="customer" interactive="none" className="overflow-hidden">
               <MithoCardHeader className="pb-4">
                 <MithoCardTitle>Find it easily</MithoCardTitle>
