@@ -37,7 +37,7 @@ export function IntegrationStatus() {
                         Coming Soon
                       </MithoBadge>
                     </div>
-                    <p className="text-xs text-muted-foreground">Nepal's leading food delivery platform</p>
+                    <p className="text-xs text-muted-foreground">Nepal&apos;s leading food delivery platform</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

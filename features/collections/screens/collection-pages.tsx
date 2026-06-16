@@ -506,8 +506,8 @@ export function CollectionEditPage({ id }: { id: string }) {
   const reorderMutation = useReorderCollectionItems(id)
   const deleteItemMutation = useDeleteCollectionItem(id)
   const [items, setItems] = React.useState<CollectionItemRecord[]>([])
+  const [originalItems, setOriginalItems] = React.useState<CollectionItemRecord[]>([])
   const [saved, setSaved] = React.useState(false)
-  const originalItemsRef = React.useRef<CollectionItemRecord[]>([])
 
   const form = useForm<CollectionFormValues>({
     resolver: zodResolver(collectionSchema),
@@ -526,7 +526,7 @@ export function CollectionEditPage({ id }: { id: string }) {
       visibility: query.data.visibility,
     })
     setItems(query.data.items)
-    originalItemsRef.current = query.data.items
+    setOriginalItems(query.data.items)
   }, [form, query.data])
 
   const moveItem = (index: number, direction: -1 | 1) => {
@@ -545,7 +545,7 @@ export function CollectionEditPage({ id }: { id: string }) {
     await reorderMutation.mutateAsync({
       itemIds: items.map((item) => item.id),
     })
-    const originalById = new Map(originalItemsRef.current.map((item) => [item.id, item]))
+    const originalById = new Map(originalItems.map((item) => [item.id, item]))
     await Promise.all(
       items
         .filter((item) => (originalById.get(item.id)?.note ?? "") !== (item.note ?? ""))

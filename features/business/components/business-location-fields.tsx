@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import type { UseFormReturn } from "react-hook-form"
+import type { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form"
 import { useDistricts, useMunicipalities, useProvinces } from "@/hooks/use-nepal-admin"
 import type { District, Municipality, Province } from "@/types/nepal-admin"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -15,8 +15,8 @@ type LocationSelection = {
   municipality?: Pick<Municipality, "id" | "name" | "wards"> | null
 }
 
-interface BusinessLocationFieldsProps {
-  form: UseFormReturn<any>
+interface BusinessLocationFieldsProps<TFieldValues extends FieldValues> {
+  form: UseFormReturn<TFieldValues>
   inputClassName: string
   selectTriggerClassName: string
   selectedLocation?: LocationSelection
@@ -40,16 +40,25 @@ function SelectDisplay({ label, placeholder }: { label?: string; placeholder: st
   return <SelectValue placeholder={placeholder} />
 }
 
-export function BusinessLocationFields({
+export function BusinessLocationFields<TFieldValues extends FieldValues>({
   form,
   inputClassName,
   selectTriggerClassName,
   selectedLocation,
-}: BusinessLocationFieldsProps) {
-  const provinceId = String(form.watch("provinceId") ?? "")
-  const districtId = String(form.watch("districtId") ?? "")
-  const municipalityId = String(form.watch("municipalityId") ?? "")
-  const wardNo = String(form.watch("wardNo") ?? "")
+}: BusinessLocationFieldsProps<TFieldValues>) {
+  const provinceIdField = "provinceId" as Path<TFieldValues>
+  const districtIdField = "districtId" as Path<TFieldValues>
+  const municipalityIdField = "municipalityId" as Path<TFieldValues>
+  const wardNoField = "wardNo" as Path<TFieldValues>
+  const areaField = "area" as Path<TFieldValues>
+  const nearestLandmarkField = "nearestLandmark" as Path<TFieldValues>
+  const addressNoteField = "addressNote" as Path<TFieldValues>
+  const emptyFieldValue = "" as PathValue<TFieldValues, Path<TFieldValues>>
+
+  const provinceId = String(form.watch(provinceIdField) ?? "")
+  const districtId = String(form.watch(districtIdField) ?? "")
+  const municipalityId = String(form.watch(municipalityIdField) ?? "")
+  const wardNo = String(form.watch(wardNoField) ?? "")
 
   const provinceValue = toNumericId(provinceId)
   const districtValue = toNumericId(districtId)
@@ -93,16 +102,16 @@ export function BusinessLocationFields({
     <div className="grid gap-4 md:grid-cols-2">
       <FormField
         control={form.control}
-        name="provinceId"
+        name={provinceIdField}
         render={({ field }) => (
           <FormItem>
             <RequiredLabel>Province / State</RequiredLabel>
             <Select
               onValueChange={(value) => {
                 field.onChange(value)
-                form.setValue("districtId", "", { shouldDirty: true })
-                form.setValue("municipalityId", "", { shouldDirty: true })
-                form.setValue("wardNo", "", { shouldDirty: true })
+                form.setValue(districtIdField, emptyFieldValue, { shouldDirty: true })
+                form.setValue(municipalityIdField, emptyFieldValue, { shouldDirty: true })
+                form.setValue(wardNoField, emptyFieldValue, { shouldDirty: true })
               }}
               value={field.value}
               disabled={provincesQuery.isLoading}
@@ -130,15 +139,15 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="districtId"
+        name={districtIdField}
         render={({ field }) => (
           <FormItem>
             <RequiredLabel>District</RequiredLabel>
             <Select
               onValueChange={(value) => {
                 field.onChange(value)
-                form.setValue("municipalityId", "", { shouldDirty: true })
-                form.setValue("wardNo", "", { shouldDirty: true })
+                form.setValue(municipalityIdField, emptyFieldValue, { shouldDirty: true })
+                form.setValue(wardNoField, emptyFieldValue, { shouldDirty: true })
               }}
               value={field.value}
               disabled={!provinceId || districtsQuery.isLoading}
@@ -166,14 +175,14 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="municipalityId"
+        name={municipalityIdField}
         render={({ field }) => (
           <FormItem>
             <RequiredLabel>City / Municipality</RequiredLabel>
             <Select
               onValueChange={(value) => {
                 field.onChange(value)
-                form.setValue("wardNo", "", { shouldDirty: true })
+                form.setValue(wardNoField, emptyFieldValue, { shouldDirty: true })
               }}
               value={field.value}
               disabled={!districtId || municipalitiesQuery.isLoading}
@@ -201,7 +210,7 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="wardNo"
+        name={wardNoField}
         render={({ field }) => (
           <FormItem>
             <RequiredLabel>Ward No.</RequiredLabel>
@@ -229,7 +238,7 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="area"
+        name={areaField}
         render={({ field }) => (
           <FormItem>
             <FormLabel>Area</FormLabel>
@@ -243,7 +252,7 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="nearestLandmark"
+        name={nearestLandmarkField}
         render={({ field }) => (
           <FormItem>
             <FormLabel>Nearest landmark</FormLabel>
@@ -257,7 +266,7 @@ export function BusinessLocationFields({
 
       <FormField
         control={form.control}
-        name="addressNote"
+        name={addressNoteField}
         render={({ field }) => (
           <FormItem className="md:col-span-2">
             <FormLabel>Address note</FormLabel>

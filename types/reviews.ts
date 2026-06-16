@@ -82,9 +82,9 @@ export interface CreateReviewPayload {
   mediaIds?: string[]
 }
 
-export interface ResubmitReviewPayload extends CreateReviewPayload {}
+export type ResubmitReviewPayload = CreateReviewPayload
 
-export interface UpdateReviewPayload extends CreateReviewPayload {}
+export type UpdateReviewPayload = CreateReviewPayload
 
 export interface UpsertReviewReplyPayload {
   body: string

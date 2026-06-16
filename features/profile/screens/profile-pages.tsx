@@ -1151,7 +1151,7 @@ function PublicCollectionsSection({ profile }: { profile: PublicUserProfileData 
             </div>
           ) : (
             <p className="text-sm leading-7 text-muted-foreground">
-              Browse {profile.name.split(" ")[0]}'s public lists as ready-made shortcuts for the next meal plan.
+              Browse {profile.name.split(" ")[0]}&apos;s public lists as ready-made shortcuts for the next meal plan.
             </p>
           )}
           <span className="text-sm text-muted-foreground">{resultLabel}</span>
