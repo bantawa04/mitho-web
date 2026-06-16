@@ -6,10 +6,12 @@ import { Analytics } from "@vercel/analytics/next"
 import { GoogleTagManager } from "@/components/analytics/google-tag-manager"
 import { Toaster } from "@/components/ui/toaster"
 import { RootProvider } from "@/providers/RootProvider"
+import { DEFAULT_OG_IMAGE, SITE_NAME, getAbsoluteUrl, getSiteUrl } from "@/lib/seo"
 import "./globals.css"
 
 
 export const metadata: Metadata = {
+  metadataBase: getSiteUrl(),
   title: "Mitho Cha! - Discover the Real Taste of Nepal",
   description:
     "Find authentic restaurants, food trucks, and hidden local gems across Nepal. Read reviews from locals and discover your next favorite meal.",
@@ -42,6 +44,21 @@ export const metadata: Metadata = {
     description: "Find authentic restaurants, food trucks, and hidden local gems across Nepal.",
     type: "website",
     locale: "en_US",
+    siteName: SITE_NAME,
+    images: [
+      {
+        url: getAbsoluteUrl(DEFAULT_OG_IMAGE),
+        width: 1200,
+        height: 630,
+        alt: "Mitho Cha food discovery in Nepal",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mitho Cha! - Discover the Real Taste of Nepal",
+    description: "Find authentic restaurants, food trucks, and hidden local gems across Nepal.",
+    images: [getAbsoluteUrl(DEFAULT_OG_IMAGE)],
   },
 }
 
