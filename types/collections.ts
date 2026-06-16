@@ -46,6 +46,7 @@ export interface CollectionRecord {
   itemCount: number
   coverImages: Media[]
   items: CollectionItemRecord[]
+  hasBusiness?: boolean
   createdAt: string
   updatedAt: string
 }
@@ -76,6 +77,8 @@ export interface ListCollectionsParams {
   perPage?: number
   search?: string
   sort?: CollectionSort
+  businessId?: string
+  includeItems?: boolean
 }
 
 export interface CreateCollectionPayload {

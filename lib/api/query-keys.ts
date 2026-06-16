@@ -60,6 +60,8 @@ export const queryKeys = {
   collections: {
     all: ["collections"] as const,
     list: (params?: ListCollectionsParams) => ["collections", "list", params] as const,
+    picker: (params: Pick<ListCollectionsParams, "businessId" | "includeItems" | "search" | "sort">) =>
+      ["collections", "picker", params] as const,
     detail: (id: string) => ["collections", "detail", id] as const,
     publicList: (username: string, params?: Pick<ListCollectionsParams, "page" | "perPage">) =>
       ["collections", "public", username, "list", params] as const,

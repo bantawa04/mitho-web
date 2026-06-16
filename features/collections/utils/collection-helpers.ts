@@ -24,10 +24,6 @@ export function searchOwnedCollections(collections: CollectionRecord[], query: s
     : collections
 }
 
-export function collectionContainsBusiness(collection: CollectionRecord, candidate: CollectionCandidate) {
-  return collection.items.some((item) => item.businessId === candidate.businessId)
-}
-
 export function createCollectionId(title: string) {
   return title
     .toLowerCase()

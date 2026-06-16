@@ -4,7 +4,8 @@ import * as React from "react"
 import { useMutation } from "@tanstack/react-query"
 import { addCollectionItem } from "@/lib/api/collections"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
-import { useCollections, useCreateCollection } from "@/hooks/use-collections"
+import { useCollectionPicker, useCreateCollection } from "@/hooks/use-collections"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useBusinessReviews, useBusinessTips } from "@/hooks/use-reviews"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { Header } from "@/features/home/components/header"
@@ -44,8 +45,17 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   const [isReviewModalOpen, setIsReviewModalOpen] = React.useState(false)
   const [signInIntent, setSignInIntent] = React.useState<"collection" | "review" | null>(null)
   const [reopenCollectionDialogAfterAuth, setReopenCollectionDialogAfterAuth] = React.useState(false)
+  const [collectionSearchQuery, setCollectionSearchQuery] = React.useState("")
+  const debouncedCollectionSearchQuery = useDebouncedValue(collectionSearchQuery, 250)
   const shouldLoadCollections = isAuthenticated && isCollectionDialogOpen
-  const collectionsQuery = useCollections({ perPage: 100 }, { enabled: shouldLoadCollections })
+  const collectionsQuery = useCollectionPicker(
+    {
+      businessId: pageData.id,
+      search: debouncedCollectionSearchQuery,
+      sort: "recent",
+    },
+    { enabled: shouldLoadCollections, perPage: 20 },
+  )
   const createCollectionMutation = useCreateCollection()
   const addCollectionItemMutation = useMutation({
     mutationFn: ({ collectionId, businessId, note }: { collectionId: string; businessId: string; note?: string }) =>
@@ -141,7 +151,8 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   }
 
   const handleAddToExistingCollection = (collectionId: string) => {
-    const addedCollectionTitle = collectionsQuery.data?.items.find((item) => item.id === collectionId)?.title ?? "collection"
+    const collections = collectionsQuery.data?.pages.flatMap((page) => page.items) ?? []
+    const addedCollectionTitle = collections.find((item) => item.id === collectionId)?.title ?? "collection"
     addCollectionItemMutation.mutate(
       {
         collectionId,
@@ -189,6 +200,11 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
     setIsCollectionDialogOpen(true)
     setReopenCollectionDialogAfterAuth(false)
   }, [isAuthenticated, reopenCollectionDialogAfterAuth])
+
+  const collectionPickerItems = React.useMemo(
+    () => collectionsQuery.data?.pages.flatMap((page) => page.items) ?? [],
+    [collectionsQuery.data?.pages],
+  )
 
   return (
     <div className="page-shell-customer min-h-screen">
@@ -310,8 +326,15 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         open={isCollectionDialogOpen}
         onOpenChange={setIsCollectionDialogOpen}
         candidate={collectionCandidate}
-        collections={collectionsQuery.data?.items ?? []}
-        isLoadingCollections={collectionsQuery.isLoading || collectionsQuery.isFetching}
+        collections={collectionPickerItems}
+        searchQuery={collectionSearchQuery}
+        isLoadingCollections={collectionsQuery.isLoading}
+        isLoadingMoreCollections={collectionsQuery.isFetchingNextPage}
+        hasMoreCollections={collectionsQuery.hasNextPage}
+        onSearchQueryChange={setCollectionSearchQuery}
+        onLoadMoreCollections={() => {
+          collectionsQuery.fetchNextPage()
+        }}
         onAddToCollection={handleAddToExistingCollection}
         onCreateCollection={handleCreateCollectionAndAdd}
       />

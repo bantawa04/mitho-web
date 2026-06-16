@@ -18,6 +18,8 @@ function mapListParams(params?: ListCollectionsParams) {
     per_page: params.perPage,
     search: params.search || undefined,
     sort: params.sort || undefined,
+    business_id: params.businessId || undefined,
+    include_items: params.includeItems,
   }
 }
 
