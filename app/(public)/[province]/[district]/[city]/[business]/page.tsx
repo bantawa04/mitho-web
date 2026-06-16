@@ -8,7 +8,14 @@ import {
   mapPublicBusinessToPageData,
 } from "@/features/business/mappers/public-business-page-data"
 import { getPublicBusinessByPath } from "@/lib/api/businesses"
-import { DEFAULT_OG_IMAGE, SITE_NAME, getAbsoluteUrl, getBusinessReviewShareTitle } from "@/lib/seo"
+import {
+  DEFAULT_OG_IMAGE,
+  SITE_NAME,
+  buildBusinessJsonLd,
+  getAbsoluteUrl,
+  getBusinessReviewShareTitle,
+  jsonLdScriptProps,
+} from "@/lib/seo"
 
 interface PublicBusinessRouteProps {
   params: Promise<{
@@ -87,13 +94,17 @@ export default async function PublicBusinessDetailRoute({ params }: PublicBusine
   }
 
   const pageData = mapPublicBusinessToPageData(business)
+  const businessJsonLd = buildBusinessJsonLd(business, publicHref)
 
   return (
-    <BusinessDetailPage
-      pageData={pageData}
-      claimHref={`/business/claim?listing=${business.slug}`}
-      publicHref={publicHref}
-    />
+    <>
+      <script type="application/ld+json" {...jsonLdScriptProps(businessJsonLd)} />
+      <BusinessDetailPage
+        pageData={pageData}
+        claimHref={`/business/claim?listing=${business.slug}`}
+        publicHref={publicHref}
+      />
+    </>
   )
 }
 

@@ -6,7 +6,16 @@ import { Analytics } from "@vercel/analytics/next"
 import { GoogleTagManager } from "@/components/analytics/google-tag-manager"
 import { Toaster } from "@/components/ui/toaster"
 import { RootProvider } from "@/providers/RootProvider"
-import { DEFAULT_OG_IMAGE, SITE_NAME, getAbsoluteUrl, getSiteUrl } from "@/lib/seo"
+import {
+  DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_ALT,
+  SITE_NAME,
+  buildOrganizationJsonLd,
+  buildWebSiteJsonLd,
+  getAbsoluteUrl,
+  getSiteUrl,
+  jsonLdScriptProps,
+} from "@/lib/seo"
 import "./globals.css"
 
 
@@ -50,7 +59,7 @@ export const metadata: Metadata = {
         url: getAbsoluteUrl(DEFAULT_OG_IMAGE),
         width: 1200,
         height: 630,
-        alt: "Mitho Cha food discovery in Nepal",
+        alt: DEFAULT_OG_IMAGE_ALT,
       },
     ],
   },
@@ -79,6 +88,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.className} ${poppins.variable} ${chivo.variable} font-sans antialiased`}>
         <GoogleTagManager />
+        <script
+          type="application/ld+json"
+          {...jsonLdScriptProps([buildOrganizationJsonLd(), buildWebSiteJsonLd()])}
+        />
         <RootProvider>
           {googleClientId ? (
             <GoogleOAuthProvider clientId={googleClientId}>

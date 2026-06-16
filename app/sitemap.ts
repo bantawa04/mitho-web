@@ -34,9 +34,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   const businessEntries = await getBusinessEntries(now)
+  const geoEntries = businessEntries
+    .flatMap((entry) => getParentGeoPaths(entry.url))
+    .map((url) => ({
+      url,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }))
   const seen = new Set<string>()
 
-  return [...staticEntries, ...businessEntries].filter((entry) => {
+  return [...staticEntries, ...geoEntries, ...businessEntries].filter((entry) => {
     if (seen.has(entry.url)) return false
     seen.add(entry.url)
     return true
@@ -62,4 +70,17 @@ async function getBusinessEntries(now: Date): Promise<MetadataRoute.Sitemap> {
   } catch {
     return []
   }
+}
+
+function getParentGeoPaths(businessUrl: string) {
+  const pathname = new URL(businessUrl).pathname
+  const parts = pathname.split("/").filter(Boolean)
+  if (parts.length < 4) return []
+
+  const [province, district, city] = parts
+  return [
+    getAbsoluteUrl(`/${province}`),
+    getAbsoluteUrl(`/${province}/${district}`),
+    getAbsoluteUrl(`/${province}/${district}/${city}`),
+  ]
 }
