@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og"
+import logoPng from "@/public/brand/logo.png"
 import { getAbsoluteUrl } from "@/lib/seo"
 
 export const alt = "Mitho Cha"
@@ -60,12 +61,14 @@ export default function Image() {
         >
           <img
             alt="Mitho Cha"
-            src={getAbsoluteUrl("/brand/logo-primary-green.svg")}
+            height={logoPng.height}
+            src={getAbsoluteUrl(logoPng.src)}
             style={{
               height: 170,
               objectFit: "contain",
               width: 560,
             }}
+            width={logoPng.width}
           />
         </div>
       </div>
