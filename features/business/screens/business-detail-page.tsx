@@ -44,7 +44,8 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
   const [isReviewModalOpen, setIsReviewModalOpen] = React.useState(false)
   const [signInIntent, setSignInIntent] = React.useState<"collection" | "review" | null>(null)
   const [reopenCollectionDialogAfterAuth, setReopenCollectionDialogAfterAuth] = React.useState(false)
-  const collectionsQuery = useCollections({ perPage: 100 })
+  const shouldLoadCollections = isAuthenticated && isCollectionDialogOpen
+  const collectionsQuery = useCollections({ perPage: 100 }, { enabled: shouldLoadCollections })
   const createCollectionMutation = useCreateCollection()
   const addCollectionItemMutation = useMutation({
     mutationFn: ({ collectionId, businessId, note }: { collectionId: string; businessId: string; note?: string }) =>
@@ -310,6 +311,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         onOpenChange={setIsCollectionDialogOpen}
         candidate={collectionCandidate}
         collections={collectionsQuery.data?.items ?? []}
+        isLoadingCollections={collectionsQuery.isLoading || collectionsQuery.isFetching}
         onAddToCollection={handleAddToExistingCollection}
         onCreateCollection={handleCreateCollectionAndAdd}
       />

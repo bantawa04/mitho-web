@@ -31,6 +31,7 @@ export const dynamic = "force-dynamic"
 export async function generateMetadata({ params }: PublicBusinessRouteProps): Promise<Metadata> {
   const routeParams = await params
   const business = await fetchPublicBusiness(routeParams)
+  console.log("Fetched business:", business)
   if (!business) {
     return {
       title: "Business not found | Mitho Cha",

@@ -25,10 +25,11 @@ import type {
   UpdateCollectionPayload,
 } from "@/types/collections"
 
-export function useCollections(params?: ListCollectionsParams) {
+export function useCollections(params?: ListCollectionsParams, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.collections.list(params),
     queryFn: () => listCollections(params),
+    enabled: options?.enabled ?? true,
   })
 }
 
