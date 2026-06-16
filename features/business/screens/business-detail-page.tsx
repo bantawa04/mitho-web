@@ -293,7 +293,11 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
         </div>
 
         <div className="mt-4 bg-transparent">
-          <SimilarPlaces subdued={isEarlyListing} />
+          <SimilarPlaces
+            subdued={isEarlyListing}
+            businessId={pageData.id}
+            coordinates={pageData.visitInfo.coordinates}
+          />
           <ClaimReport subdued={isEarlyListing} claimHref={claimHref} />
         </div>
       </main>
