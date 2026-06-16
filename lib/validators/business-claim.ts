@@ -8,6 +8,10 @@ export const claimRoleOptions = [
 
 const phonePattern = /^[+]?[\d\s()-]{7,}$/
 
+// Mirrors AllowedClaimDocumentUploadMimeTypes / MaxClaimDocumentBytes on the API.
+const acceptedDocumentMimeTypes = ["image/jpeg", "image/png", "image/webp"]
+const maxDocumentBytes = 10 * 1024 * 1024
+
 export const businessClaimSchema = z.object({
   claimantName: z
     .string()
@@ -32,7 +36,15 @@ export const businessClaimSchema = z.object({
     .max(32, "PAN/VAT number should stay under 32 characters."),
   verificationDocument: z
     .custom<File | null>((value) => value === null || value instanceof File, "Upload the PAN/VAT document.")
-    .refine((value) => value instanceof File, "Upload the PAN/VAT document."),
+    .refine((value) => value instanceof File, "Upload the PAN/VAT document.")
+    .refine(
+      (value) => !(value instanceof File) || acceptedDocumentMimeTypes.includes(value.type),
+      "Upload an image file (JPG, PNG, or WebP).",
+    )
+    .refine(
+      (value) => !(value instanceof File) || value.size <= maxDocumentBytes,
+      "The document must be 10MB or smaller.",
+    ),
   authorizationConfirmed: z.boolean().refine((value) => value, {
     message: "You need to confirm that you are allowed to claim this listing.",
   }),

@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { FileIcon } from "lucide-react"
+import { ImageIcon } from "lucide-react"
 import { AdminModal } from "@/features/admin/components/admin-modal"
+import { ClaimDocumentLightbox } from "@/features/admin/components/claim-document-lightbox"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
@@ -14,8 +15,6 @@ import {
   useApproveBusinessClaim,
   useRejectBusinessClaim,
 } from "@/hooks/use-business-claims"
-import { getClaimDocumentDownloadUrl } from "@/lib/api/business-claims"
-import type { BusinessClaim } from "@/types/business-claims"
 
 function ReviewBlock({ label, value, helper }: { label: string; value?: string; helper?: string }) {
   return (
@@ -42,22 +41,15 @@ export function ClaimReviewModal({
 
   const [decision, setDecision] = useState<"approve" | "reject" | null>(null)
   const [reviewNote, setReviewNote] = useState("")
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   useEffect(() => {
     if (claimId) {
       setDecision(null)
       setReviewNote("")
+      setLightboxIndex(null)
     }
   }, [claimId])
-
-  async function openDocument(cid: string, mediaId: string) {
-    try {
-      const access = await getClaimDocumentDownloadUrl(cid, mediaId)
-      window.open(access.url, "_blank", "noopener,noreferrer")
-    } catch {
-      toast({ title: "Could not open document", description: "Please try again.", variant: "destructive" })
-    }
-  }
 
   async function handleSave() {
     if (!claimId) return
@@ -133,14 +125,14 @@ export function ClaimReviewModal({
                   Documents deleted after review on {formatAdminDateTime(claim.documentsDeletedAt)}.
                 </p>
               ) : claim.status === "pending" && (claim.documents ?? []).length > 0 ? (
-                claim.documents?.map((document) => (
+                claim.documents?.map((document, index) => (
                   <button
                     key={document.id}
                     type="button"
-                    onClick={() => openDocument(claim.id, document.id)}
+                    onClick={() => setLightboxIndex(index)}
                     className="group flex flex-col items-center justify-center gap-3 rounded-2xl border border-brand-deep-green/14 bg-brand-soft-beige/20 p-4 transition-colors hover:bg-brand-soft-beige/50 hover:border-brand-deep-green/30 w-32 h-32 text-center"
                   >
-                    <FileIcon className="h-8 w-8 text-brand-deep-green/40 group-hover:text-brand-deep-green/70 transition-colors" />
+                    <ImageIcon className="h-8 w-8 text-brand-deep-green/40 group-hover:text-brand-deep-green/70 transition-colors" />
                     <span className="text-xs font-medium text-brand-dark-green line-clamp-2" title={document.filename}>
                       {document.filename}
                     </span>
@@ -206,6 +198,17 @@ export function ClaimReviewModal({
       ) : (
         <p className="text-sm text-muted-foreground py-4">Request not found.</p>
       )}
+      {claim ? (
+        <ClaimDocumentLightbox
+          claimId={claim.id}
+          documents={claim.documents ?? []}
+          openIndex={lightboxIndex}
+          onOpenChange={(open) => {
+            if (!open) setLightboxIndex(null)
+          }}
+          onIndexChange={setLightboxIndex}
+        />
+      ) : null}
     </AdminModal>
   )
 }
