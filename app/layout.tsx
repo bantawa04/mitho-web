@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import {chivo, poppins} from "@/config/fonts"
 import { Analytics } from "@vercel/analytics/next"
+import { GoogleTagManager } from "@/components/analytics/google-tag-manager"
 import { Toaster } from "@/components/ui/toaster"
 import { RootProvider } from "@/providers/RootProvider"
 import "./globals.css"
@@ -60,6 +61,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className} ${poppins.variable} ${chivo.variable} font-sans antialiased`}>
+        <GoogleTagManager />
         <RootProvider>
           {googleClientId ? (
             <GoogleOAuthProvider clientId={googleClientId}>
