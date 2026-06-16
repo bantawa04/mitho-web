@@ -7,11 +7,10 @@ import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader, MithoCardTitle, MithoCardDescription } from "@/components/mitho/mitho-card"
 import { BusinessGalleryPreview } from "@/features/business/components/business-gallery-preview"
 import { BusinessHoursCard } from "@/features/business/components/business-hours-card"
-import { createBusinessStaticMapEndpoint, createGoogleDirectionsUrl } from "@/lib/google-maps"
+import { createGoogleStaticMapUrl, createGoogleDirectionsUrl } from "@/lib/google-maps"
 import type { BusinessGalleryItem, BusinessVisitInfo } from "@/features/business/business-detail-types"
 
 interface InfoPanelProps {
-  businessId: string
   isEarlyListing?: boolean
   galleryItems: BusinessGalleryItem[]
   galleryTotalCount?: number
@@ -20,7 +19,6 @@ interface InfoPanelProps {
 }
 
 export function InfoPanel({
-  businessId,
   isEarlyListing = false,
   galleryItems,
   galleryTotalCount,
@@ -30,9 +28,7 @@ export function InfoPanel({
   const [mapFailed, setMapFailed] = React.useState(false)
   const contactLine = [visitInfo.phone, visitInfo.email].filter(Boolean).join(" • ") || "Contact details not listed yet"
   const cuisineLine = visitInfo.cuisines.length > 0 ? visitInfo.cuisines.join(", ") : "Cuisine details coming soon"
-  const staticMapUrl = visitInfo.coordinates
-    ? createBusinessStaticMapEndpoint(businessId)
-    : null
+  const staticMapUrl = visitInfo.coordinates ? createGoogleStaticMapUrl(visitInfo.coordinates) : null
   const directionsUrl = visitInfo.coordinates ? createGoogleDirectionsUrl(visitInfo.coordinates) : null
   const websiteUrl = visitInfo.website ? normalizeExternalUrl(visitInfo.website) : null
 
