@@ -2,11 +2,12 @@
 
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
-import { ChevronRight, Eye, Pencil, Plus, ShieldCheck } from "lucide-react"
+import { ChevronRight, DownloadCloud, Eye, Pencil, Plus, ShieldCheck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
+import { PlaceImportModal } from "@/features/admin/components/place-import-modal"
 import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { DEFAULT_BUSINESS_LOGO } from "@/features/business/constants/business-media"
 import { formatAdminBusinessTableLocation } from "@/features/admin/utils/admin-business-utils"
@@ -35,6 +36,7 @@ export function AdminBusinessesPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("All")
   const [ownershipFilter, setOwnershipFilter] = useState<OwnershipFilterValue>("All")
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null)
+  const [isImportOpen, setIsImportOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
 
   const { data: businesses, isLoading, isError } = useBusinesses()
@@ -252,12 +254,23 @@ export function AdminBusinessesPage() {
             </div>
           }
           rightToolbarContent={
-            <Button asChild size="lg" className="h-11 rounded-xl bg-brand-dark-green px-5 text-white hover:bg-brand-dark-green/92">
-              <Link href="/admin/businesses/new">
-                <Plus className="h-4 w-4" />
-                Add business
-              </Link>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-11 rounded-xl px-5"
+                onClick={() => setIsImportOpen(true)}
+              >
+                <DownloadCloud className="h-4 w-4" />
+                Import from Google
+              </Button>
+              <Button asChild size="lg" className="h-11 rounded-xl bg-brand-dark-green px-5 text-white hover:bg-brand-dark-green/92">
+                <Link href="/admin/businesses/new">
+                  <Plus className="h-4 w-4" />
+                  Add business
+                </Link>
+              </Button>
+            </div>
           }
           currentPage={currentPage}
           totalPages={totalPages}
@@ -268,12 +281,14 @@ export function AdminBusinessesPage() {
         />
       )}
 
-      <ClaimReviewModal 
-        claimId={selectedClaimId} 
+      <ClaimReviewModal
+        claimId={selectedClaimId}
         onOpenChange={(open) => {
           if (!open) setSelectedClaimId(null)
-        }} 
+        }}
       />
+
+      <PlaceImportModal open={isImportOpen} onOpenChange={setIsImportOpen} />
     </div>
   )
 }

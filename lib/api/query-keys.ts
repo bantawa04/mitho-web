@@ -6,7 +6,6 @@ import type { ListBusinessClaimsParams } from "@/types/business-claims"
 import type { ListCollectionsParams } from "@/types/collections"
 import type { ListAdminGalleryParams } from "@/types/gallery"
 import type { ListMediaParams } from "@/types/media"
-import type { ListPlaceImportCandidatesParams } from "@/types/place-import"
 import type { ListAdminReviewsParams, ListBusinessReviewsParams, ListBusinessTipsParams, ListMyReviewsParams } from "@/types/reviews"
 
 export const queryKeys = {
@@ -138,16 +137,6 @@ export const queryKeys = {
     },
     placeImport: {
       all: ["admin", "place-import"] as const,
-      batches: {
-        all: ["admin", "place-import", "batches"] as const,
-        list: () => ["admin", "place-import", "batches", "list"] as const,
-        detail: (id: string | null) => ["admin", "place-import", "batches", "detail", id] as const,
-      },
-      candidates: {
-        all: ["admin", "place-import", "candidates"] as const,
-        list: (params: ListPlaceImportCandidatesParams) => ["admin", "place-import", "candidates", "list", params] as const,
-        detail: (id: string | null) => ["admin", "place-import", "candidates", "detail", id] as const,
-      },
     },
   },
 }
