@@ -1,43 +1,31 @@
-import type { Business, BusinessListingStatus, BusinessOwnershipStatus } from "@/types/business"
-import type { EstablishmentType } from "@/types/establishment-types"
+import type { BusinessListingStatus, BusinessOwnershipStatus } from "@/types/business"
 import type { MunicipalityCategory } from "@/types/nepal-admin"
 
-export type PlaceImportSource = "google_places"
-export type PlaceImportBatchStatus = "fetched" | "failed"
-export type PlaceImportDuplicateStatus = "pending" | "warning" | "matched" | "clear"
-export type PlaceImportAddressReviewStatus = "pending" | "normalized" | "needs_attention"
-export type PlaceImportStatus = "pending" | "imported" | "rejected"
+export type PlaceImportCategoryValue = "restaurant" | "cafe" | "bakery" | "bar" | "meal_takeaway" | "night_club"
 
-export interface PlaceImportBatch {
-  id: string
-  source: PlaceImportSource
-  query: string
-  latitude?: number
-  longitude?: number
-  radiusMeters?: number
-  status: PlaceImportBatchStatus
-  fetchedCount: number
-  createdById: string
-  createdAt: string
-  updatedAt: string
+export interface PlaceImportCategory {
+  value: PlaceImportCategoryValue
+  label: string
 }
 
-export interface PlaceImportProvinceRef {
+// Mirror of backend place_import.ImportCategories (the backend is the source of
+// truth and validates the selected categories on search).
+export const PLACE_IMPORT_CATEGORIES: PlaceImportCategory[] = [
+  { value: "restaurant", label: "Restaurant" },
+  { value: "cafe", label: "Cafe / Coffee shop" },
+  { value: "bakery", label: "Bakery" },
+  { value: "bar", label: "Bar" },
+  { value: "meal_takeaway", label: "Fast food" },
+  { value: "night_club", label: "Night club" },
+]
+
+export interface PlaceImportRef {
   id: number
   name: string
   slug: string
 }
 
-export interface PlaceImportDistrictRef {
-  id: number
-  name: string
-  slug: string
-}
-
-export interface PlaceImportMunicipalityRef {
-  id: number
-  name: string
-  slug: string
+export interface PlaceImportMunicipalityRef extends PlaceImportRef {
   wards: number
   category: MunicipalityCategory
 }
@@ -50,15 +38,14 @@ export interface PlaceImportBusinessRef {
   phone: string
   listingStatus: BusinessListingStatus
   ownershipStatus: BusinessOwnershipStatus
-  province: PlaceImportProvinceRef
-  district: PlaceImportDistrictRef
+  province: PlaceImportRef
+  district: PlaceImportRef
   municipality: PlaceImportMunicipalityRef
 }
 
-export interface PlaceImportRawSnapshot {
-  id: string
-  name: string
+export interface PlaceSearchResult {
   externalId: string
+  name: string
   formattedAddress?: string
   phone?: string
   website?: string
@@ -67,123 +54,56 @@ export interface PlaceImportRawSnapshot {
   longitude?: number
   rating?: number
   reviewCount?: number
-  businessStatus?: string
   primaryType?: string
   types: string[]
-  photoRefs: string[]
-  rawPayload: Record<string, unknown>
-  lastSeenAt: string
-}
-
-export interface PlaceImportCandidate {
-  id: string
-  batch: PlaceImportBatch
-  source: PlaceImportSource
-  externalId: string
-  name: string
-  slugSuggestion?: string
-  phone?: string
-  website?: string
-  formattedAddress?: string
-  addressLine1?: string
-  addressLine2?: string
-  provinceId?: number
-  districtId?: number
-  municipalityId?: number
-  wardNo?: number
-  province: PlaceImportProvinceRef
-  district: PlaceImportDistrictRef
-  municipality: PlaceImportMunicipalityRef
-  latitude?: number
-  longitude?: number
-  rating?: number
-  reviewCount?: number
-  businessStatus?: string
-  googleTypes: string[]
-  photoRefs: string[]
   suggestedEstablishmentTypeId?: string
-  suggestedEstablishmentType?: EstablishmentType
-  duplicateCheckStatus: PlaceImportDuplicateStatus
-  addressReviewStatus: PlaceImportAddressReviewStatus
-  importStatus: PlaceImportStatus
-  adminNotes?: string
-  rejectionNote?: string
-  reviewedAt?: string
-  importedAt?: string
-  matchedBusiness?: PlaceImportBusinessRef
-  importedBusiness?: PlaceImportBusinessRef
-  duplicateHints: PlaceImportBusinessRef[]
-  raw: PlaceImportRawSnapshot
-  createdAt: string
-  updatedAt: string
+  alreadyImported: boolean
+  existingBusiness?: PlaceImportBusinessRef
 }
 
-export interface ListPlaceImportCandidatesParams {
-  batchId?: string
-  status?: PlaceImportStatus | "all"
-  duplicateStatus?: PlaceImportDuplicateStatus | "all"
-  search?: string
-}
-
-export interface SearchPlaceImportPayload {
-  query: string
-  latitude?: number
-  longitude?: number
-  radiusMeters?: number
+export interface SearchGooglePlacesPayload {
+  latitude: number
+  longitude: number
+  radiusMeters: number
+  categories: string[]
   maxResults?: number
 }
 
-export interface UpdatePlaceImportCandidatePayload {
-  name?: string
+export interface ImportGooglePlaceItem {
+  externalId: string
+  name: string
   phone?: string
   website?: string
+  googleMapsUrl?: string
   formattedAddress?: string
-  addressLine1?: string
-  addressLine2?: string
-  provinceId?: number
-  districtId?: number
-  municipalityId?: number
-  wardNo?: number
   latitude?: number
   longitude?: number
   establishmentTypeId?: string
-  adminNotes?: string
+  provinceId: number
+  districtId: number
+  municipalityId: number
+  wardNo: number
+  area?: string
+  addressNote?: string
 }
 
-export interface MatchPlaceImportCandidatePayload {
-  businessId: string
-  note?: string
+export interface ImportGooglePlacesPayload {
+  items: ImportGooglePlaceItem[]
 }
 
-export interface ImportPlaceImportCandidatePayload {
-  forceDuplicateOverride?: boolean
+export type ImportPlaceOutcomeStatus = "created" | "skipped_duplicate" | "failed"
+
+export interface ImportPlaceResult {
+  externalId: string
+  name: string
+  status: ImportPlaceOutcomeStatus
+  businessId?: string
+  message?: string
 }
 
-export interface RejectPlaceImportCandidatePayload {
-  note?: string
+export interface ImportGooglePlacesResult {
+  created: number
+  skippedDuplicate: number
+  failed: number
+  items: ImportPlaceResult[]
 }
-
-export type PlaceImportCandidateSummary = Pick<
-  PlaceImportCandidate,
-  | "id"
-  | "name"
-  | "phone"
-  | "formattedAddress"
-  | "provinceId"
-  | "districtId"
-  | "municipalityId"
-  | "wardNo"
-  | "duplicateCheckStatus"
-  | "addressReviewStatus"
-  | "importStatus"
-  | "matchedBusiness"
-  | "importedBusiness"
-  | "duplicateHints"
-  | "createdAt"
-  | "updatedAt"
->
-
-export type PlaceImportLinkedBusiness = Pick<
-  Business,
-  "id" | "name" | "slug" | "phone" | "listingStatus" | "ownershipStatus"
->
