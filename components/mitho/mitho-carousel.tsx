@@ -69,11 +69,30 @@ export function MithoCarousel({
     <div className={cn("relative group/carousel px-6", className)}>
       <div
         ref={scrollContainerRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2 snap-x snap-mandatory [&>*]:snap-start"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {children}
       </div>
+
+      {/* Edge fade gradients — signal more content without needing arrows */}
+      <div
+        aria-hidden
+        className={cn(
+          "absolute inset-y-0 left-6 w-10 pointer-events-none z-[5] transition-opacity duration-300",
+          "bg-gradient-to-r from-background to-transparent",
+          !canScrollLeft && "opacity-0",
+        )}
+      />
+      <div
+        aria-hidden
+        className={cn(
+          "absolute inset-y-0 right-6 w-16 pointer-events-none z-[5] transition-opacity duration-300",
+          "bg-gradient-to-l from-background to-transparent",
+          !canScrollRight && "opacity-0",
+        )}
+      />
+
       {showArrows && (
         <>
           <button
