@@ -27,6 +27,7 @@ import type { BusinessPageData } from "@/features/business/business-detail-types
 import { isBusinessEarlyListing } from "@/features/business/business-detail-utils"
 import { mapReviewItemToBusinessReview, mapReviewSummaryToRatingsData } from "@/features/business/mappers/public-business-page-data"
 import type { CollectionCandidate } from "@/types/collections"
+import { getBusinessReviewShareTitle } from "@/lib/seo"
 
 interface BusinessDetailPageProps {
   pageData: BusinessPageData
@@ -96,7 +97,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
 
     if (navigator.share) {
       await navigator.share({
-        title: pageData.name,
+        title: getBusinessReviewShareTitle(pageData.name),
         text: `Check out ${pageData.name} on Mitho Cha.`,
         url: shareUrl,
       })

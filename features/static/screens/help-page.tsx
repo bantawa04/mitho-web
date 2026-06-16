@@ -75,7 +75,7 @@ export function HelpPage() {
             <div className="mt-12 rounded-xl border border-border bg-surface-soft px-6 py-8 text-center">
               <h2 className="text-lg font-semibold text-brand-dark-green">Still have a question?</h2>
               <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                Our team is happy to help. Drop us a message and we'll get back to you.
+                Our team is happy to help. Drop us a message and we&apos;ll get back to you.
               </p>
               <div className="mt-6">
                 <Link

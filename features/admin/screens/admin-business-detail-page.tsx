@@ -34,6 +34,7 @@ import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
 import { formatAdminDate, formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
 import { getBusinessListingPresentation, getBusinessOwnershipPresentation } from "@/features/admin/utils/admin-status-utils"
+import { BrandLogo } from "@/components/mitho/brand-logo"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -203,6 +204,8 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
     : business.municipality.name
   const addedByLabel = business.addedByUserName || business.addedByType
   const publicBusinessHref = getPublicBusinessHref(business)
+  const featuredImage = getPublicBusinessFeaturedImage(business)
+  const canOpenPublicPage = business.listingStatus === "published" && publicBusinessHref
 
   const fullAddress = [
     business.area,
@@ -263,12 +266,23 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
         </div>
 
         {/* Premium Banner image header */}
-        <div className="relative overflow-hidden rounded-lg border-slate-500/20 bg-brand-dark-green h-48 sm:h-64 shadow-sm">
-          <img
-            src={getPublicBusinessFeaturedImage(business) ?? undefined}
-            alt={`${business.name} featured image`}
-            className="h-full w-full object-cover"
-          />
+        <div className="relative overflow-hidden rounded-lg border-slate-500/20 bg-brand-deep-green/10 h-48 sm:h-64 shadow-sm">
+          {featuredImage ? (
+            <img
+              src={featuredImage}
+              alt={`${business.name} featured image`}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-brand-deep-green/10">
+              <div className="px-6 text-center">
+                <BrandLogo kind="full" tone="green" className="mx-auto mb-6 w-48 opacity-30" />
+                <p className="font-heading text-2xl font-bold tracking-tight text-brand-dark-green sm:text-3xl">
+                  {business.name}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between mt-4">
@@ -322,19 +336,19 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 Review Request
               </Button>
             ) : null}
-            {publicBusinessHref ? (
+            {canOpenPublicPage ? (
               <Button asChild variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green hover:bg-muted dark:text-brand-soft-beige dark:border-brand-deep-green/20">
                 <Link href={publicBusinessHref} target="_blank">
                   <Eye className="h-4 w-4" />
                   Open public page
                 </Link>
               </Button>
-            ) : (
+            ) : business.listingStatus === "published" ? (
               <Button variant="outline" className="rounded-xl border-brand-deep-green/14 text-brand-dark-green dark:text-brand-soft-beige dark:border-brand-deep-green/20" disabled>
                 <Eye className="h-4 w-4" />
                 Public page unavailable
               </Button>
-            )}
+            ) : null}
           </div>
         </div>
       </section>
