@@ -144,14 +144,11 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
 
   if (!city) return null
 
-  const cityResults = React.useMemo(() => EXPLORE_RESULTS.filter((result) => result.city === city.label), [city.label])
-
-  const featuredCandidates = React.useMemo(() => selectFeaturedCityPicks(cityResults), [cityResults])
-
-  const filteredResults = React.useMemo(() => {
-    const query = filters.q.toLowerCase()
-
-    const nextResults = cityResults.filter((result) => {
+  const cityResults = EXPLORE_RESULTS.filter((result) => result.city === city.label)
+  const featuredCandidates = selectFeaturedCityPicks(cityResults)
+  const query = filters.q.toLowerCase()
+  const filteredResults = rankExploreResults(
+    cityResults.filter((result) => {
       if (filters.category !== "all" && result.category !== filters.category) return false
       if (!query) return true
 
@@ -169,15 +166,12 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
       ]
 
       return haystacks.some((value) => value.toLowerCase().includes(query))
-    })
-
-    return rankExploreResults(nextResults, filters.sort, { preferFeatured: true })
-  }, [cityResults, filters.category, filters.q, filters.sort])
-
-  const paginatedResults = React.useMemo(() => {
-    const startIndex = (currentPage - 1) * RESULTS_PER_PAGE
-    return filteredResults.slice(startIndex, startIndex + RESULTS_PER_PAGE)
-  }, [currentPage, filteredResults])
+    }),
+    filters.sort,
+    { preferFeatured: true },
+  )
+  const startIndex = (currentPage - 1) * RESULTS_PER_PAGE
+  const paginatedResults = filteredResults.slice(startIndex, startIndex + RESULTS_PER_PAGE)
 
   const totalPages = Math.max(1, Math.ceil(filteredResults.length / RESULTS_PER_PAGE))
   const hasActiveFilters =
@@ -309,7 +303,7 @@ export function CityDetailPage({ slug }: CityDetailPageProps) {
               <div>
                 <p className="type-eyebrow text-brand-deep-green/70">Start here</p>
                 <h2 className="mt-3 text-3xl font-semibold leading-tight text-brand-dark-green">
-                  The easiest ways into {city.label}'s food scene.
+                  The easiest ways into {city.label}&apos;s food scene.
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
                   Start by neighborhood if you already know the area, or jump by category if the craving is clearer than the route.

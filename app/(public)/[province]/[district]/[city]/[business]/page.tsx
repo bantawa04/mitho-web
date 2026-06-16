@@ -8,6 +8,14 @@ import {
   mapPublicBusinessToPageData,
 } from "@/features/business/mappers/public-business-page-data"
 import { getPublicBusinessByPath } from "@/lib/api/businesses"
+import {
+  DEFAULT_OG_IMAGE,
+  SITE_NAME,
+  buildBusinessJsonLd,
+  getAbsoluteUrl,
+  getBusinessReviewShareTitle,
+  jsonLdScriptProps,
+} from "@/lib/seo"
 
 interface PublicBusinessRouteProps {
   params: Promise<{
@@ -37,7 +45,8 @@ export async function generateMetadata({ params }: PublicBusinessRouteProps): Pr
     business.specialityNote ??
     `Discover ${business.name}${location ? ` in ${location}` : ""} on Mitho Cha.`
   const canonicalPath = buildPublicBusinessHref(business)
-  const featuredImage = getPublicBusinessFeaturedImage(business)
+  const featuredImage = getPublicBusinessFeaturedImage(business) ?? DEFAULT_OG_IMAGE
+  const shareTitle = getBusinessReviewShareTitle(business.name)
 
   return {
     title: `${business.name}${location ? ` in ${location}` : ""} | Mitho Cha`,
@@ -46,10 +55,25 @@ export async function generateMetadata({ params }: PublicBusinessRouteProps): Pr
       canonical: canonicalPath,
     },
     openGraph: {
-      title: business.name,
+      title: shareTitle,
       description,
-      url: canonicalPath,
-      ...(featuredImage ? { images: [{ url: featuredImage, alt: business.name }] } : {}),
+      url: getAbsoluteUrl(canonicalPath),
+      siteName: SITE_NAME,
+      type: "website",
+      images: [
+        {
+          url: getAbsoluteUrl(featuredImage),
+          width: 1200,
+          height: 630,
+          alt: business.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: shareTitle,
+      description,
+      images: [getAbsoluteUrl(featuredImage)],
     },
   }
 }
@@ -70,13 +94,17 @@ export default async function PublicBusinessDetailRoute({ params }: PublicBusine
   }
 
   const pageData = mapPublicBusinessToPageData(business)
+  const businessJsonLd = buildBusinessJsonLd(business, publicHref)
 
   return (
-    <BusinessDetailPage
-      pageData={pageData}
-      claimHref={`/business/claim?listing=${business.slug}`}
-      publicHref={publicHref}
-    />
+    <>
+      <script type="application/ld+json" {...jsonLdScriptProps(businessJsonLd)} />
+      <BusinessDetailPage
+        pageData={pageData}
+        claimHref={`/business/claim?listing=${business.slug}`}
+        publicHref={publicHref}
+      />
+    </>
   )
 }
 
