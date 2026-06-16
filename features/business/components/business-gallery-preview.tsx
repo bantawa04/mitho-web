@@ -18,7 +18,7 @@ export function BusinessGalleryPreview({
   items,
   totalCount,
   emptyMessage = "This business has not uploaded photos yet.",
-  emptyTitle = "Photos coming soon",
+  emptyTitle = "No photos yet",
   compactEmpty = false,
   className,
 }: BusinessGalleryPreviewProps) {
