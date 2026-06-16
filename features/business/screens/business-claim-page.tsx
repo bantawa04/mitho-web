@@ -546,12 +546,12 @@ export function BusinessClaimPage() {
                                   <Input
                                     {...field}
                                     type="file"
-                                    accept=".pdf,image/*"
+                                    accept="image/jpeg,image/png,image/webp"
                                     className={cn(inputClassName, "rounded-lg border-dashed border-border bg-white pt-2")}
                                     onChange={(event) => onChange(event.target.files?.[0] ?? null)}
                                   />
                                 </FormControl>
-                                <FormDescription>Upload a PDF or image used only for admin verification.</FormDescription>
+                                <FormDescription>Upload a clear photo or scan (JPG, PNG, or WebP) used only for admin verification.</FormDescription>
                                 {value instanceof File ? (
                                   <p aria-live="polite" className="text-sm font-medium text-[#15803d]">Selected: {value.name}</p>
                                 ) : null}
