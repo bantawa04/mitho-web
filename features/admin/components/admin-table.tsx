@@ -11,7 +11,11 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
+export const DEFAULT_ADMIN_PAGE_SIZE = 10
+export const ADMIN_PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
 export interface AdminTableColumn<TData> {
   id: string
@@ -33,6 +37,9 @@ interface AdminTableProps<TData> {
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
+  pageSize?: number
+  onPageSizeChange?: (pageSize: number) => void
+  pageSizeOptions?: number[]
   resultSummary: string
   emptyTitle: string
   emptyDescription: string
@@ -51,6 +58,9 @@ export function AdminTable<TData>({
   currentPage,
   totalPages,
   onPageChange,
+  pageSize,
+  onPageSizeChange,
+  pageSizeOptions = ADMIN_PAGE_SIZE_OPTIONS,
   resultSummary,
   emptyTitle,
   emptyDescription,
@@ -119,7 +129,29 @@ export function AdminTable<TData>({
         </Table>
 
         <div className="flex flex-col gap-4 border-t border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-muted-foreground">{resultSummary}</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <p className="text-sm text-muted-foreground">{resultSummary}</p>
+            {onPageSizeChange ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Rows per page</span>
+                <Select
+                  value={String(pageSize ?? DEFAULT_ADMIN_PAGE_SIZE)}
+                  onValueChange={(value) => onPageSizeChange(Number(value))}
+                >
+                  <SelectTrigger className="h-9 w-[78px] rounded-lg border-border bg-white shadow-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pageSizeOptions.map((option) => (
+                      <SelectItem key={option} value={String(option)}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : null}
+          </div>
 
           {totalPages > 1 ? (
             <Pagination className="mx-0 w-auto justify-start sm:justify-end">

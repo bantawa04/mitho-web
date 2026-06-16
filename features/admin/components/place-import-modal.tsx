@@ -188,7 +188,7 @@ export function PlaceImportModal({ open, onOpenChange }: PlaceImportModalProps) 
   return (
     <Dialog open={open} onOpenChange={(next) => (next ? onOpenChange(true) : resetAndClose())}>
       <DialogContent className="max-h-[calc(100vh-2rem)] max-w-[calc(100%-2rem)] overflow-hidden rounded-xl border border-border bg-white p-0 shadow-[0_8px_30px_rgba(0,0,0,0.12)] sm:max-w-5xl">
-        <div className="flex max-h-[calc(100vh-2rem)] flex-col">
+        <div className="flex max-h-[calc(100vh-2rem)] w-full min-w-0 flex-col">
           <DialogHeader className="shrink-0 space-y-1 border-b border-border px-6 py-5 text-left">
             <DialogTitle className="text-lg font-semibold text-foreground">Import businesses from Google</DialogTitle>
             <p className="text-sm text-muted-foreground">
@@ -198,7 +198,7 @@ export function PlaceImportModal({ open, onOpenChange }: PlaceImportModalProps) 
             </p>
           </DialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+          <div className="min-h-0 min-w-0 flex-1 overflow-y-auto px-6 py-6">
             {step === "search" && (
               <SearchStep
                 marker={marker}
@@ -216,31 +216,29 @@ export function PlaceImportModal({ open, onOpenChange }: PlaceImportModalProps) 
             )}
 
             {step === "normalize" && (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-border bg-muted/50 hover:bg-muted/50">
-                      <TableHead className="text-xs font-medium text-muted-foreground">Business</TableHead>
-                      <TableHead className="text-xs font-medium text-muted-foreground">Province</TableHead>
-                      <TableHead className="text-xs font-medium text-muted-foreground">District</TableHead>
-                      <TableHead className="text-xs font-medium text-muted-foreground">Municipality</TableHead>
-                      <TableHead className="text-xs font-medium text-muted-foreground">Ward</TableHead>
-                      <TableHead className="text-xs font-medium text-muted-foreground">Type</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {selectedResults.map((result) => (
-                      <PlaceImportNormalizeRow
-                        key={result.externalId}
-                        place={result}
-                        value={rowState[result.externalId] ?? emptyRowState(result.suggestedEstablishmentTypeId)}
-                        establishmentTypes={activeEstablishmentTypes}
-                        onChange={(next) => setRowState((prev) => ({ ...prev, [result.externalId]: next }))}
-                      />
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              <Table className="min-w-[1000px]">
+                <TableHeader>
+                  <TableRow className="border-border bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="text-xs font-medium text-muted-foreground">Business</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">Province</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">District</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">Municipality</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">Ward</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">Type</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selectedResults.map((result) => (
+                    <PlaceImportNormalizeRow
+                      key={result.externalId}
+                      place={result}
+                      value={rowState[result.externalId] ?? emptyRowState(result.suggestedEstablishmentTypeId)}
+                      establishmentTypes={activeEstablishmentTypes}
+                      onChange={(next) => setRowState((prev) => ({ ...prev, [result.externalId]: next }))}
+                    />
+                  ))}
+                </TableBody>
+              </Table>
             )}
 
             {step === "result" && importResult && <ResultStep result={importResult} />}

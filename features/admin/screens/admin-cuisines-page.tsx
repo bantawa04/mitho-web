@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form"
 import { AdminConfirmModal, AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
 import { getTaxonomyStatusPresentation } from "@/features/admin/utils/admin-status-utils"
 import {
@@ -29,7 +29,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-const pageSize = 6
 
 const emptyCuisineValues: CuisineFormValues = {
   name: "",
@@ -47,6 +46,7 @@ export function AdminCuisinesPage() {
   const debouncedQuery = useDebouncedValue(query, 300)
   const [statusFilter, setStatusFilter] = useState<AdminCuisineStatusFilter>("all")
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
   const [selectedCuisineId, setSelectedCuisineId] = useState<string | null>(null)
   const [editingCuisineId, setEditingCuisineId] = useState<string | null>(null)
   const [deleteCuisineId, setDeleteCuisineId] = useState<string | null>(null)
@@ -91,7 +91,7 @@ export function AdminCuisinesPage() {
   const paginatedCuisines = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize
     return filteredCuisines.slice(startIndex, startIndex + pageSize)
-  }, [currentPage, filteredCuisines])
+  }, [currentPage, filteredCuisines, pageSize])
 
   const selectedCuisine = useMemo(
     () => cuisines.find((item) => item.id === selectedCuisineId) ?? null,
@@ -265,6 +265,11 @@ export function AdminCuisinesPage() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size)
+            setCurrentPage(1)
+          }}
           resultSummary={resultSummary}
           emptyTitle="No cuisines found"
           emptyDescription={

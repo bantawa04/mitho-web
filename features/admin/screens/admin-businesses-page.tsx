@@ -8,7 +8,7 @@ import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
 import { PlaceImportModal } from "@/features/admin/components/place-import-modal"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { DEFAULT_BUSINESS_LOGO } from "@/features/business/constants/business-media"
 import { formatAdminBusinessTableLocation } from "@/features/admin/utils/admin-business-utils"
 import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
@@ -20,8 +20,6 @@ import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-type
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useBusinesses } from "@/hooks/use-businesses"
 import type { Business, BusinessListingStatus, BusinessOwnershipStatus } from "@/types/business"
-
-const pageSize = 6
 
 type StatusFilterValue = "All" | BusinessListingStatus
 type OwnershipFilterValue = "All" | BusinessOwnershipStatus
@@ -38,6 +36,7 @@ export function AdminBusinessesPage() {
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null)
   const [isImportOpen, setIsImportOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
 
   const { data: businesses, isLoading, isError } = useBusinesses()
   const { data: establishmentTypes } = useAdminEstablishmentTypes()
@@ -79,7 +78,7 @@ export function AdminBusinessesPage() {
   const paginatedBusinesses = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize
     return filteredBusinesses.slice(startIndex, startIndex + pageSize)
-  }, [currentPage, filteredBusinesses])
+  }, [currentPage, filteredBusinesses, pageSize])
 
   const resultSummary =
     filteredBusinesses.length === 0
@@ -275,6 +274,11 @@ export function AdminBusinessesPage() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size)
+            setCurrentPage(1)
+          }}
           resultSummary={resultSummary}
           emptyTitle="No businesses match this view."
           emptyDescription="Try clearing the search or choosing a broader status filter."

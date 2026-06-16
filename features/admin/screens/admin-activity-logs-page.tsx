@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import {
   adminActivityLogScopeOptions,
   mockAdminActivityLogs,
@@ -13,8 +13,6 @@ import {
 } from "@/features/admin/data/admin-data"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-const pageSize = 8
 
 function getScopeTone(scope: AdminActivityLogScope) {
   switch (scope) {
@@ -37,6 +35,7 @@ export function AdminActivityLogsPage() {
   const debouncedQuery = useDebouncedValue(query, 300)
   const [scopeFilter, setScopeFilter] = useState<"All" | AdminActivityLogScope>("All")
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
 
   const filteredLogs = useMemo(() => {
     const normalizedQuery = debouncedQuery.trim().toLowerCase()
@@ -68,7 +67,7 @@ export function AdminActivityLogsPage() {
   const paginatedLogs = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize
     return filteredLogs.slice(startIndex, startIndex + pageSize)
-  }, [currentPage, filteredLogs])
+  }, [currentPage, filteredLogs, pageSize])
 
   const resultSummary =
     filteredLogs.length === 0
@@ -169,6 +168,11 @@ export function AdminActivityLogsPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
+        pageSize={pageSize}
+        onPageSizeChange={(size) => {
+          setPageSize(size)
+          setCurrentPage(1)
+        }}
         resultSummary={resultSummary}
         emptyTitle="No activity logs found"
         emptyDescription="Try a broader scope filter or a different search."
