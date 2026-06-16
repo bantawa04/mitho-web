@@ -44,6 +44,7 @@ interface AddToCollectionDialogProps {
   onOpenChange: (open: boolean) => void
   candidate: CollectionCandidate
   collections: CollectionRecord[]
+  isLoadingCollections?: boolean
   onAddToCollection: (collectionId: string) => void
   onCreateCollection: (values: CollectionFormValues) => void
 }
@@ -53,6 +54,7 @@ export function AddToCollectionDialog({
   onOpenChange,
   candidate,
   collections,
+  isLoadingCollections = false,
   onAddToCollection,
   onCreateCollection,
 }: AddToCollectionDialogProps) {
@@ -82,10 +84,10 @@ export function AddToCollectionDialog({
   }, [form, open])
 
   React.useEffect(() => {
-    if (open && !hasCollections) {
+    if (open && !isLoadingCollections && !hasCollections) {
       setIsCreateOpen(true)
     }
-  }, [hasCollections, open])
+  }, [hasCollections, isLoadingCollections, open])
 
   const filteredCollections = React.useMemo(
     () => searchOwnedCollections(collections, query),
@@ -156,7 +158,20 @@ export function AddToCollectionDialog({
           </section>
 
           <section className="space-y-4 pt-4">
-            {hasCollections ? (
+            {isLoadingCollections ? (
+              <div className="space-y-3">
+                <div className="h-11 animate-pulse rounded-lg bg-muted" />
+                {[0, 1, 2].map((index) => (
+                  <div key={index} className="flex items-center gap-3 rounded-xl border border-brand-deep-green/10 bg-white px-3 py-3">
+                    <div className="h-12 w-12 shrink-0 animate-pulse rounded-lg bg-muted" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+                      <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : hasCollections ? (
               <>
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -245,8 +260,10 @@ export function AddToCollectionDialog({
 
           <section className="mt-4 border-t border-brand-deep-green/10 pt-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-brand-dark-green">{hasCollections ? "Collections" : "Create your first collection"}</p>
-              {!isCreateOpen && hasCollections ? (
+              <p className="text-sm font-semibold text-brand-dark-green">
+                {isLoadingCollections ? "Loading collections" : hasCollections ? "Collections" : "Create your first collection"}
+              </p>
+              {!isLoadingCollections && !isCreateOpen && hasCollections ? (
                 <MithoButton variant="ghost" size="sm" onClick={openCreateForm}>
                   <Plus className="h-4 w-4" />
                   New collection
@@ -254,7 +271,7 @@ export function AddToCollectionDialog({
               ) : null}
             </div>
 
-            {isCreateOpen ? (
+            {!isLoadingCollections && isCreateOpen ? (
               <div className="mt-4 rounded-xl border border-brand-deep-green/10 bg-muted p-4">
                 <Form {...form}>
                   <form className="space-y-4" onSubmit={form.handleSubmit(handleCreate)}>
