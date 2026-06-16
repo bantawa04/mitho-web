@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
-import { ChevronRight, Eye, Pencil, Plus, ShieldCheck } from "lucide-react"
+import { ChevronRight, DownloadCloud, Eye, Pencil, Plus, ShieldCheck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { PlaceImportModal } from "@/features/admin/components/place-import-modal"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { DEFAULT_BUSINESS_LOGO } from "@/features/business/constants/business-media"
 import { formatAdminBusinessTableLocation } from "@/features/admin/utils/admin-business-utils"
 import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
@@ -19,8 +20,6 @@ import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-type
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useBusinesses } from "@/hooks/use-businesses"
 import type { Business, BusinessListingStatus, BusinessOwnershipStatus } from "@/types/business"
-
-const pageSize = 6
 
 type StatusFilterValue = "All" | BusinessListingStatus
 type OwnershipFilterValue = "All" | BusinessOwnershipStatus
@@ -35,7 +34,9 @@ export function AdminBusinessesPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>("All")
   const [ownershipFilter, setOwnershipFilter] = useState<OwnershipFilterValue>("All")
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null)
+  const [isImportOpen, setIsImportOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
 
   const { data: businesses, isLoading, isError } = useBusinesses()
   const { data: establishmentTypes } = useAdminEstablishmentTypes()
@@ -77,7 +78,7 @@ export function AdminBusinessesPage() {
   const paginatedBusinesses = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize
     return filteredBusinesses.slice(startIndex, startIndex + pageSize)
-  }, [currentPage, filteredBusinesses])
+  }, [currentPage, filteredBusinesses, pageSize])
 
   const resultSummary =
     filteredBusinesses.length === 0
@@ -252,28 +253,46 @@ export function AdminBusinessesPage() {
             </div>
           }
           rightToolbarContent={
-            <Button asChild size="lg" className="h-11 rounded-xl bg-brand-dark-green px-5 text-white hover:bg-brand-dark-green/92">
-              <Link href="/admin/businesses/new">
-                <Plus className="h-4 w-4" />
-                Add business
-              </Link>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="lg"
+                className="h-11 rounded-xl px-5"
+                onClick={() => setIsImportOpen(true)}
+              >
+                <DownloadCloud className="h-4 w-4" />
+                Import from Google
+              </Button>
+              <Button asChild size="lg" className="h-11 rounded-xl bg-brand-dark-green px-5 text-white hover:bg-brand-dark-green/92">
+                <Link href="/admin/businesses/new">
+                  <Plus className="h-4 w-4" />
+                  Add business
+                </Link>
+              </Button>
+            </div>
           }
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size)
+            setCurrentPage(1)
+          }}
           resultSummary={resultSummary}
           emptyTitle="No businesses match this view."
           emptyDescription="Try clearing the search or choosing a broader status filter."
         />
       )}
 
-      <ClaimReviewModal 
-        claimId={selectedClaimId} 
+      <ClaimReviewModal
+        claimId={selectedClaimId}
         onOpenChange={(open) => {
           if (!open) setSelectedClaimId(null)
-        }} 
+        }}
       />
+
+      <PlaceImportModal open={isImportOpen} onOpenChange={setIsImportOpen} />
     </div>
   )
 }

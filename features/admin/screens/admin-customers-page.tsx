@@ -6,19 +6,18 @@ import { ChevronRight, Eye } from "lucide-react"
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { formatAdminDateTime, formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { getOauthProviderPresentation, getUserStatusPresentation } from "@/features/admin/utils/admin-status-utils"
 import { useAdminCustomers } from "@/hooks/use-admin-customers"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import type { AdminCustomerItem } from "@/types/admin-customers"
 
-const pageSize = 6
-
 export function AdminCustomersPage() {
   const [query, setQuery] = useState("")
   const debouncedQuery = useDebouncedValue(query, 300)
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null)
   const customersResult = useAdminCustomers({
     page: currentPage,
@@ -53,7 +52,7 @@ export function AdminCustomersPage() {
     const start = (page - 1) * pageSize + 1
     const end = Math.min(start + customers.length - 1, totalItems)
     return `Showing ${start}-${end} of ${totalItems}`
-  }, [currentPage, customers.length, customersResult.data?.meta.page, customersResult.data?.meta.totalItems, customersResult.isError, debouncedQuery])
+  }, [currentPage, pageSize, customers.length, customersResult.data?.meta.page, customersResult.data?.meta.totalItems, customersResult.isError, debouncedQuery])
 
   const columns = useMemo<AdminTableColumn<AdminCustomerItem>[]>(
     () => [
@@ -144,6 +143,11 @@ export function AdminCustomersPage() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size)
+            setCurrentPage(1)
+          }}
           resultSummary={resultSummary}
           emptyTitle="No customers found"
           emptyDescription={customersResult.isError ? "Reload page and try again." : "Try a different name, email, or connected business."}

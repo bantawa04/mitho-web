@@ -9,7 +9,7 @@ import { AdminInviteUserModal } from "@/features/admin/components/admin-invite-u
 import { AdminRoleEditorModal } from "@/features/admin/components/admin-role-editor-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { AdminUserDetailModal } from "@/features/admin/components/admin-user-detail-modal"
 import { adminRoleTypeOptions, type AdminRoleType } from "@/features/admin/data/admin-data"
 import { formatDate, userStatusOptions, type UserStatusFilter } from "@/features/admin/utils/admin-users-utils"
@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-const pageSize = 6
 type UsersTab = "users" | "roles"
 
 export function AdminUsersPage() {
@@ -33,6 +32,7 @@ export function AdminUsersPage() {
   const [usersQuery, setUsersQuery] = useState("")
   const [usersStatusFilter, setUsersStatusFilter] = useState<UserStatusFilter>("All")
   const [usersPage, setUsersPage] = useState(1)
+  const [usersPageSize, setUsersPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [editingUserId, setEditingUserId] = useState<string | null>(null)
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
@@ -43,13 +43,14 @@ export function AdminUsersPage() {
   const debouncedRolesQuery = useDebouncedValue(rolesQuery, 300)
   const [rolesTypeFilter, setRolesTypeFilter] = useState<"All" | AdminRoleType>("All")
   const [rolesPage, setRolesPage] = useState(1)
+  const [rolesPageSize, setRolesPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
   const [deleteRoleId, setDeleteRoleId] = useState<string | null>(null)
   const [roleEditorOpen, setRoleEditorOpen] = useState(false)
   const [editingRole, setEditingRole] = useState<AdminRole | null>(null)
 
   const usersResult = useAdminUsers({
     page: usersPage,
-    per_page: pageSize,
+    per_page: usersPageSize,
     query: debouncedUsersQuery || undefined,
     status: usersStatusFilter !== "All" ? usersStatusFilter : undefined,
   })
@@ -84,15 +85,15 @@ export function AdminUsersPage() {
     })
   }, [roles, debouncedRolesQuery, rolesTypeFilter])
 
-  const rolesTotalPages = Math.max(1, Math.ceil(filteredRoles.length / pageSize))
+  const rolesTotalPages = Math.max(1, Math.ceil(filteredRoles.length / rolesPageSize))
 
   useEffect(() => { setRolesPage(1) }, [debouncedRolesQuery, rolesTypeFilter])
   useEffect(() => { if (rolesPage > rolesTotalPages) setRolesPage(rolesTotalPages) }, [rolesPage, rolesTotalPages])
 
   const paginatedRoles = useMemo(() => {
-    const start = (rolesPage - 1) * pageSize
-    return filteredRoles.slice(start, start + pageSize)
-  }, [filteredRoles, rolesPage])
+    const start = (rolesPage - 1) * rolesPageSize
+    return filteredRoles.slice(start, start + rolesPageSize)
+  }, [filteredRoles, rolesPage, rolesPageSize])
 
   const rolePendingDelete = useMemo(() => roles.find((r) => r.id === deleteRoleId) ?? null, [roles, deleteRoleId])
 
@@ -108,7 +109,7 @@ export function AdminUsersPage() {
   const rolesResultSummary =
     filteredRoles.length === 0
       ? "No roles match this search."
-      : `Showing ${(rolesPage - 1) * pageSize + 1}–${Math.min(rolesPage * pageSize, filteredRoles.length)} of ${filteredRoles.length}`
+      : `Showing ${(rolesPage - 1) * rolesPageSize + 1}–${Math.min(rolesPage * rolesPageSize, filteredRoles.length)} of ${filteredRoles.length}`
 
   const userColumns = useMemo<AdminTableColumn<AdminUserItem>[]>(
     () => [
@@ -322,6 +323,11 @@ export function AdminUsersPage() {
               currentPage={usersPage}
               totalPages={usersMeta?.totalPages ?? 1}
               onPageChange={setUsersPage}
+              pageSize={usersPageSize}
+              onPageSizeChange={(size) => {
+                setUsersPageSize(size)
+                setUsersPage(1)
+              }}
               resultSummary={usersResultSummary}
               emptyTitle="No users match this view."
               emptyDescription="Try clearing the search or choosing a broader status filter."
@@ -365,6 +371,11 @@ export function AdminUsersPage() {
               currentPage={rolesPage}
               totalPages={rolesTotalPages}
               onPageChange={setRolesPage}
+              pageSize={rolesPageSize}
+              onPageSizeChange={(size) => {
+                setRolesPageSize(size)
+                setRolesPage(1)
+              }}
               resultSummary={rolesResultSummary}
               emptyTitle="No roles match this view."
               emptyDescription="Try a different role name or broader type filter."

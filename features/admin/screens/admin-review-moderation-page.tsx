@@ -6,7 +6,7 @@ import { ChevronRight, Eye, Trash2 } from "lucide-react"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminConfirmModal, AdminModal } from "@/features/admin/components/admin-modal"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { useApproveAdminReview, useAdminReview, useAdminReviews, useDeleteAdminReview, useRejectAdminReview } from "@/hooks/use-reviews"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
@@ -16,7 +16,6 @@ import type { ReviewItem, ReviewRejectionFlag, ReviewStatus } from "@/types/revi
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-const pageSize = 6
 const reviewStatuses: Array<"all" | ReviewStatus> = ["all", "pending", "approved", "rejected"]
 const rejectionFlags: ReviewRejectionFlag[] = [
   "spam_or_fake",
@@ -82,6 +81,7 @@ export function AdminReviewModerationPage() {
   const debouncedQuery = useDebouncedValue(query, 300)
   const [statusFilter, setStatusFilter] = useState<"all" | ReviewStatus>("all")
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null)
   const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null)
   const [selectedDecision, setSelectedDecision] = useState<"approved" | "rejected">("approved")
@@ -298,6 +298,11 @@ export function AdminReviewModerationPage() {
               </Select>
             </div>
           }
+          pageSize={pageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size)
+            setCurrentPage(1)
+          }}
           currentPage={reviewsQuery.data?.meta.page ?? currentPage}
           totalPages={reviewsQuery.data?.meta.totalPages ?? 1}
           onPageChange={setCurrentPage}
