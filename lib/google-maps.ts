@@ -10,7 +10,6 @@ const STATIC_MAP_ZOOM = 15
 const STATIC_MAP_SIZE = "640x480"
 const STATIC_MAP_SCALE = 2
 const STATIC_MAP_TYPE = "roadmap"
-const STATIC_MAP_MARKER_COLOR = "0x0A4635"
 
 export function hasGoogleMapsApiKey() {
   return GOOGLE_MAPS_API_KEY.trim().length > 0
@@ -27,7 +26,7 @@ export function createGoogleStaticMapUrl(coordinates: MapCoordinates) {
     size: STATIC_MAP_SIZE,
     scale: String(STATIC_MAP_SCALE),
     maptype: STATIC_MAP_TYPE,
-    markers: `color:${STATIC_MAP_MARKER_COLOR}|${center}`,
+    markers: `size:small|${center}`,
     key: apiKey,
   })
   return `${GOOGLE_STATIC_MAP_ENDPOINT}?${params.toString()}`
