@@ -4,9 +4,11 @@ import type {
   BusinessReview,
   BusinessPageData,
   BusinessHeroTag,
+  BusinessSocialLink,
+  BusinessSocialPlatform,
   BusinessVisitInfo,
 } from "@/features/business/business-detail-types"
-import type { BusinessAmenities, BusinessHour, PublicBusiness } from "@/types/business"
+import type { BusinessAmenities, BusinessHour, BusinessLinks, PublicBusiness } from "@/types/business"
 import type { Media } from "@/types/media"
 import type { ReviewItem, ReviewRatingsSummary } from "@/types/reviews"
 import {
@@ -138,7 +140,7 @@ function buildVisitInfo(business: PublicBusiness, cuisineNames: string[]): Busin
     address: buildAddress(business),
     phone: business.phone || undefined,
     website,
-    email: business.email,
+    socialLinks: buildSocialLinks(business.links),
     coordinates:
       business.latitude !== undefined && business.longitude !== undefined
         ? { lat: business.latitude, lng: business.longitude }
@@ -199,6 +201,19 @@ function formatHours(hours: BusinessHour[]) {
       time: hour.isClosed ? "Closed" : `${formatBusinessTime(hour.openTime)} - ${formatBusinessTime(hour.closeTime)}`,
       dayOfWeek: hour.dayOfWeek,
     }))
+}
+
+const SOCIAL_PLATFORMS: BusinessSocialPlatform[] = ["facebook", "instagram", "twitter", "youtube", "tiktok"]
+
+function buildSocialLinks(links?: BusinessLinks): BusinessSocialLink[] | undefined {
+  if (!links) return undefined
+
+  const socialLinks = SOCIAL_PLATFORMS.flatMap((platform) => {
+    const url = links[platform]?.trim()
+    return url ? [{ platform, url }] : []
+  })
+
+  return socialLinks.length > 0 ? socialLinks : undefined
 }
 
 function mapAmenities(amenities?: BusinessAmenities): BusinessVisitInfo["amenities"] {
