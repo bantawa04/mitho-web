@@ -576,162 +576,138 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
             </div>
           </div>
 
-          <div className="mt-4 space-y-3">
-            {lifecycleStatus === "active" ? (
-              <>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <button
-                      type="button"
-                      className="w-full rounded-lg border border-border bg-white px-4 py-4 text-left transition-colors hover:border-brand-deep-green/18"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                          <Clock3 className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-foreground">Temporarily close business</p>
-                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            Keep the listing public, but clearly show customers that the business is temporarily closed until you reopen it.
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Temporarily close this business?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        The listing will stay visible on Mitho and customers will see that the business is temporarily closed. You can reopen it later from this same settings page.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
+          <div className="mt-4 overflow-hidden rounded-lg border border-border bg-white">
+            <div className="divide-y divide-border">
+              {lifecycleStatus === "active" ? (
+                <>
+                  <LifecycleActionRow
+                    icon={<Clock3 className="h-4 w-4" />}
+                    title="Temporarily close business"
+                    description="Keep the listing public, but clearly show customers that the business is temporarily closed until you reopen it."
+                    action={
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <MithoButton variant="outline-secondary" size="sm">Close temporarily</MithoButton>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Temporarily close this business?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              The listing will stay visible on Mitho and customers will see that the business is temporarily closed. You can reopen it later from this same settings page.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                setLifecycleStatus("temporarily_closed")
+                                setSettingsSaved(true)
+                              }}
+                            >
+                              Close temporarily
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    }
+                  />
+
+                  <LifecycleActionRow
+                    icon={<ShieldAlert className="h-4 w-4" />}
+                    iconClassName="bg-danger/10 text-danger"
+                    title="Mark permanently closed"
+                    description="Use this when the business is no longer operating. The public listing remains visible as historical place data."
+                    action={
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <MithoButton variant="outline-danger" size="sm">Mark closed</MithoButton>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Mark this business permanently closed?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Customers will continue to see the listing, but it will be labeled permanently closed. This is more serious than a temporary closure and should only be used when the business is no longer operating.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Keep active</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-danger text-danger-foreground hover:bg-danger/90"
+                              onClick={() => {
+                                setLifecycleStatus("permanently_closed")
+                                setSettingsSaved(true)
+                              }}
+                            >
+                              Mark permanently closed
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    }
+                  />
+                </>
+              ) : null}
+
+              {lifecycleStatus === "temporarily_closed" ? (
+                <>
+                  <LifecycleActionRow
+                    icon={<Clock3 className="h-4 w-4" />}
+                    iconClassName="bg-success/10 text-success"
+                    title="Reopen business"
+                    description="Remove the temporary closure label and return the listing to its normal active state."
+                    action={
+                      <MithoButton
+                        variant="outline-success"
+                        size="sm"
                         onClick={() => {
-                          setLifecycleStatus("temporarily_closed")
+                          setLifecycleStatus("active")
                           setSettingsSaved(true)
                         }}
                       >
-                        Close temporarily
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                        Reopen
+                      </MithoButton>
+                    }
+                  />
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <button
-                      type="button"
-                      className="w-full rounded-lg border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger">
-                          <ShieldAlert className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-foreground">Mark permanently closed</p>
-                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            Use this when the business is no longer operating. The public listing remains visible as historical place data.
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Mark this business permanently closed?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Customers will continue to see the listing, but it will be labeled permanently closed. This is more serious than a temporary closure and should only be used when the business is no longer operating.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Keep active</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-danger text-danger-foreground hover:bg-danger/90"
-                        onClick={() => {
-                          setLifecycleStatus("permanently_closed")
-                          setSettingsSaved(true)
-                        }}
-                      >
-                        Mark permanently closed
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            ) : null}
+                  <LifecycleActionRow
+                    icon={<ShieldAlert className="h-4 w-4" />}
+                    iconClassName="bg-danger/10 text-danger"
+                    title="Mark permanently closed"
+                    description="Escalate from temporary closure when the business will not reopen."
+                    action={
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <MithoButton variant="outline-danger" size="sm">Mark closed</MithoButton>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Convert this to permanently closed?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will keep the listing public as a permanently closed business record instead of a reversible temporary closure.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Keep temporarily closed</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-danger text-danger-foreground hover:bg-danger/90"
+                              onClick={() => {
+                                setLifecycleStatus("permanently_closed")
+                                setSettingsSaved(true)
+                              }}
+                            >
+                              Mark permanently closed
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    }
+                  />
+                </>
+              ) : null}
 
-            {lifecycleStatus === "temporarily_closed" ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLifecycleStatus("active")
-                    setSettingsSaved(true)
-                  }}
-                  className="w-full rounded-lg border border-success/20 bg-success/5 px-4 py-4 text-left transition-colors hover:border-success/30 hover:bg-success/8"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10 text-success">
-                      <Clock3 className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground">Reopen business</p>
-                      <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                        Remove the temporary closure label and return the listing to its normal active state.
-                      </p>
-                    </div>
-                  </div>
-                </button>
-
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <button
-                      type="button"
-                      className="w-full rounded-lg border border-danger/15 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/25 hover:bg-danger/8"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger">
-                          <ShieldAlert className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-foreground">Mark permanently closed</p>
-                          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                            Escalate from temporary closure when the business will not reopen.
-                          </p>
-                        </div>
-                      </div>
-                    </button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Convert this to permanently closed?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will keep the listing public as a permanently closed business record instead of a reversible temporary closure.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Keep temporarily closed</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-danger text-danger-foreground hover:bg-danger/90"
-                        onClick={() => {
-                          setLifecycleStatus("permanently_closed")
-                          setSettingsSaved(true)
-                        }}
-                      >
-                        Mark permanently closed
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            ) : null}
-
-            {lifecycleStatus === "permanently_closed" ? (
-              <div className="rounded-lg border border-border bg-surface-business-inset px-4 py-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+              {lifecycleStatus === "permanently_closed" ? (
+                <div className="flex items-start gap-3 px-5 py-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                     <CircleAlert className="h-4 w-4" />
                   </div>
                   <div>
@@ -741,29 +717,24 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
                     </p>
                   </div>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
 
-            <div className="border-t border-border pt-4">
-              <p className="text-xs font-semibold text-danger/75">Removal request</p>
               <Dialog open={isRemovalDialogOpen} onOpenChange={setIsRemovalDialogOpen}>
-                <button
-                  type="button"
-                  onClick={() => setIsRemovalDialogOpen(true)}
-                  className="mt-3 w-full rounded-lg border border-danger/20 bg-danger/5 px-4 py-4 text-left transition-colors hover:border-danger/30 hover:bg-danger/8"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10 text-danger">
-                      <Trash2 className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground">Request listing removal</p>
-                      <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                        Use this for duplicates, incorrect listings, or other cases that should be reviewed instead of deleted immediately.
-                      </p>
-                    </div>
-                  </div>
-                </button>
+                <LifecycleActionRow
+                  icon={<Trash2 className="h-4 w-4" />}
+                  iconClassName="bg-danger/10 text-danger"
+                  title="Request listing removal"
+                  description="Use this for duplicates, incorrect listings, or other cases that should be reviewed instead of deleted immediately."
+                  action={
+                    <MithoButton
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => setIsRemovalDialogOpen(true)}
+                    >
+                      Request removal
+                    </MithoButton>
+                  }
+                />
                 <DialogContent className="sm:max-w-xl">
                   <DialogHeader>
                     <DialogTitle>Request listing removal</DialogTitle>
@@ -820,6 +791,35 @@ function SettingsContent({ initialLifecycleStatus }: { initialLifecycleStatus: B
           </div>
         </section>
       </div>
+    </div>
+  )
+}
+
+function LifecycleActionRow({
+  icon,
+  iconClassName = "bg-muted text-muted-foreground",
+  title,
+  description,
+  action,
+}: {
+  icon: React.ReactNode
+  iconClassName?: string
+  title: string
+  description: string
+  action: React.ReactNode
+}) {
+  return (
+    <div className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex items-start gap-3">
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconClassName}`}>
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-foreground">{title}</p>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
+        </div>
+      </div>
+      <div className="shrink-0 pl-[52px] sm:pl-0">{action}</div>
     </div>
   )
 }
