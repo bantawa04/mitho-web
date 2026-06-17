@@ -1,14 +1,23 @@
 "use client"
 
 import * as React from "react"
-import { Globe, MapPin, Navigation, Phone, UtensilsCrossed } from "lucide-react"
+import { Facebook, Globe, Instagram, MapPin, Music2, Navigation, Phone, Twitter, UtensilsCrossed, Youtube } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { AmenityList } from "@/components/mitho/mitho-amenity"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader, MithoCardTitle, MithoCardDescription } from "@/components/mitho/mitho-card"
 import { BusinessGalleryPreview } from "@/features/business/components/business-gallery-preview"
 import { BusinessHoursCard } from "@/features/business/components/business-hours-card"
 import { createGoogleStaticMapUrl, createGoogleDirectionsUrl } from "@/lib/google-maps"
-import type { BusinessGalleryItem, BusinessVisitInfo } from "@/features/business/business-detail-types"
+import type { BusinessGalleryItem, BusinessSocialPlatform, BusinessVisitInfo } from "@/features/business/business-detail-types"
+
+const SOCIAL_META: Record<BusinessSocialPlatform, { label: string; icon: LucideIcon }> = {
+  facebook: { label: "Facebook", icon: Facebook },
+  instagram: { label: "Instagram", icon: Instagram },
+  twitter: { label: "Twitter", icon: Twitter },
+  youtube: { label: "YouTube", icon: Youtube },
+  tiktok: { label: "TikTok", icon: Music2 },
+}
 
 interface InfoPanelProps {
   isEarlyListing?: boolean
@@ -26,7 +35,8 @@ export function InfoPanel({
   visitInfo,
 }: InfoPanelProps) {
   const [mapFailed, setMapFailed] = React.useState(false)
-  const contactLine = [visitInfo.phone, visitInfo.email].filter(Boolean).join(" • ") || "Contact details not listed yet"
+  const contactLine = visitInfo.phone || "Contact details not listed yet"
+  const socialLinks = visitInfo.socialLinks ?? []
   const cuisineLine = visitInfo.cuisines.length > 0 ? visitInfo.cuisines.join(", ") : "Cuisine details coming soon"
   const staticMapUrl = visitInfo.coordinates ? createGoogleStaticMapUrl(visitInfo.coordinates) : null
   const directionsUrl = visitInfo.coordinates ? createGoogleDirectionsUrl(visitInfo.coordinates) : null
@@ -159,6 +169,33 @@ export function InfoPanel({
                     </MithoButton>
                   ) : null}
                 </div>
+
+                {socialLinks.length > 0 ? (
+                  <div className="mt-4 border-t border-border pt-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-deep-green/72">
+                      Follow along
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {socialLinks.map((link) => {
+                        const meta = SOCIAL_META[link.platform]
+                        const Icon = meta.icon
+                        return (
+                          <a
+                            key={link.platform}
+                            href={normalizeExternalUrl(link.url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={meta.label}
+                            title={meta.label}
+                            className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange transition-colors hover:bg-brand-orange/20"
+                          >
+                            <Icon className="h-5 w-5" />
+                          </a>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ) : null}
               </MithoCardContent>
             </MithoCard>
 

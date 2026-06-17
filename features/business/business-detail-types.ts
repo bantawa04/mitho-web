@@ -60,11 +60,19 @@ export interface BusinessHeroTag {
   kind: BusinessHeroTagKind
 }
 
+export type BusinessSocialPlatform = "facebook" | "instagram" | "twitter" | "youtube" | "tiktok"
+
+export interface BusinessSocialLink {
+  platform: BusinessSocialPlatform
+  url: string
+}
+
 export interface BusinessVisitInfo {
   address: string
   phone?: string
   website?: string
   email?: string
+  socialLinks?: BusinessSocialLink[]
   coordinates?: {
     lat: number
     lng: number
