@@ -26,6 +26,7 @@ import {
   ExternalLink,
 } from "lucide-react"
 import { getPublicBusinessHref } from "@/lib/business-public-href"
+import { getMediaImage } from "@/lib/media-image"
 import { DEFAULT_BUSINESS_LOGO } from "@/features/business/constants/business-media"
 import { getPublicBusinessFeaturedImage } from "@/features/business/mappers/public-business-page-data"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
@@ -309,7 +310,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
             </div>
             <div className="flex items-start gap-4">
               <img
-                src={business.logo?.publicUrl || DEFAULT_BUSINESS_LOGO}
+                src={getMediaImage(business.logo, "logo", DEFAULT_BUSINESS_LOGO) ?? DEFAULT_BUSINESS_LOGO}
                 alt={business.logo?.altText ?? `${business.name} logo`}
                 className="h-16 w-16 rounded-lg border border-border bg-white object-contain p-1"
               />
@@ -592,7 +593,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-brand-deep-green/30 transition-colors"
               >
                 <img
-                  src={photo.publicUrl}
+                  src={getMediaImage(photo, "thumb", photo.publicUrl) ?? photo.publicUrl}
                   alt={photo.altText ?? "Gallery Photo"}
                   className="h-full w-full object-cover"
                 />

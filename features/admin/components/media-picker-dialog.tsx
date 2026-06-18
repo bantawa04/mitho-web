@@ -3,6 +3,7 @@
 import { useRef, useState } from "react"
 import { Check, ImageIcon, Loader2, Upload, Video } from "lucide-react"
 import { useMedia, useUploadMedia } from "@/hooks/use-media"
+import { getMediaImage } from "@/lib/media-image"
 import type { Media, MediaType } from "@/types/media"
 import { Button } from "@/components/ui/button"
 import {
@@ -32,9 +33,9 @@ function formatBytes(bytes: number) {
 }
 
 function getAcceptAttribute(accept: "image" | "video" | "all") {
-  if (accept === "image") return "image/jpeg,image/png,image/webp,image/gif"
+  if (accept === "image") return "image/jpeg,image/png,image/webp,image/heic,image/heif,image/gif"
   if (accept === "video") return "video/mp4,video/webm"
-  return "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
+  return "image/jpeg,image/png,image/webp,image/heic,image/heif,image/gif,video/mp4,video/webm"
 }
 
 export function MediaPickerDialog({
@@ -213,7 +214,7 @@ export function MediaPickerDialog({
                     >
                       {item.mediaType === "image" ? (
                         <img
-                          src={item.publicUrl}
+                          src={getMediaImage(item, "thumb", item.publicUrl) ?? item.publicUrl}
                           alt={item.altText ?? item.filename}
                           className="h-full w-full object-cover"
                         />

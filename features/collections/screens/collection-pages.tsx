@@ -45,6 +45,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ToggleSwitch } from "@/components/mitho/mitho-toggle-switch"
 import { Textarea } from "@/components/ui/textarea"
 import { collectionSchema, collectionVisibilityOptions, type CollectionFormValues } from "@/lib/validators/collection"
+import { getMediaImage } from "@/lib/media-image"
 import type { CollectionItemRecord, CollectionRecord, CollectionVisibility } from "@/types/collections"
 import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
@@ -85,7 +86,7 @@ function CollectionItemRow({
   onRemove?: () => void
   onNoteChange?: (value: string) => void
 }) {
-  const image = item.business?.image?.publicUrl
+  const image = getMediaImage(item.business?.image, "thumb", item.business?.image?.publicUrl)
   return (
     <div className="flex gap-4 rounded-xl border border-brand-deep-green/10 bg-white p-4">
       <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">

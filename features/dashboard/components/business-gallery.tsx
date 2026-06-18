@@ -6,6 +6,7 @@ import { MediaPickerDialog } from "@/features/admin/components/media-picker-dial
 import { useAddGalleryItems, useBusinessGallery, useDeleteGalleryItem, useUpdateGalleryItem } from "@/hooks/use-gallery"
 import { useToast } from "@/hooks/use-toast"
 import { extractApiErrorMessage } from "@/lib/api-error-utils"
+import { getMediaImage } from "@/lib/media-image"
 import type { BusinessGalleryItem, GalleryItemStatus } from "@/types/gallery"
 import type { Media } from "@/types/media"
 import {
@@ -225,7 +226,7 @@ export function BusinessGallery({ businessId }: { businessId: string }) {
                   ) : (
                     // Gallery sources come from R2; next/image needs remote-domain config, so use img.
                     <img
-                      src={item.media.publicUrl}
+                      src={getMediaImage(item.media, "card", item.media.publicUrl) ?? item.media.publicUrl}
                       alt={item.media.altText ?? displayTitle}
                       className="h-full w-full object-cover"
                     />
@@ -311,7 +312,11 @@ export function BusinessGallery({ businessId }: { businessId: string }) {
                       <Film className="h-6 w-6 text-muted-foreground" />
                     </div>
                   ) : (
-                    <img src={entry.media.publicUrl} alt={entry.media.filename} className="h-full w-full object-cover" />
+                    <img
+                      src={getMediaImage(entry.media, "thumb", entry.media.publicUrl) ?? entry.media.publicUrl}
+                      alt={entry.media.filename}
+                      className="h-full w-full object-cover"
+                    />
                   )}
                 </div>
                 <div className="min-w-0 flex-1 space-y-1.5">
