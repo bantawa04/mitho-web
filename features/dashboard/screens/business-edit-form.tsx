@@ -14,6 +14,7 @@ import { GoogleMapPicker } from "@/features/business/components/google-map-picke
 import { buildBusinessOwnerFormValues } from "@/features/business/utils/business-form-utils"
 import { MediaPickerDialog } from "@/features/admin/components/media-picker-dialog"
 import { businessOwnerSchema, type BusinessOwnerFormValues } from "@/lib/validators/admin"
+import { getMediaImage } from "@/lib/media-image"
 import type { Business } from "@/types/business"
 import type { Media } from "@/types/media"
 import {
@@ -687,7 +688,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                   {logoMedia ? (
                     <div className="relative shrink-0">
                       <img
-                        src={logoMedia.publicUrl}
+                        src={getMediaImage(logoMedia, "logo", logoMedia.publicUrl) ?? logoMedia.publicUrl}
                         alt="Logo"
                         className="h-14 w-14 rounded-lg border border-border object-cover bg-white"
                       />
@@ -728,7 +729,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
                   {bannerMedia ? (
                     <div className="relative w-full h-24 overflow-hidden rounded-lg border border-border">
                       <img
-                        src={bannerMedia.publicUrl}
+                        src={getMediaImage(bannerMedia, "card", bannerMedia.publicUrl) ?? bannerMedia.publicUrl}
                         alt="Featured image"
                         className="h-full w-full object-cover"
                       />

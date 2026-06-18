@@ -17,6 +17,7 @@ import type {
 import type { Media } from "@/types/media"
 import type { ReviewItem, ReviewRatingsSummary } from "@/types/reviews"
 import { getPublicBusinessHref } from "@/lib/business-public-href"
+import { getMediaImage } from "@/lib/media-image"
 import {
   DAY_NAMES,
   computeBusinessHoursStatus,
@@ -28,10 +29,10 @@ export function getPublicBusinessFeaturedImage(
   business: Pick<PublicBusiness, "banner" | "photos">,
 ): string | null {
   return (
-    business.banner?.publicUrl ||
-    business.photos?.find(
-      (photo) => photo.mediaType === "image" && photo.publicUrl,
-    )?.publicUrl ||
+    getMediaImage(business.banner, "hero") ||
+    business.photos
+      ?.map((photo) => (photo.mediaType === "image" ? getMediaImage(photo, "hero") : null))
+      .find((url): url is string => Boolean(url)) ||
     null
   )
 }
@@ -60,10 +61,10 @@ export function mapPublicBusinessToPageData(
   )
 
   const coverImage =
-    business.banner?.publicUrl ||
-    business.photos?.find(
-      (photo) => photo.mediaType === "image" && photo.publicUrl,
-    )?.publicUrl ||
+    getMediaImage(business.banner, "hero") ||
+    business.photos
+      ?.map((photo) => (photo.mediaType === "image" ? getMediaImage(photo, "hero") : null))
+      .find((url): url is string => Boolean(url)) ||
     null
 
   return {
@@ -153,7 +154,7 @@ export function mapReviewItemToBusinessReview(
           mediaItem.mediaType === "video"
             ? ("video" as const)
             : ("image" as const),
-        src: mediaItem.publicUrl,
+        src: mediaItem.mediaType === "image" ? getMediaImage(mediaItem, "gallery", mediaItem.publicUrl) ?? mediaItem.publicUrl : mediaItem.publicUrl,
         thumbnail:
           mediaItem.mediaType === "video" ? mediaItem.publicUrl : undefined,
       })),
@@ -210,16 +211,17 @@ function buildGalleryItems(business: PublicBusiness): BusinessGalleryItem[] {
   const seen = new Set<string>()
 
   return media.flatMap((item) => {
-    if (!item.publicUrl || seen.has(item.publicUrl)) return []
-    seen.add(item.publicUrl)
+    const itemSrc = item.mediaType === "image" ? getMediaImage(item, "gallery", item.publicUrl) ?? item.publicUrl : item.publicUrl
+    if (!itemSrc || seen.has(itemSrc)) return []
+    seen.add(itemSrc)
     return [
       {
         type:
           item.mediaType === "video" ? ("video" as const) : ("image" as const),
-        src: item.publicUrl,
+        src: itemSrc,
         alt: item.altText ?? item.title ?? business.name,
         thumbnail:
-          item.mediaType === "video" ? business.banner?.publicUrl : undefined,
+          item.mediaType === "video" ? getMediaImage(business.banner, "card", business.banner?.publicUrl) ?? undefined : undefined,
       },
     ]
   })

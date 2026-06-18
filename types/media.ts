@@ -1,6 +1,9 @@
 export type MediaType = "image" | "video" | "document"
 export type MediaStatus = "pending" | "ready"
 export type MediaVisibility = "public" | "private"
+export type MediaImageVariant = "logo" | "thumb" | "card" | "hero" | "gallery"
+
+export type MediaImageVariants = Partial<Record<MediaImageVariant, string>>
 
 export interface Media {
   id: string
@@ -11,6 +14,7 @@ export interface Media {
   mediaType: MediaType
   sizeBytes?: number
   publicUrl: string
+  variants?: MediaImageVariants
   visibility?: MediaVisibility
   purpose?: string
   status: MediaStatus
