@@ -8,9 +8,16 @@ import type {
   BusinessSocialPlatform,
   BusinessVisitInfo,
 } from "@/features/business/business-detail-types"
-import type { BusinessAmenities, BusinessHour, BusinessLinks, PublicBusiness } from "@/types/business"
+import type {
+  BusinessAmenities,
+  BusinessHour,
+  BusinessLinks,
+  PublicBusiness,
+} from "@/types/business"
 import type { Media } from "@/types/media"
 import type { ReviewItem, ReviewRatingsSummary } from "@/types/reviews"
+import { getPublicBusinessHref } from "@/lib/business-public-href"
+import { getMediaImage } from "@/lib/media-image"
 import {
   DAY_NAMES,
   computeBusinessHoursStatus,
@@ -22,33 +29,49 @@ export function getPublicBusinessFeaturedImage(
   business: Pick<PublicBusiness, "banner" | "photos">,
 ): string | null {
   return (
-    business.banner?.publicUrl ||
-    business.photos?.find((photo) => photo.mediaType === "image" && photo.publicUrl)?.publicUrl ||
+    getMediaImage(business.banner, "hero") ||
+    business.photos
+      ?.map((photo) => (photo.mediaType === "image" ? getMediaImage(photo, "hero") : null))
+      .find((url): url is string => Boolean(url)) ||
     null
   )
 }
 
-export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessPageData {
+export function mapPublicBusinessToPageData(
+  business: PublicBusiness,
+): BusinessPageData {
   const galleryItems = buildGalleryItems(business)
-  const cuisineNames = business.cuisines?.map((cuisine) => cuisine.name).filter(Boolean) ?? []
-  const establishmentLabel = business.establishmentType?.label ?? business.municipality?.category?.name ?? "Place"
-  const location = [business.municipality?.name, business.district?.name].filter(Boolean).join(", ")
+  const cuisineNames =
+    business.cuisines?.map((cuisine) => cuisine.name).filter(Boolean) ?? []
+  const establishmentLabel =
+    business.establishmentType?.label ??
+    business.municipality?.category?.name ??
+    "Place"
+  const location = [business.municipality?.name, business.district?.name]
+    .filter(Boolean)
+    .join(", ")
   const rating = business.ratingAvg ?? null
   const reviewCount = business.ratingCount ?? 0
   const categories: BusinessHeroTag[] = [
     { label: establishmentLabel, kind: "establishment" as const },
     ...cuisineNames.map((name) => ({ label: name, kind: "cuisine" as const })),
-  ].filter((category, index, all) => all.findIndex((item) => item.label === category.label) === index)
+  ].filter(
+    (category, index, all) =>
+      all.findIndex((item) => item.label === category.label) === index,
+  )
 
   const coverImage =
-    business.banner?.publicUrl ||
-    business.photos?.find((photo) => photo.mediaType === "image" && photo.publicUrl)?.publicUrl ||
+    getMediaImage(business.banner, "hero") ||
+    business.photos
+      ?.map((photo) => (photo.mediaType === "image" ? getMediaImage(photo, "hero") : null))
+      .find((url): url is string => Boolean(url)) ||
     null
 
   return {
     id: business.id,
     name: business.name,
-    sourceBadge: business.ownershipStatus === "claimed" ? "verifiedOwner" : "mitho",
+    sourceBadge:
+      business.ownershipStatus === "claimed" ? "verifiedOwner" : "mitho",
     coverImage,
     rating,
     reviewCount,
@@ -61,7 +84,10 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
       "A Mitho Cha listing with the essentials ready for people looking for a good local place to eat.",
     breadcrumbItems: [
       { label: "Home", href: "/" },
-      { label: business.province?.name ?? "Province", href: `/${business.province?.slug ?? ""}` },
+      {
+        label: business.province?.name ?? "Province",
+        href: `/${business.province?.slug ?? ""}`,
+      },
       {
         label: business.district?.name ?? "District",
         href: `/${business.province?.slug ?? ""}/${business.district?.slug ?? ""}`,
@@ -83,11 +109,14 @@ export function mapPublicBusinessToPageData(business: PublicBusiness): BusinessP
     menuLink: undefined,
     ratingsData: null,
     reviews: [],
-    addReviewPrompt: "Share the details that actually help the next person decide.",
+    addReviewPrompt:
+      "Share the details that actually help the next person decide.",
   }
 }
 
-export function mapReviewSummaryToRatingsData(summary: ReviewRatingsSummary | null | undefined): BusinessRatingsData | null {
+export function mapReviewSummaryToRatingsData(
+  summary: ReviewRatingsSummary | null | undefined,
+): BusinessRatingsData | null {
   if (!summary || summary.totalReviews <= 0) return null
   return {
     ratings: {
@@ -102,7 +131,9 @@ export function mapReviewSummaryToRatingsData(summary: ReviewRatingsSummary | nu
   }
 }
 
-export function mapReviewItemToBusinessReview(item: ReviewItem): BusinessReview {
+export function mapReviewItemToBusinessReview(
+  item: ReviewItem,
+): BusinessReview {
   return {
     id: item.id,
     author: item.author.name,
@@ -114,11 +145,18 @@ export function mapReviewItemToBusinessReview(item: ReviewItem): BusinessReview 
     content: item.body,
     tips: item.tips,
     media: item.media
-      .filter((mediaItem) => mediaItem.mediaType === "image" || mediaItem.mediaType === "video")
+      .filter(
+        (mediaItem) =>
+          mediaItem.mediaType === "image" || mediaItem.mediaType === "video",
+      )
       .map((mediaItem) => ({
-        type: mediaItem.mediaType === "video" ? ("video" as const) : ("image" as const),
-        src: mediaItem.publicUrl,
-        thumbnail: mediaItem.mediaType === "video" ? mediaItem.publicUrl : undefined,
+        type:
+          mediaItem.mediaType === "video"
+            ? ("video" as const)
+            : ("image" as const),
+        src: mediaItem.mediaType === "image" ? getMediaImage(mediaItem, "gallery", mediaItem.publicUrl) ?? mediaItem.publicUrl : mediaItem.publicUrl,
+        thumbnail:
+          mediaItem.mediaType === "video" ? mediaItem.publicUrl : undefined,
       })),
     ownerResponse: item.reply
       ? {
@@ -129,11 +167,19 @@ export function mapReviewItemToBusinessReview(item: ReviewItem): BusinessReview 
   }
 }
 
-export function buildPublicBusinessHref(business: Pick<PublicBusiness, "province" | "district" | "municipality" | "slug">) {
-  return `/${business.province.slug}/${business.district.slug}/${business.municipality.slug}/${business.slug}`
+export function buildPublicBusinessHref(
+  business: Pick<
+    PublicBusiness,
+    "id" | "slug" | "province" | "district" | "municipality" | "publicPath"
+  >,
+) {
+  return getPublicBusinessHref(business)
 }
 
-function buildVisitInfo(business: PublicBusiness, cuisineNames: string[]): BusinessVisitInfo {
+function buildVisitInfo(
+  business: PublicBusiness,
+  cuisineNames: string[],
+): BusinessVisitInfo {
   const website = business.links?.website
 
   return {
@@ -159,18 +205,23 @@ function buildVisitInfo(business: PublicBusiness, cuisineNames: string[]): Busin
 }
 
 function buildGalleryItems(business: PublicBusiness): BusinessGalleryItem[] {
-  const media = [business.banner, ...(business.photos ?? [])].filter(Boolean) as Media[]
+  const media = [business.banner, ...(business.photos ?? [])].filter(
+    Boolean,
+  ) as Media[]
   const seen = new Set<string>()
 
   return media.flatMap((item) => {
-    if (!item.publicUrl || seen.has(item.publicUrl)) return []
-    seen.add(item.publicUrl)
+    const itemSrc = item.mediaType === "image" ? getMediaImage(item, "gallery", item.publicUrl) ?? item.publicUrl : item.publicUrl
+    if (!itemSrc || seen.has(itemSrc)) return []
+    seen.add(itemSrc)
     return [
       {
-        type: item.mediaType === "video" ? ("video" as const) : ("image" as const),
-        src: item.publicUrl,
+        type:
+          item.mediaType === "video" ? ("video" as const) : ("image" as const),
+        src: itemSrc,
         alt: item.altText ?? item.title ?? business.name,
-        thumbnail: item.mediaType === "video" ? business.banner?.publicUrl : undefined,
+        thumbnail:
+          item.mediaType === "video" ? getMediaImage(business.banner, "card", business.banner?.publicUrl) ?? undefined : undefined,
       },
     ]
   })
@@ -198,14 +249,24 @@ function formatHours(hours: BusinessHour[]) {
     .sort((a, b) => a.dayOfWeek - b.dayOfWeek)
     .map((hour) => ({
       day: DAY_NAMES[hour.dayOfWeek] ?? `Day ${hour.dayOfWeek}`,
-      time: hour.isClosed ? "Closed" : `${formatBusinessTime(hour.openTime)} - ${formatBusinessTime(hour.closeTime)}`,
+      time: hour.isClosed
+        ? "Closed"
+        : `${formatBusinessTime(hour.openTime)} - ${formatBusinessTime(hour.closeTime)}`,
       dayOfWeek: hour.dayOfWeek,
     }))
 }
 
-const SOCIAL_PLATFORMS: BusinessSocialPlatform[] = ["facebook", "instagram", "twitter", "youtube", "tiktok"]
+const SOCIAL_PLATFORMS: BusinessSocialPlatform[] = [
+  "facebook",
+  "instagram",
+  "twitter",
+  "youtube",
+  "tiktok",
+]
 
-function buildSocialLinks(links?: BusinessLinks): BusinessSocialLink[] | undefined {
+function buildSocialLinks(
+  links?: BusinessLinks,
+): BusinessSocialLink[] | undefined {
   if (!links) return undefined
 
   const socialLinks = SOCIAL_PLATFORMS.flatMap((platform) => {
@@ -216,7 +277,9 @@ function buildSocialLinks(links?: BusinessLinks): BusinessSocialLink[] | undefin
   return socialLinks.length > 0 ? socialLinks : undefined
 }
 
-function mapAmenities(amenities?: BusinessAmenities): BusinessVisitInfo["amenities"] {
+function mapAmenities(
+  amenities?: BusinessAmenities,
+): BusinessVisitInfo["amenities"] {
   if (!amenities) return []
 
   return [

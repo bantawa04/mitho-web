@@ -28,7 +28,9 @@ interface PublicBusinessRouteProps {
 
 export const dynamic = "force-dynamic"
 
-export async function generateMetadata({ params }: PublicBusinessRouteProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PublicBusinessRouteProps): Promise<Metadata> {
   const routeParams = await params
   const business = await fetchPublicBusiness(routeParams)
   if (!business) {
@@ -37,15 +39,22 @@ export async function generateMetadata({ params }: PublicBusinessRouteProps): Pr
     }
   }
 
-  const location = [business.municipality?.name, business.district?.name, business.province?.name]
+  const location = [
+    business.municipality?.name,
+    business.district?.name,
+    business.province?.name,
+  ]
     .filter(Boolean)
     .join(", ")
   const description =
     business.description ??
     business.specialityNote ??
     `Discover ${business.name}${location ? ` in ${location}` : ""} on Mitho Cha.`
-  const canonicalPath = buildPublicBusinessHref(business)
-  const featuredImage = getPublicBusinessFeaturedImage(business) ?? DEFAULT_OG_IMAGE
+  const canonicalPath =
+    buildPublicBusinessHref(business) ??
+    `/${routeParams.province}/${routeParams.district}/${routeParams.city}/${routeParams.business}`
+  const featuredImage =
+    getPublicBusinessFeaturedImage(business) ?? DEFAULT_OG_IMAGE
   const shareTitle = getBusinessReviewShareTitle(business.name)
 
   return {
@@ -78,17 +87,24 @@ export async function generateMetadata({ params }: PublicBusinessRouteProps): Pr
   }
 }
 
-export default async function PublicBusinessDetailRoute({ params }: PublicBusinessRouteProps) {
+export default async function PublicBusinessDetailRoute({
+  params,
+}: PublicBusinessRouteProps) {
   const routeParams = await params
   const business = await fetchPublicBusiness(routeParams)
   if (!business) notFound()
 
   const publicHref = buildPublicBusinessHref(business)
+  if (!publicHref) notFound()
+
+  const canonicalParts = publicHref.split("/").filter(Boolean)
+  const canonicalBusinessSegment = canonicalParts[3] ?? ""
+
   if (
-    routeParams.province !== business.province.slug ||
-    routeParams.district !== business.district.slug ||
-    routeParams.city !== business.municipality.slug ||
-    routeParams.business !== business.slug
+    routeParams.province !== canonicalParts[0] ||
+    routeParams.district !== canonicalParts[1] ||
+    routeParams.city !== canonicalParts[2] ||
+    routeParams.business !== canonicalBusinessSegment
   ) {
     redirect(publicHref)
   }
@@ -98,17 +114,22 @@ export default async function PublicBusinessDetailRoute({ params }: PublicBusine
 
   return (
     <>
-      <script type="application/ld+json" {...jsonLdScriptProps(businessJsonLd)} />
+      <script
+        type="application/ld+json"
+        {...jsonLdScriptProps(businessJsonLd)}
+      />
       <BusinessDetailPage
         pageData={pageData}
-        claimHref={`/business/claim?listing=${business.slug}`}
+        claimHref={`/business/claim?listing=${business.id}`}
         publicHref={publicHref}
       />
     </>
   )
 }
 
-async function fetchPublicBusiness(params: Awaited<PublicBusinessRouteProps["params"]>) {
+async function fetchPublicBusiness(
+  params: Awaited<PublicBusinessRouteProps["params"]>,
+) {
   try {
     return await getPublicBusinessByPath(params)
   } catch (error) {

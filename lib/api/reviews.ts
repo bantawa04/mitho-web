@@ -18,7 +18,9 @@ import type {
   UpdateReviewPayload,
 } from "@/types/reviews"
 
-function mapListParams(params?: ListBusinessReviewsParams | ListBusinessTipsParams) {
+function mapListParams(
+  params?: ListBusinessReviewsParams | ListBusinessTipsParams,
+) {
   if (!params) return undefined
   return {
     page: params.page,
@@ -39,60 +41,89 @@ function mapAdminParams(params?: ListAdminReviewsParams) {
   }
 }
 
-function toSnakeCase(payload: CreateReviewPayload | ResubmitReviewPayload) {
-  return {
-    title: payload.title,
-    rating: payload.rating,
-    body: payload.body,
-    tips: payload.tips,
-    media_ids: payload.mediaIds ?? [],
-  }
-}
-
-export async function listBusinessReviews(businessId: string, params?: ListBusinessReviewsParams): Promise<BusinessReviewsResponse> {
-  const { data } = await API.get<ISuccessResponse<BusinessReviewsResponse>>(`/businesses/${businessId.trim()}/reviews`, {
-    params: mapListParams(params),
-  })
+export async function listBusinessReviews(
+  businessId: string,
+  params?: ListBusinessReviewsParams,
+): Promise<BusinessReviewsResponse> {
+  const { data } = await API.get<ISuccessResponse<BusinessReviewsResponse>>(
+    `/businesses/${businessId.trim()}/reviews`,
+    {
+      params: mapListParams(params),
+    },
+  )
   return data.data
 }
 
-export async function listBusinessTips(businessId: string, params?: ListBusinessTipsParams): Promise<BusinessTipsResponse> {
-  const { data } = await API.get<ISuccessResponse<BusinessTipsResponse>>(`/businesses/${businessId.trim()}/tips`, {
-    params: mapListParams(params),
-  })
+export async function listBusinessTips(
+  businessId: string,
+  params?: ListBusinessTipsParams,
+): Promise<BusinessTipsResponse> {
+  const { data } = await API.get<ISuccessResponse<BusinessTipsResponse>>(
+    `/businesses/${businessId.trim()}/tips`,
+    {
+      params: mapListParams(params),
+    },
+  )
   return data.data
 }
 
-export async function getMyBusinessReview(businessId: string): Promise<MyBusinessReviewStatus> {
-  const { data } = await API.get<ISuccessResponse<MyBusinessReviewStatus | null>>(`/businesses/${businessId.trim()}/reviews/me`)
+export async function getMyBusinessReview(
+  businessId: string,
+): Promise<MyBusinessReviewStatus> {
+  const { data } = await API.get<
+    ISuccessResponse<MyBusinessReviewStatus | null>
+  >(`/businesses/${businessId.trim()}/reviews/me`)
   return data.data ?? { review: null, canReview: true }
 }
 
-export async function listMyReviews(params?: ListMyReviewsParams): Promise<MyReviewsResponse> {
-  const { data } = await API.get<ISuccessResponse<MyReviewsResponse>>("/reviews/me", {
-    params: params
-      ? {
-          page: params.page,
-          per_page: params.perPage,
-          status: params.status || undefined,
-        }
-      : undefined,
-  })
+export async function listMyReviews(
+  params?: ListMyReviewsParams,
+): Promise<MyReviewsResponse> {
+  const { data } = await API.get<ISuccessResponse<MyReviewsResponse>>(
+    "/reviews/me",
+    {
+      params: params
+        ? {
+            page: params.page,
+            per_page: params.perPage,
+            status: params.status || undefined,
+          }
+        : undefined,
+    },
+  )
   return data.data
 }
 
-export async function createBusinessReview(businessId: string, payload: CreateReviewPayload): Promise<ReviewItem> {
-  const { data } = await API.post<ISuccessResponse<ReviewItem>>(`/businesses/${businessId.trim()}/reviews`, toSnakeCase(payload))
+export async function createBusinessReview(
+  businessId: string,
+  payload: CreateReviewPayload,
+): Promise<ReviewItem> {
+  const { data } = await API.post<ISuccessResponse<ReviewItem>>(
+    `/businesses/${businessId.trim()}/reviews`,
+    payload,
+  )
   return data.data
 }
 
-export async function updateReview(reviewId: string, payload: UpdateReviewPayload): Promise<ReviewItem> {
-  const { data } = await API.put<ISuccessResponse<ReviewItem>>(`/reviews/${reviewId.trim()}`, toSnakeCase(payload))
+export async function updateReview(
+  reviewId: string,
+  payload: UpdateReviewPayload,
+): Promise<ReviewItem> {
+  const { data } = await API.put<ISuccessResponse<ReviewItem>>(
+    `/reviews/${reviewId.trim()}`,
+    payload,
+  )
   return data.data
 }
 
-export async function resubmitReview(reviewId: string, payload: ResubmitReviewPayload): Promise<ReviewItem> {
-  const { data } = await API.put<ISuccessResponse<ReviewItem>>(`/reviews/${reviewId.trim()}/resubmit`, toSnakeCase(payload))
+export async function resubmitReview(
+  reviewId: string,
+  payload: ResubmitReviewPayload,
+): Promise<ReviewItem> {
+  const { data } = await API.put<ISuccessResponse<ReviewItem>>(
+    `/reviews/${reviewId.trim()}/resubmit`,
+    payload,
+  )
   return data.data
 }
 
@@ -108,28 +139,40 @@ export async function upsertBusinessReviewReply(
   return data.data
 }
 
-export async function listAdminReviews(params?: ListAdminReviewsParams): Promise<AdminReviewsResponse> {
-  const { data } = await API.get<ISuccessResponse<AdminReviewsResponse>>("/admin/reviews", {
-    params: mapAdminParams(params),
-  })
+export async function listAdminReviews(
+  params?: ListAdminReviewsParams,
+): Promise<AdminReviewsResponse> {
+  const { data } = await API.get<ISuccessResponse<AdminReviewsResponse>>(
+    "/admin/reviews",
+    {
+      params: mapAdminParams(params),
+    },
+  )
   return data.data
 }
 
 export async function getAdminReview(id: string): Promise<ReviewItem> {
-  const { data } = await API.get<ISuccessResponse<ReviewItem>>(`/admin/reviews/${id.trim()}`)
+  const { data } = await API.get<ISuccessResponse<ReviewItem>>(
+    `/admin/reviews/${id.trim()}`,
+  )
   return data.data
 }
 
 export async function approveAdminReview(id: string): Promise<ReviewItem> {
-  const { data } = await API.put<ISuccessResponse<ReviewItem>>(`/admin/reviews/${id.trim()}/approve`)
+  const { data } = await API.put<ISuccessResponse<ReviewItem>>(
+    `/admin/reviews/${id.trim()}/approve`,
+  )
   return data.data
 }
 
-export async function rejectAdminReview(id: string, payload: RejectReviewPayload): Promise<ReviewItem> {
-  const { data } = await API.put<ISuccessResponse<ReviewItem>>(`/admin/reviews/${id.trim()}/reject`, {
-    rejection_flag: payload.rejectionFlag,
-    moderation_note: payload.moderationNote,
-  })
+export async function rejectAdminReview(
+  id: string,
+  payload: RejectReviewPayload,
+): Promise<ReviewItem> {
+  const { data } = await API.put<ISuccessResponse<ReviewItem>>(
+    `/admin/reviews/${id.trim()}/reject`,
+    payload,
+  )
   return data.data
 }
 

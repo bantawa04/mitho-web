@@ -12,6 +12,7 @@ import { useApproveAdminReview, useAdminReview, useAdminReviews, useDeleteAdminR
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useToast } from "@/hooks/use-toast"
 import { extractApiErrorMessage } from "@/lib/api-error-utils"
+import { getMediaImage } from "@/lib/media-image"
 import type { ReviewItem, ReviewRejectionFlag, ReviewStatus } from "@/types/reviews"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -364,7 +365,11 @@ export function AdminReviewModerationPage() {
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {selectedReview.media.map((media) => (
                     <a key={media.id} href={media.publicUrl} target="_blank" rel="noreferrer" className="overflow-hidden rounded-xl border border-border bg-white">
-                      <img src={media.publicUrl} alt={media.altText || media.filename} className="h-32 w-full object-cover" />
+                      <img
+                        src={getMediaImage(media, "thumb", media.publicUrl) ?? media.publicUrl}
+                        alt={media.altText || media.filename}
+                        className="h-32 w-full object-cover"
+                      />
                     </a>
                   ))}
                 </div>
