@@ -5,14 +5,15 @@ import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
-import {
-  adminActivityLogScopeOptions,
-  mockAdminActivityLogs,
-  type AdminActivityLogItem,
-  type AdminActivityLogScope,
-} from "@/features/admin/data/admin-data"
+import { formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
+import { useAdminActivityLogs } from "@/hooks/use-admin-activity-logs"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  adminActivityLogScopeOptions,
+  type AdminActivityLogItem,
+  type AdminActivityLogScope,
+} from "@/types/admin-activity-logs"
 
 function getScopeTone(scope: AdminActivityLogScope) {
   switch (scope) {
@@ -21,12 +22,9 @@ function getScopeTone(scope: AdminActivityLogScope) {
     case "Reviews":
       return "bg-amber-50 text-amber-700 border-amber-100"
     case "Users":
-    case "Roles":
       return "bg-sky-50 text-sky-700 border-sky-100"
-    case "Establishment Types":
+    default:
       return "bg-muted text-muted-foreground border-border"
-    case "Settings":
-      return "bg-stone-100 text-stone-700 border-stone-200"
   }
 }
 
@@ -37,42 +35,44 @@ export function AdminActivityLogsPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
 
-  const filteredLogs = useMemo(() => {
-    const normalizedQuery = debouncedQuery.trim().toLowerCase()
+  const activityLogsResult = useAdminActivityLogs({
+    page: currentPage,
+    per_page: pageSize,
+    scope: scopeFilter === "All" ? undefined : scopeFilter,
+    search: debouncedQuery.trim() || undefined,
+  })
 
-    return mockAdminActivityLogs.filter((log) => {
-      const matchesScope = scopeFilter === "All" ? true : log.scope === scopeFilter
-      const matchesQuery =
-        normalizedQuery.length === 0
-          ? true
-          : [log.actorName, log.actorRole, log.actionLabel, log.targetLabel, log.summary, log.scope]
-              .join(" ")
-              .toLowerCase()
-              .includes(normalizedQuery)
-
-      return matchesScope && matchesQuery
-    })
-  }, [debouncedQuery, scopeFilter])
-
-  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / pageSize))
+  const logs = activityLogsResult.data?.items ?? []
+  const totalPages = activityLogsResult.data?.meta.totalPages ?? 1
 
   useEffect(() => {
     setCurrentPage(1)
   }, [debouncedQuery, scopeFilter])
 
   useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(totalPages)
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
   }, [currentPage, totalPages])
 
-  const paginatedLogs = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize
-    return filteredLogs.slice(startIndex, startIndex + pageSize)
-  }, [currentPage, filteredLogs, pageSize])
-
-  const resultSummary =
-    filteredLogs.length === 0
-      ? "No activity logs match this view."
-      : `Showing ${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, filteredLogs.length)} of ${filteredLogs.length}`
+  const resultSummary = useMemo(() => {
+    if (activityLogsResult.isError) return "Could not load activity logs."
+    const total = activityLogsResult.data?.meta.total ?? 0
+    if (total === 0) {
+      return "No activity logs match this view."
+    }
+    const page = activityLogsResult.data?.meta.page ?? currentPage
+    const start = (page - 1) * pageSize + 1
+    const end = Math.min(start + logs.length - 1, total)
+    return `Showing ${start}-${end} of ${total}`
+  }, [
+    currentPage,
+    pageSize,
+    logs.length,
+    activityLogsResult.data?.meta.page,
+    activityLogsResult.data?.meta.total,
+    activityLogsResult.isError,
+  ])
 
   const columns = useMemo<AdminTableColumn<AdminActivityLogItem>[]>(
     () => [
@@ -117,7 +117,7 @@ export function AdminActivityLogsPage() {
         label: "Logged at",
         className: "pr-6 text-xs font-medium text-muted-foreground",
         cellClassName: "py-2.5 pr-6 align-top text-sm text-muted-foreground",
-        cell: (log) => log.occurredAt,
+        cell: (log) => formatAdminDateTime(log.occurredAt),
       },
     ],
     [],
@@ -143,7 +143,7 @@ export function AdminActivityLogsPage() {
 
       <AdminTable
         columns={columns}
-        data={paginatedLogs}
+        data={logs}
         rowKey={(log) => log.id}
         searchValue={query}
         onSearchChange={setQuery}
@@ -156,6 +156,7 @@ export function AdminActivityLogsPage() {
                 <SelectValue placeholder="Filter by scope" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="All">All</SelectItem>
                 {adminActivityLogScopeOptions.map((scope) => (
                   <SelectItem key={scope} value={scope}>
                     {scope}
@@ -175,7 +176,10 @@ export function AdminActivityLogsPage() {
         }}
         resultSummary={resultSummary}
         emptyTitle="No activity logs found"
-        emptyDescription="Try a broader scope filter or a different search."
+        emptyDescription={
+          activityLogsResult.isError ? "Reload page and try again." : "Try a broader scope filter or a different search."
+        }
+        isLoading={activityLogsResult.isLoading}
       />
     </div>
   )
