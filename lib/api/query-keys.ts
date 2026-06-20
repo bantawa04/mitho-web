@@ -1,5 +1,6 @@
 import type { ListAdminUsersParams } from "@/types/admin-users"
 import type { ListPublicCreatorsParams } from "@/lib/api/profile"
+import type { ListAdminActivityLogsParams } from "@/types/admin-activity-logs"
 import type { ListAdminCustomersParams } from "@/types/admin-customers"
 import type { ListBusinessesParams, SearchBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
@@ -104,6 +105,10 @@ export const queryKeys = {
     customers: {
       all: ["admin", "customers"] as const,
       list: (params: ListAdminCustomersParams) => ["admin", "customers", "list", params] as const,
+    },
+    activityLogs: {
+      all: ["admin", "activity-logs"] as const,
+      list: (params: ListAdminActivityLogsParams) => ["admin", "activity-logs", "list", params] as const,
     },
     roles: {
       all: ["admin", "roles"] as const,
