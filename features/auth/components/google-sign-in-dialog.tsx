@@ -18,9 +18,9 @@ interface GoogleSignInDialogProps {
   stayOnCurrentPageAfterSignIn?: boolean
 }
 
-const defaultTitle = "Sign in once and keep the same Mitho account for everything."
+const defaultTitle = "Sign in to Mitho"
 const defaultDescription =
-  "Use Google to review places, save shortlists, submit listings, and later manage a business without a second account."
+  "Use your Google account to review places, save shortlists, and submit listings."
 
 
 export function GoogleSignInDialog({

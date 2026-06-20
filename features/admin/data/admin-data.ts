@@ -133,24 +133,6 @@ export interface AdminInternalUserItem {
   notifyByEmail: boolean
 }
 
-export interface AdminSettingsProfile {
-  name: string
-  email: string
-  address: {
-    addressLine: string
-    area: string
-    city: string
-    state: string
-    country: string
-  }
-  mobileNumber: string
-  notifications: {
-    newBusinessSignup: boolean
-    claimRequest: boolean
-    newReview: boolean
-  }
-}
-
 export type AdminReviewModerationFlag =
   | "Abusive wording"
   | "Potential duplicate"
@@ -454,24 +436,6 @@ export const mockAdminInternalUsers: AdminInternalUserItem[] = [
     notifyByEmail: false,
   },
 ]
-
-export const mockAdminSettingsProfile: AdminSettingsProfile = {
-  name: "Aarati Shrestha",
-  email: "aarati.shrestha@mithocha.com",
-  address: {
-    addressLine: "Amrit Marg",
-    area: "Thamel",
-    city: "Kathmandu",
-    state: "Bagmati",
-    country: "Nepal",
-  },
-  mobileNumber: "+977 9800000000",
-  notifications: {
-    newBusinessSignup: true,
-    claimRequest: true,
-    newReview: true,
-  },
-}
 
 export const mockAdminReviewModeration: AdminReviewModerationItem[] = [
   {

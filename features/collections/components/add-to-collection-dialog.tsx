@@ -269,7 +269,7 @@ export function AddToCollectionDialog({
             </div>
 
             {!isLoadingCollections && isCreateOpen ? (
-              <div className="mt-4 rounded-xl border border-brand-deep-green/10 bg-muted p-4">
+              <div className="mt-4 rounded-xl border border-brand-deep-green/10 bg-white p-4">
                 <Form {...form}>
                   <form className="space-y-4" onSubmit={form.handleSubmit(handleCreate)}>
                     <FormField

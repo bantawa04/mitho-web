@@ -35,19 +35,13 @@ export function LoginPage() {
                 <BrandLogo kind="icon" tone="green" className="h-6 w-auto" alt="Mitho Cha! icon" />
                 Google sign-in
               </div>
-              <h1 className="type-section-title mt-5 text-brand-dark-green">Sign in once and keep the same Mitho account for everything.</h1>
+              <h1 className="type-section-title mt-5 text-brand-dark-green">Sign in to Mitho</h1>
               <p className="mt-3 text-base leading-7 text-muted-foreground">
-                Use Google to review places, save shortlists, submit listings, and later manage a business without a second account.
+                Use your Google account to review places, save shortlists, and submit listings.
               </p>
             </div>
 
             <div className="space-y-5 px-6 py-6 sm:px-7">
-              <div className="rounded-lg border border-border bg-surface-soft p-4">
-                <p className="text-sm leading-7 text-muted-foreground">
-                  Mitho uses Google sign-in only. Once you are in, we will return you to the page you were trying to open.
-                </p>
-              </div>
-
               {googleClientId ? (
                 <div className="flex justify-center" >
                   <GoogleLogin
