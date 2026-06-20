@@ -143,5 +143,9 @@ export const queryKeys = {
     placeImport: {
       all: ["admin", "place-import"] as const,
     },
+    settings: {
+      all: ["admin", "settings"] as const,
+      detail: () => ["admin", "settings", "detail"] as const,
+    },
   },
 }
