@@ -15,6 +15,7 @@ import { BusinessLocationFields } from "@/features/business/components/business-
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
 import { buildAdminBusinessFormValues } from "@/features/business/utils/business-form-utils"
 import { businessSchema, type BusinessFormValues } from "@/lib/validators/admin"
+import { getMediaImage } from "@/lib/media-image"
 import type { Media } from "@/types/media"
 import { MediaPickerDialog } from "@/features/admin/components/media-picker-dialog"
 import { Button } from "@/components/ui/button"
@@ -676,7 +677,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                     {photosMedia.map((photo) => (
                       <div key={photo.id} className="relative aspect-square">
                         <img
-                          src={photo.publicUrl}
+                          src={getMediaImage(photo, "thumb", photo.publicUrl) ?? photo.publicUrl}
                           alt={photo.altText ?? photo.filename}
                           className="h-full w-full rounded-xl border border-brand-deep-green/10 object-cover"
                         />
@@ -766,7 +767,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   {logoMedia ? (
                     <div className="relative shrink-0">
                       <img
-                        src={logoMedia.publicUrl}
+                        src={getMediaImage(logoMedia, "logo", logoMedia.publicUrl) ?? logoMedia.publicUrl}
                         alt="Logo"
                         className="h-14 w-14 rounded-xl border border-brand-deep-green/10 object-cover bg-white"
                       />
@@ -809,7 +810,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   {bannerMedia ? (
                     <div className="relative w-full h-24 overflow-hidden rounded-xl border border-brand-deep-green/10">
                       <img
-                        src={bannerMedia.publicUrl}
+                        src={getMediaImage(bannerMedia, "card", bannerMedia.publicUrl) ?? bannerMedia.publicUrl}
                         alt="Featured image"
                         className="h-full w-full object-cover"
                       />

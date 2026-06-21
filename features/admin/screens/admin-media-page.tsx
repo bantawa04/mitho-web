@@ -5,6 +5,7 @@ import { useRef } from "react"
 import { ChevronRight, ImageIcon, Loader2, Upload, Video } from "lucide-react"
 import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { useMedia, useUploadMedia } from "@/hooks/use-media"
+import { getMediaImage } from "@/lib/media-image"
 import type { Media } from "@/types/media"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -21,7 +22,7 @@ function MediaCard({ item }: { item: Media }) {
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
         {item.mediaType === "image" ? (
           <img
-            src={item.publicUrl}
+            src={getMediaImage(item, "card", item.publicUrl) ?? item.publicUrl}
             alt={item.altText ?? item.filename}
             className="h-full w-full object-cover"
           />
@@ -100,7 +101,7 @@ export function AdminMediaPage() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/gif,video/mp4,video/webm"
               multiple
               className="sr-only"
               onChange={handleFileChange}

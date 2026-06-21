@@ -1,9 +1,9 @@
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight, MapPin } from "lucide-react"
+import { BusinessCardImagePlaceholder } from "@/components/mitho/business-image-placeholder"
 import { MithoBadge } from "@/components/mitho/mitho-badge"
 import { StarRating } from "@/components/mitho/mitho-rating"
-import { BusinessCardImagePlaceholder } from "@/components/mitho/business-image-placeholder"
 import type { BusinessSearchItem } from "@/types/business"
 
 interface BusinessSearchResultCardProps {
@@ -28,7 +28,7 @@ function formatCuisines(business: BusinessSearchItem): string | null {
 }
 
 export function BusinessSearchResultCard({ business }: BusinessSearchResultCardProps) {
-  const imageUrl = business.coverImage && business.coverImage.trim() ? business.coverImage : null
+  const imageUrl = business.coverImage?.trim() || null
   const href = business.publicPath
   const typeLabel = business.establishmentType?.label?.trim()
   const cuisineLabel = formatCuisines(business)
@@ -48,7 +48,7 @@ export function BusinessSearchResultCard({ business }: BusinessSearchResultCardP
               className="object-cover"
             />
           ) : (
-            <BusinessCardImagePlaceholder className="absolute inset-0" />
+            <BusinessCardImagePlaceholder className="w-full h-full" />
           )}
         </div>
 

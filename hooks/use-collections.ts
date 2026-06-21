@@ -1,6 +1,6 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   addCollectionItem,
   copyCollection,
@@ -25,10 +25,38 @@ import type {
   UpdateCollectionPayload,
 } from "@/types/collections"
 
-export function useCollections(params?: ListCollectionsParams) {
+export function useCollections(params?: ListCollectionsParams, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.collections.list(params),
     queryFn: () => listCollections(params),
+    enabled: options?.enabled ?? true,
+  })
+}
+
+export function useCollectionPicker(
+  params: Pick<ListCollectionsParams, "businessId" | "search" | "sort">,
+  options?: { enabled?: boolean; perPage?: number },
+) {
+  const perPage = options?.perPage ?? 20
+  const queryParams = {
+    businessId: params.businessId,
+    includeItems: false,
+    search: params.search || undefined,
+    sort: params.sort ?? "recent",
+  }
+
+  return useInfiniteQuery({
+    queryKey: queryKeys.collections.picker(queryParams),
+    queryFn: ({ pageParam }) =>
+      listCollections({
+        ...queryParams,
+        page: pageParam,
+        perPage,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.page < lastPage.meta.totalPages ? lastPage.meta.page + 1 : undefined,
+    enabled: options?.enabled ?? true,
   })
 }
 

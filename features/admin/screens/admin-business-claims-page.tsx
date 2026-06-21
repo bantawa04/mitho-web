@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation"
 import { AdminModal } from "@/features/admin/components/admin-modal"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { formatAdminBusinessLocation, getAdminBusinessPublicHref } from "@/features/admin/utils/admin-business-utils"
 import { formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
-const pageSize = 10
 
 const statusOptions: Array<{ label: string; value: BusinessClaimStatusFilter }> = [
   { label: "All", value: "all" },
@@ -68,6 +67,7 @@ export function AdminBusinessClaimsPage() {
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<BusinessClaimStatusFilter>(() => parseStatusFilter(searchParams.get("status")))
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(null)
   const [approveClaimId, setApproveClaimId] = useState<string | null>(null)
   const [rejectClaimId, setRejectClaimId] = useState<string | null>(null)
@@ -82,7 +82,7 @@ export function AdminBusinessClaimsPage() {
       page: currentPage,
       perPage: pageSize,
     }),
-    [currentPage, debouncedQuery, queryBusinessId, statusFilter],
+    [currentPage, pageSize, debouncedQuery, queryBusinessId, statusFilter],
   )
 
   const claimsResult = useAdminBusinessClaims(params)
@@ -291,6 +291,11 @@ export function AdminBusinessClaimsPage() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size)
+            setCurrentPage(1)
+          }}
           resultSummary={resultSummary}
           emptyTitle="No business claims found"
           emptyDescription={claimsResult.isPending ? "Loading claims..." : "Try changing the search or status filter."}
@@ -352,11 +357,20 @@ export function AdminBusinessClaimsPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button variant="outline" className="rounded-xl border-brand-deep-green/14" asChild>
-                <Link href={getAdminBusinessPublicHref(selectedClaim.business ?? { slug: selectedClaim.businessId })} target="_blank">
-                  Open public page
-                </Link>
-              </Button>
+              {(() => {
+                const publicHref = getAdminBusinessPublicHref(selectedClaim.business ?? { slug: selectedClaim.businessId })
+                return publicHref ? (
+                  <Button variant="outline" className="rounded-xl border-brand-deep-green/14" asChild>
+                    <Link href={publicHref} target="_blank">
+                      Open public page
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button variant="outline" className="rounded-xl border-brand-deep-green/14" disabled>
+                    Public page unavailable
+                  </Button>
+                )
+              })()}
               {selectedClaim.status === "pending" ? (
                 <>
                   <Button

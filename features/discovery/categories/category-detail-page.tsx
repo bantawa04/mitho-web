@@ -78,7 +78,7 @@ function FeaturedCategoryPickCard({ result }: { result: ExploreResult }) {
           </div>
 
           <Link
-            href={`/business/${result.slug}`}
+            href={result.publicHref}
             className="inline-flex items-center gap-2 text-sm font-semibold text-brand-deep-green transition-colors hover:text-primary"
           >
             View place

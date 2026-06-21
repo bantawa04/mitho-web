@@ -60,11 +60,19 @@ export interface BusinessHeroTag {
   kind: BusinessHeroTagKind
 }
 
+export type BusinessSocialPlatform = "facebook" | "instagram" | "twitter" | "youtube" | "tiktok"
+
+export interface BusinessSocialLink {
+  platform: BusinessSocialPlatform
+  url: string
+}
+
 export interface BusinessVisitInfo {
   address: string
   phone?: string
   website?: string
   email?: string
+  socialLinks?: BusinessSocialLink[]
   coordinates?: {
     lat: number
     lng: number
@@ -73,7 +81,10 @@ export interface BusinessVisitInfo {
   hours: Array<{
     day: string
     time: string
+    dayOfWeek: number
   }>
+  hoursStatus?: { label: string; tone: "open" | "closed" } | null
+  todayDayOfWeek?: number
   cuisines: string[]
   amenities: Array<"wifi" | "parking" | "takeaway" | "cards" | "accessible" | "dineIn" | "alcohol" | "liveMusic" | "petFriendly" | "vegan" | "nonVeg">
   mapDescription?: string

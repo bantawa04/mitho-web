@@ -54,6 +54,28 @@ export function useBusinessSearch(params: SearchBusinessesParams) {
   })
 }
 
+export function useLatestBusinesses(perPage = 8) {
+  return useBusinessSearch({
+    sort: "latest",
+    perPage,
+  })
+}
+
+export function useNearbyBusinesses(params: {
+  latitude: number
+  longitude: number
+  radiusKm?: number
+  perPage?: number
+}) {
+  return useBusinessSearch({
+    latitude: params.latitude,
+    longitude: params.longitude,
+    radiusKm: params.radiusKm ?? 5,
+    sort: "nearest",
+    perPage: params.perPage ?? 8,
+  })
+}
+
 export function useBusiness(id: string | undefined) {
   const cleanId = id?.trim()
   return useQuery({

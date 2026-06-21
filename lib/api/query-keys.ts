@@ -1,12 +1,12 @@
 import type { ListAdminUsersParams } from "@/types/admin-users"
 import type { ListPublicCreatorsParams } from "@/lib/api/profile"
+import type { ListAdminActivityLogsParams } from "@/types/admin-activity-logs"
 import type { ListAdminCustomersParams } from "@/types/admin-customers"
 import type { ListBusinessesParams, SearchBusinessesParams } from "@/types/business"
 import type { ListBusinessClaimsParams } from "@/types/business-claims"
 import type { ListCollectionsParams } from "@/types/collections"
 import type { ListAdminGalleryParams } from "@/types/gallery"
 import type { ListMediaParams } from "@/types/media"
-import type { ListPlaceImportCandidatesParams } from "@/types/place-import"
 import type { ListAdminReviewsParams, ListBusinessReviewsParams, ListBusinessTipsParams, ListMyReviewsParams } from "@/types/reviews"
 
 export const queryKeys = {
@@ -60,6 +60,8 @@ export const queryKeys = {
   collections: {
     all: ["collections"] as const,
     list: (params?: ListCollectionsParams) => ["collections", "list", params] as const,
+    picker: (params: Pick<ListCollectionsParams, "businessId" | "includeItems" | "search" | "sort">) =>
+      ["collections", "picker", params] as const,
     detail: (id: string) => ["collections", "detail", id] as const,
     publicList: (username: string, params?: Pick<ListCollectionsParams, "page" | "perPage">) =>
       ["collections", "public", username, "list", params] as const,
@@ -104,6 +106,10 @@ export const queryKeys = {
       all: ["admin", "customers"] as const,
       list: (params: ListAdminCustomersParams) => ["admin", "customers", "list", params] as const,
     },
+    activityLogs: {
+      all: ["admin", "activity-logs"] as const,
+      list: (params: ListAdminActivityLogsParams) => ["admin", "activity-logs", "list", params] as const,
+    },
     roles: {
       all: ["admin", "roles"] as const,
       list: () => ["admin", "roles", "list"] as const,
@@ -136,16 +142,10 @@ export const queryKeys = {
     },
     placeImport: {
       all: ["admin", "place-import"] as const,
-      batches: {
-        all: ["admin", "place-import", "batches"] as const,
-        list: () => ["admin", "place-import", "batches", "list"] as const,
-        detail: (id: string | null) => ["admin", "place-import", "batches", "detail", id] as const,
-      },
-      candidates: {
-        all: ["admin", "place-import", "candidates"] as const,
-        list: (params: ListPlaceImportCandidatesParams) => ["admin", "place-import", "candidates", "list", params] as const,
-        detail: (id: string | null) => ["admin", "place-import", "candidates", "detail", id] as const,
-      },
+    },
+    settings: {
+      all: ["admin", "settings"] as const,
+      detail: () => ["admin", "settings", "detail"] as const,
     },
   },
 }

@@ -1,11 +1,14 @@
 import type { CollectionCandidate, CollectionRecord } from "@/types/collections"
+import { getMediaImage } from "@/lib/media-image"
 
 export function getCollectionCoverImages(collection: CollectionRecord) {
   if (collection.coverImages.length > 0) {
-    return collection.coverImages.map((item) => item.publicUrl)
+    return collection.coverImages
+      .map((item) => getMediaImage(item, "card", item.publicUrl))
+      .filter((value): value is string => Boolean(value))
   }
   return collection.items
-    .map((item) => item.business?.image?.publicUrl)
+    .map((item) => getMediaImage(item.business?.image, "card", item.business?.image?.publicUrl))
     .filter((value): value is string => Boolean(value))
 }
 
@@ -22,10 +25,6 @@ export function searchOwnedCollections(collections: CollectionRecord[], query: s
         ),
       )
     : collections
-}
-
-export function collectionContainsBusiness(collection: CollectionRecord, candidate: CollectionCandidate) {
-  return collection.items.some((item) => item.businessId === candidate.businessId)
 }
 
 export function createCollectionId(title: string) {

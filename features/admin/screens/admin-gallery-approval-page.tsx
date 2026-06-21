@@ -6,17 +6,17 @@ import { ChevronRight, Eye, Film } from "lucide-react"
 import { AdminRowActions } from "@/features/admin/components/admin-row-actions"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { AdminModal } from "@/features/admin/components/admin-modal"
-import { AdminTable, type AdminTableColumn } from "@/features/admin/components/admin-table"
+import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { useAdminGallery, useApproveAdminGalleryItem, useRejectAdminGalleryItem } from "@/hooks/use-admin-gallery"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useToast } from "@/hooks/use-toast"
 import { extractApiErrorMessage } from "@/lib/api-error-utils"
+import { getMediaImage } from "@/lib/media-image"
 import type { AdminGalleryItem, GalleryItemStatus } from "@/types/gallery"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-const pageSize = 6
 const galleryStatuses: Array<"all" | GalleryItemStatus> = ["all", "pending", "approved", "rejected"]
 const mediaTypeFilters = ["all", "image", "video"] as const
 
@@ -53,6 +53,7 @@ export function AdminGalleryApprovalPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | GalleryItemStatus>("pending")
   const [typeFilter, setTypeFilter] = useState<(typeof mediaTypeFilters)[number]>("all")
   const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(DEFAULT_ADMIN_PAGE_SIZE)
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
   const [selectedDecision, setSelectedDecision] = useState<"approved" | "rejected">("approved")
   const [rejectionReason, setRejectionReason] = useState("")
@@ -106,7 +107,11 @@ export function AdminGalleryApprovalPage() {
                   <Film className="h-5 w-5 text-muted-foreground" />
                 </div>
               ) : (
-                <img src={item.media.publicUrl} alt={displayTitle(item)} className="h-full w-full object-cover" />
+                <img
+                  src={getMediaImage(item.media, "thumb", item.media.publicUrl) ?? item.media.publicUrl}
+                  alt={displayTitle(item)}
+                  className="h-full w-full object-cover"
+                />
               )}
             </div>
             <div className="min-w-0 space-y-1">
@@ -248,6 +253,11 @@ export function AdminGalleryApprovalPage() {
           currentPage={galleryQuery.data?.meta.page ?? currentPage}
           totalPages={galleryQuery.data?.meta.totalPages ?? 1}
           onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={(size) => {
+            setPageSize(size)
+            setCurrentPage(1)
+          }}
           resultSummary={resultSummary}
           emptyTitle="No gallery items match this view."
           emptyDescription="Try clearing the search or switching the status filter."
@@ -308,7 +318,7 @@ export function AdminGalleryApprovalPage() {
                   <video src={selectedItem.media.publicUrl} className="max-h-96 w-full object-contain" controls playsInline />
                 ) : (
                   <img
-                    src={selectedItem.media.publicUrl}
+                    src={getMediaImage(selectedItem.media, "gallery", selectedItem.media.publicUrl) ?? selectedItem.media.publicUrl}
                     alt={displayTitle(selectedItem)}
                     className="max-h-96 w-full object-contain"
                   />

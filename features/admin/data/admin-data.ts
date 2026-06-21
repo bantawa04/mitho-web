@@ -1,3 +1,5 @@
+import { mockBusinessPublicHref } from "@/features/business/utils/mock-business-public-href"
+
 export interface AdminQueuePreviewItem {
   id: string
   title: string
@@ -84,25 +86,6 @@ export interface AdminBusinessDetailItem extends AdminBusinessListItem {
   ownerWorkspaceHref: string
 }
 
-export type AdminActivityLogScope =
-  | "Businesses"
-  | "Reviews"
-  | "Users"
-  | "Roles"
-  | "Establishment Types"
-  | "Settings"
-
-export interface AdminActivityLogItem {
-  id: string
-  actorName: string
-  actorRole: string
-  actionLabel: string
-  scope: AdminActivityLogScope
-  targetLabel: string
-  occurredAt: string
-  summary: string
-}
-
 export interface AdminNotificationItem {
   id: string
   title: string
@@ -148,24 +131,6 @@ export interface AdminInternalUserItem {
   status: AdminInternalUserStatus
   joinedAt: string
   notifyByEmail: boolean
-}
-
-export interface AdminSettingsProfile {
-  name: string
-  email: string
-  address: {
-    addressLine: string
-    area: string
-    city: string
-    state: string
-    country: string
-  }
-  mobileNumber: string
-  notifications: {
-    newBusinessSignup: boolean
-    claimRequest: boolean
-    newReview: boolean
-  }
 }
 
 export type AdminReviewModerationFlag =
@@ -215,16 +180,6 @@ export const adminBusinessStatusOptions: Array<"All" | AdminBusinessStatus> = [
   "Claim request",
   "Pending",
   "Unclaimed",
-]
-
-export const adminActivityLogScopeOptions: Array<"All" | AdminActivityLogScope> = [
-  "All",
-  "Businesses",
-  "Reviews",
-  "Users",
-  "Roles",
-  "Establishment Types",
-  "Settings",
 ]
 
 export const adminEstablishmentTypeStatusOptions: Array<"All" | AdminEstablishmentTypeStatus> = [
@@ -482,24 +437,6 @@ export const mockAdminInternalUsers: AdminInternalUserItem[] = [
   },
 ]
 
-export const mockAdminSettingsProfile: AdminSettingsProfile = {
-  name: "Aarati Shrestha",
-  email: "aarati.shrestha@mithocha.com",
-  address: {
-    addressLine: "Amrit Marg",
-    area: "Thamel",
-    city: "Kathmandu",
-    state: "Bagmati",
-    country: "Nepal",
-  },
-  mobileNumber: "+977 9800000000",
-  notifications: {
-    newBusinessSignup: true,
-    claimRequest: true,
-    newReview: true,
-  },
-}
-
 export const mockAdminReviewModeration: AdminReviewModerationItem[] = [
   {
     id: "review-moderation-1",
@@ -752,7 +689,7 @@ export const mockAdminBusinessDetails: AdminBusinessDetailItem[] = mockAdminBusi
     fullAddress: `${business.location}, Nepal`,
     phone: "+977 9800000000",
     email: `${business.slug}@mithocha.example`,
-    website: `https://mithocha.example/business/${business.slug}`,
+    website: `https://mithocha.example${mockBusinessPublicHref(business.slug)}`,
     ownerName: ownerContext.ownerName,
     ownerEmail: ownerContext.ownerEmail,
     claimStateNote: ownerContext.claimStateNote,
@@ -763,7 +700,7 @@ export const mockAdminBusinessDetails: AdminBusinessDetailItem[] = mockAdminBusi
     profileViews30d: 820 + index * 91,
     recentReviews: buildRecentReviews(business.name),
     recentSignals: buildRecentSignals(business),
-    publicHref: `/business/${business.slug}`,
+    publicHref: mockBusinessPublicHref(business.slug),
     ownerWorkspaceHref: `/dashboard/businesses/${business.slug}/overview`,
   }
 })
@@ -771,69 +708,6 @@ export const mockAdminBusinessDetails: AdminBusinessDetailItem[] = mockAdminBusi
 export function getAdminBusinessDetailBySlug(slug: string) {
   return mockAdminBusinessDetails.find((business) => business.slug === slug) ?? null
 }
-
-export const mockAdminActivityLogs: AdminActivityLogItem[] = [
-  {
-    id: "activity-log-1",
-    actorName: "Aarati Shrestha",
-    actorRole: "Super admin",
-    actionLabel: "Approved business claim",
-    scope: "Businesses",
-    targetLabel: "Himalayan Java Courtyard",
-    occurredAt: "May 21, 2026 · 3:12 PM",
-    summary: "Approved the latest ownership request after validating the storefront and VAT documents.",
-  },
-  {
-    id: "activity-log-2",
-    actorName: "Roshan Gurung",
-    actorRole: "Moderation lead",
-    actionLabel: "Rejected flagged review",
-    scope: "Reviews",
-    targetLabel: "Owner started arguing at the table",
-    occurredAt: "May 21, 2026 · 1:48 PM",
-    summary: "Rejected the review after confirming abusive language and removed it from the public experience.",
-  },
-  {
-    id: "activity-log-3",
-    actorName: "Aarati Shrestha",
-    actorRole: "Super admin",
-    actionLabel: "Updated internal user role",
-    scope: "Users",
-    targetLabel: "Sabina Shahi",
-    occurredAt: "May 21, 2026 · 11:24 AM",
-    summary: "Changed the assigned role from Support coordinator to Moderation lead.",
-  },
-  {
-    id: "activity-log-4",
-    actorName: "Roshan Gurung",
-    actorRole: "Moderation lead",
-    actionLabel: "Edited custom role",
-    scope: "Roles",
-    targetLabel: "Business ops",
-    occurredAt: "May 20, 2026 · 6:16 PM",
-    summary: "Added read access for Users and update access for Establishment Types.",
-  },
-  {
-    id: "activity-log-5",
-    actorName: "Aarati Shrestha",
-    actorRole: "Super admin",
-    actionLabel: "Created establishment type",
-    scope: "Establishment Types",
-    targetLabel: "Dessert Shop",
-    occurredAt: "May 20, 2026 · 1:22 PM",
-    summary: "Added a new establishment type for dessert-first businesses in the directory.",
-  },
-  {
-    id: "activity-log-6",
-    actorName: "Aarati Shrestha",
-    actorRole: "Super admin",
-    actionLabel: "Updated notification preferences",
-    scope: "Settings",
-    targetLabel: "Admin account settings",
-    occurredAt: "May 19, 2026 · 9:03 AM",
-    summary: "Enabled moderation alerts and disabled the daily digest for the current operator profile.",
-  },
-]
 
 export const mockAdminHomeData: AdminHomeData = {
   pendingClaimsCount: 18,

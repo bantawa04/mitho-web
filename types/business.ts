@@ -74,6 +74,7 @@ export interface Business {
   id: string
   name: string
   slug: string
+  publicPath?: string
   description?: string
   logo?: Media
   banner?: Media
@@ -183,7 +184,7 @@ export interface ListBusinessesParams {
   pageSize?: number
 }
 
-export type BusinessSearchSort = "recommended" | "top_rated" | "most_reviewed"
+export type BusinessSearchSort = "recommended" | "top_rated" | "most_reviewed" | "latest" | "nearest"
 
 /**
  * Frontend-facing params for the public business search endpoint.
@@ -197,6 +198,12 @@ export interface SearchBusinessesParams {
   districtId?: number
   municipalityId?: number
   openNow?: boolean
+  /** Latitude for distance-aware search/sorting. */
+  latitude?: number
+  /** Longitude for distance-aware search/sorting. */
+  longitude?: number
+  /** Radius in kilometers for nearby search. */
+  radiusKm?: number
   sort?: BusinessSearchSort
   page?: number
   perPage?: number
@@ -228,6 +235,7 @@ export interface BusinessSearchItem {
   ratingCount: number
   isFeatured: boolean
   isOpenNow: boolean
+  distanceKm?: number | null
 }
 
 export interface BusinessSearchMeta {

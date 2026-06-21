@@ -31,6 +31,7 @@ export interface ReviewItem {
   businessId: string
   businessName?: string
   businessSlug?: string
+  publicHref?: string | null
   userId: string
   title: string
   rating: number
@@ -81,9 +82,9 @@ export interface CreateReviewPayload {
   mediaIds?: string[]
 }
 
-export interface ResubmitReviewPayload extends CreateReviewPayload {}
+export type ResubmitReviewPayload = CreateReviewPayload
 
-export interface UpdateReviewPayload extends CreateReviewPayload {}
+export type UpdateReviewPayload = CreateReviewPayload
 
 export interface UpsertReviewReplyPayload {
   body: string

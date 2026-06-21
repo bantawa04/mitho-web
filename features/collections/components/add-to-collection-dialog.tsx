@@ -6,10 +6,8 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Check, Globe, Lock, Plus, Search } from "lucide-react"
 import {
-  collectionContainsBusiness,
   createCollectionId,
   getCollectionCoverImages,
-  searchOwnedCollections,
 } from "@/features/collections/utils/collection-helpers"
 import { CollectionVisibilityBadge } from "@/features/collections/components/collection-visibility-badge"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -22,7 +20,6 @@ import { collectionVisibilityOptions, type CollectionFormValues } from "@/lib/va
 import type { CollectionCandidate, CollectionRecord } from "@/types/collections"
 import { cn } from "@/lib/utils"
 
-const initialCollectionCount = 3
 const inputClassName =
   "h-11 rounded-lg border-brand-deep-green/12 bg-muted px-4 shadow-none focus-visible:border-brand-orange focus-visible:ring-brand-orange/15"
 const selectTriggerClassName =
@@ -44,6 +41,12 @@ interface AddToCollectionDialogProps {
   onOpenChange: (open: boolean) => void
   candidate: CollectionCandidate
   collections: CollectionRecord[]
+  searchQuery: string
+  isLoadingCollections?: boolean
+  isLoadingMoreCollections?: boolean
+  hasMoreCollections?: boolean
+  onSearchQueryChange: (query: string) => void
+  onLoadMoreCollections?: () => void
   onAddToCollection: (collectionId: string) => void
   onCreateCollection: (values: CollectionFormValues) => void
 }
@@ -53,13 +56,18 @@ export function AddToCollectionDialog({
   onOpenChange,
   candidate,
   collections,
+  searchQuery,
+  isLoadingCollections = false,
+  isLoadingMoreCollections = false,
+  hasMoreCollections = false,
+  onSearchQueryChange,
+  onLoadMoreCollections,
   onAddToCollection,
   onCreateCollection,
 }: AddToCollectionDialogProps) {
-  const [query, setQuery] = React.useState("")
   const [isCreateOpen, setIsCreateOpen] = React.useState(false)
-  const [showAllCollections, setShowAllCollections] = React.useState(false)
   const hasCollections = collections.length > 0
+  const hasSearchQuery = searchQuery.trim().length > 0
 
   const form = useForm<QuickCreateCollectionValues>({
     resolver: zodResolver(quickCreateCollectionSchema),
@@ -71,42 +79,26 @@ export function AddToCollectionDialog({
 
   React.useEffect(() => {
     if (!open) {
-      setQuery("")
       setIsCreateOpen(false)
-      setShowAllCollections(false)
+      onSearchQueryChange("")
       form.reset({
         title: "",
         visibility: "private",
       })
     }
-  }, [form, open])
+  }, [form, onSearchQueryChange, open])
 
   React.useEffect(() => {
-    if (open && !hasCollections) {
+    if (open && !isLoadingCollections && !hasCollections && !hasSearchQuery) {
       setIsCreateOpen(true)
     }
-  }, [hasCollections, open])
-
-  const filteredCollections = React.useMemo(
-    () => searchOwnedCollections(collections, query),
-    [collections, query],
-  )
-
-  const visibleCollections =
-    query.trim().length > 0 || showAllCollections
-      ? filteredCollections
-      : filteredCollections.slice(0, initialCollectionCount)
-
-  const hiddenCollectionCount =
-    query.trim().length > 0 || showAllCollections
-      ? 0
-      : Math.max(filteredCollections.length - initialCollectionCount, 0)
+  }, [hasCollections, hasSearchQuery, isLoadingCollections, open])
 
   const openCreateForm = () => {
     setIsCreateOpen(true)
     form.reset({
-      title: query.trim()
-        ? createCollectionId(query)
+      title: searchQuery.trim()
+        ? createCollectionId(searchQuery)
             .split("-")
             .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
             .join(" ")
@@ -156,22 +148,35 @@ export function AddToCollectionDialog({
           </section>
 
           <section className="space-y-4 pt-4">
-            {hasCollections ? (
+            {isLoadingCollections ? (
+              <div className="space-y-3">
+                <div className="h-11 animate-pulse rounded-lg bg-muted" />
+                {[0, 1, 2].map((index) => (
+                  <div key={index} className="flex items-center gap-3 rounded-xl border border-brand-deep-green/10 bg-white px-3 py-3">
+                    <div className="h-12 w-12 shrink-0 animate-pulse rounded-lg bg-muted" />
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+                      <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : hasCollections || hasSearchQuery ? (
               <>
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
+                    value={searchQuery}
+                    onChange={(event) => onSearchQueryChange(event.target.value)}
                     className={cn(inputClassName, "pl-11")}
                     placeholder="Search your collections"
                   />
                 </div>
 
                 <div className="space-y-2.5">
-                  {visibleCollections.length > 0 ? (
-                    visibleCollections.map((collection) => {
-                      const alreadyAdded = collectionContainsBusiness(collection, candidate)
+                  {collections.length > 0 ? (
+                    collections.map((collection) => {
+                      const alreadyAdded = collection.hasBusiness ?? false
                       const coverImage = getCollectionCoverImages(collection)[0] ?? candidate.imageUrl
 
                       return (
@@ -216,18 +221,21 @@ export function AddToCollectionDialog({
                     </div>
                   )}
 
-                  {hiddenCollectionCount > 0 ? (
+                  {hasMoreCollections ? (
                     <button
                       type="button"
-                      onClick={() => setShowAllCollections(true)}
+                      onClick={onLoadMoreCollections}
+                      disabled={isLoadingMoreCollections}
                       className="flex w-full items-center gap-3 rounded-xl border border-dashed border-brand-deep-green/18 bg-muted px-3 py-3 text-left transition-colors hover:border-brand-deep-green/28 hover:bg-accent"
                     >
                       <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-brand-deep-green/12 bg-white text-brand-deep-green">
                         <Plus className="h-5 w-5" />
                       </span>
                       <div>
-                        <p className="text-sm font-semibold text-brand-dark-green">More collections</p>
-                        <p className="text-sm text-muted-foreground">Show {hiddenCollectionCount} more</p>
+                        <p className="text-sm font-semibold text-brand-dark-green">
+                          {isLoadingMoreCollections ? "Loading collections" : "More collections"}
+                        </p>
+                        <p className="text-sm text-muted-foreground">Show next page</p>
                       </div>
                     </button>
                   ) : null}
@@ -245,8 +253,14 @@ export function AddToCollectionDialog({
 
           <section className="mt-4 border-t border-brand-deep-green/10 pt-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-brand-dark-green">{hasCollections ? "Collections" : "Create your first collection"}</p>
-              {!isCreateOpen && hasCollections ? (
+              <p className="text-sm font-semibold text-brand-dark-green">
+                {isLoadingCollections
+                  ? "Loading collections"
+                  : hasCollections || hasSearchQuery
+                    ? "Collections"
+                    : "Create your first collection"}
+              </p>
+              {!isLoadingCollections && !isCreateOpen && (hasCollections || hasSearchQuery) ? (
                 <MithoButton variant="ghost" size="sm" onClick={openCreateForm}>
                   <Plus className="h-4 w-4" />
                   New collection
@@ -254,8 +268,8 @@ export function AddToCollectionDialog({
               ) : null}
             </div>
 
-            {isCreateOpen ? (
-              <div className="mt-4 rounded-xl border border-brand-deep-green/10 bg-muted p-4">
+            {!isLoadingCollections && isCreateOpen ? (
+              <div className="mt-4 rounded-xl border border-brand-deep-green/10 bg-white p-4">
                 <Form {...form}>
                   <form className="space-y-4" onSubmit={form.handleSubmit(handleCreate)}>
                     <FormField

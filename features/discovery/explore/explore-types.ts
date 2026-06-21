@@ -3,6 +3,7 @@ import type { BusinessSearchSort } from "@/types/business"
 export interface ExploreResult {
   id: string
   slug: string
+  publicHref: string
   name: string
   imageUrl: string
   cuisine: string
