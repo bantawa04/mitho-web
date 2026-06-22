@@ -21,6 +21,7 @@ export const adminNavSections = [
   { href: "/admin/cuisines", label: "Cuisines", icon: Soup },
   { href: "/admin/establishment-types", label: "Establishment Types", icon: Shapes },
   { href: "/admin/reviews/moderation", label: "Review Moderation", icon: MessageSquareWarning, permissions: ["reviews.read", "reviews.update", "reviews.delete"] },
+  { href: "/admin/reported-content", label: "Reported Content", icon: MessageSquareWarning },
   { href: "/admin/gallery", label: "Gallery Approval", icon: Images, permissions: ["media.review"] },
   { href: "/admin/customers", label: "Customers", icon: UserRound },
   { href: "/admin/users", label: "Users", icon: Users },
@@ -29,7 +30,6 @@ export const adminNavSections = [
 
 const adminHiddenRouteItems = [
   { href: "/admin/business-claims", label: "Business Claims", icon: Building2 },
-  { href: "/admin/reported-content", label: "Reported Content", icon: MessageSquareWarning },
   { href: "/admin/settings", label: "Account Settings", icon: Settings },
 ] as const
 
