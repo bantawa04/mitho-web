@@ -67,8 +67,37 @@ export interface BusinessSocialLink {
   url: string
 }
 
+export type BusinessAmenityKey =
+  | "wifi"
+  | "parking"
+  | "airConditioning"
+  | "outdoorSeating"
+  | "dineIn"
+  | "takeaway"
+  | "delivery"
+  | "cards"
+  | "cash"
+  | "esewa"
+  | "khalti"
+  | "qr"
+  | "vegetarian"
+  | "vegan"
+  | "halal"
+  | "nonVeg"
+  | "accessible"
+  | "alcohol"
+  | "liveMusic"
+  | "petFriendly"
+
+/** A single labeled line for the structured address block. */
+export interface BusinessAddressDetail {
+  label: string
+  value: string
+}
+
 export interface BusinessVisitInfo {
   address: string
+  addressDetails?: BusinessAddressDetail[]
   phone?: string
   website?: string
   email?: string
@@ -85,8 +114,14 @@ export interface BusinessVisitInfo {
   }>
   hoursStatus?: { label: string; tone: "open" | "closed" } | null
   todayDayOfWeek?: number
+  establishmentType?: string
+  priceRange?: number
+  avgCostPerPerson?: number
+  signatureItems?: string[]
+  mealTypes?: string[]
   cuisines: string[]
-  amenities: Array<"wifi" | "parking" | "takeaway" | "cards" | "accessible" | "dineIn" | "alcohol" | "liveMusic" | "petFriendly" | "vegan" | "nonVeg">
+  amenities: BusinessAmenityKey[]
+  menuUrl?: string
   mapDescription?: string
   mapLinkText?: string
   goodToKnow?: string
