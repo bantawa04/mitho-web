@@ -47,7 +47,7 @@ export function Footer() {
   return (
     <footer className="bg-brand-dark-green text-white">
       <div className="container mx-auto px-4 py-12 md:py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr]">
+        <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr] mb-2">
           <div className="max-w-md">
             <Link href="/" className="inline-flex mb-4">
               <BrandLogo kind="full" tone="orange" className="h-14 w-auto" alt="Mitho Cha! logo" />
