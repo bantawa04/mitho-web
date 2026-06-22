@@ -5,6 +5,7 @@ export interface AdminEstablishmentTypeItem {
   id: string
   slug: string
   label: string
+  icon?: string
   status: EstablishmentTypeStatus
   listingsCount?: number
   createdAt: string
@@ -13,10 +14,12 @@ export interface AdminEstablishmentTypeItem {
 
 export interface CreateAdminEstablishmentTypePayload {
   label: string
+  icon?: string
   status?: EstablishmentTypeStatus
 }
 
 export interface UpdateAdminEstablishmentTypePayload {
   label?: string
+  icon?: string
   status?: EstablishmentTypeStatus
 }
