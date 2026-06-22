@@ -1,4 +1,5 @@
 import type {
+  BusinessAddressDetail,
   BusinessGalleryItem,
   BusinessRatingsData,
   BusinessReview,
@@ -184,8 +185,10 @@ function buildVisitInfo(
 
   return {
     address: buildAddress(business),
+    addressDetails: buildAddressDetails(business),
     phone: business.phone || undefined,
     website,
+    email: business.email || undefined,
     socialLinks: buildSocialLinks(business.links),
     coordinates:
       business.latitude !== undefined && business.longitude !== undefined
@@ -198,8 +201,14 @@ function buildVisitInfo(
       return status.label ? { label: status.label, tone: status.tone } : null
     })(),
     todayDayOfWeek: getNepalNow().dayOfWeek,
+    establishmentType: business.establishmentType?.label || undefined,
+    priceRange: business.priceRange || undefined,
+    avgCostPerPerson: business.avgCostPerPerson || undefined,
+    signatureItems: business.signatureItems?.filter(Boolean) ?? undefined,
+    mealTypes: business.mealTypes?.map(formatMealType).filter(Boolean) ?? undefined,
     cuisines: cuisineNames,
     amenities: mapAmenities(business.amenities),
+    menuUrl: business.menuUrl || undefined,
     mapLinkText: "Get directions",
   }
 }
@@ -239,6 +248,42 @@ function buildAddress(business: PublicBusiness) {
   ]
     .filter(Boolean)
     .join(", ")
+}
+
+function buildAddressDetails(
+  business: PublicBusiness,
+): BusinessAddressDetail[] {
+  const locality = [
+    business.area,
+    business.wardNo ? `Ward ${business.wardNo}` : undefined,
+  ]
+    .filter(Boolean)
+    .join(", ")
+
+  const region = [business.district?.name, business.province?.name]
+    .filter(Boolean)
+    .join(" · ")
+
+  return [
+    locality ? { label: "Locality", value: locality } : null,
+    business.municipality?.name
+      ? { label: "City", value: business.municipality.name }
+      : null,
+    region ? { label: "District", value: region } : null,
+    business.nearestLandmark
+      ? { label: "Landmark", value: business.nearestLandmark }
+      : null,
+    business.addressNote
+      ? { label: "Getting there", value: business.addressNote }
+      : null,
+  ].filter(Boolean) as BusinessAddressDetail[]
+}
+
+function formatMealType(value: string): string {
+  return value
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .trim()
 }
 
 function formatHours(hours: BusinessHour[]) {
@@ -283,12 +328,21 @@ function mapAmenities(
   if (!amenities) return []
 
   return [
+    amenities.services?.dine_in ? "dineIn" : null,
+    amenities.services?.takeaway ? "takeaway" : null,
+    amenities.services?.delivery ? "delivery" : null,
     amenities.facilities?.wifi ? "wifi" : null,
     amenities.facilities?.parking ? "parking" : null,
-    amenities.services?.takeaway ? "takeaway" : null,
+    amenities.facilities?.air_conditioning ? "airConditioning" : null,
+    amenities.facilities?.outdoor_seating ? "outdoorSeating" : null,
     amenities.payment?.card ? "cards" : null,
-    amenities.services?.dine_in ? "dineIn" : null,
+    amenities.payment?.cash ? "cash" : null,
+    amenities.payment?.esewa ? "esewa" : null,
+    amenities.payment?.khalti ? "khalti" : null,
+    amenities.payment?.qr ? "qr" : null,
+    amenities.dietary?.vegetarian ? "vegetarian" : null,
     amenities.dietary?.vegan ? "vegan" : null,
+    amenities.dietary?.halal ? "halal" : null,
     amenities.dietary?.non_veg ? "nonVeg" : null,
   ].filter(Boolean) as BusinessVisitInfo["amenities"]
 }

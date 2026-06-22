@@ -786,7 +786,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <RequiredLabel>Phone</RequiredLabel>
+                      <RequiredLabel>Mobile</RequiredLabel>
                       <FormControl>
                         <Input {...field} placeholder="+977 9800000000" className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
                       </FormControl>
@@ -799,7 +799,7 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   name="phoneSecondary"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Secondary phone</FormLabel>
+                      <FormLabel>Landline</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="+977 9800000001" className="h-10 rounded-xl border-brand-deep-green/10 shadow-none text-sm" />
                       </FormControl>
