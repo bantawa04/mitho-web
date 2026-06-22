@@ -243,7 +243,7 @@ export function BusinessLocationFields<TFieldValues extends FieldValues>({
           <FormItem>
             <FormLabel>Area</FormLabel>
             <FormControl>
-              <Input {...field} className={inputClassName} />
+              <Input {...field} className={inputClassName} placeholder="Narshing Chowk, Thamel" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -257,7 +257,7 @@ export function BusinessLocationFields<TFieldValues extends FieldValues>({
           <FormItem>
             <FormLabel>Nearest landmark</FormLabel>
             <FormControl>
-              <Input {...field} className={inputClassName} />
+              <Input {...field} className={inputClassName} placeholder="e.g., Next to Nepal Bank" />
             </FormControl>
             <FormMessage />
           </FormItem>

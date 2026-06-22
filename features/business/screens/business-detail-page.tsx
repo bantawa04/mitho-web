@@ -298,7 +298,12 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
             businessId={pageData.id}
             coordinates={pageData.visitInfo.coordinates}
           />
-          <ClaimReport subdued={isEarlyListing} claimHref={claimHref} />
+          <ClaimReport
+            subdued={isEarlyListing}
+            claimHref={claimHref}
+            businessId={pageData.id}
+            businessName={pageData.name}
+          />
         </div>
       </main>
 

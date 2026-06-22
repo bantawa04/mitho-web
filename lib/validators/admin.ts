@@ -2,7 +2,32 @@ import { z } from "zod"
 
 const optionalUrl = z.string().trim().url("Enter a valid URL").or(z.literal("")).default("")
 
-export const businessSchema = z.object({
+const validateClaimInvitation = (
+  data: { sendClaimInvitation?: boolean; claimInvitationEmail?: string },
+  ctx: z.RefinementCtx,
+) => {
+  if (!data.sendClaimInvitation) return
+
+  if (!data.claimInvitationEmail || data.claimInvitationEmail.trim() === "") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Email is required when sending a claim invitation.",
+      path: ["claimInvitationEmail"],
+    })
+    return
+  }
+
+  const emailResult = z.string().email().safeParse(data.claimInvitationEmail)
+  if (!emailResult.success) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Enter a valid email address.",
+      path: ["claimInvitationEmail"],
+    })
+  }
+}
+
+const businessBaseSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(200, "Name must be 200 characters or fewer"),
   description: z.string().trim().max(2000, "Description must be 2000 characters or fewer").optional(),
   listingStatus: z.enum(["pending_review", "published", "suspended", "rejected"]),
@@ -51,30 +76,14 @@ export const businessSchema = z.object({
   // Claim invitation (admin create-only; ignored on edit)
   sendClaimInvitation: z.boolean().optional(),
   claimInvitationEmail: z.string().trim().optional().or(z.literal("")),
-}).superRefine((data, ctx) => {
-  if (data.sendClaimInvitation) {
-    if (!data.claimInvitationEmail || data.claimInvitationEmail.trim() === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Email is required when sending a claim invitation.",
-        path: ["claimInvitationEmail"],
-      })
-    } else {
-      const emailResult = z.string().email().safeParse(data.claimInvitationEmail)
-      if (!emailResult.success) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Enter a valid email address.",
-          path: ["claimInvitationEmail"],
-        })
-      }
-    }
-  }
 })
 
+export const businessSchema = businessBaseSchema.superRefine(validateClaimInvitation)
 export type BusinessFormValues = z.infer<typeof businessSchema>
 
-export const businessOwnerSchema = businessSchema.omit({ listingStatus: true })
+export const businessOwnerSchema = businessBaseSchema
+  .omit({ listingStatus: true })
+  .superRefine(validateClaimInvitation)
 export type BusinessOwnerFormValues = z.infer<typeof businessOwnerSchema>
 
 export const establishmentTypeSchema = z.object({
