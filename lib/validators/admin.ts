@@ -88,6 +88,12 @@ export type BusinessOwnerFormValues = z.infer<typeof businessOwnerSchema>
 
 export const establishmentTypeSchema = z.object({
   label: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be 100 characters or fewer"),
+  icon: z
+    .string()
+    .trim()
+    .max(100, "Icon name must be 100 characters or fewer")
+    .regex(/^[A-Za-z][A-Za-z0-9]*$/, "Use a Lucide icon name like Utensils")
+    .or(z.literal("")),
   status: z.enum(["active", "disabled"]),
 })
 
