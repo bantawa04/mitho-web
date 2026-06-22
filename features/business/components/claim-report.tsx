@@ -1,13 +1,18 @@
+"use client"
+
 import Link from "next/link"
 import { Building2, Flag } from "lucide-react"
 import { MithoCard, MithoCardContent } from "@/components/mitho/mitho-card"
+import { ReportIncorrectInfoDialog } from "@/features/business/components/report-incorrect-info-dialog"
 
 interface ClaimReportProps {
   subdued?: boolean
   claimHref?: string
+  businessId: string
+  businessName: string
 }
 
-export function ClaimReport({ subdued = false, claimHref = "/business/claim" }: ClaimReportProps) {
+export function ClaimReport({ subdued = false, claimHref = "/business/claim", businessId, businessName }: ClaimReportProps) {
   return (
     <section className="container mx-auto px-4 pb-12 pt-2">
       <MithoCard
@@ -34,9 +39,11 @@ export function ClaimReport({ subdued = false, claimHref = "/business/claim" }: 
             </div>
             <div>
               <p className="font-medium text-brand-dark-green">See something wrong?</p>
-              <a href="#" className="text-danger hover:underline text-sm font-medium">
-                Report Incorrect Information
-              </a>
+              <ReportIncorrectInfoDialog businessId={businessId} businessName={businessName}>
+                <button type="button" className="text-sm font-medium text-danger hover:underline">
+                  Report Incorrect Information
+                </button>
+              </ReportIncorrectInfoDialog>
             </div>
           </div>
         </MithoCardContent>

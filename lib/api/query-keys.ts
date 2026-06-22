@@ -8,6 +8,7 @@ import type { ListCollectionsParams } from "@/types/collections"
 import type { ListAdminGalleryParams } from "@/types/gallery"
 import type { ListMediaParams } from "@/types/media"
 import type { ListAdminReviewsParams, ListBusinessReviewsParams, ListBusinessTipsParams, ListMyReviewsParams } from "@/types/reviews"
+import type { ListAdminBusinessReportsParams } from "@/types/business-reports"
 
 export const queryKeys = {
   nepalAdmin: {
@@ -52,6 +53,9 @@ export const queryKeys = {
     all: ["business-claims"] as const,
     claimable: (search: string) => ["business-claims", "claimable", search] as const,
     claimableDetail: (id: string | null) => ["business-claims", "claimable", "detail", id] as const,
+  },
+  businessReports: {
+    all: ["business-reports"] as const,
   },
   media: {
     all: ["media"] as const,
@@ -139,6 +143,11 @@ export const queryKeys = {
     gallery: {
       all: ["admin", "gallery"] as const,
       list: (params: ListAdminGalleryParams) => ["admin", "gallery", "list", params] as const,
+    },
+    reportedContent: {
+      all: ["admin", "reported-content"] as const,
+      list: (params: ListAdminBusinessReportsParams) => ["admin", "reported-content", "list", params] as const,
+      detail: (id: string | null) => ["admin", "reported-content", "detail", id] as const,
     },
     placeImport: {
       all: ["admin", "place-import"] as const,
