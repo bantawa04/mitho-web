@@ -13,6 +13,45 @@ import type {
   UpdateBusinessPayload,
 } from "@/types/business"
 
+function toSnakeCase(payload: CreateBusinessPayload | UpdateBusinessPayload) {
+  const p = payload as Record<string, unknown>
+  const out: Record<string, unknown> = {}
+  if (p.name !== undefined) out.name = p.name
+  if (p.description !== undefined) out.description = p.description
+  if (p.status !== undefined) out.status = p.status
+  if (p.listingStatus !== undefined) out.listing_status = p.listingStatus
+  if (p.phone !== undefined) out.phone = p.phone
+  if (p.phoneSecondary !== undefined) out.phone_secondary = p.phoneSecondary
+  if (p.email !== undefined) out.email = p.email
+  if (p.provinceId !== undefined) out.province_id = p.provinceId
+  if (p.districtId !== undefined) out.district_id = p.districtId
+  if (p.municipalityId !== undefined) out.municipality_id = p.municipalityId
+  if (p.wardNo !== undefined) out.ward_no = p.wardNo
+  if (p.area !== undefined) out.area = p.area
+  if (p.nearestLandmark !== undefined) out.nearest_landmark = p.nearestLandmark
+  if (p.addressNote !== undefined) out.address_note = p.addressNote
+  if (p.latitude !== undefined) out.latitude = p.latitude
+  if (p.longitude !== undefined) out.longitude = p.longitude
+  if (p.googleMapsUrl !== undefined) out.google_maps_url = p.googleMapsUrl
+  if (p.establishmentTypeId !== undefined) out.establishment_type_id = p.establishmentTypeId
+  if (p.cuisineIds !== undefined) out.cuisine_ids = p.cuisineIds
+  if (p.logoId !== undefined) out.logo_id = p.logoId
+  if (p.bannerId !== undefined) out.banner_id = p.bannerId
+  if (p.photos !== undefined) out.photos = p.photos
+  if (p.signatureItems !== undefined) out.signature_items = p.signatureItems
+  if (p.mealTypes !== undefined) out.meal_types = p.mealTypes
+  if (p.menuUrl !== undefined) out.menu_url = p.menuUrl
+  if (p.specialityNote !== undefined) out.speciality_note = p.specialityNote
+  if (p.priceRange !== undefined) out.price_range = p.priceRange
+  if (p.avgCostPerPerson !== undefined) out.avg_cost_per_person = p.avgCostPerPerson
+  if (p.amenities !== undefined) out.amenities = p.amenities
+  if (p.links !== undefined) out.links = p.links
+  if (p.isFeatured !== undefined) out.is_featured = p.isFeatured
+  if (p.sendClaimInvitation !== undefined) out.send_claim_invitation = p.sendClaimInvitation
+  if (p.claimInvitationEmail !== undefined) out.claim_invitation_email = p.claimInvitationEmail ?? null
+  return out
+}
+
 export async function listMyBusinesses(): Promise<MyBusinessEntry[]> {
   const { data } =
     await API.get<ISuccessResponse<MyBusinessEntry[]>>("/businesses/mine")
