@@ -36,6 +36,13 @@ const reasonOptions: Array<{ value: BusinessReportReason; label: string; helper:
   { value: "other", label: "Other", helper: "Describe what looks incorrect." },
 ]
 
+const inputClassName =
+  "h-11 rounded-lg border-border bg-white px-4 shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
+const textareaClassName =
+  "resize-none rounded-lg border-border bg-white px-4 py-3 shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
+const selectTriggerClassName =
+  "h-11 w-full rounded-lg border-border bg-white px-4 shadow-none focus-visible:border-primary focus-visible:ring-primary/25"
+
 interface ReportIncorrectInfoDialogProps {
   businessId: string
   businessName: string
@@ -102,7 +109,7 @@ export function ReportIncorrectInfoDialog({ businessId, businessName, children }
                   <FormLabel>What is wrong?</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
-                      <SelectTrigger className="h-11 rounded-lg">
+                      <SelectTrigger className={selectTriggerClassName}>
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
@@ -134,7 +141,7 @@ export function ReportIncorrectInfoDialog({ businessId, businessName, children }
                       {...field}
                       rows={4}
                       placeholder="Share the correct information if you know it."
-                      className="resize-none rounded-lg"
+                      className={textareaClassName}
                     />
                   </FormControl>
                   <FormMessage />
@@ -153,7 +160,7 @@ export function ReportIncorrectInfoDialog({ businessId, businessName, children }
                       {...field}
                       rows={3}
                       placeholder="Add context that will help our team verify this."
-                      className="resize-none rounded-lg"
+                      className={textareaClassName}
                     />
                   </FormControl>
                   <FormMessage />
@@ -168,7 +175,13 @@ export function ReportIncorrectInfoDialog({ businessId, businessName, children }
                 <FormItem>
                   <FormLabel>Your email, optional</FormLabel>
                   <FormControl>
-                    <Input {...field} type="email" inputMode="email" placeholder="you@example.com" className="h-11 rounded-lg" />
+                    <Input
+                      {...field}
+                      type="email"
+                      inputMode="email"
+                      placeholder="you@example.com"
+                      className={inputClassName}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
