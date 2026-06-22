@@ -18,6 +18,7 @@ import {
   useUpdateAdminEstablishmentType,
 } from "@/hooks/use-admin-establishment-types"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { DynamicLucideIcon } from "@/lib/lucide-icons"
 import type {
   AdminEstablishmentTypeItem,
   AdminEstablishmentTypeStatusFilter,
@@ -32,6 +33,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const emptyEstablishmentTypeValues: EstablishmentTypeFormValues = {
   label: "",
+  icon: "",
   status: "active",
 }
 
@@ -72,7 +74,7 @@ export function AdminEstablishmentTypesPage() {
       const matchesQuery =
         normalizedQuery.length === 0
           ? true
-          : [item.label, item.slug].join(" ").toLowerCase().includes(normalizedQuery)
+          : [item.label, item.slug, item.icon].join(" ").toLowerCase().includes(normalizedQuery)
 
       return matchesStatus && matchesQuery
     })
@@ -116,9 +118,15 @@ export function AdminEstablishmentTypesPage() {
         className: "px-6 text-xs font-medium text-muted-foreground",
         cellClassName: "px-6 py-2.5 align-top",
         cell: (item) => (
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-foreground">{item.label}</p>
-            <p className="text-xs text-muted-foreground">{item.slug}</p>
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-md border border-brand-deep-green/10 bg-muted text-brand-dark-green">
+              <DynamicLucideIcon name={item.icon} className="h-4 w-4" />
+            </span>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">{item.label}</p>
+              <p className="text-xs text-muted-foreground">{item.slug}</p>
+              <p className="text-xs text-muted-foreground">{item.icon?.trim() || "Default icon"}</p>
+            </div>
           </div>
         ),
       },
@@ -152,6 +160,7 @@ export function AdminEstablishmentTypesPage() {
                     setEditingTypeId(item.id)
                     form.reset({
                       label: item.label,
+                      icon: item.icon ?? "",
                       status: item.status,
                     })
                     setIsFormModalOpen(true)
@@ -183,12 +192,14 @@ export function AdminEstablishmentTypesPage() {
         id: editingTypeId,
         payload: {
           label: values.label,
+          icon: values.icon.trim(),
           status: values.status,
         },
       })
     } else {
       await createEstablishmentType.mutateAsync({
         label: values.label,
+        icon: values.icon.trim(),
         status: values.status,
       })
       setCurrentPage(1)
@@ -305,6 +316,15 @@ export function AdminEstablishmentTypesPage() {
                 <p className="text-xs font-medium text-muted-foreground">Status</p>
                 <AdminStatusBadge {...getTaxonomyStatusPresentation(selectedType.status)} />
               </div>
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground">Icon</p>
+                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-md border border-brand-deep-green/10 bg-muted text-brand-dark-green">
+                    <DynamicLucideIcon name={selectedType.icon} className="h-4 w-4" />
+                  </span>
+                  <span>{selectedType.icon?.trim() || "Default icon"}</span>
+                </div>
+              </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -353,6 +373,30 @@ export function AdminEstablishmentTypesPage() {
                     className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="icon"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Icon</FormLabel>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-brand-deep-green/10 bg-muted text-brand-dark-green">
+                    <DynamicLucideIcon name={field.value} className="h-5 w-5" />
+                  </span>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Utensils"
+                      className="h-11 rounded-xl border-brand-deep-green/10 shadow-none"
+                    />
+                  </FormControl>
+                </div>
+                <p className="text-xs text-muted-foreground">Enter a Lucide React icon name, for example Utensils or Coffee.</p>
                 <FormMessage />
               </FormItem>
             )}
