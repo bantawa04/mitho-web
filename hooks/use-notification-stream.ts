@@ -2,19 +2,16 @@
 
 import * as React from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { apiBaseUrl } from "@/config/api"
-import { queryKeys } from "@/lib/api/query-keys"
+import { applyNotification } from "@/features/notifications/apply-notification"
+import { subscribeNotificationStream } from "@/features/notifications/notification-stream-manager"
 import { useAuthSnapshot } from "@/hooks/use-auth-session"
-import { toast } from "@/hooks/use-toast"
-import type { NotificationItem, PaginatedNotifications } from "@/types/notifications"
-
-const STREAM_URL = `${apiBaseUrl}/notifications/stream`
-const MAX_BACKOFF_MS = 30_000
-const BASE_BACKOFF_MS = 1_000
+import type { NotificationItem } from "@/types/notifications"
 
 /**
- * Opens an authenticated SSE connection to the notifications stream and keeps
- * the notification caches warm. Only connects when the user is authenticated.
+ * Keeps the notification caches warm for authenticated users by subscribing to
+ * the shared, cross-tab notification stream. All tabs of a logged-in user share
+ * a single SSE connection (Web Locks leader election + BroadcastChannel fan-out)
+ * with a graceful per-tab fallback for browsers lacking that support.
  */
 export function useNotificationStream() {
   const queryClient = useQueryClient()
@@ -25,85 +22,7 @@ export function useNotificationStream() {
       return
     }
 
-    let eventSource: EventSource | null = null
-    let reconnectTimer: ReturnType<typeof setTimeout> | null = null
-    let attempt = 0
-    let cancelled = false
-
-    const handleNotification = (event: MessageEvent) => {
-      let item: NotificationItem
-      try {
-        item = JSON.parse(event.data) as NotificationItem
-      } catch {
-        return
-      }
-
-      // Optimistically bump the unread count cache.
-      queryClient.setQueryData<number>(queryKeys.notifications.unreadCount(), (current) =>
-        typeof current === "number" ? current + 1 : current,
-      )
-
-      // Optimistically prepend to any cached notification list.
-      queryClient.setQueriesData<PaginatedNotifications>(
-        { queryKey: queryKeys.notifications.all },
-        (current) => {
-          if (!current || !Array.isArray(current.items)) return current
-          if (current.items.some((existing) => existing.id === item.id)) return current
-          return {
-            ...current,
-            items: [item, ...current.items],
-            meta: {
-              ...current.meta,
-              total: current.meta.total + 1,
-              unreadCount: current.meta.unreadCount + 1,
-            },
-          }
-        },
-      )
-
-      // Ensure server truth wins eventually.
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.unreadCount() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all })
-
-      if (item.title) {
-        toast({ title: item.title, description: item.body || undefined })
-      }
-    }
-
-    const connect = () => {
-      if (cancelled) return
-
-      eventSource = new EventSource(STREAM_URL, { withCredentials: true })
-
-      eventSource.addEventListener("notification", handleNotification as EventListener)
-
-      eventSource.onopen = () => {
-        attempt = 0
-      }
-
-      eventSource.onerror = () => {
-        // EventSource auto-reconnects, but we close and back off manually so the
-        // delay is capped and predictable.
-        eventSource?.close()
-        eventSource = null
-
-        if (cancelled) return
-
-        const delay = Math.min(BASE_BACKOFF_MS * 2 ** attempt, MAX_BACKOFF_MS)
-        attempt += 1
-        reconnectTimer = setTimeout(connect, delay)
-      }
-    }
-
-    connect()
-
-    return () => {
-      cancelled = true
-      if (reconnectTimer) clearTimeout(reconnectTimer)
-      if (eventSource) {
-        eventSource.removeEventListener("notification", handleNotification as EventListener)
-        eventSource.close()
-      }
-    }
+    const handler = (item: NotificationItem) => applyNotification(queryClient, item)
+    return subscribeNotificationStream(handler)
   }, [isAuthenticated, queryClient])
 }
