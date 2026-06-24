@@ -21,7 +21,7 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
-  title: "Mitho Cha! - Discover the Real Taste of Nepal",
+  title: "Mitho Cha! - Where Nepal Eats",
   description:
     "Find authentic restaurants, food trucks, and hidden local gems across Nepal. Read reviews from locals and discover your next favorite meal.",
   keywords: [
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     apple: "/brand/apple-icon.png",
   },
   openGraph: {
-    title: "Mitho Cha! - Discover the Real Taste of Nepal",
+    title: "Mitho Cha! - Where Nepal Eats",
     description: "Find authentic restaurants, food trucks, and hidden local gems across Nepal.",
     type: "website",
     locale: "en_US",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mitho Cha! - Discover the Real Taste of Nepal",
+    title: "Mitho Cha! - Where Nepal Eats",
     description: "Find authentic restaurants, food trucks, and hidden local gems across Nepal.",
     images: [getAbsoluteUrl(DEFAULT_OG_IMAGE)],
   },
