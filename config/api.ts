@@ -13,8 +13,10 @@ function buildApiBaseUrl() {
   return normalizedBaseUrl.endsWith("/api") ? normalizedBaseUrl : `${normalizedBaseUrl}/api`
 }
 
+export const apiBaseUrl = buildApiBaseUrl()
+
 const API = axios.create({
-  baseURL: buildApiBaseUrl(),
+  baseURL: apiBaseUrl,
   withCredentials: true,
   timeout: 15000,
   headers: {

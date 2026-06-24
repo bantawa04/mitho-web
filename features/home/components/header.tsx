@@ -16,6 +16,7 @@ import { useAuthSnapshot, useLogout } from "@/hooks/use-auth-session"
 import { cn } from "@/lib/utils"
 import { GoogleSignInDialog } from "@/features/auth/components/google-sign-in-dialog"
 import { MithoButton } from "@/components/mitho/mitho-button"
+import { NotificationBell } from "@/features/notifications/components/notification-bell"
 import { BrandLogo } from "@/components/mitho/brand-logo"
 import { headerNavLinks } from "@/features/home/data/header-nav-links"
 
@@ -112,7 +113,8 @@ export function Header({ signedInUser }: HeaderProps = {}) {
 
             <div className="flex items-center gap-2 sm:gap-3">
               {effectiveUser ? (
-                <div className="hidden lg:block">
+                <div className="hidden items-center gap-2 lg:flex">
+                  {isAuthenticated ? <NotificationBell viewAllHref="/notifications" /> : null}
                   <AccountMenu fallbackUser={signedInUser} />
                 </div>
               ) : (
