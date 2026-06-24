@@ -9,6 +9,7 @@ import type { ListAdminGalleryParams } from "@/types/gallery"
 import type { ListMediaParams } from "@/types/media"
 import type { ListAdminReviewsParams, ListBusinessReviewsParams, ListBusinessTipsParams, ListMyReviewsParams } from "@/types/reviews"
 import type { ListAdminBusinessReportsParams } from "@/types/business-reports"
+import type { ListNotificationsParams } from "@/types/notifications"
 
 export const queryKeys = {
   nepalAdmin: {
@@ -100,6 +101,11 @@ export const queryKeys = {
   },
   accountDeletion: {
     preflight: ["account-deletion", "preflight"] as const,
+  },
+  notifications: {
+    all: ["notifications"] as const,
+    list: (params?: ListNotificationsParams) => ["notifications", "list", params] as const,
+    unreadCount: () => ["notifications", "unread-count"] as const,
   },
   admin: {
     users: {
