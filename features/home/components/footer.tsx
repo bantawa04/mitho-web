@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Facebook, Instagram, Twitter, Youtube, Mail } from "lucide-react"
+import { Facebook, Instagram, Twitter, Youtube, Mail, Linkedin } from "lucide-react"
 import { BrandLogo } from "@/components/mitho/brand-logo"
 
 const footerLinks = {
@@ -37,10 +37,9 @@ const footerLinks = {
 }
 
 const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Youtube, href: "#", label: "YouTube" },
+  { icon: Facebook, href: "https://www.facebook.com/mithochanepal", label: "Facebook" },
+  { icon: Instagram, href: "https://www.instagram.com/mithocha.nepal", label: "Instagram" },
+  {icon: Linkedin, href: "https://www.linkedin.com/company/mitho-cha-nepal", label: "LinkedIn" },
 ]
 
 export function Footer() {
