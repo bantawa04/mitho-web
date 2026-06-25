@@ -16,6 +16,7 @@ import {
   getBusinessReviewShareTitle,
   jsonLdScriptProps,
 } from "@/lib/seo"
+import { safeDecodePathSegment } from "@/lib/url-path"
 
 interface PublicBusinessRouteProps {
   params: Promise<{
@@ -31,7 +32,7 @@ export const dynamic = "force-dynamic"
 export async function generateMetadata({
   params,
 }: PublicBusinessRouteProps): Promise<Metadata> {
-  const routeParams = await params
+  const routeParams = normalizeRouteParams(await params)
   const business = await fetchPublicBusiness(routeParams)
   if (!business) {
     return {
@@ -90,14 +91,17 @@ export async function generateMetadata({
 export default async function PublicBusinessDetailRoute({
   params,
 }: PublicBusinessRouteProps) {
-  const routeParams = await params
+  const routeParams = normalizeRouteParams(await params)
   const business = await fetchPublicBusiness(routeParams)
   if (!business) notFound()
 
   const publicHref = buildPublicBusinessHref(business)
   if (!publicHref) notFound()
 
-  const canonicalParts = publicHref.split("/").filter(Boolean)
+  const canonicalParts = publicHref
+    .split("/")
+    .filter(Boolean)
+    .map(safeDecodePathSegment)
   const canonicalBusinessSegment = canonicalParts[3] ?? ""
 
   if (
@@ -137,5 +141,16 @@ async function fetchPublicBusiness(
       return null
     }
     throw error
+  }
+}
+
+function normalizeRouteParams(
+  params: Awaited<PublicBusinessRouteProps["params"]>,
+) {
+  return {
+    province: safeDecodePathSegment(params.province),
+    district: safeDecodePathSegment(params.district),
+    city: safeDecodePathSegment(params.city),
+    business: safeDecodePathSegment(params.business),
   }
 }
