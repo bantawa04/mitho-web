@@ -1,4 +1,5 @@
 import API from "@/config/api"
+import { encodePathSegment } from "@/lib/url-path"
 import type { ISuccessResponse } from "@/types/response"
 import type {
   Business,
@@ -124,8 +125,12 @@ export async function getPublicBusinessByPath(params: {
   business: string
 }): Promise<PublicBusiness> {
   const { province, district, city, business } = params
+  const provinceSegment = encodePathSegment(province)
+  const districtSegment = encodePathSegment(district)
+  const citySegment = encodePathSegment(city)
+  const businessSegment = encodePathSegment(business)
   const { data } = await API.get<ISuccessResponse<PublicBusiness>>(
-    `/businesses/public/${province}/${district}/${city}/${business}`,
+    `/businesses/public/${provinceSegment}/${districtSegment}/${citySegment}/${businessSegment}`,
   )
   return data.data
 }
