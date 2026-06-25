@@ -2,11 +2,11 @@
 
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Bell, CircleAlert, Clock3, Mail, Settings, ShieldAlert, Trash2 } from "lucide-react"
+import { Bell, CircleAlert, Clock3, Mail, ShieldAlert, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
-import { useBusinessHours, useReplaceBusinessHours } from "@/hooks/use-businesses"
+import { useBusinessDetail, useBusinessHours, useMyBusiness } from "@/hooks/use-businesses"
 import { useBusinessReviews, useUpsertBusinessReviewReply } from "@/hooks/use-reviews"
-import type { BusinessHour, ReplaceHoursPayload } from "@/types/business"
+import { WeeklyBusinessHoursEditor } from "@/features/business/components/weekly-business-hours-editor"
 import { BusinessEditForm } from "@/features/dashboard/screens/business-edit-form"
 import {
   AlertDialog,
@@ -28,7 +28,6 @@ import {
   deriveBusinessLifecycleStatus,
   getBusinessLifecyclePresentation,
 } from "@/features/dashboard/utils/dashboard-business-utils"
-import { useBusinessDetail, useMyBusiness } from "@/hooks/use-businesses"
 import { MithoButton } from "@/components/mitho/mitho-button"
 import { MithoCard, MithoCardContent, MithoCardHeader } from "@/components/mitho/mitho-card"
 import { ReviewProgress, StarRating } from "@/components/mitho/mitho-rating"
@@ -348,117 +347,6 @@ export function BusinessInfoRoutePage({ businessId }: { businessId: string }) {
 
   return <BusinessEditForm businessId={business.id} business={business} />
 }
-
-type HoursFormRow = {
-  dayOfWeek: number
-  dayName: string
-  opensAt: string
-  closesAt: string
-  isClosed: boolean
-}
-
-const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-
-function buildFormRows(apiData: BusinessHour[]): HoursFormRow[] {
-  const byDay = new Map(apiData.map((h) => [h.dayOfWeek, h]))
-  return DAY_NAMES.map((dayName, dayOfWeek) => {
-    const existing = byDay.get(dayOfWeek)
-    if (existing) {
-      return {
-        dayOfWeek,
-        dayName,
-        opensAt: existing.openTime ?? "10:00",
-        closesAt: existing.closeTime ?? "21:00",
-        isClosed: existing.isClosed,
-      }
-    }
-    return { dayOfWeek, dayName, opensAt: "10:00", closesAt: "21:00", isClosed: false }
-  })
-}
-
-function HoursForm({ businessId, initialHours }: { businessId: string; initialHours: BusinessHour[] }) {
-  const [rows, setRows] = React.useState<HoursFormRow[]>(() => buildFormRows(initialHours))
-  const { mutate: replaceHours, isPending, isError, isSuccess, reset } = useReplaceBusinessHours(businessId)
-
-  function updateRow(index: number, update: Partial<HoursFormRow>) {
-    if (isSuccess || isError) reset()
-    setRows((current) => current.map((item, i) => (i === index ? { ...item, ...update } : item)))
-  }
-
-  function handleSave() {
-    const payload: ReplaceHoursPayload = {
-      hours: rows.map((row) => ({
-        dayOfWeek: row.dayOfWeek,
-        isClosed: row.isClosed,
-        openTime: row.isClosed ? undefined : row.opensAt,
-        closeTime: row.isClosed ? undefined : row.closesAt,
-      })),
-    }
-    replaceHours(payload)
-  }
-
-  return (
-    <section>
-      <div className="mb-4">
-        <h2 className="type-section-title text-foreground">Weekly schedule</h2>
-        <p className="type-meta mt-1">Update open and close times here, then save the full schedule in one pass.</p>
-      </div>
-
-      <div className="divide-y divide-border rounded-lg border border-border bg-white">
-        {rows.map((item, index) => (
-          <div
-            key={item.dayOfWeek}
-            className="grid gap-4 px-4 py-3 md:grid-cols-[140px_minmax(0,1fr)_minmax(0,1fr)_120px] md:px-6"
-          >
-            <div className="flex items-center">
-              <p className="text-sm font-semibold text-foreground">{item.dayName}</p>
-            </div>
-
-            <label className="space-y-2">
-              <span className="block text-xs font-semibold text-muted-foreground">Opens</span>
-              <input
-                type="time"
-                value={item.opensAt}
-                onChange={(e) => updateRow(index, { opensAt: e.target.value })}
-                disabled={item.isClosed || isPending}
-                className="w-full rounded-lg border border-border bg-surface-business-inset px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </label>
-
-            <label className="space-y-2">
-              <span className="block text-xs font-semibold text-muted-foreground">Closes</span>
-              <input
-                type="time"
-                value={item.closesAt}
-                onChange={(e) => updateRow(index, { closesAt: e.target.value })}
-                disabled={item.isClosed || isPending}
-                className="w-full rounded-lg border border-border bg-surface-business-inset px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </label>
-
-            <div className="flex items-end md:justify-end">
-              <ToggleSwitch
-                checked={item.isClosed}
-                onCheckedChange={(checked) => updateRow(index, { isClosed: checked })}
-                label="Closed"
-                disabled={isPending}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-        {isSuccess ? <span className="text-sm font-medium text-success">Hours saved.</span> : null}
-        {isError ? <span className="text-sm font-medium text-danger">Something went wrong. Please try again.</span> : null}
-        <MithoButton size="sm" onClick={handleSave} disabled={isPending}>
-          {isPending ? "Saving…" : "Save hours"}
-        </MithoButton>
-      </div>
-    </section>
-  )
-}
-
 export function HoursRoutePage({ businessId }: { businessId: string }) {
   const { data, isLoading, dataUpdatedAt } = useBusinessHours(businessId)
 
@@ -469,7 +357,7 @@ export function HoursRoutePage({ businessId }: { businessId: string }) {
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-deep-green/20 border-t-brand-deep-green/60" />
         </div>
       ) : (
-        <HoursForm businessId={businessId} initialHours={data ?? []} key={`${businessId}-${dataUpdatedAt}`} />
+        <WeeklyBusinessHoursEditor businessId={businessId} initialHours={data ?? []} key={`${businessId}-${dataUpdatedAt}`} />
       )}
     </div>
   )
