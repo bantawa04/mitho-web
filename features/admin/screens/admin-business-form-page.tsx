@@ -6,10 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import type { Resolver } from "react-hook-form"
 import { useRouter } from "next/navigation"
-import { Building2, ChevronRight, Globe, Image, Mail, MapPin, Phone, ShieldCheck, UtensilsCrossed, X } from "lucide-react"
-import { useBusiness, useCreateBusiness, useUpdateBusiness } from "@/hooks/use-businesses"
+import { Building2, ChevronRight, Clock3, Image, Mail, MapPin, UtensilsCrossed, X } from "lucide-react"
+import { useBusiness, useBusinessHours, useCreateBusiness, useUpdateBusiness } from "@/hooks/use-businesses"
 import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-types"
 import { useMunicipalities } from "@/hooks/use-nepal-admin"
+import { WeeklyBusinessHoursEditor } from "@/features/business/components/weekly-business-hours-editor"
 import { BusinessCuisineField } from "@/features/business/components/business-cuisine-field"
 import { BusinessLocationFields } from "@/features/business/components/business-location-fields"
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
@@ -26,7 +27,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/hooks/use-toast"
-import type { BusinessOwnershipStatus } from "@/types/business"
 
 interface AdminBusinessFormPageProps {
   mode: "create" | "edit"
@@ -57,24 +57,18 @@ const dietaryAmenityFields = [
   { name: "amenityNonVeg", label: "Non Veg" },
 ] as const
 
-const ownershipLabels: Record<BusinessOwnershipStatus, string> = {
-  unclaimed: "Unclaimed",
-  claim_under_review: "Claim under review",
-  claimed: "Claimed",
-}
-
-function getClaimReviewHref(businessId: string, claimId?: string) {
-  const params = new URLSearchParams({ status: "pending", businessId })
-  if (claimId) params.set("claimId", claimId)
-  return `/admin/business-claims?${params.toString()}`
-}
-
 export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPageProps) {
   const router = useRouter()
 
   const { data: existing, isLoading: isLoadingBusiness } = useBusiness(
     mode === "edit" ? businessId : undefined,
   )
+  const {
+    data: businessHours,
+    isLoading: isLoadingHours,
+    isError: isHoursError,
+    dataUpdatedAt: hoursUpdatedAt,
+  } = useBusinessHours(mode === "edit" ? businessId ?? "" : "")
   const { data: establishmentTypes, isLoading: isLoadingTypes } = useAdminEstablishmentTypes()
 
   const createMutation = useCreateBusiness()
@@ -318,7 +312,6 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
   const existingLogoId = form.watch("logoId")
   const existingBannerId = form.watch("bannerId")
   const existingPhotos = form.watch("photos") ?? []
-  const claimReviewHref = existing ? getClaimReviewHref(existing.id, existing.pendingClaim?.id) : "/admin/business-claims"
   return (
     <div className="space-y-6 pb-12">
       <section className="space-y-3">
@@ -477,6 +470,39 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 </div>
               </div>
             </section>
+
+            {/* Opening hours — edit only */}
+            {mode === "edit" && businessId ? (
+              <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                    <Clock3 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-brand-dark-green">Opening hours</h2>
+                    <p className="text-sm text-muted-foreground">Review and update the public weekly schedule for this listing.</p>
+                  </div>
+                </div>
+                <div className="mt-6 border-t border-border pt-6">
+                  {isLoadingHours ? (
+                    <div className="flex items-center justify-center py-10">
+                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-deep-green/20 border-t-brand-deep-green/60" />
+                    </div>
+                  ) : isHoursError ? (
+                    <div className="rounded-xl border border-dashed border-border bg-muted px-6 py-6 text-center">
+                      <p className="text-sm text-muted-foreground">Could not load opening hours. Refresh to try again.</p>
+                    </div>
+                  ) : (
+                    <WeeklyBusinessHoursEditor
+                      businessId={businessId}
+                      initialHours={businessHours ?? []}
+                      hideHeader
+                      key={`${businessId}-${hoursUpdatedAt}`}
+                    />
+                  )}
+                </div>
+              </section>
+            ) : null}
 
             {/* Amenities */}
             <section className="rounded-xl border border-border bg-white p-6 shadow-sm">
