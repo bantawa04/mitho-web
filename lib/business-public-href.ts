@@ -1,3 +1,5 @@
+import { normalizeEncodedPath } from "@/lib/url-path"
+
 /**
  * Derives the public listing href for a business.
  * Matches the same logic used in the business switcher page.
@@ -15,7 +17,7 @@ export function getPublicBusinessHref(business: {
 }): string | null {
   const publicPath = business.publicPath?.trim()
   if (publicPath) {
-    return publicPath.startsWith("/") ? publicPath : `/${publicPath}`
+    return normalizeEncodedPath(publicPath.startsWith("/") ? publicPath : `/${publicPath}`)
   }
 
   const provinceSlug =
@@ -40,7 +42,9 @@ export function getPublicBusinessHref(business: {
     cleanId &&
     cleanSlug
   ) {
-    return `/${finalProvinceSlug}/${finalDistrictSlug}/${finalMunicipalitySlug}/${cleanId}-${cleanSlug}`
+    return normalizeEncodedPath(
+      `/${finalProvinceSlug}/${finalDistrictSlug}/${finalMunicipalitySlug}/${cleanId}-${cleanSlug}`,
+    )
   }
   return null
 }
