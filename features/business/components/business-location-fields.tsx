@@ -22,6 +22,8 @@ interface BusinessLocationFieldsProps<TFieldValues extends FieldValues> {
   selectedLocation?: LocationSelection
 }
 
+const NO_WARD_VALUE = "__no_ward__"
+
 function toNumericId(value: unknown) {
   if (typeof value === "number" && Number.isFinite(value)) return value
   if (typeof value === "string" && /^\d+$/.test(value)) return Number(value)
@@ -213,17 +215,24 @@ export function BusinessLocationFields<TFieldValues extends FieldValues>({
         name={wardNoField}
         render={({ field }) => (
           <FormItem>
-            <RequiredLabel>Ward No.</RequiredLabel>
-            <Select onValueChange={field.onChange} value={field.value} disabled={!selectedMunicipality}>
+            <FormLabel>Ward No. (Optional)</FormLabel>
+            <Select
+              onValueChange={(value) =>
+                field.onChange(value === NO_WARD_VALUE ? emptyFieldValue : (value as PathValue<TFieldValues, Path<TFieldValues>>))
+              }
+              value={selectedMunicipality ? wardNo || NO_WARD_VALUE : undefined}
+              disabled={!selectedMunicipality}
+            >
               <FormControl>
                 <SelectTrigger className={selectTriggerClassName}>
                   <SelectDisplay
-                    label={wardNo ? `Ward ${wardNo}` : undefined}
-                    placeholder={selectedMunicipality ? "Choose a ward" : "Choose a municipality first"}
+                    label={selectedMunicipality ? (wardNo ? `Ward ${wardNo}` : "No ward") : undefined}
+                    placeholder={selectedMunicipality ? "Choose a ward or No ward" : "Choose a municipality first"}
                   />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
+                <SelectItem value={NO_WARD_VALUE}>No ward</SelectItem>
                 {wardOptions.map((ward) => (
                   <SelectItem key={ward} value={ward}>
                     Ward {ward}

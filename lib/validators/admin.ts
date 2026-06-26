@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 const optionalUrl = z.string().trim().url("Enter a valid URL").or(z.literal("")).default("")
+const wardPattern = /^\d+$/
 
 const validateClaimInvitation = (
   data: { sendClaimInvitation?: boolean; claimInvitationEmail?: string },
@@ -42,7 +43,10 @@ const businessBaseSchema = z.object({
   provinceId: z.string().trim().min(1, "Province is required"),
   districtId: z.string().trim().min(1, "District is required"),
   municipalityId: z.string().trim().min(1, "Municipality is required"),
-  wardNo: z.string().trim().min(1, "Ward No. is required").regex(/^\d+$/, "Ward No. must be a whole number"),
+  wardNo: z
+    .string()
+    .trim()
+    .refine((value) => value === "" || wardPattern.test(value), "Ward No. must be a whole number"),
   area: z.string().trim().max(100, "Area must be 100 characters or fewer").optional(),
   nearestLandmark: z.string().trim().max(200, "Nearest landmark must be 200 characters or fewer").optional(),
   addressNote: z.string().trim().max(200, "Address note must be 200 characters or fewer").optional(),

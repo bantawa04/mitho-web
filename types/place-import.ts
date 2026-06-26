@@ -82,7 +82,7 @@ export interface ImportGooglePlaceItem {
   provinceId: number
   districtId: number
   municipalityId: number
-  wardNo: number
+  wardNo?: number
   area?: string
   addressNote?: string
 }

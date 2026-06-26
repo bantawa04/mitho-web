@@ -301,6 +301,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
 
   const submitBusiness = useCallback(async (values: AddBusinessFormValues) => {
     setSubmitError(null)
+    const wardNo = values.wardNo.trim()
 
     const links = {
       website: normalizeOptionalUrl(values.website),
@@ -318,7 +319,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
       provinceId: Number(values.provinceId),
       districtId: Number(values.districtId),
       municipalityId: Number(values.municipalityId),
-      wardNo: Number(values.wardNo),
+      ...(wardNo ? { wardNo: Number(wardNo) } : {}),
       area: values.area?.trim() || undefined,
       nearestLandmark: values.nearestLandmark?.trim() || undefined,
       addressNote: values.addressNote?.trim() || undefined,
@@ -374,7 +375,7 @@ export function AddBusinessFlow({ shell }: AddBusinessFlowProps) {
           { label: "Province / State", value: selectedProvince?.name ?? "Selected province" },
           { label: "District", value: selectedDistrict?.name ?? "Selected district" },
           { label: "City / Municipality", value: selectedMunicipality?.name ?? "Selected municipality" },
-          { label: "Ward No.", value: values.wardNo.trim() },
+          { label: "Ward No.", value: wardNo ? `Ward ${wardNo}` : "No ward" },
           { label: "Area", value: displayValue(values.area) },
           { label: "Nearest landmark", value: displayValue(values.nearestLandmark) },
           { label: "Address note", value: displayValue(values.addressNote) },
