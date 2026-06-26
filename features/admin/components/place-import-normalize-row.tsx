@@ -23,6 +23,7 @@ interface PlaceImportNormalizeRowProps {
 }
 
 const NONE = "__none__"
+const BLANK_WARD = "__blank_ward__"
 
 export function PlaceImportNormalizeRow({ place, value, establishmentTypes, onChange }: PlaceImportNormalizeRowProps) {
   const provincesQuery = useProvinces()
@@ -107,14 +108,15 @@ export function PlaceImportNormalizeRow({ place, value, establishmentTypes, onCh
 
       <TableCell className="py-3">
         <Select
-          value={value.wardNo ? String(value.wardNo) : ""}
-          onValueChange={(next) => onChange({ ...value, wardNo: Number(next) })}
+          value={value.municipalityId ? (value.wardNo ? String(value.wardNo) : BLANK_WARD) : ""}
+          onValueChange={(next) => onChange({ ...value, wardNo: next === BLANK_WARD ? null : Number(next) })}
           disabled={!value.municipalityId}
         >
           <SelectTrigger className="h-9 w-[90px] rounded-lg border-border bg-white shadow-none">
-            <SelectValue placeholder="Ward" />
+            <SelectValue placeholder="Ward (optional)" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value={BLANK_WARD}>Leave blank</SelectItem>
             {wardOptions.map((ward) => (
               <SelectItem key={ward} value={String(ward)}>
                 {ward}

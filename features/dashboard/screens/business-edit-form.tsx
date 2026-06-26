@@ -114,6 +114,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
   }
 
   async function onSubmit(values: BusinessOwnerFormValues) {
+    const wardNo = values.wardNo.trim()
     const links = {
       website: values.websiteUrl || undefined,
       facebook: values.facebookUrl || undefined,
@@ -166,7 +167,7 @@ export function BusinessEditForm({ businessId, business: b }: BusinessEditFormPr
           provinceId: Number(values.provinceId),
           districtId: Number(values.districtId),
           municipalityId: Number(values.municipalityId),
-          wardNo: Number(values.wardNo),
+          wardNo: wardNo ? Number(wardNo) : null,
           area: values.area || undefined,
           nearestLandmark: values.nearestLandmark || undefined,
           addressNote: values.addressNote || undefined,

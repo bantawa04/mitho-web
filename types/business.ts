@@ -85,7 +85,7 @@ export interface Business {
   provinceId: number
   districtId: number
   municipalityId: number
-  wardNo: number
+  wardNo: number | null
   province: Pick<Province, "id" | "name" | "slug">
   district: Pick<District, "id" | "name" | "slug">
   municipality: Pick<Municipality, "id" | "name" | "slug" | "wards"> & {
@@ -143,7 +143,7 @@ export interface CreateBusinessPayload {
   provinceId: number
   districtId: number
   municipalityId: number
-  wardNo: number
+  wardNo?: number | null
   area?: string
   description?: string
   logoId?: string

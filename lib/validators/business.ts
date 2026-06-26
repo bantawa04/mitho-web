@@ -2,6 +2,7 @@ import { z } from "zod"
 
 const websitePattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/.*)?$/i
 const phonePattern = /^[+]?[\d\s()-]{7,}$/
+const wardPattern = /^\d+$/
 
 export const BUSINESS_ROLE_OPTIONS = [
   { value: "owner", label: "Owner" },
@@ -28,7 +29,10 @@ export const addBusinessSchema = z.object({
   provinceId: z.string().trim().min(1, "Choose a valid province."),
   districtId: z.string().trim().min(1, "Choose a valid district."),
   municipalityId: z.string().trim().min(1, "Choose a valid municipality."),
-  wardNo: z.string().trim().min(1, "Ward No. is required.").regex(/^\d+$/, "Ward No. must be a whole number."),
+  wardNo: z
+    .string()
+    .trim()
+    .refine((value) => value === "" || wardPattern.test(value), "Ward No. must be a whole number."),
   area: z
     .string()
     .trim()

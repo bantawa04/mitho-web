@@ -72,7 +72,7 @@ export function PlaceImportModal({ open, onOpenChange }: PlaceImportModalProps) 
     () =>
       selectedResults.every((result) => {
         const state = rowState[result.externalId]
-        return Boolean(state?.provinceId && state.districtId && state.municipalityId && state.wardNo)
+        return Boolean(state?.provinceId && state.districtId && state.municipalityId)
       }),
     [selectedResults, rowState],
   )
@@ -150,7 +150,7 @@ export function PlaceImportModal({ open, onOpenChange }: PlaceImportModalProps) 
 
   async function handleImport() {
     if (!allRowsValid) {
-      toast({ title: "Complete addresses", description: "Set province, district, municipality and ward for every row.", variant: "destructive" })
+      toast({ title: "Complete addresses", description: "Set province, district, and municipality for every row.", variant: "destructive" })
       return
     }
     const items: ImportGooglePlaceItem[] = selectedResults.map((result) => {
@@ -168,7 +168,7 @@ export function PlaceImportModal({ open, onOpenChange }: PlaceImportModalProps) 
         provinceId: state.provinceId!,
         districtId: state.districtId!,
         municipalityId: state.municipalityId!,
-        wardNo: state.wardNo!,
+        ...(state.wardNo !== null ? { wardNo: state.wardNo } : {}),
       }
     })
 
@@ -193,7 +193,7 @@ export function PlaceImportModal({ open, onOpenChange }: PlaceImportModalProps) 
             <DialogTitle className="text-lg font-semibold text-foreground">Import businesses from Google</DialogTitle>
             <p className="text-sm text-muted-foreground">
               {step === "search" && "Set a location and categories, then fetch nearby businesses."}
-              {step === "normalize" && "Set the Mitho address for each business before importing."}
+              {step === "normalize" && "Set the Mitho address for each business before importing. Ward is optional."}
               {step === "result" && "Import summary."}
             </p>
           </DialogHeader>
@@ -223,7 +223,7 @@ export function PlaceImportModal({ open, onOpenChange }: PlaceImportModalProps) 
                     <TableHead className="text-xs font-medium text-muted-foreground">Province</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">District</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Municipality</TableHead>
-                    <TableHead className="text-xs font-medium text-muted-foreground">Ward</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">Ward (optional)</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Type</TableHead>
                   </TableRow>
                 </TableHeader>
