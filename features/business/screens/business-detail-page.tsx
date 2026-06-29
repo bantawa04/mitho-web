@@ -28,6 +28,7 @@ import type { BusinessPageData } from "@/features/business/business-detail-types
 import { isBusinessEarlyListing } from "@/features/business/business-detail-utils"
 import { mapReviewItemToBusinessReview, mapReviewSummaryToRatingsData } from "@/features/business/mappers/public-business-page-data"
 import type { CollectionCandidate } from "@/types/collections"
+import { createGoogleDirectionsUrl } from "@/lib/google-maps"
 import { getBusinessReviewShareTitle } from "@/lib/seo"
 
 interface BusinessDetailPageProps {
@@ -205,6 +206,9 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
     () => collectionsQuery.data?.pages.flatMap((page) => page.items) ?? [],
     [collectionsQuery.data?.pages],
   )
+  const directionsHref = pageData.visitInfo.coordinates
+    ? createGoogleDirectionsUrl(pageData.visitInfo.coordinates)
+    : null
 
   return (
     <div className="page-shell-customer min-h-screen">
@@ -226,6 +230,7 @@ export function BusinessDetailPage({ pageData, claimHref = "/business/claim", pu
           location={pageData.location}
           isOpen={pageData.isOpen}
           heroNote={pageData.heroNote}
+          directionsHref={directionsHref}
           onAddToCollection={handleAddToCollectionPress}
           onWriteReview={() => {
             if (typeof window !== "undefined" && window.innerWidth < 1024) {

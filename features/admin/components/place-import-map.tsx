@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { APIProvider, Map, Marker, useMap, type MapMouseEvent } from "@vis.gl/react-google-maps"
-import { MapPin } from "lucide-react"
+import { LocateFixed, Loader2, MapPin } from "lucide-react"
 import { GOOGLE_MAPS_API_KEY, hasGoogleMapsApiKey, type MapCoordinates } from "@/lib/google-maps"
 import { cn } from "@/lib/utils"
 
@@ -49,14 +49,47 @@ function RadiusCircle({ center, radiusMeters }: { center: MapCoordinates; radius
 }
 
 export function PlaceImportMap({ defaultCenter, marker, radiusMeters, onSelect, className }: PlaceImportMapProps) {
+  const [isLocating, setIsLocating] = useState(false)
+  const [locationError, setLocationError] = useState<string | null>(null)
+
   const handleMapClick = (event: MapMouseEvent) => {
     const coordinates = event.detail.latLng
-    if (coordinates) onSelect(coordinates)
+    if (coordinates) {
+      onSelect(coordinates)
+      setLocationError(null)
+    }
   }
 
   const handleMarkerDragEnd = (event: google.maps.MapMouseEvent) => {
     const latLng = event.latLng
-    if (latLng) onSelect(latLng.toJSON())
+    if (latLng) {
+      onSelect(latLng.toJSON())
+      setLocationError(null)
+    }
+  }
+
+  const handleUseCurrentLocation = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocationError("Current location is not available in this browser. Kathmandu stays selected for now.")
+      return
+    }
+
+    setIsLocating(true)
+    setLocationError(null)
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setIsLocating(false)
+        onSelect({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        })
+      },
+      () => {
+        setIsLocating(false)
+        setLocationError("Could not get your current location. Allow browser location permission or keep using the current marker.")
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+    )
   }
 
   if (!hasGoogleMapsApiKey()) {
@@ -82,25 +115,46 @@ export function PlaceImportMap({ defaultCenter, marker, radiusMeters, onSelect, 
   }
 
   return (
-    <div className={cn("overflow-hidden rounded-xl border border-border", className)}>
-      <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
-        <Map
-          defaultCenter={defaultCenter}
-          defaultZoom={14}
-          clickableIcons={false}
-          disableDefaultUI
-          fullscreenControl={false}
-          gestureHandling="greedy"
-          mapTypeControl={false}
-          streetViewControl={false}
-          zoomControl
-          className="h-[320px] w-full"
-          onClick={handleMapClick}
+    <div className={cn("rounded-xl border border-border", className)}>
+      <div className="flex flex-col gap-2 border-b border-border bg-white px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs leading-5 text-muted-foreground">
+          Use browser GPS or click the map to set the Google Places search center.
+        </p>
+        <button
+          type="button"
+          onClick={handleUseCurrentLocation}
+          disabled={isLocating}
+          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-brand-deep-green/20 bg-white px-3 text-xs font-semibold text-brand-deep-green transition-colors hover:bg-brand-soft-beige/60 disabled:pointer-events-none disabled:opacity-60"
         >
-          {marker ? <Marker position={marker} draggable onDragEnd={handleMarkerDragEnd} /> : null}
-          {marker ? <RadiusCircle center={marker} radiusMeters={radiusMeters} /> : null}
-        </Map>
-      </APIProvider>
+          {isLocating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LocateFixed className="h-3.5 w-3.5" />}
+          {isLocating ? "Locating..." : "Use current location"}
+        </button>
+      </div>
+      {locationError ? (
+        <p className="border-b border-border bg-brand-orange/10 px-3 py-2 text-xs leading-5 text-brand-dark-green">
+          {locationError}
+        </p>
+      ) : null}
+      <div className="overflow-hidden rounded-b-xl">
+        <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
+          <Map
+            defaultCenter={defaultCenter}
+            defaultZoom={14}
+            clickableIcons={false}
+            disableDefaultUI
+            fullscreenControl={false}
+            gestureHandling="greedy"
+            mapTypeControl={false}
+            streetViewControl={false}
+            zoomControl
+            className="h-[320px] w-full"
+            onClick={handleMapClick}
+          >
+            {marker ? <Marker position={marker} draggable onDragEnd={handleMarkerDragEnd} /> : null}
+            {marker ? <RadiusCircle center={marker} radiusMeters={radiusMeters} /> : null}
+          </Map>
+        </APIProvider>
+      </div>
     </div>
   )
 }
