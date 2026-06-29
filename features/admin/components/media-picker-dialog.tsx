@@ -3,8 +3,8 @@
 import { useRef, useState } from "react"
 import { Check, ImageIcon, Loader2, Upload, Video } from "lucide-react"
 import { useMedia, useUploadMedia } from "@/hooks/use-media"
-import { getMediaImage } from "@/lib/media-image"
 import type { Media, MediaType } from "@/types/media"
+import { MediaImage } from "@/components/mitho/media-image"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -213,8 +213,10 @@ export function MediaPickerDialog({
                       }`}
                     >
                       {item.mediaType === "image" ? (
-                        <img
-                          src={getMediaImage(item, "thumb", item.publicUrl) ?? item.publicUrl}
+                        <MediaImage
+                          media={item}
+                          variant="thumb"
+                          fallback={item.publicUrl}
                           alt={item.altText ?? item.filename}
                           className="h-full w-full object-cover"
                         />
