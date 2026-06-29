@@ -26,9 +26,7 @@ import {
   ExternalLink,
 } from "lucide-react"
 import { getPublicBusinessHref } from "@/lib/business-public-href"
-import { getMediaImage } from "@/lib/media-image"
 import { DEFAULT_BUSINESS_LOGO } from "@/features/business/constants/business-media"
-import { getPublicBusinessFeaturedImage } from "@/features/business/mappers/public-business-page-data"
 import { AdminStatusBadge } from "@/features/admin/components/admin-status-badge"
 import { useBusiness } from "@/hooks/use-businesses"
 import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal"
@@ -36,6 +34,7 @@ import { useAdminEstablishmentTypes } from "@/hooks/use-admin-establishment-type
 import { formatAdminDate, formatAdminDateTime } from "@/features/admin/utils/admin-format-utils"
 import { getBusinessListingPresentation, getBusinessOwnershipPresentation } from "@/features/admin/utils/admin-status-utils"
 import { BrandLogo } from "@/components/mitho/brand-logo"
+import { MediaImage } from "@/components/mitho/media-image"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -205,7 +204,7 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
     : business.municipality.name
   const addedByLabel = business.addedByUserName || business.addedByType
   const publicBusinessHref = getPublicBusinessHref(business)
-  const featuredImage = getPublicBusinessFeaturedImage(business)
+  const featuredImageMedia = business.banner ?? business.photos?.find((photo) => photo.mediaType === "image") ?? null
   const canOpenPublicPage = business.listingStatus === "published" && publicBusinessHref
 
   const fullAddress = [
@@ -268,9 +267,10 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
 
         {/* Premium Banner image header */}
         <div className="relative overflow-hidden rounded-lg border-slate-500/20 bg-brand-deep-green/10 h-48 sm:h-64 shadow-sm">
-          {featuredImage ? (
-            <img
-              src={featuredImage}
+          {featuredImageMedia ? (
+            <MediaImage
+              media={featuredImageMedia}
+              variant="hero"
               alt={`${business.name} featured image`}
               className="h-full w-full object-cover"
             />
@@ -309,8 +309,10 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
               )}
             </div>
             <div className="flex items-start gap-4">
-              <img
-                src={getMediaImage(business.logo, "logo", DEFAULT_BUSINESS_LOGO) ?? DEFAULT_BUSINESS_LOGO}
+              <MediaImage
+                media={business.logo}
+                variant="logo"
+                fallback={DEFAULT_BUSINESS_LOGO}
                 alt={business.logo?.altText ?? `${business.name} logo`}
                 className="h-16 w-16 rounded-lg border border-border bg-white object-contain p-1"
               />
@@ -592,8 +594,10 @@ export function AdminBusinessDetailPage({ id }: { id: string }) {
                 rel="noreferrer"
                 className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/30 hover:border-brand-deep-green/30 transition-colors"
               >
-                <img
-                  src={getMediaImage(photo, "thumb", photo.publicUrl) ?? photo.publicUrl}
+                <MediaImage
+                  media={photo}
+                  variant="thumb"
+                  fallback={photo.publicUrl}
                   alt={photo.altText ?? "Gallery Photo"}
                   className="h-full w-full object-cover"
                 />

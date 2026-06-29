@@ -12,8 +12,8 @@ import { useAdminGallery, useApproveAdminGalleryItem, useRejectAdminGalleryItem 
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useToast } from "@/hooks/use-toast"
 import { extractApiErrorMessage } from "@/lib/api-error-utils"
-import { getMediaImage } from "@/lib/media-image"
 import type { AdminGalleryItem, GalleryItemStatus } from "@/types/gallery"
+import { MediaImage } from "@/components/mitho/media-image"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -107,8 +107,10 @@ export function AdminGalleryApprovalPage() {
                   <Film className="h-5 w-5 text-muted-foreground" />
                 </div>
               ) : (
-                <img
-                  src={getMediaImage(item.media, "thumb", item.media.publicUrl) ?? item.media.publicUrl}
+                <MediaImage
+                  media={item.media}
+                  variant="thumb"
+                  fallback={item.media.publicUrl}
                   alt={displayTitle(item)}
                   className="h-full w-full object-cover"
                 />
@@ -317,8 +319,10 @@ export function AdminGalleryApprovalPage() {
                 {selectedItem.media.mediaType === "video" ? (
                   <video src={selectedItem.media.publicUrl} className="max-h-96 w-full object-contain" controls playsInline />
                 ) : (
-                  <img
-                    src={getMediaImage(selectedItem.media, "gallery", selectedItem.media.publicUrl) ?? selectedItem.media.publicUrl}
+                  <MediaImage
+                    media={selectedItem.media}
+                    variant="gallery"
+                    fallback={selectedItem.media.publicUrl}
                     alt={displayTitle(selectedItem)}
                     className="max-h-96 w-full object-contain"
                   />
