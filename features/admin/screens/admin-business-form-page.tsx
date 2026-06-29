@@ -48,6 +48,8 @@ const paymentAmenityFields = [
 const facilityAmenityFields = [
   { name: "amenityParking", label: "Parking" },
   { name: "amenityWifi", label: "WiFi" },
+  { name: "amenityAirConditioning", label: "Air conditioning" },
+  { name: "amenityOutdoorSeating", label: "Outdoor seating" },
 ] as const
 
 const dietaryAmenityFields = [
