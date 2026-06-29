@@ -16,9 +16,9 @@ import { BusinessLocationFields } from "@/features/business/components/business-
 import { GoogleMapPicker } from "@/features/business/components/google-map-picker"
 import { buildAdminBusinessFormValues } from "@/features/business/utils/business-form-utils"
 import { businessSchema, type BusinessFormValues } from "@/lib/validators/admin"
-import { getMediaImage } from "@/lib/media-image"
 import type { Media } from "@/types/media"
 import { MediaPickerDialog } from "@/features/admin/components/media-picker-dialog"
+import { MediaImage } from "@/components/mitho/media-image"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -703,8 +703,10 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                   <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
                     {photosMedia.map((photo) => (
                       <div key={photo.id} className="relative aspect-square">
-                        <img
-                          src={getMediaImage(photo, "thumb", photo.publicUrl) ?? photo.publicUrl}
+                        <MediaImage
+                          media={photo}
+                          variant="thumb"
+                          fallback={photo.publicUrl}
                           alt={photo.altText ?? photo.filename}
                           className="h-full w-full rounded-xl border border-brand-deep-green/10 object-cover"
                         />
@@ -793,8 +795,10 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 <div className="flex items-center flex-col gap-3">
                   {logoMedia ? (
                     <div className="relative shrink-0">
-                      <img
-                        src={getMediaImage(logoMedia, "logo", logoMedia.publicUrl) ?? logoMedia.publicUrl}
+                      <MediaImage
+                        media={logoMedia}
+                        variant="logo"
+                        fallback={logoMedia.publicUrl}
                         alt="Logo"
                         className="h-14 w-14 rounded-xl border border-brand-deep-green/10 object-cover bg-white"
                       />
@@ -836,8 +840,10 @@ export function AdminBusinessFormPage({ mode, businessId }: AdminBusinessFormPag
                 <div className="space-y-3">
                   {bannerMedia ? (
                     <div className="relative w-full h-24 overflow-hidden rounded-xl border border-brand-deep-green/10">
-                      <img
-                        src={getMediaImage(bannerMedia, "card", bannerMedia.publicUrl) ?? bannerMedia.publicUrl}
+                      <MediaImage
+                        media={bannerMedia}
+                        variant="card"
+                        fallback={bannerMedia.publicUrl}
                         alt="Featured image"
                         className="h-full w-full object-cover"
                       />

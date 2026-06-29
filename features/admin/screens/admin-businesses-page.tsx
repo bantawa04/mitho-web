@@ -10,10 +10,10 @@ import { ClaimReviewModal } from "@/features/admin/components/claim-review-modal
 import { PlaceImportModal } from "@/features/admin/components/place-import-modal"
 import { AdminTable, DEFAULT_ADMIN_PAGE_SIZE, type AdminTableColumn } from "@/features/admin/components/admin-table"
 import { DEFAULT_BUSINESS_LOGO } from "@/features/business/constants/business-media"
-import { getMediaImage } from "@/lib/media-image"
 import { formatAdminBusinessTableLocation } from "@/features/admin/utils/admin-business-utils"
 import { formatAdminDate } from "@/features/admin/utils/admin-format-utils"
 import { getBusinessListingPresentation, getBusinessOwnershipPresentation } from "@/features/admin/utils/admin-status-utils"
+import { MediaImage } from "@/components/mitho/media-image"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -95,8 +95,10 @@ export function AdminBusinessesPage() {
         cellClassName: "px-6 py-2.5 align-top",
         cell: (business) => (
           <div className="flex items-start gap-3">
-            <img
-              src={getMediaImage(business.logo, "logo", DEFAULT_BUSINESS_LOGO) ?? DEFAULT_BUSINESS_LOGO}
+            <MediaImage
+              media={business.logo}
+              variant="logo"
+              fallback={DEFAULT_BUSINESS_LOGO}
               alt={business.logo?.altText ?? `${business.name} logo`}
               className="h-11 w-11 rounded-xl border border-border bg-white object-contain p-1"
             />
