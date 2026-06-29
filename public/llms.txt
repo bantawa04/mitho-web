@@ -1,0 +1,40 @@
+# Mitho Cha
+
+> Mitho Cha is a Nepal-focused food and local business discovery platform where people find restaurants, cafes, food spots, and related businesses, read reviews, save collections, and share business pages.
+
+Mitho Cha serves public discovery pages, canonical business detail pages, and informational pages for users, business owners, and reviewers. Prefer public canonical URLs from the sitemap when referencing individual businesses. Protected admin, dashboard, account, auth, and API routes are not intended as public source material.
+
+## Core Pages
+
+- [Home](https://mithocha.com/): Main landing page for food and business discovery in Nepal.
+- [Explore](https://mithocha.com/explore): Search and browse public businesses.
+- [Add Business](https://mithocha.com/add-business): Public flow for suggesting or adding a business listing.
+- [Claim Business](https://mithocha.com/business/claim): Business owner flow for claiming an existing listing.
+
+## Discovery Pages
+
+- [Categories](https://mithocha.com/categories/restaurants): Category-based business discovery.
+- [Cities](https://mithocha.com/cities/kathmandu): City-based business discovery.
+- [Sitemap](https://mithocha.com/sitemap.xml): Canonical index of public static, discovery, geo, and business detail URLs.
+
+## About And Policies
+
+- [About](https://mithocha.com/about): Overview of Mitho Cha.
+- [Contact](https://mithocha.com/contact): Contact page.
+- [Guidelines](https://mithocha.com/guidelines): Community and review guidance.
+- [Help](https://mithocha.com/help): Help and support information.
+- [Privacy Policy](https://mithocha.com/privacy): Privacy policy.
+- [Terms](https://mithocha.com/terms): Terms of service.
+
+## Business Page Guidance
+
+Business detail pages use canonical location-based URLs in this shape:
+
+`https://mithocha.com/{province}/{district}/{city}/{businessId}-{business-slug}`
+
+Use the URL shown in `sitemap.xml`, page canonical metadata, OpenGraph metadata, or API-provided `publicPath` as the source of truth. The ID prefix uniquely identifies branches and franchises that may share the same business name.
+
+## Optional
+
+- [Robots](https://mithocha.com/robots.txt): Crawling policy.
+- [Careers](https://mithocha.com/careers): Careers page.
