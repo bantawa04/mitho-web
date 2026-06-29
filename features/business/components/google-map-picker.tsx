@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
 import { APIProvider, Map, Marker, type MapMouseEvent } from "@vis.gl/react-google-maps"
 import { LocateFixed, Loader2, MapPin } from "lucide-react"
 import { GOOGLE_MAPS_API_KEY, hasGoogleMapsApiKey, type MapCoordinates } from "@/lib/google-maps"
+import { useCurrentLocation } from "@/hooks/use-current-location"
 import { cn } from "@/lib/utils"
 
 interface GoogleMapPickerProps {
@@ -21,45 +21,24 @@ export function GoogleMapPicker({
   onSelect,
   className,
 }: GoogleMapPickerProps) {
-  const [isLocating, setIsLocating] = useState(false)
-  const [locationError, setLocationError] = useState<string | null>(null)
+  const { isLocating, locationError, clearLocationError, requestCurrentLocation } = useCurrentLocation()
 
   const handleMapClick = (event: MapMouseEvent) => {
     const coordinates = event.detail.latLng
     if (!coordinates) return
     onSelect(coordinates)
-    setLocationError(null)
+    clearLocationError()
   }
 
   const handleMarkerDragEnd = (event: google.maps.MapMouseEvent) => {
     const latLng = event.latLng
     if (!latLng) return
     onSelect(latLng.toJSON())
-    setLocationError(null)
+    clearLocationError()
   }
 
   const handleUseCurrentLocation = () => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setLocationError("Current location is not available in this browser.")
-      return
-    }
-
-    setIsLocating(true)
-    setLocationError(null)
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setIsLocating(false)
-        onSelect({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        })
-      },
-      () => {
-        setIsLocating(false)
-        setLocationError("Could not get your current location. Check browser permission and try again.")
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
-    )
+    requestCurrentLocation(onSelect)
   }
 
   if (!hasGoogleMapsApiKey()) {

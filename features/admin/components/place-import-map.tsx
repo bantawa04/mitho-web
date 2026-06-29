@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { APIProvider, Map, Marker, useMap, type MapMouseEvent } from "@vis.gl/react-google-maps"
 import { LocateFixed, Loader2, MapPin } from "lucide-react"
 import { GOOGLE_MAPS_API_KEY, hasGoogleMapsApiKey, type MapCoordinates } from "@/lib/google-maps"
+import { useCurrentLocation } from "@/hooks/use-current-location"
 import { cn } from "@/lib/utils"
 
 interface PlaceImportMapProps {
@@ -49,14 +50,16 @@ function RadiusCircle({ center, radiusMeters }: { center: MapCoordinates; radius
 }
 
 export function PlaceImportMap({ defaultCenter, marker, radiusMeters, onSelect, className }: PlaceImportMapProps) {
-  const [isLocating, setIsLocating] = useState(false)
-  const [locationError, setLocationError] = useState<string | null>(null)
+  const { isLocating, locationError, clearLocationError, requestCurrentLocation } = useCurrentLocation({
+    unavailableMessage: "Current location is not available in this browser. Kathmandu stays selected for now.",
+    errorMessage: "Could not get your current location. Allow browser location permission or keep using the current marker.",
+  })
 
   const handleMapClick = (event: MapMouseEvent) => {
     const coordinates = event.detail.latLng
     if (coordinates) {
       onSelect(coordinates)
-      setLocationError(null)
+      clearLocationError()
     }
   }
 
@@ -64,32 +67,12 @@ export function PlaceImportMap({ defaultCenter, marker, radiusMeters, onSelect, 
     const latLng = event.latLng
     if (latLng) {
       onSelect(latLng.toJSON())
-      setLocationError(null)
+      clearLocationError()
     }
   }
 
   const handleUseCurrentLocation = () => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setLocationError("Current location is not available in this browser. Kathmandu stays selected for now.")
-      return
-    }
-
-    setIsLocating(true)
-    setLocationError(null)
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setIsLocating(false)
-        onSelect({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        })
-      },
-      () => {
-        setIsLocating(false)
-        setLocationError("Could not get your current location. Allow browser location permission or keep using the current marker.")
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
-    )
+    requestCurrentLocation(onSelect)
   }
 
   if (!hasGoogleMapsApiKey()) {
