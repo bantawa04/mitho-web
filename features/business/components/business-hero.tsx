@@ -1,5 +1,5 @@
 "use client"
-import { BadgeCheck, Bookmark, MapPin, PenLine, Share2 } from "lucide-react"
+import { BadgeCheck, Bookmark, MapPin, Navigation, PenLine, Share2 } from "lucide-react"
 import { MithoBadge, OpenNowBadge, ClosedBadge } from "@/components/mitho/mitho-badge"
 import { StarRating } from "@/components/mitho/mitho-rating"
 import { MithoButton } from "@/components/mitho/mitho-button"
@@ -17,6 +17,7 @@ interface BusinessHeroProps {
   location: string
   isOpen: boolean | null
   heroNote: string
+  directionsHref?: string | null
   onAddToCollection?: () => void
   onWriteReview?: () => void
   onShare?: () => void
@@ -33,6 +34,7 @@ export function BusinessHero({
   location,
   isOpen,
   heroNote,
+  directionsHref,
   onAddToCollection,
   onWriteReview,
   onShare,
@@ -169,6 +171,19 @@ export function BusinessHero({
             >
               Add to collection
             </MithoButton>
+            {directionsHref ? (
+              <MithoButton
+                asChild
+                variant="outline-secondary"
+                size="lg"
+                className="w-full justify-center"
+                leftIcon={<Navigation className="h-5 w-5" />}
+              >
+                <a href={directionsHref} target="_blank" rel="noopener noreferrer">
+                  Get Direction
+                </a>
+              </MithoButton>
+            ) : null}
             <button
               type="button"
               onClick={onShare}
